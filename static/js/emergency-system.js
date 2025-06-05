@@ -7,6 +7,7 @@ gsap.registerPlugin(ScrollTrigger);
 document.addEventListener('DOMContentLoaded', () => {
     initHeroAnimations();
     initParallax();
+    initHorizontalSections();
     initScrollAnimations();
     initTimelineAnimation();
     initNetworkAnimation();
@@ -72,6 +73,28 @@ function initParallax() {
     });
 }
 
+// Horizontal parallax sections pinned on scroll
+function initHorizontalSections() {
+    gsap.utils.toArray('.horizontal-section').forEach(section => {
+        const content = section.querySelector('.scroll-content');
+        if (!content) return;
+
+        const distance = content.scrollWidth - section.clientWidth;
+        gsap.fromTo(content, { x: -distance }, {
+            x: 0,
+            ease: 'none',
+            scrollTrigger: {
+                trigger: section,
+                start: 'top top',
+                end: () => `+=${distance}`,
+                scrub: true,
+                pin: true,
+                invalidateOnRefresh: true
+            }
+        });
+    });
+}
+
 // Scroll Animations
 function initScrollAnimations() {
     // Emergency Cards
@@ -85,20 +108,37 @@ function initScrollAnimations() {
         duration: 0.8,
         stagger: 0.1
     });
-    
-    // Component Cards
-    gsap.from('.component-card', {
-        scrollTrigger: {
-            trigger: '#components',
-            start: 'top 80%'
-        },
-        y: 50,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.15,
-        ease: "power3.out"
+
+    // Recent Alerts - slide in from right
+    gsap.utils.toArray('#alerts .alert-card').forEach((card, i) => {
+        gsap.from(card, {
+            scrollTrigger: {
+                trigger: card,
+                start: 'top 85%'
+            },
+            x: 120,
+            opacity: 0,
+            duration: 0.8,
+            delay: i * 0.1,
+            ease: "power3.out"
+        });
     });
-    
+
+    // IoT Component Cards - slide in with parallax
+    gsap.utils.toArray('#components .component-card').forEach((card, i) => {
+        gsap.from(card, {
+            scrollTrigger: {
+                trigger: card,
+                start: 'top 90%'
+            },
+            x: 100,
+            opacity: 0,
+            duration: 0.8,
+            delay: i * 0.1,
+            ease: "power3.out"
+        });
+    });
+
     // Architecture Section
     gsap.from('#architecture .bg-white', {
         scrollTrigger: {
@@ -340,51 +380,6 @@ function showDataTransmission(target) {
     };
 }
 
-// Add ripple effect to demo buttons
-function attachButtonEffects() {
-    document.querySelectorAll('.demo-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            createRipple(e);
-        });
-    });
-}
-
-function createRipple(e) {
-    const button = e.currentTarget;
-    const circle = document.createElement('span');
-    const diameter = Math.max(button.clientWidth, button.clientHeight);
-    const radius = diameter / 2;
-    circle.classList.add('ripple');
-    circle.style.width = circle.style.height = `${diameter}px`;
-    circle.style.left = `${e.clientX - button.getBoundingClientRect().left - radius}px`;
-    circle.style.top = `${e.clientY - button.getBoundingClientRect().top - radius}px`;
-    button.appendChild(circle);
-    setTimeout(() => circle.remove(), 600);
-}
-
-// Display data flow animation in demo output
-function showDataTransmission(target) {
-    const container = document.createElement('div');
-    container.className = 'data-flow';
-    for (let i = 0; i < 5; i++) {
-        const p = document.createElement('span');
-        p.className = 'packet';
-        container.appendChild(p);
-    }
-    target.appendChild(container);
-    const anim = gsap.to(container.children, {
-        x: 16,
-        opacity: 0,
-        duration: 0.6,
-        stagger: 0.1,
-        repeat: -1,
-        ease: 'power1.inOut'
-    });
-    return () => {
-        anim.kill();
-        container.remove();
-    };
-}
 
 // Initialize network data flow animation
 function animateDataFlow() {

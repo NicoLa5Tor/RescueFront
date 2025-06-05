@@ -37,6 +37,17 @@
     animation: float 6s ease-in-out infinite;
 }
 
+/* Horizontal parallax sections */
+.horizontal-section {
+    overflow: hidden;
+}
+.horizontal-section .scroll-content {
+    will-change: transform;
+    display: flex;
+    gap: 2rem;
+    width: max-content;
+}
+
 @keyframes float {
     0%, 100% { transform: translateY(0px); }
     50% { transform: translateY(-20px); }
@@ -569,9 +580,15 @@
 
 /* Alerts */
 .alert-list {
-    max-width: 40rem;
-    margin-left: auto;
-    margin-right: auto;
+    display: flex;
+    gap: 1.5rem;
+    width: max-content;
+}
+
+.component-list {
+    display: flex;
+    gap: 2rem;
+    width: max-content;
 }
 
 .alert-card {

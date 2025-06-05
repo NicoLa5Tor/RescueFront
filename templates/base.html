@@ -120,6 +120,15 @@
     
     <!-- GSAP Plugins -->
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/MotionPathHelper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/MotionPathPlugin.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/MorphSVGPlugin.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/Observer.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/PixiPlugin.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrambleTextPlugin.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollSmoother.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollToPlugin.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/TextPlugin.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/EasePack.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/CustomEase.min.js"></script>
@@ -180,7 +189,22 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Registrar plugins de GSAP
             if (typeof gsap !== 'undefined') {
-                gsap.registerPlugin(ScrollTrigger, TextPlugin, CustomEase, CustomBounce, Flip);
+                gsap.registerPlugin(
+                    MotionPathHelper,
+                    MotionPathPlugin,
+                    MorphSVGPlugin,
+                    Observer,
+                    PixiPlugin,
+                    ScrambleTextPlugin,
+                    ScrollTrigger,
+                    ScrollSmoother,
+                    ScrollToPlugin,
+                    SplitText,
+                    TextPlugin,
+                    CustomEase,
+                    CustomBounce,
+                    Flip
+                );
                 console.log('GSAP plugins registrados correctamente');
             }
         });

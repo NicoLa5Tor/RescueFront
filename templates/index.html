@@ -89,9 +89,9 @@
 </section>
 
 <!-- Recent Alerts -->
-<section class="py-20 bg-gray-50 relative overflow-hidden" id="alerts">
+<section class="py-20 bg-gray-50 relative overflow-hidden horizontal-section" id="alerts">
     <div class="absolute inset-0 parallax-layer bg-grid-pattern opacity-20" data-speed="0.25" data-direction="horizontal"></div>
-    <div class="section-container">
+    <div class="section-container scroll-content max-w-none">
         <div class="text-center mb-16">
             <span class="section-subtitle">Historial</span>
             <h2 class="section-heading">
@@ -99,8 +99,8 @@
             </h2>
         </div>
 
-        <div class="alert-list space-y-4">
-            <div class="alert-card flex items-center">
+        <div class="alert-list flex space-x-6 w-max">
+            <div class="alert-card flex items-center w-80 flex-shrink-0">
                 <div class="alert-icon bg-red-100 text-red-600">
                     <i class="fas fa-fire"></i>
                 </div>
@@ -111,7 +111,7 @@
                 <span class="alert-tag bg-red-500 text-white">Rojo</span>
             </div>
 
-            <div class="alert-card flex items-center">
+            <div class="alert-card flex items-center w-80 flex-shrink-0">
                 <div class="alert-icon bg-blue-100 text-blue-600">
                     <i class="fas fa-water"></i>
                 </div>
@@ -122,7 +122,7 @@
                 <span class="alert-tag bg-blue-500 text-white">Azul</span>
             </div>
 
-            <div class="alert-card flex items-center">
+            <div class="alert-card flex items-center w-80 flex-shrink-0">
                 <div class="alert-icon bg-green-100 text-green-600">
                     <i class="fas fa-shield-alt"></i>
                 </div>
@@ -137,9 +137,9 @@
 </section>
 
 <!-- Emergency Types -->
-<section class="py-20 bg-gray-50 relative overflow-hidden" id="emergency-types">
+<section class="py-20 bg-gray-50 relative overflow-hidden horizontal-section" id="emergency-types">
     <div class="absolute inset-0 parallax-layer bg-grid-pattern opacity-20" data-speed="0.3"></div>
-    <div class="section-container">
+    <div class="section-container scroll-content max-w-none">
         <div class="text-center mb-16">
             <span class="section-subtitle">Tipos de Emergencia</span>
             <h2 class="section-heading">
@@ -150,9 +150,9 @@
             </p>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+        <div class="alert-list flex space-x-6 w-max">
             <!-- Incendio -->
-            <div class="emergency-card bg-white rounded-xl shadow-lg p-6 transform hover:scale-105 transition-all duration-300" data-emergency="fire">
+            <div class="emergency-card bg-white rounded-xl shadow-lg p-6 transform hover:scale-105 transition-all duration-300 w-72 flex-shrink-0" data-emergency="fire">
                 <div class="text-center">
                     <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center">
                         <i class="fas fa-fire text-2xl text-red-600"></i>
@@ -164,7 +164,7 @@
             </div>
             
             <!-- Inundación -->
-            <div class="emergency-card bg-white rounded-xl shadow-lg p-6 transform hover:scale-105 transition-all duration-300" data-emergency="flood">
+            <div class="emergency-card bg-white rounded-xl shadow-lg p-6 transform hover:scale-105 transition-all duration-300 w-72 flex-shrink-0" data-emergency="flood">
                 <div class="text-center">
                     <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-100 flex items-center justify-center">
                         <i class="fas fa-water text-2xl text-blue-600"></i>
@@ -176,7 +176,7 @@
             </div>
             
             <!-- Terremoto -->
-            <div class="emergency-card bg-white rounded-xl shadow-lg p-6 transform hover:scale-105 transition-all duration-300" data-emergency="earthquake">
+            <div class="emergency-card bg-white rounded-xl shadow-lg p-6 transform hover:scale-105 transition-all duration-300 w-72 flex-shrink-0" data-emergency="earthquake">
                 <div class="text-center">
                     <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-yellow-100 flex items-center justify-center">
                         <i class="fas fa-house-damage text-2xl text-yellow-600"></i>
@@ -188,7 +188,7 @@
             </div>
             
             <!-- Seguridad -->
-            <div class="emergency-card bg-white rounded-xl shadow-lg p-6 transform hover:scale-105 transition-all duration-300" data-emergency="security">
+            <div class="emergency-card bg-white rounded-xl shadow-lg p-6 transform hover:scale-105 transition-all duration-300 w-72 flex-shrink-0" data-emergency="security">
                 <div class="text-center">
                     <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center">
                         <i class="fas fa-shield-alt text-2xl text-green-600"></i>
@@ -200,7 +200,7 @@
             </div>
             
             <!-- Alerta General -->
-            <div class="emergency-card bg-white rounded-xl shadow-lg p-6 transform hover:scale-105 transition-all duration-300" data-emergency="general">
+            <div class="emergency-card bg-white rounded-xl shadow-lg p-6 transform hover:scale-105 transition-all duration-300 w-72 flex-shrink-0" data-emergency="general">
                 <div class="text-center">
                     <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-orange-100 flex items-center justify-center">
                         <i class="fas fa-exclamation-triangle text-2xl text-orange-600"></i>
@@ -215,10 +215,10 @@
 </section>
 
 <!-- System Components -->
-<section class="py-20 bg-white relative overflow-hidden" id="components">
+<section class="py-20 bg-white relative overflow-hidden horizontal-section" id="components">
     <div class="absolute inset-0 parallax-layer bg-gradient-to-br from-white to-gray-100 opacity-20" data-speed="0.2" data-direction="horizontal"></div>
     <div class="absolute inset-0 parallax-layer bg-gradient-to-br from-white to-gray-100 opacity-20" data-speed="0.2"></div>
-    <div class="section-container">
+    <div class="section-container scroll-content max-w-none">
         <div class="text-center mb-16">
             <span class="section-subtitle">Componentes del Sistema</span>
             <h2 class="section-heading">
@@ -226,9 +226,9 @@
             </h2>
         </div>
         
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div class="component-list flex space-x-8 w-max">
             <!-- Semáforo ESP32 -->
-            <div class="component-card group">
+            <div class="component-card group w-80 flex-shrink-0">
                 <div class="bg-gradient-to-br from-red-50 to-red-100 rounded-t-xl p-8">
                     <i class="fas fa-traffic-light text-5xl text-red-600 group-hover:scale-110 transition-transform"></i>
                 </div>
@@ -249,7 +249,7 @@
             </div>
             
             <!-- Botonera -->
-            <div class="component-card group">
+            <div class="component-card group w-80 flex-shrink-0">
                 <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-t-xl p-8">
                     <i class="fas fa-th text-5xl text-yellow-600 group-hover:scale-110 transition-transform"></i>
                 </div>
@@ -270,7 +270,7 @@
             </div>
             
             <!-- Televisores -->
-            <div class="component-card group">
+            <div class="component-card group w-80 flex-shrink-0">
                 <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-t-xl p-8">
                     <i class="fas fa-tv text-5xl text-blue-600 group-hover:scale-110 transition-transform"></i>
                 </div>
@@ -291,7 +291,7 @@
             </div>
             
             <!-- Software Central -->
-            <div class="component-card group">
+            <div class="component-card group w-80 flex-shrink-0">
                 <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-t-xl p-8">
                     <i class="fas fa-server text-5xl text-purple-600 group-hover:scale-110 transition-transform"></i>
                 </div>
@@ -570,7 +570,7 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
 <script src="{{ url_for('static', filename='js/emergency-system.js') }}"></script>
 {% endblock %}
