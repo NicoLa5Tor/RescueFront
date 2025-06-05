@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initScrollAnimations();
     initTimelineAnimation();
     initNetworkAnimation();
+    attachButtonEffects();
 });
 
 // Hero Animations
@@ -171,12 +172,14 @@ function simulateEmergency(type) {
     const display = document.getElementById('demo-display');
     
     // Clear previous states
-    output.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div>';
+    output.innerHTML = '';
+    const stopTransmission = showDataTransmission(output);
     semaphore.querySelectorAll('.light').forEach(light => light.className = 'light off');
     
     // Simulate processing
     setTimeout(() => {
         // Update output
+        stopTransmission();
         output.innerHTML = `
             <div class="flex items-center justify-center text-green-400 text-lg font-semibold">
                 <i class="fas fa-check-circle mr-2"></i>
@@ -296,6 +299,52 @@ document.querySelector('form')?.addEventListener('submit', (e) => {
 function showNotification(message, type = 'info') {
     // This would integrate with your notification system
     console.log(`${type}: ${message}`);
+}
+
+// Add ripple effect to demo buttons
+function attachButtonEffects() {
+    document.querySelectorAll('.demo-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            createRipple(e);
+        });
+    });
+}
+
+function createRipple(e) {
+    const button = e.currentTarget;
+    const circle = document.createElement('span');
+    const diameter = Math.max(button.clientWidth, button.clientHeight);
+    const radius = diameter / 2;
+    circle.classList.add('ripple');
+    circle.style.width = circle.style.height = `${diameter}px`;
+    circle.style.left = `${e.clientX - button.getBoundingClientRect().left - radius}px`;
+    circle.style.top = `${e.clientY - button.getBoundingClientRect().top - radius}px`;
+    button.appendChild(circle);
+    setTimeout(() => circle.remove(), 600);
+}
+
+// Display data flow animation in demo output
+function showDataTransmission(target) {
+    const container = document.createElement('div');
+    container.className = 'data-flow';
+    for (let i = 0; i < 5; i++) {
+        const p = document.createElement('span');
+        p.className = 'packet';
+        container.appendChild(p);
+    }
+    target.appendChild(container);
+    const anim = gsap.to(container.children, {
+        x: 16,
+        opacity: 0,
+        duration: 0.6,
+        stagger: 0.1,
+        repeat: -1,
+        ease: 'power1.inOut'
+    });
+    return () => {
+        anim.kill();
+        container.remove();
+    };
 }
 
 // Initialize network data flow animation
