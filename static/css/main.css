@@ -1,16 +1,13 @@
 /* static/css/main.css */
 
-/* ===== VARIABLES CSS ===== */
 :root {
     --primary-color: #667eea;
     --secondary-color: #764ba2;
-    --success-color: #10b981;
     --danger-color: #ef4444;
     --warning-color: #f59e0b;
     --info-color: #3b82f6;
     --dark-color: #1e293b;
     --light-color: #f8fafc;
-    --body-bg: #f1f5f9;
     --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -32,28 +29,38 @@ body {
 
 /* ===== NAVBAR ===== */
 .navbar {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+    color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     transition: var(--transition);
     padding: 1rem 0;
 }
 
 .navbar.scrolled {
-    background: white;
+    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
     box-shadow: var(--card-shadow);
     padding: 0.5rem 0;
+}
+
+.bg-gradient-primary {
+    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+}
+
+.footer-gradient {
+    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+    color: #fff;
 }
 
 .navbar-brand {
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--primary-color);
+    color: #fff;
     text-decoration: none;
 }
 
 .navbar-brand:hover {
-    color: var(--secondary-color);
+    color: #fff;
+    opacity: 0.8;
 }
 
 /* ===== HERO SECTION ===== */

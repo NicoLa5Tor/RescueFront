@@ -22,10 +22,14 @@
     position: absolute;
     inset: 0;
     overflow: hidden;
+    pointer-events: none;
+    perspective: 1000px;
 }
 
 .parallax-layer {
     position: absolute;
+    will-change: transform;
+    transform-style: preserve-3d;
     width: 110%;
     height: 110%;
     top: -5%;

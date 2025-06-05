@@ -42,35 +42,34 @@ function initHeroAnimations() {
 // Parallax Effects
 function initParallax() {
     gsap.utils.toArray('.parallax-layer').forEach(layer => {
-        const speed = layer.dataset.speed || 0.5;
-        const direction = layer.dataset.direction || 'vertical';
-
-        const props = direction === 'horizontal' ? { xPercent: 50 * speed } : { yPercent: -50 * speed };
+        const speed = parseFloat(layer.dataset.speed || '0.5');
+        const axis = layer.dataset.direction === 'horizontal' ? 'x' : 'y';
 
         gsap.to(layer, {
-            ...props,
-            ease: "none",
+            [axis]: () => `${-100 * speed}%`,
+            ease: 'none',
             scrollTrigger: {
                 trigger: layer.closest('section'),
-                start: "top bottom",
-                end: "bottom top",
+                start: 'top bottom',
+                end: 'bottom top',
                 scrub: true
             }
         });
     });
-    
-    // Mouse parallax for floating elements
-    document.addEventListener('mousemove', (e) => {
-        const x = (e.clientX / window.innerWidth - 0.5) * 2;
-        const y = (e.clientY / window.innerHeight - 0.5) * 2;
-        
-        gsap.to('.floating-element', {
-            x: x * 20,
-            y: y * 20,
-            duration: 1,
-            ease: "power2.out"
+
+    if (window.innerWidth > 768) {
+        document.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth - 0.5) * 10;
+            const y = (e.clientY / window.innerHeight - 0.5) * 10;
+
+            gsap.to('.floating-element', {
+                x,
+                y,
+                duration: 1.2,
+                ease: 'power2.out'
+            });
         });
-    });
+    }
 }
 
 // Horizontal parallax sections pinned on scroll
