@@ -44,8 +44,8 @@
 
 /* Hero Content */
 .hero-content > * {
-    opacity: 0;
-    transform: translateY(30px);
+    opacity: 1;
+    transform: none;
 }
 
 /* Buttons */

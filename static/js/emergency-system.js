@@ -17,9 +17,9 @@ document.addEventListener('DOMContentLoaded', () => {
 function initHeroAnimations() {
     const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
     
-    tl.to('.hero-content > *', {
-        opacity: 1,
-        y: 0,
+    tl.from('.hero-content > *', {
+        opacity: 0,
+        y: 30,
         duration: 1,
         stagger: 0.2
     })
