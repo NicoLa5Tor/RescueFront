@@ -340,6 +340,52 @@ function showDataTransmission(target) {
     };
 }
 
+// Add ripple effect to demo buttons
+function attachButtonEffects() {
+    document.querySelectorAll('.demo-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            createRipple(e);
+        });
+    });
+}
+
+function createRipple(e) {
+    const button = e.currentTarget;
+    const circle = document.createElement('span');
+    const diameter = Math.max(button.clientWidth, button.clientHeight);
+    const radius = diameter / 2;
+    circle.classList.add('ripple');
+    circle.style.width = circle.style.height = `${diameter}px`;
+    circle.style.left = `${e.clientX - button.getBoundingClientRect().left - radius}px`;
+    circle.style.top = `${e.clientY - button.getBoundingClientRect().top - radius}px`;
+    button.appendChild(circle);
+    setTimeout(() => circle.remove(), 600);
+}
+
+// Display data flow animation in demo output
+function showDataTransmission(target) {
+    const container = document.createElement('div');
+    container.className = 'data-flow';
+    for (let i = 0; i < 5; i++) {
+        const p = document.createElement('span');
+        p.className = 'packet';
+        container.appendChild(p);
+    }
+    target.appendChild(container);
+    const anim = gsap.to(container.children, {
+        x: 16,
+        opacity: 0,
+        duration: 0.6,
+        stagger: 0.1,
+        repeat: -1,
+        ease: 'power1.inOut'
+    });
+    return () => {
+        anim.kill();
+        container.remove();
+    };
+}
+
 // Initialize network data flow animation
 function animateDataFlow() {
     const packets = [];
