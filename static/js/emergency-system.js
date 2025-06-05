@@ -85,20 +85,37 @@ function initScrollAnimations() {
         duration: 0.8,
         stagger: 0.1
     });
-    
-    // Component Cards
-    gsap.from('.component-card', {
-        scrollTrigger: {
-            trigger: '#components',
-            start: 'top 80%'
-        },
-        y: 50,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.15,
-        ease: "power3.out"
+
+    // Recent Alerts - slide in from right
+    gsap.utils.toArray('#alerts .alert-card').forEach((card, i) => {
+        gsap.from(card, {
+            scrollTrigger: {
+                trigger: card,
+                start: 'top 85%'
+            },
+            x: 120,
+            opacity: 0,
+            duration: 0.8,
+            delay: i * 0.1,
+            ease: "power3.out"
+        });
     });
-    
+
+    // IoT Component Cards - slide in with parallax
+    gsap.utils.toArray('#components .component-card').forEach((card, i) => {
+        gsap.from(card, {
+            scrollTrigger: {
+                trigger: card,
+                start: 'top 90%'
+            },
+            x: 100,
+            opacity: 0,
+            duration: 0.8,
+            delay: i * 0.1,
+            ease: "power3.out"
+        });
+    });
+
     // Architecture Section
     gsap.from('#architecture .bg-white', {
         scrollTrigger: {

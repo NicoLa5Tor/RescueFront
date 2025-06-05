@@ -125,6 +125,7 @@
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/CustomEase.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/CustomBounce.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/Flip.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollToPlugin.min.js"></script>
     
     <!-- API Configuration -->
     <script>
@@ -180,7 +181,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Registrar plugins de GSAP
             if (typeof gsap !== 'undefined') {
-                gsap.registerPlugin(ScrollTrigger, TextPlugin, CustomEase, CustomBounce, Flip);
+                gsap.registerPlugin(ScrollTrigger, TextPlugin, CustomEase, CustomBounce, Flip, ScrollToPlugin);
                 console.log('GSAP plugins registrados correctamente');
             }
         });
