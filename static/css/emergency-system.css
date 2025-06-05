@@ -49,7 +49,7 @@
 }
 
 /* Buttons */
-.btn-primary {
+.hero-btn-primary {
     padding: 1rem 2rem;
     background: linear-gradient(to right, #dc2626, #ea580c);
     color: white;
@@ -60,14 +60,10 @@
     transition: all 0.3s ease;
     display: inline-flex;
     align-items: center;
-}
-
-.btn-primary:hover {
+.hero-btn-primary:hover {
     transform: scale(1.05);
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
-}
-
-.btn-secondary {
+.hero-btn-secondary {
     padding: 1rem 2rem;
     background: white;
     color: #111827;
@@ -78,14 +74,10 @@
     transition: all 0.3s ease;
     display: inline-flex;
     align-items: center;
-}
-
-.btn-secondary:hover {
+.hero-btn-secondary:hover {
     transform: scale(1.05);
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
-}
-
-.btn-white {
+.hero-btn-white {
     padding: 1rem 2rem;
     background: white;
     color: #111827;
@@ -94,13 +86,9 @@
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     transform: translateY(0);
     transition: all 0.3s ease;
-}
-
-.btn-white:hover {
+.hero-btn-white:hover {
     transform: scale(1.05);
-}
-
-.btn-white-outline {
+.hero-btn-white-outline {
     padding: 1rem 2rem;
     border: 2px solid white;
     color: white;
@@ -109,9 +97,7 @@
     transform: translateY(0);
     transition: all 0.3s ease;
     background: transparent;
-}
-
-.btn-white-outline:hover {
+.hero-btn-white-outline:hover {
     background: white;
     color: #111827;
 }
@@ -639,8 +625,8 @@
         height: 3rem;
     }
     
-    .btn-primary,
-    .btn-secondary {
+    .hero-btn-primary,
+    .hero-btn-secondary {
         padding: 0.75rem 1.5rem;
         font-size: 0.875rem;
     }
