@@ -79,9 +79,9 @@ function initHorizontalSections() {
         const content = section.querySelector('.scroll-content');
         if (!content) return;
 
-        const distance = section.offsetWidth;
-        gsap.fromTo(content, { x: 0 }, {
-            x: -distance,
+        const distance = content.scrollWidth - section.clientWidth;
+        gsap.fromTo(content, { x: -distance }, {
+            x: 0,
             ease: 'none',
             scrollTrigger: {
                 trigger: section,

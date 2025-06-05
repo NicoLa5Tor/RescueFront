@@ -43,6 +43,9 @@
 }
 .horizontal-section .scroll-content {
     will-change: transform;
+    display: flex;
+    gap: 2rem;
+    width: max-content;
 }
 
 @keyframes float {
@@ -577,9 +580,15 @@
 
 /* Alerts */
 .alert-list {
-    max-width: 40rem;
-    margin-left: auto;
-    margin-right: auto;
+    display: flex;
+    gap: 1.5rem;
+    width: max-content;
+}
+
+.component-list {
+    display: flex;
+    gap: 2rem;
+    width: max-content;
 }
 
 .alert-card {
