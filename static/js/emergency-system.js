@@ -178,11 +178,12 @@ function simulateEmergency(type) {
     setTimeout(() => {
         // Update output
         output.innerHTML = `
-            <div class="flex items-center text-green-400">
+            <div class="flex items-center justify-center text-green-400 text-lg font-semibold">
                 <i class="fas fa-check-circle mr-2"></i>
                 <span>Alerta ${type} activada en todos los dispositivos</span>
             </div>
         `;
+        gsap.fromTo(output, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5 });
         
         // Update semaphore
         const lights = semaphore.querySelectorAll('.light');

@@ -396,7 +396,7 @@
         
         <div class="max-w-6xl mx-auto">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div>
+                <div class="demo-panel">
                     <h3 class="text-2xl font-semibold mb-6">Simula una Emergencia</h3>
                     <div class="space-y-4">
                         <button class="demo-btn w-full bg-gradient-to-r from-red-500 to-red-700 hover:from-red-600 hover:to-red-800" onclick="simulateEmergency('ROJO')">
@@ -421,11 +421,11 @@
                         </button>
                     </div>
                 </div>
-                
-                <div>
+
+                <div class="demo-panel">
                     <h3 class="text-2xl font-semibold mb-6">Respuesta del Sistema</h3>
-                    <div class="bg-gray-800 rounded-lg p-6">
-                        <div id="demo-output" class="space-y-4">
+                    <div class="demo-output-area">
+                        <div id="demo-output" class="space-y-4 text-center">
                             <p class="text-gray-400">
                                 <i class="fas fa-info-circle mr-2"></i>
                                 Presiona un botón para simular una emergencia...

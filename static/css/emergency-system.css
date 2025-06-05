@@ -414,6 +414,30 @@
     justify-content: center;
 }
 
+/* Demo Panels */
+.demo-panel {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(4px);
+}
+
+.demo-output-area {
+    background: #1f2937;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    min-height: 6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#demo-output p {
+    margin: 0;
+}
+
 /* Form Inputs */
 .form-input {
     padding: 0.75rem 1rem;
