@@ -11,16 +11,8 @@
   <div class="login-header-content">
     <a href="{{ url_for('index') }}" class="login-brand">
       <i class="fas fa-building"></i>
-      <span>Multi-Tenant System</span>
+      <span>Rescue</span>
     </a>
-    <nav class="login-nav-links">
-      <a href="#features" class="login-nav-link">Características</a>
-      <a href="#contact" class="login-nav-link">Contacto</a>
-      <a href="#help" class="login-help-btn">
-        <i class="fas fa-question-circle me-1"></i>
-        Ayuda
-      </a>
-    </nav>
   </div>
 </header>
 {% endblock %}
@@ -41,7 +33,7 @@
   <div class="login-container">
     <div class="login-wrapper">
       <div class="login-info fade-in-up" data-aos="fade-right">
-        <h2 class="info-title">Bienvenido a Multi-Tenant System</h2>
+        <h2 class="info-title">Bienvenido a Rescue</h2>
         <p class="info-text">Accede para gestionar de forma segura tus recursos y empresas.</p>
       </div>
       <div class="login-content">
@@ -128,3 +120,5 @@
 {% block extra_js %}
 <script src="{{ url_for('static', filename='js/login.js') }}"></script>
 {% endblock %}
+
+{% block footer %}{% endblock %}
