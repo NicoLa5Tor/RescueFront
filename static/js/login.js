@@ -24,16 +24,23 @@ function initLoginAnimations() {
       // Configurar estado inicial
       window.gsap.set(".fade-in-up", { opacity: 0, y: 30 })
       window.gsap.set(".fade-in-scale", { opacity: 0, scale: 0.8 })
+      window.gsap.set("#loginInfo", { opacity: 0, y: 30 })
   
       // Timeline principal
       const tl = window.gsap.timeline({ delay: 0.2 })
   
-      tl.to("#loginCard", {
+      tl.to("#loginInfo", {
         duration: 0.8,
         opacity: 1,
         y: 0,
         ease: "power3.out",
       })
+        .to("#loginCard", {
+          duration: 0.8,
+          opacity: 1,
+          y: 0,
+          ease: "power3.out",
+        }, "-=0.6")
         .to(
           "#brandLogo",
           {

@@ -530,9 +530,9 @@
   }
   
   /* ========== CONTRASEÑA OLVIDADA ========== */
-  .forgot-password {
+.forgot-password {
     text-align: center;
-    margin-top: 1rem;
+    margin-top: 1.5rem;
   }
   
   .forgot-password a {
