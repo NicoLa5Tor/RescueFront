@@ -116,6 +116,40 @@
     color: #111827;
 }
 
+/* Section Styling */
+.section-container {
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.section-heading {
+    font-size: 2.25rem;
+    line-height: 1.2;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.section-subtitle {
+    color: #6b7280;
+    text-transform: uppercase;
+    font-weight: 600;
+    font-size: 0.875rem;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+}
+
+.section-description {
+    max-width: 40rem;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 2rem;
+    font-size: 1.125rem;
+    color: #4b5563;
+}
+
 /* Text Gradient */
 .text-gradient {
     background: linear-gradient(to right, #dc2626, #ea580c);
@@ -308,8 +342,10 @@
 
 /* Demo Buttons */
 .demo-btn {
-    padding: 1rem 1.5rem;
-    border-radius: 0.5rem;
+    position: relative;
+    overflow: hidden;
+    padding: 1rem 2rem;
+    border-radius: 9999px;
     font-weight: 600;
     color: white;
     transition: all 0.3s ease;
@@ -317,10 +353,33 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
 .demo-btn:hover {
-    transform: scale(1.05);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.demo-btn:active {
+    transform: translateY(0);
+    box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.demo-btn .ripple {
+    position: absolute;
+    border-radius: 50%;
+    transform: scale(0);
+    background: rgba(255, 255, 255, 0.4);
+    animation: ripple 0.6s linear;
+    pointer-events: none;
+}
+
+@keyframes ripple {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
 }
 
 /* Semaphore Demo */
@@ -361,10 +420,45 @@
     box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
 }
 
-.semaphore-demo .light.orange { 
+.semaphore-demo .light.orange {
     background: #f97316;
     box-shadow: 0 0 20px rgba(249, 115, 22, 0.5);
 }
+
+/* Control Panel (Botonera) */
+.control-panel {
+    background: #1f2937;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.control-button {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.control-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+}
+
+.control-button.red { background: #ef4444; }
+.control-button.blue { background: #3b82f6; }
+.control-button.yellow { background: #eab308; color: #1f2937; }
+.control-button.green { background: #22c55e; }
+.control-button.orange { background: #f97316; }
 
 /* Display Demo */
 .display-demo {
@@ -376,6 +470,30 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+/* Demo Panels */
+.demo-panel {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(4px);
+}
+
+.demo-output-area {
+    background: #1f2937;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    min-height: 6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#demo-output p {
+    margin: 0;
 }
 
 /* Form Inputs */
@@ -413,6 +531,19 @@
 
 .loading-dots span:nth-child(3) {
     animation-delay: 0.2s;
+}
+
+/* Data Flow Animation */
+.data-flow {
+    display: inline-flex;
+    gap: 0.25rem;
+}
+
+.data-flow .packet {
+    width: 0.4rem;
+    height: 0.4rem;
+    background: #38bdf8;
+    border-radius: 0.125rem;
 }
 
 /* GSAP Animation Classes */

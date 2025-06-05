@@ -89,19 +89,20 @@
 </section>
 
 <!-- Emergency Types -->
-<section class="py-20 bg-gray-50" id="emergency-types">
-    <div class="container mx-auto px-4">
+<section class="py-20 bg-gray-50 relative overflow-hidden" id="emergency-types">
+    <div class="absolute inset-0 parallax-layer bg-grid-pattern opacity-20" data-speed="0.3"></div>
+    <div class="section-container">
         <div class="text-center mb-16">
-            <span class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Tipos de Emergencia</span>
-            <h2 class="text-4xl lg:text-5xl font-bold mt-2 mb-4">
+            <span class="section-subtitle">Tipos de Emergencia</span>
+            <h2 class="section-heading">
                 5 Tipos de <span class="text-gradient">Alertas</span>
             </h2>
-            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p class="section-description">
                 Sistema preparado para responder a diferentes tipos de emergencias empresariales
             </p>
         </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
             <!-- Incendio -->
             <div class="emergency-card bg-white rounded-xl shadow-lg p-6 transform hover:scale-105 transition-all duration-300" data-emergency="fire">
                 <div class="text-center">
@@ -166,16 +167,17 @@
 </section>
 
 <!-- System Components -->
-<section class="py-20 bg-white" id="components">
-    <div class="container mx-auto px-4">
+<section class="py-20 bg-white relative overflow-hidden" id="components">
+    <div class="absolute inset-0 parallax-layer bg-gradient-to-br from-white to-gray-100 opacity-20" data-speed="0.2"></div>
+    <div class="section-container">
         <div class="text-center mb-16">
-            <span class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Componentes del Sistema</span>
-            <h2 class="text-4xl lg:text-5xl font-bold mt-2 mb-4">
+            <span class="section-subtitle">Componentes del Sistema</span>
+            <h2 class="section-heading">
                 Dispositivos <span class="text-gradient">IoT</span>
             </h2>
         </div>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             <!-- Semáforo ESP32 -->
             <div class="component-card group">
                 <div class="bg-gradient-to-br from-red-50 to-red-100 rounded-t-xl p-8">
@@ -254,7 +256,7 @@
                         </li>
                         <li class="flex items-center">
                             <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                            <span>Formato JSON</span>
+                            <span>Integración en la nube</span>
                         </li>
                     </ul>
                 </div>
@@ -264,11 +266,12 @@
 </section>
 
 <!-- MQTT Architecture -->
-<section class="py-20 bg-gray-50" id="architecture">
-    <div class="container mx-auto px-4">
+<section class="py-20 bg-gray-50 relative overflow-hidden" id="architecture">
+    <div class="absolute inset-0 parallax-layer bg-grid-pattern opacity-20" data-speed="0.25"></div>
+    <div class="section-container">
         <div class="text-center mb-16">
-            <span class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Arquitectura</span>
-            <h2 class="text-4xl lg:text-5xl font-bold mt-2 mb-4">
+            <span class="section-subtitle">Arquitectura</span>
+            <h2 class="section-heading">
                 Comunicación <span class="text-gradient">MQTT</span>
             </h2>
         </div>
@@ -276,28 +279,22 @@
         <div class="max-w-4xl mx-auto">
             <div class="bg-white rounded-2xl shadow-xl p-8">
                 <h3 class="text-2xl font-semibold mb-6">Estructura de Topics</h3>
-                
-                <div class="bg-gray-900 text-green-400 p-6 rounded-lg font-mono text-sm mb-6">
-                    <p class="mb-2">empresas/[municipio]/[empresa]/[ubicacion]/[DISPOSITIVO]/[ID]</p>
-                    <p class="text-gray-500"># Ejemplo:</p>
-                    <p>empresas/cota/nestle/bodega1/SEMAFOROS/SEM_001</p>
-                </div>
-                
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
                     <div>
                         <h4 class="font-semibold mb-3">Topics de Dispositivos</h4>
                         <ul class="space-y-2 text-gray-600">
                             <li class="flex items-center">
                                 <i class="fas fa-folder text-yellow-500 mr-2"></i>
-                                SEMAFOROS/[ID]
+                                Semáforos
                             </li>
                             <li class="flex items-center">
                                 <i class="fas fa-folder text-yellow-500 mr-2"></i>
-                                BOTONERAS/[ID]
+                                Botoneras
                             </li>
                             <li class="flex items-center">
                                 <i class="fas fa-folder text-yellow-500 mr-2"></i>
-                                TELEVISORES/[ID]
+                                Displays
                             </li>
                         </ul>
                     </div>
@@ -326,11 +323,12 @@
 </section>
 
 <!-- How it Works -->
-<section class="py-20 bg-white" id="how-it-works">
-    <div class="container mx-auto px-4">
+<section class="py-20 bg-white relative overflow-hidden" id="how-it-works">
+    <div class="absolute inset-0 parallax-layer bg-gradient-to-br from-white to-gray-100 opacity-20" data-speed="0.2"></div>
+    <div class="section-container">
         <div class="text-center mb-16">
-            <span class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Proceso</span>
-            <h2 class="text-4xl lg:text-5xl font-bold mt-2 mb-4">
+            <span class="section-subtitle">Proceso</span>
+            <h2 class="section-heading">
                 ¿Cómo <span class="text-gradient">Funciona</span>?
             </h2>
         </div>
@@ -356,7 +354,7 @@
                         <i class="fas fa-wifi"></i>
                     </div>
                     <h3 class="text-xl font-semibold mb-2">Mensaje MQTT</h3>
-                    <p class="text-gray-600">Se envía mensaje JSON al broker en la nube</p>
+                    <p class="text-gray-600">Se envía la alerta al broker en la nube</p>
                 </div>
             </div>
             
@@ -386,47 +384,52 @@
 </section>
 
 <!-- Interactive Demo -->
-<section class="py-20 bg-gray-900 text-white" id="demo">
-    <div class="container mx-auto px-4">
+<section class="py-20 bg-gray-900 text-white relative overflow-hidden" id="demo">
+    <div class="absolute inset-0 parallax-layer bg-grid-pattern opacity-10" data-speed="0.3"></div>
+    <div class="section-container">
         <div class="text-center mb-16">
-            <span class="text-sm font-semibold text-gray-400 uppercase tracking-wide">Demostración</span>
-            <h2 class="text-4xl lg:text-5xl font-bold mt-2 mb-4">
+            <span class="section-subtitle text-gray-400">Demostración</span>
+            <h2 class="section-heading text-white">
                 Prueba el <span class="text-gradient">Sistema</span>
             </h2>
         </div>
         
         <div class="max-w-6xl mx-auto">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div>
+                <div class="demo-panel">
                     <h3 class="text-2xl font-semibold mb-6">Simula una Emergencia</h3>
-                    <div class="space-y-4">
-                        <button class="demo-btn w-full bg-red-600 hover:bg-red-700" onclick="simulateEmergency('ROJO')">
-                            <i class="fas fa-fire mr-3"></i>
-                            Activar Alerta ROJA (Incendio)
-                        </button>
-                        <button class="demo-btn w-full bg-blue-600 hover:bg-blue-700" onclick="simulateEmergency('AZUL')">
-                            <i class="fas fa-water mr-3"></i>
-                            Activar Alerta AZUL (Inundación)
-                        </button>
-                        <button class="demo-btn w-full bg-yellow-600 hover:bg-yellow-700" onclick="simulateEmergency('AMARILLO')">
-                            <i class="fas fa-house-damage mr-3"></i>
-                            Activar Alerta AMARILLA (Terremoto)
-                        </button>
-                        <button class="demo-btn w-full bg-green-600 hover:bg-green-700" onclick="simulateEmergency('VERDE')">
-                            <i class="fas fa-shield-alt mr-3"></i>
-                            Activar Alerta VERDE (Seguridad)
-                        </button>
-                        <button class="demo-btn w-full bg-orange-600 hover:bg-orange-700" onclick="simulateEmergency('NARANJA')">
-                            <i class="fas fa-exclamation-triangle mr-3"></i>
-                            Activar Alerta NARANJA (General)
-                        </button>
+                    <div class="flex items-center gap-8">
+                        <div class="control-panel" id="demo-buttons">
+                            <button class="control-button red" onclick="simulateEmergency('ROJO')">
+                                <i class="fas fa-fire"></i>
+                            </button>
+                            <button class="control-button blue" onclick="simulateEmergency('AZUL')">
+                                <i class="fas fa-water"></i>
+                            </button>
+                            <button class="control-button yellow" onclick="simulateEmergency('AMARILLO')">
+                                <i class="fas fa-house-damage"></i>
+                            </button>
+                            <button class="control-button green" onclick="simulateEmergency('VERDE')">
+                                <i class="fas fa-shield-alt"></i>
+                            </button>
+                            <button class="control-button orange" onclick="simulateEmergency('NARANJA')">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </button>
+                        </div>
+                        <ul class="text-sm space-y-1">
+                            <li><span class="font-semibold text-red-400">Rojo:</span> Incendio</li>
+                            <li><span class="font-semibold text-blue-400">Azul:</span> Inundación</li>
+                            <li><span class="font-semibold text-yellow-500">Amarillo:</span> Terremoto</li>
+                            <li><span class="font-semibold text-green-500">Verde:</span> Seguridad</li>
+                            <li><span class="font-semibold text-orange-500">Naranja:</span> General</li>
+                        </ul>
                     </div>
                 </div>
-                
-                <div>
+
+                <div class="demo-panel">
                     <h3 class="text-2xl font-semibold mb-6">Respuesta del Sistema</h3>
-                    <div class="bg-gray-800 rounded-lg p-6">
-                        <div id="demo-output" class="space-y-4">
+                    <div class="demo-output-area">
+                        <div id="demo-output" class="space-y-4 text-center">
                             <p class="text-gray-400">
                                 <i class="fas fa-info-circle mr-2"></i>
                                 Presiona un botón para simular una emergencia...
@@ -434,16 +437,8 @@
                         </div>
                     </div>
                     
-                    <!-- Visual Indicators -->
-                    <div class="mt-6 flex justify-around">
-                        <div class="text-center">
-                            <div id="demo-semaphore" class="semaphore-demo">
-                                <div class="light off"></div>
-                                <div class="light off"></div>
-                                <div class="light off"></div>
-                            </div>
-                            <p class="text-sm mt-2">Semáforo</p>
-                        </div>
+                    <!-- Visual Indicator -->
+                    <div class="mt-6 flex justify-center">
                         <div class="text-center">
                             <div id="demo-display" class="display-demo">
                                 <i class="fas fa-tv text-3xl"></i>
@@ -458,8 +453,9 @@
 </section>
 
 <!-- CTA Section -->
-<section class="py-20 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-    <div class="container mx-auto px-4 text-center">
+<section class="py-20 bg-gradient-to-r from-blue-600 to-purple-600 text-white relative overflow-hidden">
+    <div class="absolute inset-0 parallax-layer bg-gradient-to-r from-blue-600 to-purple-600 opacity-50" data-speed="0.15"></div>
+    <div class="section-container text-center">
         <h2 class="text-4xl lg:text-5xl font-bold mb-6">
             ¿Listo para proteger tu empresa?
         </h2>
@@ -480,8 +476,9 @@
 </section>
 
 <!-- Contact -->
-<section class="py-20 bg-white" id="contact">
-    <div class="container mx-auto px-4">
+<section class="py-20 bg-white relative overflow-hidden" id="contact">
+    <div class="absolute inset-0 parallax-layer bg-gradient-to-br from-white to-gray-100 opacity-20" data-speed="0.2"></div>
+    <div class="section-container">
         <div class="max-w-4xl mx-auto">
             <div class="text-center mb-12">
                 <h2 class="text-4xl font-bold mb-4">Contáctanos</h2>

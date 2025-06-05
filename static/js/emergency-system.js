@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initScrollAnimations();
     initTimelineAnimation();
     initNetworkAnimation();
+    attachButtonEffects();
 });
 
 // Hero Animations
@@ -167,61 +168,24 @@ function initNetworkAnimation() {
 // Emergency Simulation
 function simulateEmergency(type) {
     const output = document.getElementById('demo-output');
-    const semaphore = document.getElementById('demo-semaphore');
     const display = document.getElementById('demo-display');
     
     // Clear previous states
-    output.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div>';
-    semaphore.querySelectorAll('.light').forEach(light => light.className = 'light off');
+    output.innerHTML = '';
+    const stopTransmission = showDataTransmission(output);
     
     // Simulate processing
     setTimeout(() => {
         // Update output
+        stopTransmission();
         output.innerHTML = `
-            <div class="space-y-4">
-                <div class="bg-gray-700 rounded p-4">
-                    <p class="text-sm text-gray-400">MQTT Message Sent:</p>
-                    <code class="text-green-400 text-xs">
-                        {
-                            "tipo_mensaje": "alarma",
-                            "tipo_alarma": "${type}",
-                            "id_origen": "BOTONERA_001",
-                            "ubicacion": "Oficina Principal"
-                        }
-                    </code>
-                </div>
-                <div class="bg-gray-700 rounded p-4">
-                    <p class="text-sm text-gray-400">Topic:</p>
-                    <code class="text-blue-400 text-xs">empresas/cota/nestle/bodega1/SEMAFOROS/SEM_001</code>
-                </div>
-                <div class="flex items-center text-green-400">
-                    <i class="fas fa-check-circle mr-2"></i>
-                    <span>Alerta ${type} activada en todos los dispositivos</span>
-                </div>
+            <div class="flex items-center justify-center text-green-400 text-lg font-semibold">
+                <i class="fas fa-check-circle mr-2"></i>
+                <span>Alerta ${type} activada en todos los dispositivos</span>
             </div>
         `;
+        gsap.fromTo(output, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5 });
         
-        // Update semaphore
-        const lights = semaphore.querySelectorAll('.light');
-        switch(type) {
-            case 'ROJO':
-                lights[0].classList.add('red');
-                break;
-            case 'AMARILLO':
-                lights[1].classList.add('yellow');
-                break;
-            case 'VERDE':
-                lights[2].classList.add('green');
-                break;
-            case 'AZUL':
-                lights[0].classList.add('blue');
-                lights[1].classList.add('blue');
-                break;
-            case 'NARANJA':
-                lights[0].classList.add('orange');
-                lights[2].classList.add('orange');
-                break;
-        }
         
         // Animate display
         gsap.to(display, {
@@ -312,6 +276,52 @@ document.querySelector('form')?.addEventListener('submit', (e) => {
 function showNotification(message, type = 'info') {
     // This would integrate with your notification system
     console.log(`${type}: ${message}`);
+}
+
+// Add ripple effect to demo buttons
+function attachButtonEffects() {
+    document.querySelectorAll('.demo-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            createRipple(e);
+        });
+    });
+}
+
+function createRipple(e) {
+    const button = e.currentTarget;
+    const circle = document.createElement('span');
+    const diameter = Math.max(button.clientWidth, button.clientHeight);
+    const radius = diameter / 2;
+    circle.classList.add('ripple');
+    circle.style.width = circle.style.height = `${diameter}px`;
+    circle.style.left = `${e.clientX - button.getBoundingClientRect().left - radius}px`;
+    circle.style.top = `${e.clientY - button.getBoundingClientRect().top - radius}px`;
+    button.appendChild(circle);
+    setTimeout(() => circle.remove(), 600);
+}
+
+// Display data flow animation in demo output
+function showDataTransmission(target) {
+    const container = document.createElement('div');
+    container.className = 'data-flow';
+    for (let i = 0; i < 5; i++) {
+        const p = document.createElement('span');
+        p.className = 'packet';
+        container.appendChild(p);
+    }
+    target.appendChild(container);
+    const anim = gsap.to(container.children, {
+        x: 16,
+        opacity: 0,
+        duration: 0.6,
+        stagger: 0.1,
+        repeat: -1,
+        ease: 'power1.inOut'
+    });
+    return () => {
+        anim.kill();
+        container.remove();
+    };
 }
 
 // Initialize network data flow animation
