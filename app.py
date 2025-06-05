@@ -46,6 +46,12 @@ def index():
     """Página principal - Landing page"""
     return render_template('index.html')
 
+# Ruta para el favicon (evita error 404 en algunos navegadores)
+@app.route('/favicon.ico')
+def favicon():
+    """Devuelve un favicon vacío para evitar 404"""
+    return '', 204
+
 @app.route('/login')
 def login():
     """Página de login"""
