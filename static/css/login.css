@@ -720,6 +720,14 @@
       flex-direction: column;
       text-align: center;
     }
+
+    .login-info {
+      margin-bottom: 2rem;
+    }
+
+    .plane-wrapper {
+      top: -30px;
+    }
   }
   
   @media (max-width: 480px) {
@@ -761,6 +769,20 @@
 
     .login-wrapper {
       flex-direction: column;
+    }
+
+    .plane-wrapper {
+      top: -20px;
+      width: 140px;
+      height: 50px;
+    }
+
+    .login-info h2 {
+      font-size: 1.5rem;
+    }
+
+    .login-info p {
+      font-size: 0.875rem;
     }
   }
   
