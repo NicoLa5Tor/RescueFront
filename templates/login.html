@@ -39,7 +39,12 @@
 
   <!-- Contenedor principal -->
   <div class="login-container">
-    <div class="login-content">
+    <div class="login-wrapper">
+      <div class="login-info fade-in-up" data-aos="fade-right">
+        <h2 class="info-title">Bienvenido a Multi-Tenant System</h2>
+        <p class="info-text">Accede para gestionar de forma segura tus recursos y empresas.</p>
+      </div>
+      <div class="login-content">
       <div id="loginCard" class="login-card fade-in-up">
         <!-- Header del formulario -->
         <div class="form-header">
@@ -51,7 +56,7 @@
         </div>
 
         <!-- Formulario -->
-        <form id="loginForm">
+        <form id="loginForm" novalidate autocomplete="off">
           <!-- Usuario -->
           <div class="form-group fade-in-up">
             <label for="usuario" class="form-label">Usuario</label>
