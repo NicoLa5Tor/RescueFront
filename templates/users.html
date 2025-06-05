@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block title %}Gestión de Usuarios - Admin{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="p-3">
+            <h5 class="text-white mb-4">
+                <i class="fas fa-user-shield me-2"></i>Panel Admin
+            </h5>
+            <nav>
+                <a href="{{ url_for('admin_dashboard') }}" class="sidebar-link">
+                    <i class="fas fa-tachometer-alt"></i>
+                    Dashboard
+                </a>
+                <a href="{{ url_for('admin_users') }}" class="sidebar-link active">
+                    <i class="fas fa-users"></i>
+                    Usuarios
+                </a>
+                <a href="{{ url_for('admin_empresas') }}" class="sidebar-link">
+                    <i class="fas fa-building"></i>
+                    Empresas
+                </a>
+                <a href="{{ url_for('admin_stats') }}" class="sidebar-link">
+                    <i class="fas fa-chart-bar"></i>
+                    Estadísticas
+                </a>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-content">
+        <div class="container-fluid">
+            <!-- Header -->
+            <div class="row mb-4">
+                <div class="col">
+                    <h1 class="h3 mb-0">Gestión de Usuarios</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+                            <li class="breadcrumb-item active">Usuarios</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Actions Bar -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text" class="form-control" placeholder="Buscar usuarios..." 
+                               id="searchUsers" onkeyup="filterTable()">
+                    </div>
+                </div>
+                <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                    <button class="btn btn-primary me-2" onclick="createUser()">
+                        <i class="fas fa-plus me-2"></i>Nuevo Usuario
+                    </button>
+                    <button class="btn btn-outline-primary me-2" onclick="filterUsersByAge()">
+                        <i class="fas fa-filter me-2"></i>Filtrar por Edad
+                    </button>
+                    <button class="btn btn-outline-secondary" onclick="loadUsers()">
+                        <i class="fas fa-sync me-2"></i>Actualizar
+                    </button>
+                </div>
+            </div>
+
+            <!-- Users Table -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="modern-card">
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="usersTable">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Usuario</th>
+                                        <th>Edad</th>
+                                        <th>Estado</th>
+                                        <th>Fecha Registro</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usersTableBody">
+                                    <!-- Users will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Loading State -->
+                        <div class="text-center py-5 d-none" id="loadingState">
+                            <div class="loading-spinner mb-3"></div>
+                            <p class="text-muted">Cargando usuarios...</p>
+                        </div>
+                        
+                        <!-- Empty State -->
+                        <div class="text-center py-5 d-none" id="emptyState">
+                            <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                            <h5>No hay usuarios registrados</h5>
+                            <p class="text-muted">Comienza creando el primer usuario</p>
+                            <button class="btn btn-primary" onclick="createUser()">
+                                <i class="fas fa-plus me-2"></i>Crear Usuario
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Edit User Modal -->
+<div class="modal fade" id="editUserModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Editar Usuario</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editUserForm">
+                    <input type="hidden" id="editUserId">
+                    <div class="mb-3">
+                        <label for="editUserName" class="form-label">Nombre</label>
+                        <input type="text" class="form-control" id="editUserName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editUserEmail" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="editUserEmail" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editUserAge" class="form-label">Edad</label>
+                        <input type="number" class="form-control" id="editUserAge" min="1" max="120">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="saveUserChanges()">
+                    <i class="fas fa-save me-2"></i>Guardar Cambios
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Mobile Menu Toggle -->
+<button class="btn btn-primary d-md-none position-fixed bottom-0 start-0 m-3 rounded-circle" 
+        style="width: 56px; height: 56px; z-index: 1001;" 
+        onclick="document.getElementById('sidebar').classList.toggle('active')">
+    <i class="fas fa-bars"></i>
+</button>
+
+<script>
+// Simple filter function for the search
+function filterTable() {
+    const searchTerm = document.getElementById('searchUsers').value.toLowerCase();
+    const rows = document.querySelectorAll('#usersTableBody tr');
+    
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(searchTerm) ? '' : 'none';
+    });
+}
+</script>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}

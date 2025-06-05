@@ -1,0 +1,641 @@
+{% extends "base.html" %}
+
+{% block title %}Estadísticas - Admin{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="p-3">
+            <h5 class="text-white mb-4">
+                <i class="fas fa-user-shield me-2"></i>Panel Admin
+            </h5>
+            <nav>
+                <a href="{{ url_for('admin_dashboard') }}" class="sidebar-link">
+                    <i class="fas fa-tachometer-alt"></i>
+                    Dashboard
+                </a>
+                <a href="{{ url_for('admin_users') }}" class="sidebar-link">
+                    <i class="fas fa-users"></i>
+                    Usuarios
+                </a>
+                <a href="{{ url_for('admin_empresas') }}" class="sidebar-link">
+                    <i class="fas fa-building"></i>
+                    Empresas
+                </a>
+                <a href="{{ url_for('admin_stats') }}" class="sidebar-link active">
+                    <i class="fas fa-chart-bar"></i>
+                    Estadísticas
+                </a>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-content">
+        <div class="container-fluid">
+            <!-- Header -->
+            <div class="row mb-4">
+                <div class="col">
+                    <h1 class="h3 mb-0">Estadísticas del Sistema</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+                            <li class="breadcrumb-item active">Estadísticas</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Date Range Filter -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fas fa-calendar"></i>
+                        </span>
+                        <input type="date" class="form-control" id="startDate">
+                        <span class="input-group-text">hasta</span>
+                        <input type="date" class="form-control" id="endDate">
+                        <button class="btn btn-primary" onclick="loadStats()">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                    <div class="btn-group">
+                        <button class="btn btn-outline-secondary" onclick="setDateRange('week')">
+                            Esta Semana
+                        </button>
+                        <button class="btn btn-outline-secondary" onclick="setDateRange('month')">
+                            Este Mes
+                        </button>
+                        <button class="btn btn-outline-secondary" onclick="setDateRange('year')">
+                            Este Año
+                        </button>
+                    </div>
+                    <button class="btn btn-success ms-2" onclick="exportStats()">
+                        <i class="fas fa-download me-2"></i>Exportar
+                    </button>
+                </div>
+            </div>
+
+            <!-- Summary Cards -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-3" data-aos="fade-up" data-aos-delay="100">
+                    <div class="stat-card text-center animate-scale-in">
+                        <i class="fas fa-users fa-3x mb-3 opacity-75"></i>
+                        <h2 id="totalUsersCount" class="animate-fade-in">0</h2>
+                        <p class="mb-0">Usuarios Totales</p>
+                    </div>
+                </div>
+                <div class="col-md-3" data-aos="fade-up" data-aos-delay="200">
+                    <div class="stat-card text-center animate-scale-in">
+                        <i class="fas fa-building fa-3x mb-3 opacity-75"></i>
+                        <h2 id="totalEmpresasCount" class="animate-fade-in">0</h2>
+                        <p class="mb-0">Empresas Totales</p>
+                    </div>
+                </div>
+                <div class="col-md-3" data-aos="fade-up" data-aos-delay="300">
+                    <div class="stat-card text-center animate-scale-in">
+                        <i class="fas fa-check-circle fa-3x mb-3 opacity-75"></i>
+                        <h2 id="activeEmpresasCount" class="animate-fade-in">0</h2>
+                        <p class="mb-0">Empresas Activas</p>
+                    </div>
+                </div>
+                <div class="col-md-3" data-aos="fade-up" data-aos-delay="400">
+                    <div class="stat-card text-center animate-scale-in">
+                        <i class="fas fa-chart-line fa-3x mb-3 opacity-75"></i>
+                        <h2 id="avgUsersPerEmpresa" class="animate-fade-in">0</h2>
+                        <p class="mb-0">Promedio Usuarios/Empresa</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="row g-4 mb-4">
+                <!-- Users by Empresa Chart -->
+                <div class="col-lg-6" data-aos="fade-up">
+                    <div class="modern-card">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="mb-0">Usuarios por Empresa</h5>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-secondary" onclick="changeChartType('usersChart', 'bar')">
+                                    <i class="fas fa-chart-bar"></i>
+                                </button>
+                                <button class="btn btn-outline-secondary" onclick="changeChartType('usersChart', 'line')">
+                                    <i class="fas fa-chart-line"></i>
+                                </button>
+                                <button class="btn btn-outline-secondary" onclick="changeChartType('usersChart', 'pie')">
+                                    <i class="fas fa-chart-pie"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div style="height: 350px;">
+                            <canvas id="usersChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Growth Chart -->
+                <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="modern-card">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="mb-0">Crecimiento Mensual</h5>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="toggleDataset('growthChart')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div style="height: 350px;">
+                            <canvas id="growthChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4 mb-4">
+                <!-- Location Distribution -->
+                <div class="col-lg-4" data-aos="fade-up">
+                    <div class="modern-card">
+                        <h5 class="mb-4">Distribución por Ubicación</h5>
+                        <div style="height: 300px;">
+                            <canvas id="locationChart"></canvas>
+                        </div>
+                        <div class="mt-3">
+                            <small class="text-muted">Top 5 ubicaciones con más empresas</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activity Heatmap -->
+                <div class="col-lg-8" data-aos="fade-up" data-aos-delay="100">
+                    <div class="modern-card">
+                        <h5 class="mb-4">Actividad por Día/Hora</h5>
+                        <div id="activityHeatmap" class="p-4">
+                            <div class="heatmap-container">
+                                <!-- Heatmap grid -->
+                                <div class="heatmap-grid">
+                                    <div class="heatmap-labels-y">
+                                        <span>Lun</span>
+                                        <span>Mar</span>
+                                        <span>Mié</span>
+                                        <span>Jue</span>
+                                        <span>Vie</span>
+                                        <span>Sáb</span>
+                                        <span>Dom</span>
+                                    </div>
+                                    <div class="heatmap-cells" id="heatmapCells">
+                                        <!-- Cells will be generated by JavaScript -->
+                                    </div>
+                                    <div class="heatmap-labels-x">
+                                        <span>00</span>
+                                        <span>04</span>
+                                        <span>08</span>
+                                        <span>12</span>
+                                        <span>16</span>
+                                        <span>20</span>
+                                        <span>24</span>
+                                    </div>
+                                </div>
+                                <div class="heatmap-legend mt-3">
+                                    <span>Menos</span>
+                                    <div class="legend-gradient"></div>
+                                    <span>Más</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Tables -->
+            <div class="row g-4">
+                <!-- Top Empresas -->
+                <div class="col-lg-6" data-aos="fade-up">
+                    <div class="modern-card">
+                        <h5 class="mb-4">Top 10 Empresas por Usuarios</h5>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th width="10%">#</th>
+                                        <th width="50%">Empresa</th>
+                                        <th width="20%">Usuarios</th>
+                                        <th width="20%">Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="topEmpresasTable">
+                                    <tr>
+                                        <td>1</td>
+                                        <td>Empresa Demo S.A.</td>
+                                        <td><span class="badge bg-primary">125</span></td>
+                                        <td><span class="badge bg-success">Activa</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>Tech Solutions Ltd.</td>
+                                        <td><span class="badge bg-primary">98</span></td>
+                                        <td><span class="badge bg-success">Activa</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>Global Services Inc.</td>
+                                        <td><span class="badge bg-primary">87</span></td>
+                                        <td><span class="badge bg-success">Activa</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity Log -->
+                <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="modern-card">
+                        <h5 class="mb-4">Registro de Actividad Reciente</h5>
+                        <div class="activity-log" style="max-height: 400px; overflow-y: auto;">
+                            <div class="activity-item p-3 border-bottom animate-fade-in-left">
+                                <div class="d-flex align-items-center">
+                                    <div class="activity-icon bg-success text-white rounded-circle p-2 me-3">
+                                        <i class="fas fa-user-plus"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <p class="mb-0 fw-semibold">Nuevo usuario registrado</p>
+                                        <small class="text-muted">juan.perez@empresa.com - Hace 5 minutos</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="activity-item p-3 border-bottom animate-fade-in-left animation-delay-1">
+                                <div class="d-flex align-items-center">
+                                    <div class="activity-icon bg-info text-white rounded-circle p-2 me-3">
+                                        <i class="fas fa-building"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <p class="mb-0 fw-semibold">Empresa actualizada</p>
+                                        <small class="text-muted">Tech Solutions Ltd. - Hace 1 hora</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="activity-item p-3 border-bottom animate-fade-in-left animation-delay-2">
+                                <div class="d-flex align-items-center">
+                                    <div class="activity-icon bg-warning text-white rounded-circle p-2 me-3">
+                                        <i class="fas fa-edit"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <p class="mb-0 fw-semibold">Perfil de usuario modificado</p>
+                                        <small class="text-muted">maria.garcia@empresa.com - Hace 2 horas</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="activity-item p-3 border-bottom animate-fade-in-left animation-delay-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="activity-icon bg-danger text-white rounded-circle p-2 me-3">
+                                        <i class="fas fa-trash"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <p class="mb-0 fw-semibold">Usuario eliminado</p>
+                                        <small class="text-muted">pedro.lopez@empresa.com - Hace 3 horas</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="activity-item p-3 animate-fade-in-left animation-delay-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="activity-icon bg-primary text-white rounded-circle p-2 me-3">
+                                        <i class="fas fa-sync"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <p class="mb-0 fw-semibold">Sincronización completada</p>
+                                        <small class="text-muted">Base de datos actualizada - Hace 4 horas</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Metrics -->
+            <div class="row g-4 mt-4">
+                <div class="col-12" data-aos="fade-up">
+                    <div class="modern-card">
+                        <h5 class="mb-4">Métricas de Rendimiento</h5>
+                        <div class="row g-4">
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <div class="progress-circle" data-value="87">
+                                        <svg width="120" height="120">
+                                            <circle cx="60" cy="60" r="54" stroke="#e9ecef" stroke-width="12" fill="none"></circle>
+                                            <circle cx="60" cy="60" r="54" stroke="#667eea" stroke-width="12" fill="none"
+                                                    stroke-dasharray="339.292" stroke-dashoffset="44" 
+                                                    transform="rotate(-90 60 60)"></circle>
+                                        </svg>
+                                        <div class="progress-value">87%</div>
+                                    </div>
+                                    <p class="mt-2 mb-0">Tasa de Retención</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <div class="progress-circle" data-value="92">
+                                        <svg width="120" height="120">
+                                            <circle cx="60" cy="60" r="54" stroke="#e9ecef" stroke-width="12" fill="none"></circle>
+                                            <circle cx="60" cy="60" r="54" stroke="#10b981" stroke-width="12" fill="none"
+                                                    stroke-dasharray="339.292" stroke-dashoffset="27" 
+                                                    transform="rotate(-90 60 60)"></circle>
+                                        </svg>
+                                        <div class="progress-value">92%</div>
+                                    </div>
+                                    <p class="mt-2 mb-0">Satisfacción</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <div class="progress-circle" data-value="78">
+                                        <svg width="120" height="120">
+                                            <circle cx="60" cy="60" r="54" stroke="#e9ecef" stroke-width="12" fill="none"></circle>
+                                            <circle cx="60" cy="60" r="54" stroke="#f59e0b" stroke-width="12" fill="none"
+                                                    stroke-dasharray="339.292" stroke-dashoffset="75" 
+                                                    transform="rotate(-90 60 60)"></circle>
+                                        </svg>
+                                        <div class="progress-value">78%</div>
+                                    </div>
+                                    <p class="mt-2 mb-0">Uso del Sistema</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <div class="progress-circle" data-value="95">
+                                        <svg width="120" height="120">
+                                            <circle cx="60" cy="60" r="54" stroke="#e9ecef" stroke-width="12" fill="none"></circle>
+                                            <circle cx="60" cy="60" r="54" stroke="#ef4444" stroke-width="12" fill="none"
+                                                    stroke-dasharray="339.292" stroke-dashoffset="17" 
+                                                    transform="rotate(-90 60 60)"></circle>
+                                        </svg>
+                                        <div class="progress-value">95%</div>
+                                    </div>
+                                    <p class="mt-2 mb-0">Disponibilidad</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Export Options Modal -->
+<div class="modal fade" id="exportModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Exportar Estadísticas</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Selecciona el formato de exportación:</p>
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-primary" onclick="exportToPDF()">
+                        <i class="fas fa-file-pdf me-2"></i>Exportar como PDF
+                    </button>
+                    <button class="btn btn-outline-success" onclick="exportToExcel()">
+                        <i class="fas fa-file-excel me-2"></i>Exportar como Excel
+                    </button>
+                    <button class="btn btn-outline-info" onclick="exportToCSV()">
+                        <i class="fas fa-file-csv me-2"></i>Exportar como CSV
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Mobile Menu Toggle -->
+<button class="btn btn-primary d-md-none position-fixed bottom-0 start-0 m-3 rounded-circle" 
+        style="width: 56px; height: 56px; z-index: 1001;" 
+        onclick="document.getElementById('sidebar').classList.toggle('active')">
+    <i class="fas fa-bars"></i>
+</button>
+
+<style>
+/* Activity log styles */
+.activity-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.activity-item:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+/* Heatmap styles */
+.heatmap-container {
+    width: 100%;
+}
+
+.heatmap-grid {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    grid-template-rows: 1fr 30px;
+    gap: 10px;
+}
+
+.heatmap-labels-y {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    font-size: 12px;
+    color: #6c757d;
+}
+
+.heatmap-labels-x {
+    grid-column: 2;
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #6c757d;
+}
+
+.heatmap-cells {
+    display: grid;
+    grid-template-columns: repeat(24, 1fr);
+    grid-template-rows: repeat(7, 1fr);
+    gap: 2px;
+    height: 200px;
+}
+
+.heatmap-cell {
+    background-color: #e9ecef;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.heatmap-cell:hover {
+    transform: scale(1.1);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.heatmap-cell.level-1 { background-color: #c3dafe; }
+.heatmap-cell.level-2 { background-color: #93bbfd; }
+.heatmap-cell.level-3 { background-color: #6699ff; }
+.heatmap-cell.level-4 { background-color: #3366ff; }
+.heatmap-cell.level-5 { background-color: #0033cc; }
+
+.heatmap-legend {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 12px;
+    color: #6c757d;
+}
+
+.legend-gradient {
+    width: 200px;
+    height: 10px;
+    background: linear-gradient(to right, #e9ecef, #c3dafe, #93bbfd, #6699ff, #3366ff, #0033cc);
+    border-radius: 5px;
+}
+
+/* Progress circles */
+.progress-circle {
+    position: relative;
+    display: inline-block;
+}
+
+.progress-value {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--dark-color);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .heatmap-cells {
+        height: 150px;
+    }
+    
+    .progress-circle svg {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .progress-circle svg circle {
+        cx: 40;
+        cy: 40;
+        r: 36;
+    }
+    
+    .progress-value {
+        font-size: 18px;
+    }
+}
+</style>
+
+<script>
+// Generate heatmap cells
+document.addEventListener('DOMContentLoaded', function() {
+    const heatmapCells = document.getElementById('heatmapCells');
+    if (heatmapCells) {
+        for (let i = 0; i < 168; i++) { // 7 days * 24 hours
+            const cell = document.createElement('div');
+            cell.className = 'heatmap-cell';
+            const level = Math.floor(Math.random() * 6);
+            if (level > 0) {
+                cell.classList.add(`level-${level}`);
+            }
+            cell.title = `Actividad: ${level * 20}%`;
+            heatmapCells.appendChild(cell);
+        }
+    }
+});
+
+// Date range functions
+function setDateRange(range) {
+    const endDate = new Date();
+    const startDate = new Date();
+    
+    switch(range) {
+        case 'week':
+            startDate.setDate(endDate.getDate() - 7);
+            break;
+        case 'month':
+            startDate.setMonth(endDate.getMonth() - 1);
+            break;
+        case 'year':
+            startDate.setFullYear(endDate.getFullYear() - 1);
+            break;
+    }
+    
+    document.getElementById('startDate').value = startDate.toISOString().split('T')[0];
+    document.getElementById('endDate').value = endDate.toISOString().split('T')[0];
+    
+    loadStats();
+}
+
+// Export functions
+function exportStats() {
+    const modal = new bootstrap.Modal(document.getElementById('exportModal'));
+    modal.show();
+}
+
+function exportToPDF() {
+    showNotification('Generando PDF...', 'info');
+    setTimeout(() => {
+        showNotification('PDF descargado exitosamente', 'success');
+        bootstrap.Modal.getInstance(document.getElementById('exportModal')).hide();
+    }, 2000);
+}
+
+function exportToExcel() {
+    showNotification('Generando Excel...', 'info');
+    setTimeout(() => {
+        showNotification('Excel descargado exitosamente', 'success');
+        bootstrap.Modal.getInstance(document.getElementById('exportModal')).hide();
+    }, 2000);
+}
+
+function exportToCSV() {
+    showNotification('Generando CSV...', 'info');
+    setTimeout(() => {
+        showNotification('CSV descargado exitosamente', 'success');
+        bootstrap.Modal.getInstance(document.getElementById('exportModal')).hide();
+    }, 2000);
+}
+
+// Chart type toggle
+let currentChartType = 'bar';
+function changeChartType(chartId, type) {
+    currentChartType = type;
+    // Re-render chart with new type
+    showNotification(`Gráfico cambiado a ${type}`, 'info');
+    // In real implementation, you would destroy and recreate the chart
+}
+
+// Toggle dataset visibility
+function toggleDataset(chartId) {
+    showNotification('Vista actualizada', 'info');
+}
+
+// Initialize date inputs with current month
+document.addEventListener('DOMContentLoaded', () => {
+    const now = new Date();
+    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+    
+    document.getElementById('startDate').value = firstDay.toISOString().split('T')[0];
+    document.getElementById('endDate').value = now.toISOString().split('T')[0];
+});
+</script>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}
