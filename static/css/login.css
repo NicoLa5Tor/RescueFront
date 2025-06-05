@@ -699,6 +699,9 @@
   
   /* ========== RESPONSIVE ========== */
   @media (max-width: 768px) {
+    .login-background {
+      overflow-y: auto;
+    }
     .login-nav-links {
       gap: 1rem;
     }
@@ -718,7 +721,7 @@
     }
 
     .login-info {
-      margin-bottom: 2rem;
+      margin-bottom: 3rem;
     }
 
     .plane-wrapper {
@@ -727,6 +730,9 @@
   }
   
   @media (max-width: 480px) {
+    .login-background {
+      overflow-y: auto;
+    }
     .login-header-content {
       padding: 0 1rem;
     }
