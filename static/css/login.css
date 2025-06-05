@@ -246,9 +246,10 @@
     gap: 3rem;
   }
 
-  .login-info {
+.login-info {
     flex: 1;
     color: var(--text-primary);
+    position: relative;
   }
 
   .login-info h2 {
@@ -261,11 +262,50 @@
     background-clip: text;
   }
 
+  #infoHighlight {
+    background: var(--secondary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
   .login-info p {
     font-size: 1rem;
     color: var(--text-secondary);
     line-height: 1.6;
     margin-bottom: 1rem;
+  }
+
+  .plane-wrapper {
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    width: 180px;
+    height: 60px;
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+
+  #planeSvg {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  #planeSvg path {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.3);
+    stroke-dasharray: 4 4;
+  }
+
+  .plane-icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: white;
+    font-size: 1.25rem;
   }
   
   .login-content {
