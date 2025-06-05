@@ -178,26 +178,9 @@ function simulateEmergency(type) {
     setTimeout(() => {
         // Update output
         output.innerHTML = `
-            <div class="space-y-4">
-                <div class="bg-gray-700 rounded p-4">
-                    <p class="text-sm text-gray-400">MQTT Message Sent:</p>
-                    <code class="text-green-400 text-xs">
-                        {
-                            "tipo_mensaje": "alarma",
-                            "tipo_alarma": "${type}",
-                            "id_origen": "BOTONERA_001",
-                            "ubicacion": "Oficina Principal"
-                        }
-                    </code>
-                </div>
-                <div class="bg-gray-700 rounded p-4">
-                    <p class="text-sm text-gray-400">Topic:</p>
-                    <code class="text-blue-400 text-xs">empresas/cota/nestle/bodega1/SEMAFOROS/SEM_001</code>
-                </div>
-                <div class="flex items-center text-green-400">
-                    <i class="fas fa-check-circle mr-2"></i>
-                    <span>Alerta ${type} activada en todos los dispositivos</span>
-                </div>
+            <div class="flex items-center text-green-400">
+                <i class="fas fa-check-circle mr-2"></i>
+                <span>Alerta ${type} activada en todos los dispositivos</span>
             </div>
         `;
         
