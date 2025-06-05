@@ -168,13 +168,11 @@ function initNetworkAnimation() {
 // Emergency Simulation
 function simulateEmergency(type) {
     const output = document.getElementById('demo-output');
-    const semaphore = document.getElementById('demo-semaphore');
     const display = document.getElementById('demo-display');
     
     // Clear previous states
     output.innerHTML = '';
     const stopTransmission = showDataTransmission(output);
-    semaphore.querySelectorAll('.light').forEach(light => light.className = 'light off');
     
     // Simulate processing
     setTimeout(() => {
@@ -188,27 +186,6 @@ function simulateEmergency(type) {
         `;
         gsap.fromTo(output, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5 });
         
-        // Update semaphore
-        const lights = semaphore.querySelectorAll('.light');
-        switch(type) {
-            case 'ROJO':
-                lights[0].classList.add('red');
-                break;
-            case 'AMARILLO':
-                lights[1].classList.add('yellow');
-                break;
-            case 'VERDE':
-                lights[2].classList.add('green');
-                break;
-            case 'AZUL':
-                lights[0].classList.add('blue');
-                lights[1].classList.add('blue');
-                break;
-            case 'NARANJA':
-                lights[0].classList.add('orange');
-                lights[2].classList.add('orange');
-                break;
-        }
         
         // Animate display
         gsap.to(display, {

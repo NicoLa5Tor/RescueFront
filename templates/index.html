@@ -398,27 +398,31 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <div class="demo-panel">
                     <h3 class="text-2xl font-semibold mb-6">Simula una Emergencia</h3>
-                    <div class="space-y-4">
-                        <button class="demo-btn w-full bg-gradient-to-r from-red-500 to-red-700 hover:from-red-600 hover:to-red-800" onclick="simulateEmergency('ROJO')">
-                            <i class="fas fa-fire mr-3"></i>
-                            Activar Alerta ROJA (Incendio)
-                        </button>
-                        <button class="demo-btn w-full bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800" onclick="simulateEmergency('AZUL')">
-                            <i class="fas fa-water mr-3"></i>
-                            Activar Alerta AZUL (Inundación)
-                        </button>
-                        <button class="demo-btn w-full bg-gradient-to-r from-yellow-500 to-yellow-700 hover:from-yellow-600 hover:to-yellow-800" onclick="simulateEmergency('AMARILLO')">
-                            <i class="fas fa-house-damage mr-3"></i>
-                            Activar Alerta AMARILLA (Terremoto)
-                        </button>
-                        <button class="demo-btn w-full bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800" onclick="simulateEmergency('VERDE')">
-                            <i class="fas fa-shield-alt mr-3"></i>
-                            Activar Alerta VERDE (Seguridad)
-                        </button>
-                        <button class="demo-btn w-full bg-gradient-to-r from-orange-500 to-orange-700 hover:from-orange-600 hover:to-orange-800" onclick="simulateEmergency('NARANJA')">
-                            <i class="fas fa-exclamation-triangle mr-3"></i>
-                            Activar Alerta NARANJA (General)
-                        </button>
+                    <div class="flex items-center gap-8">
+                        <div class="control-panel" id="demo-buttons">
+                            <button class="control-button red" onclick="simulateEmergency('ROJO')">
+                                <i class="fas fa-fire"></i>
+                            </button>
+                            <button class="control-button blue" onclick="simulateEmergency('AZUL')">
+                                <i class="fas fa-water"></i>
+                            </button>
+                            <button class="control-button yellow" onclick="simulateEmergency('AMARILLO')">
+                                <i class="fas fa-house-damage"></i>
+                            </button>
+                            <button class="control-button green" onclick="simulateEmergency('VERDE')">
+                                <i class="fas fa-shield-alt"></i>
+                            </button>
+                            <button class="control-button orange" onclick="simulateEmergency('NARANJA')">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </button>
+                        </div>
+                        <ul class="text-sm space-y-1">
+                            <li><span class="font-semibold text-red-400">Rojo:</span> Incendio</li>
+                            <li><span class="font-semibold text-blue-400">Azul:</span> Inundación</li>
+                            <li><span class="font-semibold text-yellow-500">Amarillo:</span> Terremoto</li>
+                            <li><span class="font-semibold text-green-500">Verde:</span> Seguridad</li>
+                            <li><span class="font-semibold text-orange-500">Naranja:</span> General</li>
+                        </ul>
                     </div>
                 </div>
 
@@ -433,16 +437,8 @@
                         </div>
                     </div>
                     
-                    <!-- Visual Indicators -->
-                    <div class="mt-6 flex justify-around">
-                        <div class="text-center">
-                            <div id="demo-semaphore" class="semaphore-demo">
-                                <div class="light off"></div>
-                                <div class="light off"></div>
-                                <div class="light off"></div>
-                            </div>
-                            <p class="text-sm mt-2">Semáforo</p>
-                        </div>
+                    <!-- Visual Indicator -->
+                    <div class="mt-6 flex justify-center">
                         <div class="text-center">
                             <div id="demo-display" class="display-demo">
                                 <i class="fas fa-tv text-3xl"></i>

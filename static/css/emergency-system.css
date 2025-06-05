@@ -420,10 +420,45 @@
     box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
 }
 
-.semaphore-demo .light.orange { 
+.semaphore-demo .light.orange {
     background: #f97316;
     box-shadow: 0 0 20px rgba(249, 115, 22, 0.5);
 }
+
+/* Control Panel (Botonera) */
+.control-panel {
+    background: #1f2937;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.control-button {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.control-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+}
+
+.control-button.red { background: #ef4444; }
+.control-button.blue { background: #3b82f6; }
+.control-button.yellow { background: #eab308; color: #1f2937; }
+.control-button.green { background: #22c55e; }
+.control-button.orange { background: #f97316; }
 
 /* Display Demo */
 .display-demo {
