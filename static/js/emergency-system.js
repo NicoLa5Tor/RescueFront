@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initTimelineAnimation();
     initNetworkAnimation();
     attachButtonEffects();
+    initAlertCarousel();
 });
 
 // Hero Animations
@@ -421,3 +422,34 @@ function animateDataFlow() {
 window.addEventListener('load', () => {
     setTimeout(animateDataFlow, 1000);
 });
+
+// Simple carousel animation for recent alerts
+function initAlertCarousel() {
+    const wrapper = document.querySelector('#alerts .carousel-wrapper');
+    if (!wrapper) return;
+
+    const list = wrapper.querySelector('.alert-list');
+    const cards = list ? list.children : [];
+    if (!list || cards.length === 0) return;
+
+    const gap = parseFloat(getComputedStyle(list).gap) || 0;
+    const cardWidth = cards[0].offsetWidth + gap;
+    let index = 0;
+
+    function showSlide(i) {
+        anime({
+            targets: list,
+            translateX: -cardWidth * i,
+            duration: 800,
+            easing: 'easeInOutQuad'
+        });
+        gsap.to(cards, { backgroundColor: '#f8fafc', duration: 0.5 });
+        gsap.to(cards[i], { backgroundColor: '#e0f2fe', duration: 0.5 });
+    }
+
+    showSlide(0);
+    setInterval(() => {
+        index = (index + 1) % cards.length;
+        showSlide(index);
+    }, 4000);
+}
