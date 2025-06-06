@@ -56,17 +56,17 @@ class confettiCannon {
     this.clamper = gsap.utils.clamp(1, 100);
 
     this.setpricingMotion();
-    this.initObserver();
     this.initEvents();
   }
 
   initEvents() {
     if (!this.animationIsOk) return;
 
-    this.hero.style.cursor = 'pointer';
-
-    this.el.proxy.addEventListener('click', (e) => {
-      this.createExplosion(e.clientX, e.clientY, 400);
+    document.body.addEventListener('click', (e) => {
+      const x = e.clientX;
+      const y = e.clientY;
+      this.showHand(x, y);
+      this.createExplosion(x, y, 400);
     });
 
     gsap.delayedCall(1, () => {
@@ -78,12 +78,16 @@ class confettiCannon {
     gsap.set(this.el.hand, { xPercent: -50, yPercent: -50 });
   }
 
-  initObserver() {
-    if (!this.animationIsOk) return;
-
-    document.body.addEventListener('click', (e) => {
-      this.createExplosion(e.clientX, e.clientY, 400);
-    });
+  // Hand animation when clicking
+  showHand(x, y) {
+    gsap.killTweensOf(this.el.hand);
+    gsap.set(this.el.hand, { display: 'block', x, y, opacity: 1 });
+    gsap.fromTo(
+      this.el.rock,
+      { rotation: 0 },
+      { rotation: 30, duration: 0.4, ease: 'myWiggle' }
+    );
+    gsap.to(this.el.hand, { opacity: 0, duration: 0.3, delay: 0.4 });
   }
 
   startDrawing(e) {
@@ -176,7 +180,7 @@ class confettiCannon {
     const angleSpread = Math.PI * 2;
     const explosion = gsap.timeline();
     const speed = gsap.utils.mapRange(0, 500, 0.3, 1.5, distance);
-    const sizeRange = gsap.utils.mapRange(0, 500, 20, 60, distance);
+    const sizeRange = gsap.utils.mapRange(0, 500, 20, 40, distance);
 
     for (let i = 0; i < count; i++) {
       const randomKey = gsap.utils.random(this.explosionKeys);
