@@ -663,13 +663,13 @@
     }
 }
 
-#intro-overlay{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#000;z-index:10000;font-family:'Signika Negative',sans-serif;text-align:center}
+#intro-overlay{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#000;z-index:10000;font-family:'Signika Negative',sans-serif;text-align:center;overflow-y:auto}
 #intro-subtitle{margin-top:.5rem;font-size:1.25rem;color:#ccc}
 
 /* GSAP hero effect styles */
 #smooth-wrapper {
     font-family: 'Unbounded', sans-serif;
-    height: 100vh;
+    height: 100%;
     overflow-y: auto;
 }
 
