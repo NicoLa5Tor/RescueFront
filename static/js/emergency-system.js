@@ -19,15 +19,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function initIntroAnimation() {
     const overlay = document.getElementById('intro-overlay');
-    const text = document.getElementById('intro-text');
-    const subtitle = document.getElementById('intro-subtitle');
     const navbar = document.querySelector('nav.navbar');
-    if (!overlay || !text) return;
+    if (!overlay) return;
 
-    gsap.set([text, subtitle], { autoAlpha: 1 });
     if (navbar) gsap.set(navbar, { autoAlpha: 0 });
 
-    gsap.timeline({
+    gsap.to(overlay, {
+        autoAlpha: 0,
+        pointerEvents: 'none',
         scrollTrigger: {
             trigger: document.body,
             start: 'top top',
@@ -35,11 +34,9 @@ function initIntroAnimation() {
             scrub: true,
             onLeave: () => overlay.remove()
         }
-    })
-    .to(text, { scale: 20, ease: 'expoScale(1, 20)' }, 0)
-    .to(subtitle, { y: -20, autoAlpha: 0 }, 0)
-    .to(overlay, { autoAlpha: 0, pointerEvents: 'none' }, '<')
-    .to(navbar, { autoAlpha: 1 }, 0);
+    });
+
+    if (navbar) gsap.to(navbar, { autoAlpha: 1, scrollTrigger: { trigger: document.body, start: 'top top' } });
 }
 
 function initSmoothHero() {

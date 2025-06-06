@@ -667,13 +667,6 @@
 #intro-subtitle{margin-top:.5rem;font-size:1.25rem;color:#ccc}
 
 /* GSAP hero effect styles */
-#hero-gsap {
-    min-height: 100vh;
-    background: linear-gradient(to bottom right, #0f172a, #1e293b);
-    position: relative;
-    overflow: hidden;
-}
-
 #smooth-wrapper {
     font-family: 'Unbounded', sans-serif;
 }
