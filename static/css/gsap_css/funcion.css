@@ -1,47 +1,364 @@
-@font-face {
-    font-display: block;
-    font-family: Mori;
-    font-style: normal;
-    font-weight: 400;
-    src: url(https://assets.codepen.io/16327/PPMori-Regular.woff) format("woff");
-  }
-  
-  body {
-    width:100%;
-      height: 400vh;
-    background:white;
-    color:  black;
-    font-family: "Mori", sans-serif;
-  }
-  
-  .header-section {
-    position:relative;
-    text-align:center;
-    margin: 100px auto 0;
-  }
-  
-  #svg-stage {
-    max-width: 600px;
-    overflow: visible;
-    margin-top: 60vh;
-  }
-  
-  .ball {
-    fill: white;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    width: 100%;
+    min-height: 100vh;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #000;
+    overflow-x: hidden;
+}
+
+/* Animación de gradiente */
+@keyframes gradient {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+.animate-gradient {
+    background-size: 200% 200%;
+    animation: gradient 8s ease infinite;
+}
+
+/* Partículas flotantes */
+.particles-container {
+    pointer-events: none;
+}
+
+.particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    animation: float 20s infinite;
+}
+
+.particle:nth-child(1) {
+    left: 10%;
+    animation-delay: 0s;
+    animation-duration: 25s;
+}
+
+.particle:nth-child(2) {
+    left: 30%;
+    animation-delay: 2s;
+    animation-duration: 20s;
+}
+
+.particle:nth-child(3) {
+    left: 50%;
+    animation-delay: 4s;
+    animation-duration: 30s;
+}
+
+.particle:nth-child(4) {
+    left: 70%;
+    animation-delay: 6s;
+    animation-duration: 22s;
+}
+
+.particle:nth-child(5) {
+    left: 90%;
+    animation-delay: 8s;
+    animation-duration: 28s;
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.4;
+    }
+    90% {
+        opacity: 0.4;
+    }
+    100% {
+        transform: translateY(-100vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+/* Timeline container */
+.timeline-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 4rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.svg-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+#svg-stage {
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 0 30px rgba(59, 130, 246, 0.1));
+}
+
+/* Elementos SVG */
+.ball {
     visibility: hidden;
-  }
-  
-  .line {
-    fill: none;
-    stroke: white;
-    stroke-width: 2px;
-  }
-  
-  text {
-    fill: white;
-    font-size: 15px; 
+    transition: all 0.3s ease;
+}
+
+.node-icon {
+    text-anchor: middle;
+    dominant-baseline: central;
     visibility: hidden;
-  }
-  .gsap-infobar,a{
+    user-select: none;
+}
+
+.node-ring {
+    animation: rotate 20s linear infinite;
+    transform-origin: center;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.pulse-ring {
+    animation: pulse-expand 2s ease-out infinite;
+}
+
+@keyframes pulse-expand {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+.connection-line {
+    opacity: 0;
+    animation: fadeIn 2s ease-out forwards;
+}
+
+.connection-line:nth-child(1) { animation-delay: 0.5s; }
+.connection-line:nth-child(2) { animation-delay: 1s; }
+.connection-line:nth-child(3) { animation-delay: 1.5s; }
+.connection-line:nth-child(4) { animation-delay: 2s; }
+
+@keyframes fadeIn {
+    to { opacity: 1; }
+}
+
+/* Timeline Cards */
+.timeline-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-top: 4rem;
+}
+
+.timeline-card {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-content {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+}
+
+.card-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transform: translateX(-100%);
+    animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+    100% { transform: translateX(100%); }
+}
+
+.card-content:hover {
+    transform: translateY(-5px);
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.3),
+        0 0 60px rgba(59, 130, 246, 0.1);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+}
+
+.card-number {
+    font-size: 3rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1;
+}
+
+.card-icon-wrapper {
+    position: relative;
+}
+
+.card-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.card-icon::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.6s;
+}
+
+.card-content:hover .card-icon::after {
+    transform: translateX(100%);
+}
+
+.card-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #fff;
+    letter-spacing: -0.02em;
+}
+
+.card-description {
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.6;
+    font-size: 0.95rem;
+    flex-grow: 1;
+    margin-bottom: 1.5rem;
+}
+
+.card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.response-time {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 500;
+}
+
+/* Efectos de hover para nodos */
+.node-group {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.node-group:hover .node-bg {
+    r: 45;
+    fill-opacity: 0.2;
+}
+
+.node-group:hover .ball {
+    filter: url(#bigGlow) brightness(1.2);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .timeline-cards {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    #how-it-works h2 {
+        font-size: 3rem;
+    }
+    
+    .timeline-container {
+        gap: 2rem;
+    }
+    
+    .timeline-cards {
+        grid-template-columns: 1fr;
+        margin-top: 2rem;
+    }
+    
+    .card-content {
+        padding: 1.5rem;
+    }
+    
+    .card-number {
+        font-size: 2.5rem;
+    }
+    
+    .card-icon {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .card-title {
+        font-size: 1.25rem;
+    }
+}
+
+/* Animaciones específicas para cada card */
+.card01 { animation-delay: 0.1s; }
+.card02 { animation-delay: 0.2s; }
+.card03 { animation-delay: 0.3s; }
+.card04 { animation-delay: 0.4s; }
+.card05 { animation-delay: 0.5s; }
+
+/* Estados activos */
+.timeline-card.active {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+/* Ocultar barra de GSAP */
+.gsap-infobar, .gsap-infobar a {
     display: none !important;
-  }
+}

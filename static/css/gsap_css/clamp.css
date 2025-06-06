@@ -7,7 +7,7 @@
 .pin-spacer {
   pointer-events: none;
 }
-:root {
+.contan-clamp {
   --fluid-bp: clamp(0, 1vw + 0.15, 1);  /* 0-1 rango porcentual */
 
   --f-5-min: 48;   /* px que tendrá en pantallas muy angostas  */
@@ -20,21 +20,7 @@
 }
 
 
-header {
-  padding: 1.5rem;
-  display: flex;
-  border-bottom: 2px solid grey;
-  background-color: var(--dark);
-}
 
-button {
-  cursor: pointer;
-}
-
-button:hover {
-  background: var(--purple);
-  background-image: none;
-}
 
 .hero {
   min-height: 100vh;
@@ -122,9 +108,7 @@ transform: rotate(0.1deg);
   opacity: 0
 }
 .gsap-infobar,
-a,
 nav,
-header,
 footer {
   display: none !important;
 }

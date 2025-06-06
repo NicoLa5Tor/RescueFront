@@ -1,39 +1,275 @@
 {% block extra_css %}
 <link href="{{ url_for('static', filename='css/gsap_css/funcion.css') }}" rel="stylesheet">
 {% endblock %}
+
 {% block content %}
-
-<svg id="svg-stage" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 600 1200">
-  <path class="line01 line" d="M 10 200 600 200" ></path>
-  <path class="line02 line" d="M 10 400 600 400" ></path>
-  <path class="line03 line" d="M 10 600 600 600" ></path>
-  <path class="line04 line" d="M 10 800 600 800" ></path>
-  <path class="line05 line" d="M 10 1000 600 1000" ></path>
-  <text class="text01" x="30" y="190">2018</text>
-  <text class="text02" x="30" y="390">2019</text>
-  <text class="text03" x="30" y="590">2020</text>
-
-  <path class="theLine" 
-        d="M -5,0
-           Q 450 230 300 450 
-           T 130 750
-           Q 100 850 300 1000
-           T 150 1200"
-        fill="none" stroke="white" stroke-width="10px" />
-  
-  <circle class="ball ball01" r="20" cx="50" cy="100"></circle>
-  <circle class="ball ball02" r="20" cx="278" cy="201"></circle>
-  <circle class="ball ball03" r="20" cx="327" cy="401"></circle>
-  <circle class="ball ball04" r="20" cx="203" cy="601"></circle>
-
-</svg>
+<section class="py-20 bg-black text-white relative overflow-hidden min-h-screen timeline-section" id="how-it-works-{{ section_id|default('1') }}">
+    <!-- Fondo con gradiente animado -->
+    <div class="absolute inset-0">
+        <div class="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-purple-900/20 to-black"></div>
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(59,130,246,0.15),transparent_50%)]"></div>
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(147,51,234,0.15),transparent_50%)]"></div>
+    </div>
+    
+    <!-- Partículas flotantes -->
+    <div class="particles-container absolute inset-0 overflow-hidden">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+    
+    <div class="container mx-auto px-4 relative z-10">
+        <!-- Encabezado mejorado -->
+        <div class="text-center mb-20">
+            <div class="inline-flex items-center gap-2 mb-6">
+                <div class="h-px w-12 bg-gradient-to-r from-transparent to-blue-500"></div>
+                <span class="text-sm uppercase tracking-[0.3em] text-gray-400 font-light">PROCESO INTELIGENTE</span>
+                <div class="h-px w-12 bg-gradient-to-l from-transparent to-purple-500"></div>
+            </div>
+            <h2 class="text-5xl md:text-7xl font-black mt-4 mb-6">
+                <span class="block bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-gradient">
+                    ¿Cómo Funciona?
+                </span>
+            </h2>
+            <p class="text-gray-400 text-lg max-w-2xl mx-auto">
+                Un sistema inteligente que conecta cada componente en perfecta sincronía
+            </p>
+        </div>
+        
+        <div class="max-w-7xl mx-auto">
+            <div class="timeline-container relative" data-timeline-id="{{ section_id|default('1') }}">
+                <!-- SVG principal -->
+                <div class="svg-wrapper">
+                    <svg id="svg-stage-{{ section_id|default('1') }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" class="timeline-svg w-full">
+                        <!-- Definiciones de gradientes y filtros -->
+                        <defs>
+                            <linearGradient id="lineGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:0" />
+                                <stop offset="50%" style="stop-color:#8B5CF6;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#EC4899;stop-opacity:0" />
+                            </linearGradient>
+                            <filter id="glow">
+                                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                                <feMerge>
+                                    <feMergeNode in="coloredBlur"/>
+                                    <feMergeNode in="SourceGraphic"/>
+                                </feMerge>
+                            </filter>
+                            <filter id="bigGlow">
+                                <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+                                <feMerge>
+                                    <feMergeNode in="coloredBlur"/>
+                                    <feMergeNode in="SourceGraphic"/>
+                                </feMerge>
+                            </filter>
+                        </defs>
+                        
+                        <!-- Grid de fondo -->
+                        <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
+                            <path d="M 50 0 L 0 0 0 50" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+                        </pattern>
+                        <rect width="100%" height="100%" fill="url(#grid)" />
+                        
+                        <!-- Líneas de conexión decorativas -->
+                        <g class="connection-lines">
+                            <path class="connection-line" d="M 100 200 Q 400 150 700 200" fill="none" stroke="rgba(59,130,246,0.1)" stroke-width="2" stroke-dasharray="5,10"/>
+                            <path class="connection-line" d="M 100 400 Q 400 450 700 400" fill="none" stroke="rgba(147,51,234,0.1)" stroke-width="2" stroke-dasharray="5,10"/>
+                            <path class="connection-line" d="M 100 600 Q 400 550 700 600" fill="none" stroke="rgba(236,72,153,0.1)" stroke-width="2" stroke-dasharray="5,10"/>
+                            <path class="connection-line" d="M 100 800 Q 400 850 700 800" fill="none" stroke="rgba(34,197,94,0.1)" stroke-width="2" stroke-dasharray="5,10"/>
+                        </g>
+                        
+                        <!-- Línea principal del timeline -->
+                        <path class="theLine"
+                              d="M 100,150
+                                 C 300,150 300,250 500,250
+                                 S 700,350 500,450
+                                 S 300,550 500,650
+                                 S 700,750 400,850"
+                              fill="none" 
+                              stroke="url(#lineGradient)" 
+                              stroke-width="8" 
+                              filter="url(#bigGlow)"
+                              opacity="0.8"/>
+                        
+                        <!-- Nodos del timeline -->
+                        <g class="timeline-nodes">
+                            <!-- Nodo 1 -->
+                            <g class="node-group node01">
+                                <circle class="node-bg" r="40" cx="100" cy="150" fill="rgba(239,68,68,0.1)" stroke="rgba(239,68,68,0.3)" stroke-width="2"/>
+                                <circle class="node-ring" r="35" cx="100" cy="150" fill="none" stroke="rgba(239,68,68,0.5)" stroke-width="1" stroke-dasharray="2,4"/>
+                                <circle class="ball ball01" r="30" cx="100" cy="150" fill="#EF4444" filter="url(#glow)"/>
+                                <text class="node-icon icon01" x="100" y="150" font-size="24">🚨</text>
+                                <circle class="pulse-ring" r="30" cx="100" cy="150" fill="none" stroke="#EF4444" stroke-width="2" opacity="0"/>
+                            </g>
+                            
+                            <!-- Nodo 2 -->
+                            <g class="node-group node02">
+                                <circle class="node-bg" r="40" cx="500" cy="250" fill="rgba(59,130,246,0.1)" stroke="rgba(59,130,246,0.3)" stroke-width="2"/>
+                                <circle class="node-ring" r="35" cx="500" cy="250" fill="none" stroke="rgba(59,130,246,0.5)" stroke-width="1" stroke-dasharray="2,4"/>
+                                <circle class="ball ball02" r="30" cx="500" cy="250" fill="#3B82F6" filter="url(#glow)"/>
+                                <text class="node-icon icon02" x="500" y="250" font-size="24">📡</text>
+                                <circle class="pulse-ring" r="30" cx="500" cy="250" fill="none" stroke="#3B82F6" stroke-width="2" opacity="0"/>
+                            </g>
+                            
+                            <!-- Nodo 3 -->
+                            <g class="node-group node03">
+                                <circle class="node-bg" r="40" cx="500" cy="450" fill="rgba(147,51,234,0.1)" stroke="rgba(147,51,234,0.3)" stroke-width="2"/>
+                                <circle class="node-ring" r="35" cx="500" cy="450" fill="none" stroke="rgba(147,51,234,0.5)" stroke-width="1" stroke-dasharray="2,4"/>
+                                <circle class="ball ball03" r="30" cx="500" cy="450" fill="#9333EA" filter="url(#glow)"/>
+                                <text class="node-icon icon03" x="500" y="450" font-size="24">💻</text>
+                                <circle class="pulse-ring" r="30" cx="500" cy="450" fill="none" stroke="#9333EA" stroke-width="2" opacity="0"/>
+                            </g>
+                            
+                            <!-- Nodo 4 -->
+                            <g class="node-group node04">
+                                <circle class="node-bg" r="40" cx="500" cy="650" fill="rgba(236,72,153,0.1)" stroke="rgba(236,72,153,0.3)" stroke-width="2"/>
+                                <circle class="node-ring" r="35" cx="500" cy="650" fill="none" stroke="rgba(236,72,153,0.5)" stroke-width="1" stroke-dasharray="2,4"/>
+                                <circle class="ball ball04" r="30" cx="500" cy="650" fill="#EC4899" filter="url(#glow)"/>
+                                <text class="node-icon icon04" x="500" y="650" font-size="24">🚦</text>
+                                <circle class="pulse-ring" r="30" cx="500" cy="650" fill="none" stroke="#EC4899" stroke-width="2" opacity="0"/>
+                            </g>
+                            
+                            <!-- Nodo 5 -->
+                            <g class="node-group node05">
+                                <circle class="node-bg" r="40" cx="400" cy="850" fill="rgba(34,197,94,0.1)" stroke="rgba(34,197,94,0.3)" stroke-width="2"/>
+                                <circle class="node-ring" r="35" cx="400" cy="850" fill="none" stroke="rgba(34,197,94,0.5)" stroke-width="1" stroke-dasharray="2,4"/>
+                                <circle class="ball ball05" r="30" cx="400" cy="850" fill="#22C55E" filter="url(#glow)"/>
+                                <text class="node-icon icon05" x="400" y="850" font-size="24">✅</text>
+                                <circle class="pulse-ring" r="30" cx="400" cy="850" fill="none" stroke="#22C55E" stroke-width="2" opacity="0"/>
+                            </g>
+                        </g>
+                        
+                        <!-- Partícula viajera -->
+                        <circle class="traveling-particle" r="8" fill="#fff" filter="url(#glow)" opacity="0">
+                            <animate attributeName="opacity" values="0;1;0" dur="3s" repeatCount="indefinite"/>
+                        </circle>
+                    </svg>
+                </div>
+                
+                <!-- Cards de información -->
+                <div class="timeline-cards">
+                    <!-- Card 1 -->
+                    <div class="timeline-card card01" data-step="1">
+                        <div class="card-content">
+                            <div class="card-header">
+                                <div class="card-number">01</div>
+                                <div class="card-icon-wrapper">
+                                    <div class="card-icon bg-gradient-to-br from-red-500 to-red-600">
+                                        <i class="fas fa-hand-pointer text-white text-2xl"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <h3 class="card-title">Activación de Emergencia</h3>
+                            <p class="card-description">Sistema de respuesta inmediata activado mediante botonera de emergencia con confirmación táctil y visual</p>
+                            <div class="card-footer">
+                                <span class="response-time">
+                                    <i class="fas fa-clock text-xs mr-1"></i>
+                                    Respuesta: 0.1s
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Card 2 -->
+                    <div class="timeline-card card02" data-step="2">
+                        <div class="card-content">
+                            <div class="card-header">
+                                <div class="card-number">02</div>
+                                <div class="card-icon-wrapper">
+                                    <div class="card-icon bg-gradient-to-br from-blue-500 to-blue-600">
+                                        <i class="fas fa-wifi text-white text-2xl"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <h3 class="card-title">Transmisión MQTT</h3>
+                            <p class="card-description">Protocolo de mensajería ultraligero que garantiza la entrega de alertas al broker en la nube</p>
+                            <div class="card-footer">
+                                <span class="response-time">
+                                    <i class="fas fa-signal text-xs mr-1"></i>
+                                    Latencia: <50ms
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Card 3 -->
+                    <div class="timeline-card card03" data-step="3">
+                        <div class="card-content">
+                            <div class="card-header">
+                                <div class="card-number">03</div>
+                                <div class="card-icon-wrapper">
+                                    <div class="card-icon bg-gradient-to-br from-purple-500 to-purple-600">
+                                        <i class="fas fa-microchip text-white text-2xl"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <h3 class="card-title">Procesamiento Central</h3>
+                            <p class="card-description">IA analiza patrones, prioriza alertas y coordina la respuesta multi-dispositivo en tiempo real</p>
+                            <div class="card-footer">
+                                <span class="response-time">
+                                    <i class="fas fa-brain text-xs mr-1"></i>
+                                    Análisis: 0.3s
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Card 4 -->
+                    <div class="timeline-card card04" data-step="4">
+                        <div class="card-content">
+                            <div class="card-header">
+                                <div class="card-number">04</div>
+                                <div class="card-icon-wrapper">
+                                    <div class="card-icon bg-gradient-to-br from-pink-500 to-pink-600">
+                                        <i class="fas fa-traffic-light text-white text-2xl"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <h3 class="card-title">Activación de Dispositivos</h3>
+                            <p class="card-description">Red sincronizada de semáforos y displays LED de alta visibilidad con actualización instantánea</p>
+                            <div class="card-footer">
+                                <span class="response-time">
+                                    <i class="fas fa-sync text-xs mr-1"></i>
+                                    Sincronización: 0.2s
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Card 5 -->
+                    <div class="timeline-card card05" data-step="5">
+                        <div class="card-content">
+                            <div class="card-header">
+                                <div class="card-number">05</div>
+                                <div class="card-icon-wrapper">
+                                    <div class="card-icon bg-gradient-to-br from-green-500 to-green-600">
+                                        <i class="fas fa-check-circle text-white text-2xl"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <h3 class="card-title">Confirmación del Sistema</h3>
+                            <p class="card-description">Verificación completa del proceso con registro de eventos y notificaciones en tiempo real</p>
+                            <div class="card-footer">
+                                <span class="response-time">
+                                    <i class="fas fa-shield-alt text-xs mr-1"></i>
+                                    Total: <1s
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}
+
 {% block extra_js %}
 <script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/16327/gsap-latest-beta.min.js"></script>
 <script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/16327/ScrollTrigger.min.js"></script>
 <script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/16327/DrawSVGPlugin3.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.2.6/MotionPathPlugin.min.js"></script>
 <script type="module" src="{{ url_for('static', filename='js/gsap_js/funcion.js') }}"></script>
-
-
 {% endblock %}
