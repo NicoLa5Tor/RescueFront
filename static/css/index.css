@@ -1,0 +1,7 @@
+/* static/css/index.css */
+
+/* Presentation wrappers ensure sections stack cleanly */
+.presentation-overlay {
+    position: relative;
+    z-index: 0;
+}

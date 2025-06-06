@@ -1,9 +1,11 @@
 
 
+{% extends "base.html" %}
+
 {% block title %}Sistema de Emergencias Empresarial - Protección IoT{% endblock %}
 
 {% block extra_css %}
-
+<link href="{{ url_for('static', filename='css/index.css') }}" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
