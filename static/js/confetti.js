@@ -96,12 +96,14 @@ class confettiCannon {
     this.changeCursor();
     gsap.killTweensOf(this.el.hand);
     gsap.set(this.el.hand, { display: 'block', x, y, opacity: 1 });
+    gsap.set(this.el.rock, { opacity: 1 });
     gsap.fromTo(
       this.el.rock,
       { rotation: 0 },
       { rotation: 30, duration: 0.4, ease: 'myWiggle' }
     );
     gsap.to(this.el.hand, { opacity: 0, duration: 0.3, delay: 0.4 });
+    gsap.to(this.el.rock, { opacity: 0, duration: 0.3, delay: 0.4 });
   }
 
   startDrawing(e) {
