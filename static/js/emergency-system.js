@@ -18,11 +18,23 @@ document.addEventListener('DOMContentLoaded', () => {
 function initIntroAnimation() {
     const overlay = document.getElementById('intro-overlay');
     const text = document.getElementById('intro-text');
+    const subtitle = document.getElementById('intro-subtitle');
     if (!overlay || !text) return;
-    gsap.set(text, { scale: 0.8 });
-    gsap.timeline({ onComplete: () => overlay.remove() })
-        .to(text, { duration: 1.2, scale: 5, autoAlpha: 1, ease: 'expoScale(0.8, 5)' })
-        .to(overlay, { duration: 0.6, autoAlpha: 0 }, '-=0.3');
+
+    gsap.set([text, subtitle], { autoAlpha: 1 });
+
+    gsap.timeline({
+        scrollTrigger: {
+            trigger: document.body,
+            start: 'top top',
+            end: '+=100%',
+            scrub: true,
+            onLeave: () => overlay.remove()
+        }
+    })
+    .to(text, { scale: 5, ease: 'expoScale(1, 5)' }, 0)
+    .to(subtitle, { y: -20, autoAlpha: 0 }, 0)
+    .to(overlay, { autoAlpha: 0, pointerEvents: 'none' }, '<');
 }
 
 // Hero Animations

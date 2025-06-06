@@ -3,12 +3,14 @@
 {% block title %}Sistema de Emergencias Empresarial - Protección IoT{% endblock %}
 
 {% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Signika+Negative:wght@400;700&display=swap" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/emergency-system.css') }}" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
-<div id="intro-overlay" class="fixed inset-0 flex items-center justify-center bg-black z-50">
+<div id="intro-overlay" class="fixed inset-0 flex flex-col items-center justify-center bg-black z-50 text-center">
     <h1 id="intro-text" class="text-white text-6xl font-bold">Rescue</h1>
+    <p id="intro-subtitle" class="text-gray-300 text-xl mt-2">Sistema de Emergencias Empresarial</p>
 </div>
 <!-- Hero Section -->
 <section class="relative min-h-screen overflow-hidden bg-gradient-to-br from-slate-900 to-slate-800" id="hero">
