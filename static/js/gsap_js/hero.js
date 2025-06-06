@@ -118,7 +118,7 @@ function setupDeviceConnections() {
         line.setAttribute('stroke', getComputedStyle(device).borderColor);
         line.setAttribute('stroke-width', '1');
         line.setAttribute('opacity', '0');
-        line.setAttribute('filter', 'url(#glow)');
+        line.setAttribute('filter', 'url(#hero-glow)');
         line.className = `connection-${index}`;
         svg.appendChild(line);
         

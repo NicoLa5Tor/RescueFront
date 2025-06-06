@@ -1,19 +1,21 @@
 
 
+{% extends "base.html" %}
+
 {% block title %}Sistema de Emergencias Empresarial - Protección IoT{% endblock %}
 
 {% block extra_css %}
-
+<link href="{{ url_for('static', filename='css/index.css') }}" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
-<div id="presentation"class="presentation-overlay" >
-{% include 'GSAP_Templates/clamp.html' %}
+<div id="clamp-presentation" class="presentation-overlay">
+    {% include 'GSAP_Templates/clamp.html' %}
 </div>
-<div id="presentation"class="presentation-overlay" >
+<div id="hero-presentation" class="presentation-overlay">
     {% include 'GSAP_Templates/hero.html' %}
-    </div>
-<div id="presentation"class="presentation-overlay">
+</div>
+<div id="funcion-presentation" class="presentation-overlay">
     {% include 'GSAP_Templates/funcion.html' %}
 </div>
 <!-- Emergency Types -->

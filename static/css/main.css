@@ -402,6 +402,12 @@ body {
     border-radius: 16px;
 }
 
+/* Presentation wrappers */
+.presentation-overlay {
+    position: relative;
+    z-index: 0;
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
     .sidebar {
