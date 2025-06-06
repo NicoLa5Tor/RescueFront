@@ -4,9 +4,12 @@
 
 {% block extra_css %}
 <link href="{{ url_for('static', filename='css/emergency-system.css') }}" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700&display=swap" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
+<div id="smooth-wrapper">
+<div id="smooth-content">
 <div id="intro-overlay" class="fixed inset-0 flex items-center justify-center bg-black z-50">
     <div class="stage">
         <div class="content">
@@ -19,86 +22,29 @@
         </div>
     </div>
 </div>
-<!-- Hero Section -->
-<section class="relative min-h-screen overflow-hidden bg-gradient-to-br from-slate-900 to-slate-800" id="hero">
-    <!-- Parallax Background Elements -->
-    <div class="absolute inset-0 parallax-container">
-        <div class="parallax-layer" data-speed="0.2">
-            <div class="absolute inset-0 bg-grid-pattern opacity-10"></div>
+<!-- Hero Section with GSAP effect -->
+<section id="hero-gsap" class="hero pad-l">
+    <div class="heading">
+        <div class="pin">
+            <h1>
+                <span class="clamp">Rescue
+                    <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 842.14 500">
+                        <path class="draw" d="M336.2,130.05C261.69,118,16.52,122,20.65,244.29c4.17,123,484.3,299.8,734.57,108.37,244-186.65-337.91-311-546.54-268.47" fill="none" stroke="#8486aa" stroke-miterlimit="10" stroke-width="8" />
+                    </svg>
+                </span>
+                <span class="yt">System</span>
+            </h1>
         </div>
-        <div class="parallax-layer" data-speed="0.5">
-            <div class="floating-element top-20 left-10 w-20 h-20 bg-red-500 rounded-full opacity-20"></div>
-            <div class="floating-element bottom-20 right-10 w-32 h-32 bg-blue-500 rounded-full opacity-20"></div>
-        </div>
+    </div>
+    <div class="images">
+        <img data-speed="clamp(2.4)" src="https://images.unsplash.com/photo-1530569673472-307dc017a82d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt="">
+        <img data-speed="clamp(1.8)" src="https://images.unsplash.com/photo-1439853949127-fa647821eba0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt="">
+        <img data-speed="clamp(2.2)" src="https://images.unsplash.com/photo-1551376347-075b0121a65b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt="">
+        <img data-speed="clamp(1.5)" src="https://images.unsplash.com/photo-1500817487388-039e623edc21?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt="">
     </div>
 
-    <div class="container mx-auto px-4 relative z-10">
-        <div class="flex flex-col lg:flex-row items-center justify-between min-h-screen py-20">
-            <div class="lg:w-1/2 text-white">
-                <div class="hero-content">
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-500 bg-opacity-20 text-red-300 mb-6">
-                        <span class="animate-pulse w-2 h-2 bg-red-400 rounded-full mr-2"></span>
-                        Sistema Activo
-                    </span>
-                    
-                    <h1 class="text-5xl lg:text-7xl font-bold mb-6 leading-tight">
-                        <span class="block">Sistema de</span>
-                        <span class="block text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-orange-600">Emergencias</span>
-                        <span class="block">Empresarial</span>
-                    </h1>
-                    
-                    <p class="text-xl text-gray-300 mb-8 leading-relaxed">
-                        Protección integral con tecnología IoT y comunicación MQTT para respuesta inmediata ante emergencias: incendios, inundaciones, terremotos, seguridad y alertas generales.
-                    </p>
-                    
-                    <div class="flex flex-wrap gap-4">
-                        <button class="btn-primary group" onclick="scrollToSection('#demo')">
-                            <span>Ver Demostración</span>
-                            <i class="fas fa-play-circle ml-2 group-hover:translate-x-1 transition-transform"></i>
-                        </button>
-                        <button class="btn-secondary" onclick="scrollToSection('#components')">
-                            <span>Conocer Componentes</span>
-                            <i class="fas fa-arrow-down ml-2"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="lg:w-1/2 mt-12 lg:mt-0">
-                <div class="hero-visual relative">
-                    <!-- MQTT Network Visualization -->
-                    <div class="mqtt-network">
-                        <div class="central-broker">
-                            <i class="fas fa-cloud text-4xl text-blue-400"></i>
-                            <span class="text-sm mt-2">Broker MQTT</span>
-                        </div>
-                        <div class="network-device device-1">
-                            <i class="fas fa-traffic-light text-2xl text-red-400"></i>
-                        </div>
-                        <div class="network-device device-2">
-                            <i class="fas fa-th text-2xl text-yellow-400"></i>
-                        </div>
-                        <div class="network-device device-3">
-                            <i class="fas fa-tv text-2xl text-green-400"></i>
-                        </div>
-                        <div class="network-device device-4">
-                            <i class="fas fa-server text-2xl text-purple-400"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Scroll Indicator -->
-    <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white text-center">
-        <div class="scroll-indicator">
-            <div class="mouse-icon">
-                <div class="wheel"></div>
-            </div>
-        </div>
-    </div>
 </section>
+<section class="spacer"></section>
 
 <!-- Recent Alerts -->
 <section class="py-20 bg-gray-50 relative overflow-hidden horizontal-section" id="alerts">
@@ -579,6 +525,8 @@
         </div>
     </div>
 </section>
+</div>
+</div>
 {% endblock %}
 
 {% block extra_js %}

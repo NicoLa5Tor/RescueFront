@@ -6,6 +6,7 @@ gsap.registerPlugin(ScrollTrigger);
 // Initialize animations when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     initPixiStage();
+    initSmoothHero();
     initIntroAnimation();
     initHeroAnimations();
     initParallax();
@@ -39,6 +40,27 @@ function initIntroAnimation() {
     .to(subtitle, { y: -20, autoAlpha: 0 }, 0)
     .to(overlay, { autoAlpha: 0, pointerEvents: 'none' }, '<')
     .to(navbar, { autoAlpha: 1 }, 0);
+}
+
+function initSmoothHero() {
+    if (typeof ScrollSmoother === 'undefined' || typeof DrawSVGPlugin === 'undefined') return;
+
+    ScrollSmoother.create({
+        smooth: 2,
+        effects: true
+    });
+
+    gsap.from('.draw', {
+        drawSVG: '0%',
+        ease: 'expo.out',
+        scrollTrigger: {
+            trigger: '.heading',
+            start: 'top center',
+            scrub: true,
+            pin: '.pin',
+            pinSpacing: false
+        }
+    });
 }
 
 function initPixiStage() {
