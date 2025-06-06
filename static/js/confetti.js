@@ -63,14 +63,18 @@ class confettiCannon {
     if (!this.animationIsOk) return;
 
     document.body.addEventListener('click', (e) => {
-      const x = e.clientX;
-      const y = e.clientY;
-      this.showHand(x, y);
-      this.createExplosion(x, y, 400);
+      const pageX = e.pageX;
+      const pageY = e.pageY;
+      this.showHand(e.clientX, e.clientY);
+      this.createExplosion(pageX, pageY, 400);
     });
 
     gsap.delayedCall(1, () => {
-      this.createExplosion(window.innerWidth / 2, window.innerHeight / 2, 600);
+      this.createExplosion(
+        window.innerWidth / 2 + window.scrollX,
+        window.innerHeight / 2 + window.scrollY,
+        600
+      );
     });
   }
 
