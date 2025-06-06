@@ -16,7 +16,7 @@
   position: fixed;
   left: 0;
   top: 0;
-  width: 40px;
+  width: 32px;
   pointer-events: none;
   opacity: 0;
   z-index: 10000;

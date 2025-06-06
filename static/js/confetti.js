@@ -83,13 +83,13 @@ class confettiCannon {
     gsap.set(this.el.hand, { xPercent: -50, yPercent: -50 });
   }
 
-  changeCursor() {
-    document.body.style.cursor = 'pointer';
-    clearTimeout(this.cursorTimeout);
-    this.cursorTimeout = setTimeout(() => {
-      document.body.style.cursor = '';
-    }, 500);
-  }
+    changeCursor() {
+      document.body.style.cursor = 'none';
+      clearTimeout(this.cursorTimeout);
+      this.cursorTimeout = setTimeout(() => {
+        document.body.style.cursor = '';
+      }, 300);
+    }
 
   // Hand animation when clicking
   showHand(x, y) {
