@@ -186,4 +186,4 @@ def date_format_filter(value, format='%d/%m/%Y'):
     return ''
 
 if __name__ == '__main__':
-    app.run(debug=True, port=3002)
+    app.run(debug=True, port=3000)
