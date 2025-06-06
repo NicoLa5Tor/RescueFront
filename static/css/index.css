@@ -5,3 +5,8 @@
     position: relative;
     z-index: 0;
 }
+
+/* Ensure the Clamp module stays above subsequent sections */
+#clamp-presentation {
+    z-index: 1;
+}
