@@ -16,27 +16,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Hero Animations
 function initHeroAnimations() {
-    const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-    
-    tl.to('.hero-content > *', {
-        opacity: 1,
-        y: 0,
-        duration: 1,
-        stagger: 0.2
-    })
-    .from('.network-device', {
-        scale: 0,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.1,
-        ease: "back.out(1.7)"
-    }, "-=0.5")
-    .from('.central-broker', {
-        scale: 0,
-        opacity: 0,
-        duration: 0.6,
-        ease: "back.out(1.7)"
-    }, "-=0.8");
+    if (typeof anime === 'undefined') return;
+
+    anime.timeline({ autoplay: true })
+        .add({
+            targets: '.hero-content span.block',
+            translateY: [40, 0],
+            opacity: [0, 1],
+            easing: 'easeOutExpo',
+            duration: 800,
+            delay: anime.stagger(100)
+        })
+        .add({
+            targets: '.hero-content p, .hero-content button',
+            translateY: [20, 0],
+            opacity: [0, 1],
+            easing: 'easeOutExpo',
+            duration: 600,
+            delay: anime.stagger(100)
+        }, '-=400')
+        .add({
+            targets: '.network-device',
+            scale: [0, 1],
+            opacity: [0, 1],
+            easing: 'easeOutBack',
+            duration: 700,
+            delay: anime.stagger(100)
+        }, '-=200')
+        .add({
+            targets: '.central-broker',
+            scale: [0, 1],
+            opacity: [0, 1],
+            easing: 'easeOutBack',
+            duration: 600
+        }, '-=400');
 }
 
 // Parallax Effects
