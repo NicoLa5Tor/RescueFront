@@ -56,6 +56,7 @@ class confettiCannon {
     this.clamper = gsap.utils.clamp(1, 100);
 
     this.setpricingMotion();
+    this.cursorTimeout = null;
     this.initEvents();
   }
 
@@ -82,8 +83,17 @@ class confettiCannon {
     gsap.set(this.el.hand, { xPercent: -50, yPercent: -50 });
   }
 
+  changeCursor() {
+    document.body.style.cursor = 'pointer';
+    clearTimeout(this.cursorTimeout);
+    this.cursorTimeout = setTimeout(() => {
+      document.body.style.cursor = '';
+    }, 500);
+  }
+
   // Hand animation when clicking
   showHand(x, y) {
+    this.changeCursor();
     gsap.killTweensOf(this.el.hand);
     gsap.set(this.el.hand, { display: 'block', x, y, opacity: 1 });
     gsap.fromTo(
@@ -96,7 +106,9 @@ class confettiCannon {
 
   startDrawing(e) {
     this.isDrawing = true;
-    gsap.set(this.el.instructions, { opacity: 0 });
+    if (this.el.instructions) {
+      gsap.set(this.el.instructions, { opacity: 0 });
+    }
 
     this.startX = e.x;
     this.startY = e.y + window.scrollY;
@@ -233,7 +245,9 @@ class confettiCannon {
       onComplete: () => {
         gsap.set(this.el.rock, { opacity: 0 });
         gsap.set(this.el.hand, { rotation: 0, overwrite: 'auto' });
-        gsap.to(this.el.instructions, { opacity: 1 });
+        if (this.el.instructions) {
+          gsap.to(this.el.instructions, { opacity: 1 });
+        }
         gsap.set(this.el.drag, { opacity: 1 });
       }
     });
