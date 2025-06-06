@@ -1,0 +1,126 @@
+@import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@700&display=swap');
+
+#smooth-wrapper {
+  font-family: 'Unbounded', sans-serif;
+}
+
+.pin-spacer {
+  pointer-events: none;
+}
+
+:root {
+  --f-5-min: 30;
+	--f-5-max: 120;
+	--step-5: calc(
+		((var(--f-5-min) / 16) * 1rem) + (var(--f-5-max) - var(--f-5-min)) *
+			var(--fluid-bp));
+}
+
+header {
+  padding: 1.5rem;
+  display: flex;
+  border-bottom: 2px solid grey;
+  background-color: var(--dark);
+}
+
+button {
+  cursor: pointer;
+}
+
+button:hover {
+  background: var(--purple);
+  background-image: none;
+}
+
+.hero {
+  min-height: 100vh;
+}
+
+.logo {
+  width: 150px;
+  max-width: 40vw;
+  filter: invert(1);
+}
+
+nav {
+  margin-left: auto;
+}
+
+ul {
+  display: flex;
+  list-style: none;
+}
+
+li + li {
+  padding-left: 1rem;
+}
+
+a {
+  color: white;
+}
+
+h1 {
+  position: relative;
+  font-size: var(--step-5);
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.images {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  align-items: stretch;
+  justify-items: center;
+  margin-top: 2rem;
+}
+/* añadelo al final de tu hoja o debajo de .images {…} */
+.images img {
+  width: 80%;       /* cambia max-width por width */
+  height: 60vh;
+  object-fit: cover;
+}
+
+.spacer {
+  height: 100vh
+}
+
+.clamp {
+  position: relative;
+  z-index: -1
+}
+.yt {
+  z-index: 3
+}
+
+.clamp svg {
+  position: absolute;
+  width: 112%;
+  top: 0;
+  top: 50%;
+  transform: translateY(-50%) rotate(2deg);
+  left: -6%;
+}
+
+.heading {
+  position: relative;
+  z-index: 2;
+  mix-blend-mode: difference;
+   perspective:1000px;
+    -webkit-backface-visibility: visible;
+    backface-visibility: visible;
+transform: rotate(0.1deg);
+}
+.images {
+  z-index: -1
+}
+
+.logo svg {
+  opacity: 0
+}
+.gsap-infobar,
+a,
+nav,
+header,
+footer {
+  display: none !important;
+}

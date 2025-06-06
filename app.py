@@ -162,6 +162,10 @@ def inject_user():
             'empresa_name': session.get('empresa_name')
         } if 'user_id' in session else None
     )
+#=========== RUTAS DE PRUEBA ============
+@app.route("/pruebas")
+def pruebas():
+    return render_template("GSAP_Templates/prueba/clamp.html")
 
 # ========== MANEJO DE ERRORES ==========
 @app.errorhandler(404)
@@ -186,4 +190,4 @@ def date_format_filter(value, format='%d/%m/%Y'):
     return ''
 
 if __name__ == '__main__':
-    app.run(debug=True, port=3000)
+    app.run(debug=True, port=3004)
