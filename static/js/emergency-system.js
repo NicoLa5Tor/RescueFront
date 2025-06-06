@@ -46,7 +46,7 @@ function initParallax() {
         const axis = layer.dataset.direction === 'horizontal' ? 'x' : 'y';
 
         gsap.to(layer, {
-            [axis]: () => `${-100 * speed}%`,
+            [axis]: () => `${layer.dataset.direction === 'horizontal' ? 100 * speed : -100 * speed}%`,
             ease: 'none',
             scrollTrigger: {
                 trigger: layer.closest('section'),
