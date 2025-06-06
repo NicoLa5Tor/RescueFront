@@ -121,10 +121,3 @@ transform: rotate(0.1deg);
 .logo svg {
   opacity: 0
 }
-.gsap-infobar,
-a,
-nav,
-header,
-footer {
-  display: none !important;
-}

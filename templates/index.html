@@ -5,10 +5,11 @@
 {% block extra_css %}
 <link href="{{ url_for('static', filename='css/emergency-system.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/confetti.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/presentation.css') }}" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
-<div class="presentation">
+<div id="presentation" class="presentation-overlay">
 
 {% include 'GSAP_Templates/clamp.html' %}
 
@@ -582,4 +583,5 @@
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ExpoScaleEase.min.js"></script>
 <script src="{{ url_for('static', filename='js/emergency-system.js') }}"></script>
 <script src="{{ url_for('static', filename='js/confetti.js') }}"></script>
+<script src="{{ url_for('static', filename='js/presentation.js') }}"></script>
 {% endblock %}

@@ -1,0 +1,21 @@
+#presentation.presentation-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+    background: #000;
+    overflow: hidden;
+}
+
+#presentation.fade-out {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 1s ease;
+}
+
+body.no-scroll {
+    overflow: hidden;
+}
+
