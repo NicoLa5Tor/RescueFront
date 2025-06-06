@@ -684,3 +684,15 @@
     visibility: hidden;
 }
 
+#svg-stage .line {
+    fill: none;
+    stroke: #ffffff;
+    stroke-width: 2px;
+}
+
+#svg-stage text {
+    fill: #ffffff;
+    font-size: 15px;
+    visibility: hidden;
+}
+

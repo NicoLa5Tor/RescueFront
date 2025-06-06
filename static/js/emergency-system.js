@@ -317,9 +317,9 @@ function initTimelineAnimation() {
             ease: 'elastic(2.5, 1)'
         }
     })
-    .to('.ball02', {}, 0.2)
-    .to('.ball03', {}, 0.33)
-    .to('.ball04', {}, 0.46);
+    .to('.ball02, .text01', {}, 0.2)
+    .to('.ball03, .text02', {}, 0.33)
+    .to('.ball04, .text03', {}, 0.46);
 
     gsap.timeline({
         defaults: { duration: 1 },
