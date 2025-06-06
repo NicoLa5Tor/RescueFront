@@ -4,6 +4,8 @@
 gsap.registerPlugin(ScrollTrigger);
 
 // Initialize animations when DOM is loaded
+let heroSmoother;
+
 document.addEventListener('DOMContentLoaded', () => {
     initPixiStage();
     initSmoothHero();
@@ -37,6 +39,10 @@ function initIntroAnimation() {
             onLeave: () => {
                 overlay.remove();
                 document.body.classList.remove('no-scroll');
+                if (heroSmoother) {
+                    heroSmoother.kill();
+                    heroSmoother = null;
+                }
                 if (navbar) gsap.to(navbar, { autoAlpha: 1 });
                 window.scrollTo(0, 0);
             }
@@ -47,7 +53,7 @@ function initIntroAnimation() {
 function initSmoothHero() {
     if (typeof ScrollSmoother === 'undefined' || typeof DrawSVGPlugin === 'undefined') return;
 
-    ScrollSmoother.create({
+    heroSmoother = ScrollSmoother.create({
         smooth: 2,
         effects: true,
         wrapper: '#smooth-wrapper',
