@@ -7,14 +7,18 @@
 .pin-spacer {
   pointer-events: none;
 }
-
 :root {
-  --f-5-min: 30;
-	--f-5-max: 120;
-	--step-5: calc(
-		((var(--f-5-min) / 16) * 1rem) + (var(--f-5-max) - var(--f-5-min)) *
-			var(--fluid-bp));
+  --fluid-bp: clamp(0, 1vw + 0.15, 1);  /* 0-1 rango porcentual */
+
+  --f-5-min: 48;   /* px que tendrá en pantallas muy angostas  */
+  --f-5-max: 10;  /* px que tendrá en pantallas muy anchas    */
+
+  --step-5: calc(
+    ((var(--f-5-min) / 16) * 1rem) +
+    (var(--f-5-max) - var(--f-5-min)) * var(--fluid-bp)
+  );
 }
+
 
 header {
   padding: 1.5rem;
@@ -61,7 +65,7 @@ a {
 
 h1 {
   position: relative;
-  font-size: var(--step-5);
+  font-size: clamp(4rem, 12vw, 16rem) !important;
   text-transform: uppercase;
   text-align: center;
 }
