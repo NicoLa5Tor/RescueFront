@@ -616,6 +616,12 @@
     white-space: nowrap;
 }
 
+/* Full-width styling for the recent alerts section */
+#alerts .section-container {
+    max-width: none;
+    width: 100%;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .timeline-step {
