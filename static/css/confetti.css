@@ -1,0 +1,69 @@
+.pricing-hero {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: 100vw;
+  min-height: 100vh;
+  overflow: hidden;
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  z-index: 9999;
+  pointer-events: none; /* overlay not interfering */
+  transform: scale(0.6);
+  transform-origin: top left;
+}
+.pricing-hero__hand {
+  left: 0;
+  opacity: 0;
+  pointer-events: none;
+  position: fixed;
+  top: 0;
+  width: 20px; /* smaller */
+  z-index: 4;
+}
+.pricing-hero__hand small {
+  left: -60%;
+  position: absolute;
+  top: 20px;
+  width: 200%;
+}
+.pricing-hero__drag,
+.pricing-hero__rock {
+  position: absolute;
+  max-width: 141%;
+  right: 1px;
+  top: -22px;
+  width: 131%;
+}
+.pricing-hero__drag { opacity: 1; }
+.pricing-hero__rock { opacity: 0; }
+.pricing-hero__handle {
+  left: 0;
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  top: -40px;
+  width: 100%;
+}
+.pricing-hero__canvas {
+  z-index: -1;
+}
+.pricing-hero__canvas,
+.pricing-hero__proxy {
+  bottom: 0;
+  height: 100vh;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 100vw;
+}
+.pricing-hero__proxy {
+  z-index: 3;
+  pointer-events: auto; /* allow events */
+}
+.explosion-img {
+  will-change: transform;
+}
