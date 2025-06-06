@@ -97,7 +97,9 @@
     </nav>
     {% endblock %}
 
-    {% block content %}{% endblock %}
+    <div id="smooth-wrapper">
+        <div id="smooth-content">
+            {% block content %}{% endblock %}
 
     <!-- Footer -->
     {% block footer %}
@@ -107,6 +109,8 @@
         </div>
     </footer>
     {% endblock %}
+        </div>
+    </div>
 
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>

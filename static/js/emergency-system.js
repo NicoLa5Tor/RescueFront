@@ -5,6 +5,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 // Initialize animations when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
+    initSmoothScroll();
     initHeroAnimations();
     initParallax();
     initHorizontalSections();
@@ -259,6 +260,18 @@ function scrollToSection(selector) {
     }
 }
 
+function initSmoothScroll() {
+    if (typeof ScrollSmoother !== 'undefined') {
+        ScrollSmoother.create({
+            wrapper: '#smooth-wrapper',
+            content: '#smooth-content',
+            smooth: 1,
+            effects: true,
+            smoothTouch: 0.1
+        });
+    }
+}
+
 // Add hover effects to emergency cards
 document.querySelectorAll('.emergency-card').forEach(card => {
     card.addEventListener('mouseenter', () => {
@@ -443,8 +456,12 @@ function initAlertCarousel() {
             duration: 800,
             easing: 'easeInOutQuad'
         });
-        gsap.to(cards, { backgroundColor: '#f8fafc', duration: 0.5 });
-        gsap.to(cards[i], { backgroundColor: '#e0f2fe', duration: 0.5 });
+        gsap.to(cards, { scale: 0.9, opacity: 0.6, backgroundColor: '#f8fafc', duration: 0.5 });
+        gsap.to(cards[i], { scale: 1, opacity: 1, backgroundColor: '#e0f2fe', duration: 0.5 });
+        const title = cards[i].querySelector('.alert-title');
+        if (title) {
+            gsap.fromTo(title, { y: -10, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: 'power2.out' });
+        }
     }
 
     showSlide(0);
