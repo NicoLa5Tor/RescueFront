@@ -143,10 +143,11 @@
         window.CURRENT_USER = '{% if current_user %}{{ current_user | tojson | safe }}{% else %}null{% endif %}';
         
         // Configuración de Tailwind
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
+        if (window.tailwind) {
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
                         primary: {
                             50: '#f0f9ff',
                             100: '#e0f2fe',
@@ -179,9 +180,10 @@
                         'pulse-slow': 'pulse 3s infinite',
                         'spin-slow': 'spin 3s linear infinite',
                     },
-                    boxShadow: {
-                        'glow': '0 0 15px rgba(59, 130, 246, 0.5)',
-                        'glow-lg': '0 0 30px rgba(59, 130, 246, 0.6)',
+                        boxShadow: {
+                            'glow': '0 0 15px rgba(59, 130, 246, 0.5)',
+                            'glow-lg': '0 0 30px rgba(59, 130, 246, 0.6)',
+                        }
                     }
                 }
             }

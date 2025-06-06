@@ -1,7 +1,7 @@
 // static/js/emergency-system.js
 
 // Register GSAP Plugins
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 
 // Initialize animations when DOM is loaded
 let heroSmoother;
