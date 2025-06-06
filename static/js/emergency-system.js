@@ -1,7 +1,7 @@
 // static/js/emergency-system.js
 
 // Register GSAP Plugins
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 
 // Initialize animations when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
@@ -387,8 +387,8 @@ function initScrollSmootherNoise() {
         return;
     }
 
-    const wrapper = document.getElementById('smooth-wrapper');
-    const content = document.getElementById('smooth-content');
+    const wrapper = document.getElementById('wrapper');
+    const content = document.getElementById('content');
 
     if (!wrapper || !content) return;
 
