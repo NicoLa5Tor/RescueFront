@@ -5,6 +5,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 // Initialize animations when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
+    initIntroAnimation();
     initHeroAnimations();
     initParallax();
     initHorizontalSections();
@@ -13,6 +14,16 @@ document.addEventListener('DOMContentLoaded', () => {
     initNetworkAnimation();
     attachButtonEffects();
 });
+
+function initIntroAnimation() {
+    const overlay = document.getElementById('intro-overlay');
+    const text = document.getElementById('intro-text');
+    if (!overlay || !text) return;
+    gsap.set(text, { scale: 0.8 });
+    gsap.timeline({ onComplete: () => overlay.remove() })
+        .to(text, { duration: 1.2, scale: 5, autoAlpha: 1, ease: 'expoScale(0.8, 5)' })
+        .to(overlay, { duration: 0.6, autoAlpha: 0 }, '-=0.3');
+}
 
 // Hero Animations
 function initHeroAnimations() {
