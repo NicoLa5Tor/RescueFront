@@ -304,36 +304,43 @@ function initScrollAnimations() {
     });
 }
 
-// Timeline Animation
+// SVG Timeline Animation
 function initTimelineAnimation() {
-    const steps = gsap.utils.toArray('.timeline-step');
-    
-    steps.forEach((step, index) => {
-        gsap.to(step, {
-            scrollTrigger: {
-                trigger: step,
-                start: 'top 80%',
-                toggleActions: 'play none none reverse'
-            },
-            opacity: 1,
-            x: 0,
-            duration: 0.8,
-            delay: index * 0.2,
-            ease: "power3.out"
-        });
-    });
-    
-    // Animate timeline line progress
-    gsap.to('.timeline-line', {
+    gsap.registerPlugin(ScrollTrigger, DrawSVGPlugin, MotionPathPlugin);
+    gsap.defaults({ ease: 'none' });
+
+    const pulses = gsap.timeline({
+        defaults: {
+            duration: 0.05,
+            autoAlpha: 1,
+            scale: 2,
+            transformOrigin: 'center',
+            ease: 'elastic(2.5, 1)'
+        }
+    })
+    .to('.ball02', {}, 0.2)
+    .to('.ball03', {}, 0.33)
+    .to('.ball04', {}, 0.46);
+
+    gsap.timeline({
+        defaults: { duration: 1 },
         scrollTrigger: {
-            trigger: '.timeline-container',
-            start: 'top 60%',
-            end: 'bottom 40%',
-            scrub: 1
-        },
-        background: 'linear-gradient(to bottom, #dc2626 0%, #dc2626 100%)',
-        ease: "none"
-    });
+            trigger: '#svg-stage',
+            scrub: true,
+            start: 'top center',
+            end: 'bottom center'
+        }
+    })
+    .to('.ball01', { duration: 0.01, autoAlpha: 1 })
+    .from('.theLine', { drawSVG: 0 }, 0)
+    .to('.ball01', {
+        motionPath: {
+            path: '.theLine',
+            align: '.theLine',
+            alignOrigin: [0.5, 0.5]
+        }
+    }, 0)
+    .add(pulses, 0);
 }
 
 // Network Animation

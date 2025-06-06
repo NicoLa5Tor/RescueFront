@@ -430,52 +430,18 @@
             </h2>
         </div>
         
-        <div class="timeline-container max-w-4xl mx-auto">
-            <div class="timeline-line"></div>
-            
-            <!-- Step 1 -->
-            <div class="timeline-step" data-step="1">
-                <div class="timeline-content">
-                    <div class="timeline-icon bg-red-500">
-                        <i class="fas fa-hand-pointer"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-2">Activación de Emergencia</h3>
-                    <p class="text-gray-600">Se presiona el botón correspondiente en la botonera</p>
-                </div>
-            </div>
-            
-            <!-- Step 2 -->
-            <div class="timeline-step" data-step="2">
-                <div class="timeline-content">
-                    <div class="timeline-icon bg-blue-500">
-                        <i class="fas fa-wifi"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-2">Mensaje MQTT</h3>
-                    <p class="text-gray-600">Se envía la alerta al broker en la nube</p>
-                </div>
-            </div>
-            
-            <!-- Step 3 -->
-            <div class="timeline-step" data-step="3">
-                <div class="timeline-content">
-                    <div class="timeline-icon bg-purple-500">
-                        <i class="fas fa-microchip"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-2">Procesamiento Central</h3>
-                    <p class="text-gray-600">Software analiza y distribuye la alerta</p>
-                </div>
-            </div>
-            
-            <!-- Step 4 -->
-            <div class="timeline-step" data-step="4">
-                <div class="timeline-content">
-                    <div class="timeline-icon bg-green-500">
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-2">Activación de Dispositivos</h3>
-                    <p class="text-gray-600">Semáforos y displays muestran la información</p>
-                </div>
-            </div>
+        <div class="flex justify-center">
+            <svg id="svg-stage" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 1200">
+                <path class="theLine" d="M -5,0
+                   Q 450 230 300 450
+                   T 130 750
+                   Q 100 850 300 1000
+                   T 150 1200" />
+                <circle class="ball ball01" r="20" cx="50" cy="100"></circle>
+                <circle class="ball ball02" r="20" cx="278" cy="201"></circle>
+                <circle class="ball ball03" r="20" cx="327" cy="401"></circle>
+                <circle class="ball ball04" r="20" cx="203" cy="601"></circle>
+            </svg>
         </div>
     </div>
 </section>
@@ -620,6 +586,8 @@
 {% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/DrawSVGPlugin.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/MotionPathPlugin.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.2.4/browser/pixi.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ExpoScaleEase.min.js"></script>
 <script src="{{ url_for('static', filename='js/emergency-system.js') }}"></script>
