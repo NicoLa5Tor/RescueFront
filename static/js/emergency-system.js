@@ -7,6 +7,7 @@ gsap.registerPlugin(ScrollTrigger);
 document.addEventListener('DOMContentLoaded', () => {
     initHeroAnimations();
     initParallax();
+    initHorizontalSections();
     initScrollAnimations();
     initTimelineAnimation();
     initNetworkAnimation();
@@ -42,9 +43,12 @@ function initHeroAnimations() {
 function initParallax() {
     gsap.utils.toArray('.parallax-layer').forEach(layer => {
         const speed = layer.dataset.speed || 0.5;
-        
+        const direction = layer.dataset.direction || 'vertical';
+
+        const props = direction === 'horizontal' ? { xPercent: 50 * speed } : { yPercent: -50 * speed };
+
         gsap.to(layer, {
-            yPercent: -50 * speed,
+            ...props,
             ease: "none",
             scrollTrigger: {
                 trigger: layer.closest('section'),
@@ -69,6 +73,28 @@ function initParallax() {
     });
 }
 
+// Horizontal parallax sections pinned on scroll
+function initHorizontalSections() {
+    gsap.utils.toArray('.horizontal-section').forEach(section => {
+        const content = section.querySelector('.scroll-content');
+        if (!content) return;
+
+        const distance = content.scrollWidth - section.clientWidth;
+        gsap.fromTo(content, { x: -distance }, {
+            x: 0,
+            ease: 'none',
+            scrollTrigger: {
+                trigger: section,
+                start: 'top top',
+                end: () => `+=${distance}`,
+                scrub: true,
+                pin: true,
+                invalidateOnRefresh: true
+            }
+        });
+    });
+}
+
 // Scroll Animations
 function initScrollAnimations() {
     // Emergency Cards
@@ -82,20 +108,37 @@ function initScrollAnimations() {
         duration: 0.8,
         stagger: 0.1
     });
-    
-    // Component Cards
-    gsap.from('.component-card', {
-        scrollTrigger: {
-            trigger: '#components',
-            start: 'top 80%'
-        },
-        y: 50,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.15,
-        ease: "power3.out"
+
+    // Recent Alerts - slide in from right
+    gsap.utils.toArray('#alerts .alert-card').forEach((card, i) => {
+        gsap.from(card, {
+            scrollTrigger: {
+                trigger: card,
+                start: 'top 85%'
+            },
+            x: 120,
+            opacity: 0,
+            duration: 0.8,
+            delay: i * 0.1,
+            ease: "power3.out"
+        });
     });
-    
+
+    // IoT Component Cards - slide in with parallax
+    gsap.utils.toArray('#components .component-card').forEach((card, i) => {
+        gsap.from(card, {
+            scrollTrigger: {
+                trigger: card,
+                start: 'top 90%'
+            },
+            x: 100,
+            opacity: 0,
+            duration: 0.8,
+            delay: i * 0.1,
+            ease: "power3.out"
+        });
+    });
+
     // Architecture Section
     gsap.from('#architecture .bg-white', {
         scrollTrigger: {
@@ -185,6 +228,7 @@ function simulateEmergency(type) {
             </div>
         `;
         gsap.fromTo(output, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5 });
+        showNotification(`Alerta ${type} enviada`, 'success');
         
         
         // Animate display
@@ -274,8 +318,20 @@ document.querySelector('form')?.addEventListener('submit', (e) => {
 
 // Notification function
 function showNotification(message, type = 'info') {
-    // This would integrate with your notification system
-    console.log(`${type}: ${message}`);
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: type,
+            title: message,
+            showConfirmButton: false,
+            timer: 3000,
+            background: '#1f2937',
+            color: '#fff'
+        });
+    } else {
+        console.log(`${type}: ${message}`);
+    }
 }
 
 // Add ripple effect to demo buttons
@@ -323,6 +379,7 @@ function showDataTransmission(target) {
         container.remove();
     };
 }
+
 
 // Initialize network data flow animation
 function animateDataFlow() {
