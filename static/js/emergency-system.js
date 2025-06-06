@@ -22,21 +22,26 @@ function initIntroAnimation() {
     const navbar = document.querySelector('nav.navbar');
     if (!overlay) return;
 
+    document.body.classList.add('no-scroll');
     if (navbar) gsap.set(navbar, { autoAlpha: 0 });
 
     gsap.to(overlay, {
         autoAlpha: 0,
         pointerEvents: 'none',
         scrollTrigger: {
-            trigger: document.body,
+            trigger: '#smooth-content',
+            scroller: '#smooth-wrapper',
             start: 'top top',
-            end: '+=100%',
+            end: 'bottom top',
             scrub: true,
-            onLeave: () => overlay.remove()
+            onLeave: () => {
+                overlay.remove();
+                document.body.classList.remove('no-scroll');
+                if (navbar) gsap.to(navbar, { autoAlpha: 1 });
+                window.scrollTo(0, 0);
+            }
         }
     });
-
-    if (navbar) gsap.to(navbar, { autoAlpha: 1, scrollTrigger: { trigger: document.body, start: 'top top' } });
 }
 
 function initSmoothHero() {
@@ -44,7 +49,9 @@ function initSmoothHero() {
 
     ScrollSmoother.create({
         smooth: 2,
-        effects: true
+        effects: true,
+        wrapper: '#smooth-wrapper',
+        content: '#smooth-content'
     });
 
     gsap.from('.draw', {
@@ -55,7 +62,8 @@ function initSmoothHero() {
             start: 'top center',
             scrub: true,
             pin: '.pin',
-            pinSpacing: false
+            pinSpacing: false,
+            scroller: '#smooth-wrapper'
         }
     });
 }

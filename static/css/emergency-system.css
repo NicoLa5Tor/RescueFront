@@ -669,6 +669,8 @@
 /* GSAP hero effect styles */
 #smooth-wrapper {
     font-family: 'Unbounded', sans-serif;
+    height: 100vh;
+    overflow-y: auto;
 }
 
 .hero {
@@ -725,5 +727,9 @@ h1 {
     top: 50%;
     transform: translateY(-50%) rotate(2deg);
     left: -6%;
+}
+
+body.no-scroll {
+    overflow: hidden;
 }
 
