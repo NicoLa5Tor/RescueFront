@@ -1,10 +1,12 @@
 // static/js/emergency-system.js
 
 // Register GSAP Plugins
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, PixiPlugin);
 
 // Initialize animations when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
+    initPixiStage();
+    initIntroAnimation();
     initHeroAnimations();
     initParallax();
     initHorizontalSections();
@@ -13,6 +15,155 @@ document.addEventListener('DOMContentLoaded', () => {
     initNetworkAnimation();
     attachButtonEffects();
 });
+
+function initIntroAnimation() {
+    const overlay = document.getElementById('intro-overlay');
+    const text = document.getElementById('intro-text');
+    const subtitle = document.getElementById('intro-subtitle');
+    const navbar = document.querySelector('nav.navbar');
+    if (!overlay || !text) return;
+
+    document.body.style.overflow = 'hidden';
+    gsap.set([text, subtitle], { autoAlpha: 1 });
+    if (navbar) gsap.set(navbar, { autoAlpha: 0 });
+
+    gsap.timeline({
+        defaults: { ease: 'expo.inOut' },
+        onComplete: () => {
+            overlay.remove();
+            document.body.style.overflow = '';
+            if (navbar) gsap.to(navbar, { autoAlpha: 1, duration: 0.5 });
+        }
+    })
+    .to(text, { scale: 20, duration: 4 }, 0)
+    .to(subtitle, { y: -40, autoAlpha: 0, duration: 3 }, 0)
+    .to(overlay, { backgroundColor: '#0f172a', duration: 4, ease: 'none' }, 0)
+    .to(overlay, { autoAlpha: 0, duration: 1 }, 3.5);
+}
+
+function initPixiStage() {
+    const stage = document.querySelector('#intro-overlay .stage');
+    if (!stage || typeof PIXI === 'undefined') return;
+
+    const app = new PIXI.Application({
+        width: 716,
+        height: 724,
+        backgroundColor: 0xDAE0D2,
+        antialias: true
+    });
+
+    const gridSize = 11;
+    const circD = 63;
+    const circOffsetX = 0.11111;
+    const circOffsetY = 0.15873;
+    const color1 = 0x01AFF6;
+    const color2 = 0xF20085;
+    const color3 = 0xFFD036;
+    const animDuration = 0.8;
+
+    function buildGrid() {
+        stage.appendChild(app.view);
+        app.ticker.stop();
+        gsap.ticker.add(() => app.ticker.update());
+
+        for (let i = 0; i < gridSize; i++) {
+            for (let j = 0; j < gridSize; j++) {
+                const container = new PIXI.Container();
+                const c1 = new PIXI.Graphics();
+                c1.beginFill(color1).drawCircle(0, 0, circD / 2).endFill();
+                c1.blendMode = PIXI.BLEND_MODES.MULTIPLY;
+                const c2 = new PIXI.Graphics();
+                c2.beginFill(color2).drawCircle(0, 0, circD / 2).endFill();
+                c2.blendMode = PIXI.BLEND_MODES.MULTIPLY;
+                const c3 = new PIXI.Graphics();
+                c3.beginFill(color3).drawCircle(0, 0, circD / 2).endFill();
+                c3.blendMode = PIXI.BLEND_MODES.MULTIPLY;
+
+                const cc1 = new PIXI.Container();
+                cc1.addChild(c1);
+                const cc2 = new PIXI.Container();
+                cc2.addChild(c2);
+                const cc3 = new PIXI.Container();
+                cc3.addChild(c3);
+
+                cc2.x = -circOffsetX * circD;
+                cc2.y = circOffsetY * circD;
+                cc3.x = circOffsetX * circD;
+                cc3.y = circOffsetY * circD;
+
+                container.addChild(cc1, cc2, cc3);
+                app.stage.addChild(container);
+
+                container.x = i * circD + circD / 2 + i * 2;
+                container.y = j * circD + circD / 2 + j * 2;
+            }
+        }
+
+        app.stage.x = 2;
+    }
+
+    function animate() {
+        const band = new SplitText(stage.querySelector('.band'), { type: 'chars', charsClass: 'char', position: 'relative' });
+        new SplitText(stage.querySelectorAll('.details p'), { type: 'lines', charsClass: 'line', position: 'relative' });
+
+        gsap.timeline({ delay: 0.2 })
+            .from(app.stage.children, {
+                pixi: { scale: 0, rotation: 360 },
+                duration: 2,
+                ease: 'power4',
+                stagger: {
+                    each: 0.1,
+                    grid: [gridSize, gridSize],
+                    from: [0, 1]
+                }
+            })
+            .to(app.stage.children, {
+                duration: animDuration,
+                ease: 'sine.inOut',
+                stagger: {
+                    each: 0.1,
+                    repeat: -1,
+                    yoyo: true,
+                    grid: [gridSize, gridSize],
+                    from: [0, 1],
+                    onStart: function () {
+                        gsap.to(this.targets()[0].children, {
+                            pixi: { scale: 0.15 },
+                            duration: animDuration,
+                            ease: 'sine.inOut',
+                            repeat: -1,
+                            yoyo: true
+                        });
+                    }
+                }
+            }, 0.1)
+            .from(band.chars, {
+                duration: 2,
+                y: 150,
+                stagger: 0.05,
+                ease: 'expo'
+            }, 0.5)
+            .from(stage.querySelectorAll('.details span'), {
+                duration: 1.5,
+                y: 50,
+                opacity: 0,
+                ease: 'expo',
+                stagger: 0.1
+            }, 0.9);
+    }
+
+    function resize() {
+        const vh = window.innerHeight;
+        const sh = stage.offsetHeight;
+        const scaleFactor = vh / sh;
+        gsap.set(stage, { scale: scaleFactor < 1 ? scaleFactor : 1 });
+    }
+
+    buildGrid();
+    resize();
+    animate();
+    window.addEventListener('resize', resize);
+}
 
 // Hero Animations
 function initHeroAnimations() {
