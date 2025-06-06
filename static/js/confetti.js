@@ -84,7 +84,8 @@ class confettiCannon {
   }
 
     changeCursor() {
-      document.body.style.cursor = 'none';
+      document.body.style.cursor =
+        "url('https://assets.codepen.io/16327/hand-rock.png') 16 16, auto";
       clearTimeout(this.cursorTimeout);
       this.cursorTimeout = setTimeout(() => {
         document.body.style.cursor = '';
