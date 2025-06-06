@@ -729,6 +729,11 @@ h1 {
     left: -6%;
 }
 
+.draw {
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+}
+
 body.no-scroll {
     overflow: hidden;
 }

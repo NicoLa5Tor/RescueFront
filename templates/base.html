@@ -136,7 +136,6 @@
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/CustomBounce.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/Flip.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/MotionPathPlugin.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/DrawSVGPlugin.min.js"></script>
     
     <!-- API Configuration -->
     <script>
@@ -206,10 +205,9 @@
                     TextPlugin,
                     CustomEase,
                     CustomBounce,
-                    Flip,
-                    DrawSVGPlugin
+                    Flip
                 );
-                gsap.registerPlugin(ScrollTrigger, TextPlugin, CustomEase, CustomBounce, Flip, MotionPathPlugin, DrawSVGPlugin);
+                gsap.registerPlugin(ScrollTrigger, TextPlugin, CustomEase, CustomBounce, Flip, MotionPathPlugin);
                 console.log('GSAP plugins registrados correctamente');
             }
         });

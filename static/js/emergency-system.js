@@ -51,7 +51,7 @@ function initIntroAnimation() {
 }
 
 function initSmoothHero() {
-    if (typeof ScrollSmoother === 'undefined' || typeof DrawSVGPlugin === 'undefined') return;
+    if (typeof ScrollSmoother === 'undefined') return;
 
     heroSmoother = ScrollSmoother.create({
         smooth: 2,
@@ -60,18 +60,25 @@ function initSmoothHero() {
         content: '#smooth-content'
     });
 
-    gsap.from('.draw', {
-        drawSVG: '0%',
-        ease: 'expo.out',
-        scrollTrigger: {
-            trigger: '.heading',
-            start: 'top center',
-            scrub: true,
-            pin: '.pin',
-            pinSpacing: false,
-            scroller: '#smooth-wrapper'
-        }
-    });
+    const path = document.querySelector('.draw');
+    if (path) {
+        const length = path.getTotalLength();
+        gsap.fromTo(path,
+            { strokeDasharray: length, strokeDashoffset: length },
+            {
+                strokeDashoffset: 0,
+                ease: 'expo.out',
+                scrollTrigger: {
+                    trigger: '.heading',
+                    start: 'top center',
+                    scrub: true,
+                    pin: '.pin',
+                    pinSpacing: false,
+                    scroller: '#smooth-wrapper'
+                }
+            }
+        );
+    }
 }
 
 function initPixiStage() {
