@@ -116,28 +116,28 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.32/sweetalert2.all.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js"></script>
     
-    <!-- GSAP Core -->
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
-    
-    <!-- GSAP Plugins -->
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/MotionPathHelper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/MotionPathPlugin.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/MorphSVGPlugin.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/Observer.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/PixiPlugin.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrambleTextPlugin.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollSmoother.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollToPlugin.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/TextPlugin.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/EasePack.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/CustomEase.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/CustomBounce.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/Flip.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/MotionPathPlugin.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/Physics2DPlugin.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/CustomWiggle.min.js"></script>
+    <!-- GSAP Core and Plugins -->
+    <script src="https://cdn.jsdelivr.net/combine/
+        npm/gsap@3.13.0/dist/gsap.min.js,
+        npm/gsap@3.13.0/dist/ScrollTrigger.min.js,
+        npm/gsap@3.13.0/dist/MotionPathHelper.min.js,
+        npm/gsap@3.13.0/dist/MotionPathPlugin.min.js,
+        npm/gsap@3.13.0/dist/MorphSVGPlugin.min.js,
+        npm/gsap@3.13.0/dist/Observer.min.js,
+        npm/gsap@3.13.0/dist/PixiPlugin.min.js,
+        npm/gsap@3.13.0/dist/ScrambleTextPlugin.min.js,
+        npm/gsap@3.13.0/dist/ScrollSmoother.min.js,
+        npm/gsap@3.13.0/dist/ScrollToPlugin.min.js,
+        npm/gsap@3.13.0/dist/SplitText.min.js,
+        npm/gsap@3.13.0/dist/TextPlugin.min.js,
+        npm/gsap@3.13.0/dist/EasePack.min.js,
+        npm/gsap@3.13.0/dist/CustomEase.min.js,
+        npm/gsap@3.13.0/dist/CustomBounce.min.js,
+        npm/gsap@3.13.0/dist/Flip.min.js,
+        npm/gsap@3.13.0/dist/Physics2DPlugin.min.js,
+        npm/gsap@3.13.0/dist/CustomWiggle.min.js,
+        npm/gsap@3.13.0/dist/DrawSVGPlugin.min.js,
+        npm/gsap@3.13.0/dist/ExpoScaleEase.min.js"></script>
     
     <!-- API Configuration -->
     <script>
@@ -205,6 +205,8 @@
                     ScrollToPlugin,
                     SplitText,
                     TextPlugin,
+                    DrawSVGPlugin,
+                    ExpoScaleEase,
                     CustomEase,
                     CustomBounce,
                     Flip
