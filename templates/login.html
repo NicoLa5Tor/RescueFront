@@ -11,16 +11,8 @@
   <div class="login-header-content">
     <a href="{{ url_for('index') }}" class="login-brand">
       <i class="fas fa-building"></i>
-      <span>Multi-Tenant System</span>
+      <span>Rescue</span>
     </a>
-    <nav class="login-nav-links">
-      <a href="#features" class="login-nav-link">Características</a>
-      <a href="#contact" class="login-nav-link">Contacto</a>
-      <a href="#help" class="login-help-btn">
-        <i class="fas fa-question-circle me-1"></i>
-        Ayuda
-      </a>
-    </nav>
   </div>
 </header>
 {% endblock %}
@@ -39,7 +31,18 @@
 
   <!-- Contenedor principal -->
   <div class="login-container">
-    <div class="login-content">
+    <div class="login-wrapper">
+      <div id="loginInfo" class="login-info fade-in-up">
+        <div class="plane-wrapper">
+          <svg id="planeSvg" width="180" height="60" viewBox="0 0 180 60">
+            <path id="planePath" d="M10,50 Q90,0 170,50" />
+          </svg>
+          <i id="planeIcon" class="fas fa-paper-plane plane-icon"></i>
+        </div>
+        <h2 class="info-title">Bienvenido a <span id="infoHighlight">Rescue</span></h2>
+        <p class="info-text">Accede para gestionar de forma segura tus recursos y empresas.</p>
+      </div>
+      <div class="login-content">
       <div id="loginCard" class="login-card fade-in-up">
         <!-- Header del formulario -->
         <div class="form-header">
@@ -51,7 +54,7 @@
         </div>
 
         <!-- Formulario -->
-        <form id="loginForm">
+        <form id="loginForm" novalidate autocomplete="off">
           <!-- Usuario -->
           <div class="form-group fade-in-up">
             <label for="usuario" class="form-label">Usuario</label>
@@ -123,3 +126,5 @@
 {% block extra_js %}
 <script src="{{ url_for('static', filename='js/login.js') }}"></script>
 {% endblock %}
+
+{% block footer %}{% endblock %}

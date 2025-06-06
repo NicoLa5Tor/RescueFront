@@ -24,16 +24,42 @@ function initLoginAnimations() {
       // Configurar estado inicial
       window.gsap.set(".fade-in-up", { opacity: 0, y: 30 })
       window.gsap.set(".fade-in-scale", { opacity: 0, scale: 0.8 })
+      window.gsap.set("#loginInfo", { opacity: 0, y: 30 })
+      window.gsap.set("#infoHighlight", { text: "" })
+      window.gsap.set("#planeIcon", { opacity: 0 })
   
       // Timeline principal
       const tl = window.gsap.timeline({ delay: 0.2 })
   
-      tl.to("#loginCard", {
+      tl.to("#loginInfo", {
         duration: 0.8,
         opacity: 1,
         y: 0,
         ease: "power3.out",
       })
+        .to(
+          "#infoHighlight",
+          {
+            duration: 1.2,
+            text: "Rescue",
+            ease: "none",
+          },
+          "-=0.6",
+        )
+        .to(
+          "#planeIcon",
+          {
+            duration: 0.3,
+            opacity: 1,
+          },
+          "<",
+        )
+        .to("#loginCard", {
+          duration: 0.8,
+          opacity: 1,
+          y: 0,
+          ease: "power3.out",
+        }, "-=0.6")
         .to(
           "#brandLogo",
           {
@@ -95,6 +121,21 @@ function initLoginAnimations() {
         transformOrigin: "center",
         delay: 1,
       })
+
+      // Animación continua del avión de papel
+      if (window.gsap.MotionPathPlugin) {
+        window.gsap.to("#planeIcon", {
+          duration: 4,
+          repeat: -1,
+          ease: "none",
+          motionPath: {
+            path: "#planePath",
+            align: "#planePath",
+            autoRotate: true,
+            alignOrigin: [0.5, 0.5],
+          },
+        })
+      }
   
       console.log("Animaciones GSAP inicializadas correctamente")
     } catch (error) {
