@@ -8,52 +8,10 @@
 {% endblock %}
 
 {% block content %}
-<div id="intro-overlay" class="fixed inset-0 flex items-center justify-center bg-black z-50">
-    <div class="stage">
-        <div class="content">
-            <h1 id="intro-text" class="band">Rescue</h1>
-            <div class="details">
-                <p class="date"><span>Sistema de Emergencias</span><span>Empresarial</span></p>
-                <p class="location"><span>Protección IoT</span><span>MQTT</span></p>
-                <p class="freq"><span></span><span></span></p>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="pricing-hero confetti-overlay" data-block="pricing-hero">
-  <div class="pricing-hero__hand">
-    <img class="pricing-hero__drag" src="https://assets.codepen.io/16327/hand-drag.png" alt="">
-    <img class="pricing-hero__rock" src="https://assets.codepen.io/16327/hand-rock.png" alt="">
-    <img class="pricing-hero__handle" src="https://assets.codepen.io/16327/2D-circle.png" alt="">
-  </div>
+<div class="presentation">
 
-  <div class="image-preload" aria-hidden="true">
-    <img data-key="combo" src="https://assets.codepen.io/16327/3D-combo.png" width="1" height="1" style="position: absolute; left: -9999px;" />
-    <img data-key="cone" src="https://assets.codepen.io/16327/3D-cone.png" width="1" height="1" style="position: absolute; left: -9999px;" />
-    <img data-key="hoop" src="https://assets.codepen.io/16327/3D-hoop.png" width="1" height="1" style="position: absolute; left: -9999px;" />
-    <img data-key="keyframe" src="https://assets.codepen.io/16327/3D-keyframe.png" width="1" height="1" style="position: absolute; left: -9999px;" />
-    <img data-key="semi" src="https://assets.codepen.io/16327/3D-semi.png" width="1" height="1" style="position: absolute; left: -9999px;" />
-    <img data-key="spiral" src="https://assets.codepen.io/16327/3D-spiral.png" width="1" height="1" style="position: absolute; left: -9999px;" />
-    <img data-key="squish" src="https://assets.codepen.io/16327/3D-squish.png" width="1" height="1" style="position: absolute; left: -9999px;" />
-    <img data-key="triangle" src="https://assets.codepen.io/16327/3D-triangle.png" width="1" height="1" style="position: absolute; left: -9999px;" />
-    <img data-key="tunnel" src="https://assets.codepen.io/16327/3D-tunnel.png" width="1" height="1" style="position: absolute; left: -9999px;" />
-    <img data-key="wat" src="https://assets.codepen.io/16327/3D-poly.png" width="1" height="1" style="position: absolute; left: -9999px;" />
-  </div>
-  <div class="explosion-preload" aria-hidden="true">
-    <img data-key="blue-circle" src="https://assets.codepen.io/16327/2D-circles.png" style="position: absolute; left: -9999px;" />
-    <img data-key="green-keyframe" src="https://assets.codepen.io/16327/2D-keyframe.png" style="position: absolute; left: -9999px;" />
-    <img data-key="orange-lightning" src="https://assets.codepen.io/16327/2D-lightning.png" style="position: absolute; left: -9999px;" />
-    <img data-key="orange-star" src="https://assets.codepen.io/16327/2D-star.png" style="position: absolute; left: -9999px;" />
-    <img data-key="purple-flower" src="https://assets.codepen.io/16327/2D-flower.png" style="position: absolute; left: -9999px;" />
-    <img data-key="cone" src="https://assets.codepen.io/16327/3D-cone.png" style="position: absolute; left: -9999px;" />
-    <img data-key="keyframe" src="https://assets.codepen.io/16327/3D-spiral.png" style="position: absolute; left: -9999px;" />
-    <img data-key="spiral" src="https://assets.codepen.io/16327/3D-spiral.png" style="position: absolute; left: -9999px;" />
-    <img data-key="tunnel" src="https://assets.codepen.io/16327/3D-tunnel.png" style="position: absolute; left: -9999px;" />
-    <img data-key="hoop" src="https://assets.codepen.io/16327/3D-hoop.png" style="position: absolute; left: -9999px;" />
-    <img data-key="semi" src="https://assets.codepen.io/16327/3D-semi.png" style="position: absolute; left: -9999px;" />
-  </div>
-  <svg class="pricing-hero__canvas"></svg>
-  <div class="pricing-hero__proxy"></div>
+{% include 'GSAP_Templates/clamp.html' %}
+
 </div>
 <!-- Hero Section -->
 <section class="relative min-h-screen overflow-hidden bg-gradient-to-br from-slate-900 to-slate-800" id="hero">
