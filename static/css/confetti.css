@@ -10,18 +10,12 @@
   inset: 0;
   width: 100vw;
   z-index: 9999;
-  pointer-events: auto; /* allow interaction for confetti */
+  pointer-events: none;
   transform: scale(0.8);
   transform-origin: top left;
 }
 .pricing-hero__hand {
-  left: 0;
-  opacity: 0;
-  pointer-events: none;
-  position: fixed;
-  top: 0;
-  width: 20px; /* smaller */
-  z-index: 4;
+  display: none;
 }
 .pricing-hero__hand small {
   left: -60%;
@@ -62,7 +56,7 @@
 }
 .pricing-hero__proxy {
   z-index: 3;
-  pointer-events: auto; /* allow events */
+  pointer-events: none;
 }
 .explosion-img {
   will-change: transform;

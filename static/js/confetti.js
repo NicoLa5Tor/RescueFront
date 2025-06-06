@@ -55,36 +55,22 @@ class confettiCannon {
     this.wiggle = CustomWiggle.create('myWiggle', { wiggles: 6 });
     this.clamper = gsap.utils.clamp(1, 100);
 
-    this.xSetter = gsap.quickTo(this.el.hand, 'x', { duration: 0.1 });
-    this.ySetter = gsap.quickTo(this.el.hand, 'y', { duration: 0.1 });
-
     this.setpricingMotion();
     this.initObserver();
     this.initEvents();
   }
 
   initEvents() {
-    if (!this.animationIsOk || ScrollTrigger.isTouch === 1) return;
+    if (!this.animationIsOk) return;
 
-    this.hero.style.cursor = 'none';
+    this.hero.style.cursor = 'pointer';
 
-    this.hero.addEventListener('mouseenter', (e) => {
-      gsap.set(this.el.hand, { opacity: 1 });
-      this.xSetter(e.x, e.x);
-      this.ySetter(e.y, e.y);
-    });
-
-    this.hero.addEventListener('mouseleave', () => {
-      gsap.set(this.el.hand, { opacity: 0 });
-    });
-
-    this.hero.addEventListener('mousemove', (e) => {
-      this.xSetter(e.x);
-      this.ySetter(e.y);
+    this.el.proxy.addEventListener('click', (e) => {
+      this.createExplosion(e.clientX, e.clientY, 400);
     });
 
     gsap.delayedCall(1, () => {
-      this.createExplosion(window.innerWidth/2, window.innerHeight/2, 600);
+      this.createExplosion(window.innerWidth / 2, window.innerHeight / 2, 600);
     });
   }
 
@@ -95,22 +81,9 @@ class confettiCannon {
   initObserver() {
     if (!this.animationIsOk) return;
 
-    if (ScrollTrigger.isTouch === 1) {
-      Observer.create({
-        target: this.el.proxy,
-        type: 'touch',
-        onPress: (e) => { this.createExplosion(e.x, e.y, 400); }
-      });
-    } else {
-      Observer.create({
-        target: this.el.proxy,
-        type: 'pointer',
-        onPress: (e) => this.startDrawing(e),
-        onDrag: (e) => this.isDrawing && this.updateDrawing(e),
-        onDragEnd: () => this.clearDrawing(),
-        onRelease: () => this.clearDrawing()
-      });
-    }
+    document.body.addEventListener('click', (e) => {
+      this.createExplosion(e.clientX, e.clientY, 400);
+    });
   }
 
   startDrawing(e) {
