@@ -9,6 +9,51 @@
     --emergency-orange: #ea580c;
 }
 
+/* ScrollSmoother demo styles */
+#smooth-wrapper {
+    position: relative;
+    overflow: hidden;
+}
+
+#smooth-content .circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    opacity: 0;
+    margin: -19px auto;
+    transition: transform 1s cubic-bezier(0.14, 0.15, 0.13, 0.99);
+}
+
+.smooth-scroll-indicator {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    z-index: 1;
+    font-family: Roboto, sans-serif;
+    letter-spacing: 0.2em;
+    font-size: 11px;
+}
+
+.smooth-scroll-indicator svg {
+    margin-top: 10px;
+    width: 18px;
+    height: 18px;
+    animation: smoother-scroll 0.95s ease-in-out alternate infinite;
+    fill: none;
+    stroke: #000;
+    stroke-linecap: round;
+    stroke-miterlimit: 10;
+    stroke-width: 1;
+}
+
+@keyframes smoother-scroll {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(10px); }
+}
 /* Grid Background Pattern */
 .bg-grid-pattern {
     background-image: 

@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initScrollAnimations();
     initTimelineAnimation();
     initNetworkAnimation();
+    initScrollSmootherNoise();
     attachButtonEffects();
 });
 
@@ -378,6 +379,48 @@ function showDataTransmission(target) {
         anim.kill();
         container.remove();
     };
+}
+
+// Initialize ScrollSmoother with animated circles
+function initScrollSmootherNoise() {
+    if (typeof ScrollSmoother === 'undefined' || typeof SimplexNoise === 'undefined') {
+        return;
+    }
+
+    const wrapper = document.getElementById('smooth-wrapper');
+    const content = document.getElementById('smooth-content');
+
+    if (!wrapper || !content) return;
+
+    const smoother = ScrollSmoother.create({
+        wrapper: wrapper,
+        content: content,
+        smooth: 1,
+        effects: false
+    });
+
+    const simplex = new SimplexNoise();
+    for (let i = 0; i < 200; i++) {
+        const div = document.createElement('div');
+        div.classList.add('circle');
+        const n1 = simplex.noise2D(i * 0.003, i * 0.0033);
+        const n2 = simplex.noise2D(i * 0.002, i * 0.001);
+        div.style.transform = `translate(${n2 * 200}px) rotate(${n2 * 270}deg) scale(${1 + n1}, ${1 + n2})`;
+        div.style.boxShadow = `0 0 0 .2px hsla(${Math.floor(i*0.3)}, 70%, 70%, .6)`;
+        content.appendChild(div);
+    }
+
+    const circles = content.querySelectorAll('.circle');
+    const tl = gsap.timeline({
+        scrollTrigger: {
+            trigger: content,
+            start: 'top top',
+            end: 'bottom bottom',
+            scrub: 0.7
+        }
+    });
+
+    circles.forEach(circle => tl.to(circle, { opacity: 1 }, 0));
 }
 
 
