@@ -670,7 +670,7 @@
 #svg-stage {
     max-width: 600px;
     overflow: visible;
-    margin: 4rem auto 0;
+    margin: 60vh auto 0;
 }
 
 #svg-stage .theLine {

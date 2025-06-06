@@ -1,7 +1,7 @@
 // static/js/emergency-system.js
 
 // Register GSAP Plugins
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, DrawSVGPlugin, MotionPathPlugin);
 
 // Initialize animations when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
@@ -306,7 +306,6 @@ function initScrollAnimations() {
 
 // SVG Timeline Animation
 function initTimelineAnimation() {
-    gsap.registerPlugin(ScrollTrigger, DrawSVGPlugin, MotionPathPlugin);
     gsap.defaults({ ease: 'none' });
 
     const pulses = gsap.timeline({
