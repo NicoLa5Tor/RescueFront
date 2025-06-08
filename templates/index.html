@@ -3,10 +3,14 @@
 
 {%extends 'base.html'%}
 {% block extra_css %}
+{{ super() }}
 <link href="{{ url_for('static', filename='css/index.css') }}" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+<link href="{{ url_for('static', filename='css/gsap_css/clamp.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/gsap_css/secundIndex.css') }}" rel="stylesheet">
+<link href="https://codepen.io/GreenSock/pen/xxmzBrw/fcaef74061bb7a76e5263dfc076c363e.css" rel="stylesheet">
+
 {% endblock %}
 
 {% block content %}
@@ -449,4 +453,6 @@
 {% endblock %}
 
 {%block extra_js%}
+<script type="module" src="{{ url_for('static', filename='js/gsap_js/clamp.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/gsap_js/secundIndex.js') }}"></script>
 {% endblock %}
