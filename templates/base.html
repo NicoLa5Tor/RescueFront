@@ -85,7 +85,11 @@
     </nav> -->
     {% endblock %}
 
-    {% block content %}{% endblock %}
+    <div id="gsap-smoother-wrapper">
+        <div id="gsap-smoother-content">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
 
     <!-- Footer -->
     {% block footer %}
@@ -148,32 +152,16 @@
             }
         }
         
-        // Inicializar GSAP cuando el DOM esté listo
-        document.addEventListener('DOMContentLoaded', function() {
-            // Registrar plugins de GSAP
-            if (typeof gsap !== 'undefined') {
-                gsap.registerPlugin(
-                    MotionPathHelper,
-                    MotionPathPlugin,
-                    MorphSVGPlugin,
-                    Observer,
-                    PixiPlugin,
-                    ScrambleTextPlugin,
-                    ScrollTrigger,
-                    ScrollSmoother,
-                    ScrollToPlugin,
-                    SplitText,
-                    TextPlugin,
-                    CustomEase,
-                    CustomBounce,
-                    Flip
-                );
-                gsap.registerPlugin(ScrollTrigger, TextPlugin, CustomEase, CustomBounce, Flip, MotionPathPlugin);
-                console.log('GSAP plugins registrados correctamente');
-            }
-        });
     </script>
-    
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollSmoother.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollToPlugin.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/DrawSVGPlugin.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/MotionPathPlugin.min.js"></script>
+    <script type="module" src="{{ url_for('static', filename='js/gsap_main.js') }}"></script>
+
     <!-- Custom Scripts -->
     
     {% block extra_js %}
