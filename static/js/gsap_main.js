@@ -25,12 +25,14 @@ const GSAP_MAIN = (() => {
     });
 
     registered.forEach(fn => fn({ gsap, ScrollTrigger, smoother }));
+    refresh();
   }
 
   function registerModule(fn) {
     if (typeof fn === 'function') {
       if (smoother) {
         fn({ gsap, ScrollTrigger, smoother });
+        refresh();
       } else {
         registered.push(fn);
       }

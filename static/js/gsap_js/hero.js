@@ -1,22 +1,22 @@
 // Hero Module JavaScript
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize GSAP
- 
-    // Create particles
-    createParticles();
-    
-    // Animate hero content on load
-    animateHeroContent();
-    
-    // Setup device connections
-    setupDeviceConnections();
-    
-    // Setup scroll animations
-    setupScrollAnimations();
-    
-    // Device tooltips
-    setupTooltips();
-});
+(function(window){
+    'use strict';
+
+    function init() {
+        createParticles();
+        animateHeroContent();
+        setupDeviceConnections();
+        setupScrollAnimations();
+        setupTooltips();
+    }
+
+    if(window.GSAP_MAIN){
+        window.GSAP_MAIN.registerModule(() => init());
+    } else {
+        document.addEventListener('DOMContentLoaded', init);
+    }
+
+})(window);
 
 // Create floating particles
 function createParticles() {

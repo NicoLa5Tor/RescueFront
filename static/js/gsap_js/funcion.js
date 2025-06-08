@@ -1,5 +1,5 @@
 // TIMELINE MODULE - JAVASCRIPT COMPLETAMENTE ENCAPSULADO
-(function() {
+(function(window) {
     'use strict';
     
     // Función para inicializar el módulo timeline
@@ -18,8 +18,7 @@
                 return;
             }
             
-            // Registrar plugins
-            gsap.registerPlugin(ScrollTrigger, DrawSVGPlugin, MotionPathPlugin);
+
             
             // Crear contexto para este módulo específico
             const ctx = gsap.context(() => {
@@ -288,11 +287,17 @@
         });
     }
     
-    // Inicializar cuando el DOM esté listo
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initTimelineModule);
-    } else {
+    function register() {
         initTimelineModule();
+        window.GSAP_MAIN && window.GSAP_MAIN.refresh();
+    }
+
+    if (window.GSAP_MAIN) {
+        window.GSAP_MAIN.registerModule(register);
+    } else if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', register);
+    } else {
+        register();
     }
     
     // Refresh ScrollTrigger on resize
