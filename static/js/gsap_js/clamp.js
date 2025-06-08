@@ -9,7 +9,7 @@
       ease: 'expo.out',
       scrollTrigger: {
         trigger: '.rescue-7x9k-heading',
-        start: 'clamp(top center)',
+        start: 'top center',
         scrub: true,
         pin: '.rescue-7x9k-pin',
         pinSpacing: false,
@@ -19,7 +19,8 @@
     });
 
     gsap.utils.toArray('.rescue-7x9k-img').forEach((img, i) => {
-      const speed = img.getAttribute('data-speed');
+      const attr = img.getAttribute('data-speed');
+      const speed = parseFloat(attr) || 1;
       gsap.to(img, {
         yPercent: -30 * (i + 1),
         ease: 'none',
