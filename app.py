@@ -165,7 +165,7 @@ def inject_user():
 #=========== RUTAS DE PRUEBA ============
 @app.route("/pruebas")
 def pruebas():
-    return render_template("GSAP_Templates/hero.html")
+    return render_template("GSAP_Templates/funcion.html")
 
 # ========== MANEJO DE ERRORES ==========
 @app.errorhandler(404)
@@ -190,4 +190,4 @@ def date_format_filter(value, format='%d/%m/%Y'):
     return ''
 
 if __name__ == '__main__':
-    app.run(debug=True, port=3001)
+    app.run(debug=True, port=5050)

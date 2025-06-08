@@ -1,275 +1,266 @@
 {% block extra_css %}
-<link href="{{ url_for('static', filename='css/gsap_css/funcion.css') }}" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Unbounded:wght@700&display=swap" rel="stylesheet">
+<style>
+  body {
+    background: radial-gradient(ellipse at 50% 30%, #10151d 70%, #090c11 100%);
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+    color: #fff;
+  }
+  .timeline-hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-top: 64px;
+    padding-bottom: 64px;
+    background: radial-gradient(ellipse at top, #141f33 60%, #0a101b 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .timeline-title {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 3rem;
+    font-weight: 700;
+    letter-spacing: -1px;
+    background: linear-gradient(90deg, #60a5fa, #d946ef, #06b6d4 80%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    text-align: center;
+    margin-bottom: 2.5rem;
+    animation: shimmer 3s infinite linear;
+  }
+  @keyframes shimmer {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+  }
+  .timeline-svg-box {
+    width: 90vw;
+    max-width: 1000px;
+    min-height: 320px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+  }
+  .glass {
+    background: rgba(30, 41, 59, 0.30);
+    box-shadow: 0 6px 32px 0 rgba(10,20,50,0.20);
+    backdrop-filter: blur(12px);
+    border: 1.5px solid rgba(59,130,246,0.10);
+    border-radius: 1.5rem;
+    padding: 1.3rem 1rem 1rem 1rem;
+    text-align: center;
+    margin-top: 1rem;
+  }
+  .timeline-legend {
+    margin-top: 2.5rem;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1.5rem;
+    max-width: 960px;
+    width: 90vw;
+    z-index: 3;
+  }
+  .legend-step {
+    color: #fff;
+    padding: 1rem 0.3rem;
+    border-radius: 1.2rem;
+    background: linear-gradient(135deg, rgba(30,64,175,0.10) 0%, rgba(236,72,153,0.09) 100%);
+    box-shadow: 0 0 0 0 transparent;
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    transition: box-shadow 0.35s;
+    position: relative;
+  }
+  .legend-step.active {
+    box-shadow: 0 0 16px 2px #60a5fa55, 0 2px 24px 1px #a78bfa33;
+    background: linear-gradient(135deg, #0ea5e9 15%, #d946ef 100%);
+    color: #fff;
+  }
+  .legend-label {
+    font-size: 1.1rem;
+    font-family: 'Unbounded', sans-serif;
+    letter-spacing: 0.05em;
+  }
+  .legend-desc {
+    font-size: 0.90rem;
+    color: #e0e7ef;
+    margin-top: 0.5rem;
+    font-weight: 400;
+  }
+  /* Particles bg */
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0.07;
+    z-index: 1;
+    animation: float 18s linear infinite;
+  }
+  .particle-1 { width: 160px; height: 160px; background: #22d3ee; left: 5vw; top: 12vh; animation-delay: 0s;}
+  .particle-2 { width: 240px; height: 240px; background: #d946ef; right: 6vw; top: 32vh; animation-delay: 4s;}
+  .particle-3 { width: 120px; height: 120px; background: #60a5fa; left: 23vw; bottom: 7vh; animation-delay: 7s;}
+  .particle-4 { width: 140px; height: 140px; background: #0ea5e9; right: 25vw; bottom: 12vh; animation-delay: 9s;}
+  @keyframes float {
+    0%,100% { transform: translateY(0px) scale(1);}
+    50% { transform: translateY(80px) scale(1.1);}
+  }
+  /* Responsive */
+  @media (max-width: 900px) {
+    .timeline-legend { grid-template-columns: 1fr 1fr; gap: 0.7rem; }
+    .timeline-title { font-size: 2.1rem; }
+    .timeline-svg-box { min-height: 200px; }
+  }
+  @media (max-width: 600px) {
+    .timeline-legend { grid-template-columns: 1fr; }
+    .timeline-title { font-size: 1.3rem; }
+    .timeline-svg-box { min-height: 110px; }
+    .glass { padding: 0.7rem 0.6rem; }
+    .legend-step { font-size: 0.92rem; }
+  }
+</style>
 {% endblock %}
 
 {% block content %}
-<section class="py-20 bg-black text-white relative overflow-hidden min-h-screen timeline-section" id="how-it-works">
-    <!-- Fondo con gradiente animado -->
-    <div class="absolute inset-0">
-        <div class="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-purple-900/20 to-black"></div>
-        <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(59,130,246,0.15),transparent_50%)]"></div>
-        <div class="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(147,51,234,0.15),transparent_50%)]"></div>
+<div class="timeline-hero">
+  <div class="particle particle-1"></div>
+  <div class="particle particle-2"></div>
+  <div class="particle particle-3"></div>
+  <div class="particle particle-4"></div>
+  <div class="glass" style="max-width:680px;margin-bottom:1.7rem;">
+    <div class="timeline-title">
+      Proceso de Alerta Inteligente IoT
     </div>
-    
-    <!-- Partículas flotantes -->
-    <div class="particles-container absolute inset-0 overflow-hidden">
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
+    <div style="font-size:1.14rem; color:#dbeafe;font-family:Inter,sans-serif;letter-spacing:0.01em;margin-top:0.7rem;">
+      Desde la activación hasta la confirmación,<br>visualiza cómo tu emergencia recorre el sistema en tiempo real.
     </div>
-    
-    <div class="container mx-auto px-4 relative z-10">
-        <!-- Encabezado mejorado -->
-        <div class="text-center mb-20">
-            <div class="inline-flex items-center gap-2 mb-6">
-                <div class="h-px w-12 bg-gradient-to-r from-transparent to-blue-500"></div>
-                <span class="text-sm uppercase tracking-[0.3em] text-gray-400 font-light">PROCESO INTELIGENTE</span>
-                <div class="h-px w-12 bg-gradient-to-l from-transparent to-purple-500"></div>
-            </div>
-            <h2 class="text-5xl md:text-7xl font-black mt-4 mb-6">
-                <span class="block bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-gradient">
-                    ¿Cómo Funciona?
-                </span>
-            </h2>
-            <p class="text-gray-400 text-lg max-w-2xl mx-auto">
-                Un sistema inteligente que conecta cada componente en perfecta sincronía
-            </p>
-        </div>
-        
-        <div class="max-w-7xl mx-auto">
-            <div class="timeline-container relative" data-timeline-id="{{ section_id|default('1') }}">
-                <!-- SVG principal -->
-                <div class="svg-wrapper">
-                    <svg id="svg-stage" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" class="timeline-svg w-full">
-                        <!-- Definiciones de gradientes y filtros -->
-                        <defs>
-                            <linearGradient id="funcion-lineGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                                <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:0" />
-                                <stop offset="50%" style="stop-color:#8B5CF6;stop-opacity:1" />
-                                <stop offset="100%" style="stop-color:#EC4899;stop-opacity:0" />
-                            </linearGradient>
-                            <filter id="funcion-glow">
-                                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-                                <feMerge>
-                                    <feMergeNode in="coloredBlur"/>
-                                    <feMergeNode in="SourceGraphic"/>
-                                </feMerge>
-                            </filter>
-                            <filter id="funcion-bigGlow">
-                                <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
-                                <feMerge>
-                                    <feMergeNode in="coloredBlur"/>
-                                    <feMergeNode in="SourceGraphic"/>
-                                </feMerge>
-                            </filter>
-                        </defs>
-                        
-                        <!-- Grid de fondo -->
-                        <pattern id="funcion-grid" width="50" height="50" patternUnits="userSpaceOnUse">
-                            <path d="M 50 0 L 0 0 0 50" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
-                        </pattern>
-                        <rect width="100%" height="100%" fill="url(#funcion-grid)" />
-                        
-                        <!-- Líneas de conexión decorativas -->
-                        <g class="connection-lines">
-                            <path class="connection-line" d="M 100 200 Q 400 150 700 200" fill="none" stroke="rgba(59,130,246,0.1)" stroke-width="2" stroke-dasharray="5,10"/>
-                            <path class="connection-line" d="M 100 400 Q 400 450 700 400" fill="none" stroke="rgba(147,51,234,0.1)" stroke-width="2" stroke-dasharray="5,10"/>
-                            <path class="connection-line" d="M 100 600 Q 400 550 700 600" fill="none" stroke="rgba(236,72,153,0.1)" stroke-width="2" stroke-dasharray="5,10"/>
-                            <path class="connection-line" d="M 100 800 Q 400 850 700 800" fill="none" stroke="rgba(34,197,94,0.1)" stroke-width="2" stroke-dasharray="5,10"/>
-                        </g>
-                        
-                        <!-- Línea principal del timeline -->
-                        <path class="theLine"
-                              d="M 100,150
-                                 C 300,150 300,250 500,250
-                                 S 700,350 500,450
-                                 S 300,550 500,650
-                                 S 700,750 400,850"
-                              fill="none" 
-                              stroke="url(#funcion-lineGradient)"
-                              stroke-width="8" 
-                              filter="url(#funcion-bigGlow)"
-                              opacity="0.8"/>
-                        
-                        <!-- Nodos del timeline -->
-                        <g class="timeline-nodes">
-                            <!-- Nodo 1 -->
-                            <g class="node-group node01">
-                                <circle class="node-bg" r="40" cx="100" cy="150" fill="rgba(239,68,68,0.1)" stroke="rgba(239,68,68,0.3)" stroke-width="2"/>
-                                <circle class="node-ring" r="35" cx="100" cy="150" fill="none" stroke="rgba(239,68,68,0.5)" stroke-width="1" stroke-dasharray="2,4"/>
-                                <circle class="ball ball01" r="30" cx="100" cy="150" fill="#EF4444" filter="url(#funcion-glow)"/>
-                                <text class="node-icon icon01" x="100" y="150" font-size="24">🚨</text>
-                                <circle class="pulse-ring" r="30" cx="100" cy="150" fill="none" stroke="#EF4444" stroke-width="2" opacity="0"/>
-                            </g>
-                            
-                            <!-- Nodo 2 -->
-                            <g class="node-group node02">
-                                <circle class="node-bg" r="40" cx="500" cy="250" fill="rgba(59,130,246,0.1)" stroke="rgba(59,130,246,0.3)" stroke-width="2"/>
-                                <circle class="node-ring" r="35" cx="500" cy="250" fill="none" stroke="rgba(59,130,246,0.5)" stroke-width="1" stroke-dasharray="2,4"/>
-                                <circle class="ball ball02" r="30" cx="500" cy="250" fill="#3B82F6" filter="url(#funcion-glow)"/>
-                                <text class="node-icon icon02" x="500" y="250" font-size="24">📡</text>
-                                <circle class="pulse-ring" r="30" cx="500" cy="250" fill="none" stroke="#3B82F6" stroke-width="2" opacity="0"/>
-                            </g>
-                            
-                            <!-- Nodo 3 -->
-                            <g class="node-group node03">
-                                <circle class="node-bg" r="40" cx="500" cy="450" fill="rgba(147,51,234,0.1)" stroke="rgba(147,51,234,0.3)" stroke-width="2"/>
-                                <circle class="node-ring" r="35" cx="500" cy="450" fill="none" stroke="rgba(147,51,234,0.5)" stroke-width="1" stroke-dasharray="2,4"/>
-                                <circle class="ball ball03" r="30" cx="500" cy="450" fill="#9333EA" filter="url(#funcion-glow)"/>
-                                <text class="node-icon icon03" x="500" y="450" font-size="24">💻</text>
-                                <circle class="pulse-ring" r="30" cx="500" cy="450" fill="none" stroke="#9333EA" stroke-width="2" opacity="0"/>
-                            </g>
-                            
-                            <!-- Nodo 4 -->
-                            <g class="node-group node04">
-                                <circle class="node-bg" r="40" cx="500" cy="650" fill="rgba(236,72,153,0.1)" stroke="rgba(236,72,153,0.3)" stroke-width="2"/>
-                                <circle class="node-ring" r="35" cx="500" cy="650" fill="none" stroke="rgba(236,72,153,0.5)" stroke-width="1" stroke-dasharray="2,4"/>
-                                <circle class="ball ball04" r="30" cx="500" cy="650" fill="#EC4899" filter="url(#funcion-glow)"/>
-                                <text class="node-icon icon04" x="500" y="650" font-size="24">🚦</text>
-                                <circle class="pulse-ring" r="30" cx="500" cy="650" fill="none" stroke="#EC4899" stroke-width="2" opacity="0"/>
-                            </g>
-                            
-                            <!-- Nodo 5 -->
-                            <g class="node-group node05">
-                                <circle class="node-bg" r="40" cx="400" cy="850" fill="rgba(34,197,94,0.1)" stroke="rgba(34,197,94,0.3)" stroke-width="2"/>
-                                <circle class="node-ring" r="35" cx="400" cy="850" fill="none" stroke="rgba(34,197,94,0.5)" stroke-width="1" stroke-dasharray="2,4"/>
-                                <circle class="ball ball05" r="30" cx="400" cy="850" fill="#22C55E" filter="url(#funcion-glow)"/>
-                                <text class="node-icon icon05" x="400" y="850" font-size="24">✅</text>
-                                <circle class="pulse-ring" r="30" cx="400" cy="850" fill="none" stroke="#22C55E" stroke-width="2" opacity="0"/>
-                            </g>
-                        </g>
-                        
-                        <!-- Partícula viajera -->
-                        <circle class="traveling-particle" r="8" fill="#fff" filter="url(#funcion-glow)" opacity="0">
-                            <animate attributeName="opacity" values="0;1;0" dur="3s" repeatCount="indefinite"/>
-                        </circle>
-                    </svg>
-                </div>
-                
-                <!-- Cards de información -->
-                <div class="timeline-cards">
-                    <!-- Card 1 -->
-                    <div class="timeline-card card01" data-step="1">
-                        <div class="card-content">
-                            <div class="card-header">
-                                <div class="card-number">01</div>
-                                <div class="card-icon-wrapper">
-                                    <div class="card-icon bg-gradient-to-br from-red-500 to-red-600">
-                                        <i class="fas fa-hand-pointer text-white text-2xl"></i>
-                                    </div>
-                                </div>
-                            </div>
-                            <h3 class="card-title">Activación de Emergencia</h3>
-                            <p class="card-description">Sistema de respuesta inmediata activado mediante botonera de emergencia con confirmación táctil y visual</p>
-                            <div class="card-footer">
-                                <span class="response-time">
-                                    <i class="fas fa-clock text-xs mr-1"></i>
-                                    Respuesta: 0.1s
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Card 2 -->
-                    <div class="timeline-card card02" data-step="2">
-                        <div class="card-content">
-                            <div class="card-header">
-                                <div class="card-number">02</div>
-                                <div class="card-icon-wrapper">
-                                    <div class="card-icon bg-gradient-to-br from-blue-500 to-blue-600">
-                                        <i class="fas fa-wifi text-white text-2xl"></i>
-                                    </div>
-                                </div>
-                            </div>
-                            <h3 class="card-title">Transmisión MQTT</h3>
-                            <p class="card-description">Protocolo de mensajería ultraligero que garantiza la entrega de alertas al broker en la nube</p>
-                            <div class="card-footer">
-                                <span class="response-time">
-                                    <i class="fas fa-signal text-xs mr-1"></i>
-                                    Latencia: <50ms
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Card 3 -->
-                    <div class="timeline-card card03" data-step="3">
-                        <div class="card-content">
-                            <div class="card-header">
-                                <div class="card-number">03</div>
-                                <div class="card-icon-wrapper">
-                                    <div class="card-icon bg-gradient-to-br from-purple-500 to-purple-600">
-                                        <i class="fas fa-microchip text-white text-2xl"></i>
-                                    </div>
-                                </div>
-                            </div>
-                            <h3 class="card-title">Procesamiento Central</h3>
-                            <p class="card-description">IA analiza patrones, prioriza alertas y coordina la respuesta multi-dispositivo en tiempo real</p>
-                            <div class="card-footer">
-                                <span class="response-time">
-                                    <i class="fas fa-brain text-xs mr-1"></i>
-                                    Análisis: 0.3s
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Card 4 -->
-                    <div class="timeline-card card04" data-step="4">
-                        <div class="card-content">
-                            <div class="card-header">
-                                <div class="card-number">04</div>
-                                <div class="card-icon-wrapper">
-                                    <div class="card-icon bg-gradient-to-br from-pink-500 to-pink-600">
-                                        <i class="fas fa-traffic-light text-white text-2xl"></i>
-                                    </div>
-                                </div>
-                            </div>
-                            <h3 class="card-title">Activación de Dispositivos</h3>
-                            <p class="card-description">Red sincronizada de semáforos y displays LED de alta visibilidad con actualización instantánea</p>
-                            <div class="card-footer">
-                                <span class="response-time">
-                                    <i class="fas fa-sync text-xs mr-1"></i>
-                                    Sincronización: 0.2s
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Card 5 -->
-                    <div class="timeline-card card05" data-step="5">
-                        <div class="card-content">
-                            <div class="card-header">
-                                <div class="card-number">05</div>
-                                <div class="card-icon-wrapper">
-                                    <div class="card-icon bg-gradient-to-br from-green-500 to-green-600">
-                                        <i class="fas fa-check-circle text-white text-2xl"></i>
-                                    </div>
-                                </div>
-                            </div>
-                            <h3 class="card-title">Confirmación del Sistema</h3>
-                            <p class="card-description">Verificación completa del proceso con registro de eventos y notificaciones en tiempo real</p>
-                            <div class="card-footer">
-                                <span class="response-time">
-                                    <i class="fas fa-shield-alt text-xs mr-1"></i>
-                                    Total: <1s
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+  </div>
+  <div class="timeline-svg-box">
+    <svg id="timeline-svg" width="100%" height="320" viewBox="0 0 900 320">
+      <path id="main-path"
+        d="M 90 160 Q 230 50 350 160 Q 470 270 610 160 Q 730 50 830 160"
+        stroke="#38bdf8"
+        stroke-width="10"
+        fill="none"
+        stroke-linecap="round"
+        style="filter:drop-shadow(0 0 20px #38bdf8cc)"
+      />
+      <!-- Nodos -->
+      <circle class="timeline-node" id="node-1" cx="90" cy="160" r="32" fill="#dc2626" filter="url(#glow1)"/>
+      <circle class="timeline-node" id="node-2" cx="230" cy="50" r="32" fill="#f59e42" filter="url(#glow2)"/>
+      <circle class="timeline-node" id="node-3" cx="350" cy="160" r="32" fill="#a78bfa" filter="url(#glow3)"/>
+      <circle class="timeline-node" id="node-4" cx="610" cy="160" r="32" fill="#38bdf8" filter="url(#glow4)"/>
+      <circle class="timeline-node" id="node-5" cx="830" cy="160" r="32" fill="#22d3ee" filter="url(#glow5)"/>
+      <!-- Emojis -->
+      <text x="90" y="168" font-size="2.3rem" text-anchor="middle" alignment-baseline="middle">🚨</text>
+      <text x="230" y="58" font-size="2.3rem" text-anchor="middle" alignment-baseline="middle">📡</text>
+      <text x="350" y="168" font-size="2.3rem" text-anchor="middle" alignment-baseline="middle">🤖</text>
+      <text x="610" y="168" font-size="2.3rem" text-anchor="middle" alignment-baseline="middle">💡</text>
+      <text x="830" y="168" font-size="2.3rem" text-anchor="middle" alignment-baseline="middle">✅</text>
+      <!-- Glow filters -->
+      <defs>
+        <filter id="glow1"><feGaussianBlur stdDeviation="9" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="glow2"><feGaussianBlur stdDeviation="7" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="glow3"><feGaussianBlur stdDeviation="7" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="glow4"><feGaussianBlur stdDeviation="7" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="glow5"><feGaussianBlur stdDeviation="9" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <!-- Partícula viajera -->
+      <circle id="traveler" r="14" fill="#fff" filter="url(#glow4)" style="opacity:0"/>
+    </svg>
+  </div>
+  <!-- Leyenda de pasos -->
+  <div class="timeline-legend" id="timeline-legend">
+    <div class="legend-step" id="legend-1"><div class="legend-label">Alerta</div><div class="legend-desc">Se activa emergencia</div></div>
+    <div class="legend-step" id="legend-2"><div class="legend-label">Envío</div><div class="legend-desc">MQTT Broker</div></div>
+    <div class="legend-step" id="legend-3"><div class="legend-label">Procesamiento</div><div class="legend-desc">IA Analiza</div></div>
+    <div class="legend-step" id="legend-4"><div class="legend-label">Notificación</div><div class="legend-desc">Dispositivos IoT</div></div>
+    <div class="legend-step" id="legend-5"><div class="legend-label">Confirmación</div><div class="legend-desc">Todo OK</div></div>
+  </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-<script src="https://assets.codepen.io/16327/ScrollTrigger.min.js?v=3.12"></script>
-<script src="https://assets.codepen.io/16327/DrawSVGPlugin3.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/MotionPathPlugin.min.js"></script>
-<script type="module" src="{{ url_for('static', filename='js/gsap_js/funcion.js') }}"></script>
+<!-- GSAP CDN -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/DrawSVGPlugin.min.js"></script>
+<script>
+  // ANIMACIÓN GSAP PRO
+  window.addEventListener('DOMContentLoaded', () => {
+    // Línea principal: dibuja progresivamente
+    gsap.fromTo("#main-path", {
+      drawSVG: "0% 0%"
+    }, {
+      drawSVG: "0% 100%",
+      duration: 2.3,
+      ease: "power2.inOut",
+      onStart() {
+        // Reset nodos/leyendas
+        for(let i=1; i<=5; i++) {
+          gsap.set(`#node-${i}`, { scale: 0.45, opacity: 0.7 });
+          gsap.set(`#legend-${i}`, { className: "legend-step" });
+        }
+      }
+    });
+
+    // Partícula viaja sobre el path, deteniéndose en cada nodo
+    const path = document.querySelector("#main-path");
+    const traveler = document.querySelector("#traveler");
+    const nodes = [
+      {id: 1, pct: 0.00, cx: 90, cy: 160},
+      {id: 2, pct: 0.23, cx: 230, cy: 50},
+      {id: 3, pct: 0.45, cx: 350, cy: 160},
+      {id: 4, pct: 0.70, cx: 610, cy: 160},
+      {id: 5, pct: 0.97, cx: 830, cy: 160}
+    ];
+    // Función para obtener punto a lo largo del path SVG
+    function getPointAt(pct) {
+      const len = path.getTotalLength();
+      return path.getPointAtLength(len * pct);
+    }
+
+    function animateTraveler() {
+      gsap.set(traveler, { opacity: 1, scale: 0.8 });
+      let tl = gsap.timeline();
+      nodes.forEach((node, i) => {
+        let next = getPointAt(node.pct);
+        tl.to(traveler, {
+          duration: i === 0 ? 0.01 : 0.55,
+          motionPath: {
+            path: path,
+            align: path,
+            alignOrigin: [0.5, 0.5],
+            start: nodes[i-1]?.pct || 0,
+            end: node.pct
+          },
+          onStart: () => {
+            // Destaca el nodo y leyenda activa
+            gsap.to(`#node-${node.id}`, { scale: 1.13, opacity: 1, filter: "drop-shadow(0 0 24px #38bdf8cc)", duration: 0.29, ease: "elastic.out(1, 0.4)" });
+            gsap.to(`#legend-${node.id}`, { className: "legend-step active", duration: 0.2 });
+          },
+          onComplete: () => {
+            gsap.to(`#node-${node.id}`, { scale: 0.98, duration: 0.2, yoyo: true, repeat: 1 });
+            gsap.to(traveler, { scale: 1.06, duration: 0.15, yoyo: true, repeat: 1 });
+          }
+        }, i * 0.6);
+      });
+      tl.to(traveler, { opacity: 0, duration: 0.8, delay: 0.45 });
+    }
+
+    // Dibuja la línea, después anima traveler
+    setTimeout(animateTraveler, 1550);
+
+    // Interacción: si haces click en traveler, repite animación
+    traveler.addEventListener("click", animateTraveler);
+  });
+</script>
 {% endblock %}

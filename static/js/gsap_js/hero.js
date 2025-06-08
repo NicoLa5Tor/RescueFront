@@ -1,8 +1,7 @@
 // Hero Module JavaScript
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize GSAP
-    gsap.registerPlugin(ScrollTrigger);
-    
+ 
     // Create particles
     createParticles();
     
@@ -189,7 +188,7 @@ function setupScrollAnimations() {
     
     // Fade out hero content on scroll
     gsap.to('.hero-content', {
-        opacity: 0,
+        opacity: 0.1,
         y: -50,
         scrollTrigger: {
             trigger: '#hero',
@@ -202,7 +201,7 @@ function setupScrollAnimations() {
     // Scale down visual on scroll
     gsap.to('.hero-visual', {
         scale: 0.8,
-        opacity: 0,
+        opacity: 0.2,
         scrollTrigger: {
             trigger: '#hero',
             start: 'center center',
@@ -268,156 +267,6 @@ function scrollToSection(selector) {
     }
 }
 
-// Add interactive effects to buttons
-document.addEventListener('DOMContentLoaded', () => {
-    // Primary button hover effect
-    const primaryButtons = document.querySelectorAll('.cta-primary');
-    primaryButtons.forEach(btn => {
-        btn.addEventListener('mouseenter', (e) => {
-            const rect = btn.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            
-            // Create ripple effect
-            const ripple = document.createElement('div');
-            ripple.style.cssText = `
-                position: absolute;
-                background: rgba(255, 255, 255, 0.3);
-                border-radius: 50%;
-                transform: translate(-50%, -50%);
-                pointer-events: none;
-                animation: ripple 0.6s ease-out;
-            `;
-            ripple.style.left = x + 'px';
-            ripple.style.top = y + 'px';
-            ripple.style.width = '0px';
-            ripple.style.height = '0px';
-            
-            btn.appendChild(ripple);
-            
-            setTimeout(() => ripple.remove(), 600);
-        });
-    });
-    
-    // Add magnetic effect to devices
-    const devices = document.querySelectorAll('.orbit-device');
-    devices.forEach(device => {
-        device.addEventListener('mousemove', (e) => {
-            const rect = device.getBoundingClientRect();
-            const x = e.clientX - rect.left - rect.width / 2;
-            const y = e.clientY - rect.top - rect.height / 2;
-            
-            gsap.to(device, {
-                x: x * 0.3,
-                y: y * 0.3,
-                duration: 0.3,
-                ease: "power2.out"
-            });
-        });
-        
-        device.addEventListener('mouseleave', () => {
-            gsap.to(device, {
-                x: 0,
-                y: 0,
-                duration: 0.3,
-                ease: "elastic.out(1, 0.3)"
-            });
-        });
-    });
-    
-    // Animate stat numbers on view
-    const stats = document.querySelectorAll('.stat-number');
-    stats.forEach(stat => {
-        const value = stat.textContent;
-        const isNumeric = !isNaN(value.replace(/[<>]/g, ''));
-        
-        if (isNumeric) {
-            const finalValue = parseInt(value.replace(/[<>]/g, ''));
-            stat.textContent = '0';
-            
-            ScrollTrigger.create({
-                trigger: stat,
-                start: 'top 80%',
-                onEnter: () => {
-                    gsap.to(stat, {
-                        textContent: finalValue,
-                        duration: 2,
-                        ease: "power2.out",
-                        snap: { textContent: 1 },
-                        onUpdate: function() {
-                            stat.textContent = Math.floor(this.targets()[0].textContent);
-                            if (value.includes('<')) {
-                                stat.textContent = '<' + stat.textContent + 'ms';
-                            }
-                        }
-                    });
-                }
-            });
-        }
-    });
-    
-    // Glitch effect on logo hover
-    const hubCore = document.querySelector('.hub-core');
-    hubCore.addEventListener('mouseenter', () => {
-        hubCore.classList.add('glitch');
-        setTimeout(() => hubCore.classList.remove('glitch'), 300);
-    });
-    
-    // Dynamic background gradient
-    let mouseX = 0;
-    let mouseY = 0;
-    
-    document.addEventListener('mousemove', (e) => {
-        mouseX = e.clientX / window.innerWidth;
-        mouseY = e.clientY / window.innerHeight;
-        
-        gsap.to('.gradient-orbs > div:first-child', {
-            x: mouseX * 50,
-            y: mouseY * 50,
-            duration: 2,
-            ease: "power2.out"
-        });
-        
-        gsap.to('.gradient-orbs > div:last-child', {
-            x: -mouseX * 50,
-            y: -mouseY * 50,
-            duration: 2,
-            ease: "power2.out"
-        });
-    });
-    
-    // Performance optimization - pause animations when not visible
-    let observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                gsap.globalTimeline.play();
-            } else {
-                gsap.globalTimeline.pause();
-            }
-        });
-    });
-    
-    observer.observe(document.querySelector('#hero'));
-    
-    // Initialize connection update loop
-    function updateConnections() {
-        document.querySelectorAll('.orbit-device').forEach((device, index) => {
-            const line = document.querySelector(`.connection-${index}`);
-            if (line) {
-                const deviceRect = device.getBoundingClientRect();
-                const visualRect = device.closest('.hero-visual').getBoundingClientRect();
-                const x2 = deviceRect.left + deviceRect.width / 2 - visualRect.left;
-                const y2 = deviceRect.top + deviceRect.height / 2 - visualRect.top;
-                
-                line.setAttribute('x2', x2);
-                line.setAttribute('y2', y2);
-            }
-        });
-        requestAnimationFrame(updateConnections);
-    }
-    
-    updateConnections();
-});
 
 // Add CSS for ripple animation
 const style = document.createElement('style');

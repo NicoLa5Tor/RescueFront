@@ -6,7 +6,14 @@
     z-index: 0;
 }
 
-/* Ensure the Clamp module stays above subsequent sections */
 #clamp-presentation {
     z-index: 1;
 }
+body {
+    overflow-x: hidden;
+  }
+  body {
+    margin: 0;
+    height: 100%;
+    font-weight: 300;
+  }
