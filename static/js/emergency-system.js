@@ -1,7 +1,6 @@
 // static/js/emergency-system.js
 
-// Register GSAP Plugins
-gsap.registerPlugin(ScrollTrigger);
+// Plugins registrados globalmente en gsap_main.js
 
 // Initialize animations when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {

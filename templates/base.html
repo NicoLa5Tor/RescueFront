@@ -24,6 +24,8 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body>
+    <div id="gsap-smoother-wrapper">
+    <div id="gsap-smoother-content">
     {% block navbar %}
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
@@ -190,35 +192,14 @@
             }
         }
         
-        // Inicializar GSAP cuando el DOM esté listo
-        document.addEventListener('DOMContentLoaded', function() {
-            // Registrar plugins de GSAP
-            if (typeof gsap !== 'undefined') {
-                gsap.registerPlugin(
-                    MotionPathHelper,
-                    MotionPathPlugin,
-                    MorphSVGPlugin,
-                    Observer,
-                    PixiPlugin,
-                    ScrambleTextPlugin,
-                    ScrollTrigger,
-                    ScrollSmoother,
-                    ScrollToPlugin,
-                    SplitText,
-                    TextPlugin,
-                    CustomEase,
-                    CustomBounce,
-                    Flip
-                );
-                gsap.registerPlugin(ScrollTrigger, TextPlugin, CustomEase, CustomBounce, Flip, MotionPathPlugin);
-                console.log('GSAP plugins registrados correctamente');
-            }
-        });
     </script>
-    
-    <!-- Custom Scripts -->
+
+    <!-- Framework Scripts -->
+    <script src="{{ url_for('static', filename='js/gsap_main.js') }}"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    
+
     {% block extra_js %}{% endblock %}
+    </div> <!-- #gsap-smoother-content -->
+    </div> <!-- #gsap-smoother-wrapper -->
 </body>
 </html>
