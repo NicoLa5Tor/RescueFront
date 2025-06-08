@@ -1,7 +1,7 @@
 // Confetti cannon effect using GSAP
 // Adapted from example snippet
 
-gsap.registerPlugin(Observer, CustomEase, CustomWiggle, Physics2DPlugin, ScrollTrigger);
+// Plugins registrados globalmente en gsap_main.js
 
 class confettiCannon {
   constructor(el) {

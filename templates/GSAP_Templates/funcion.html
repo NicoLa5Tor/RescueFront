@@ -29,11 +29,10 @@
 </svg>
 {% endblock %}
 {% block extra_js %}
-<script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/16327/gsap-latest-beta.min.js"></script>
-<script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/16327/ScrollTrigger.min.js"></script>
-<script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/16327/DrawSVGPlugin3.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.2.6/MotionPathPlugin.min.js"></script>
-<script type="module" src="{{ url_for('static', filename='js/gsap_js/funcion.js') }}"></script>
+<script type="module">
+    import { initFuncionModule } from "{{ url_for('static', filename='js/gsap_js/funcion.js') }}";
+    window.gsapApp.registerAnimation(initFuncionModule);
+</script>
 
 
 {% endblock %}
