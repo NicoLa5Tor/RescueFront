@@ -1,0 +1,266 @@
+{% block extra_css %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Unbounded:wght@700&display=swap" rel="stylesheet">
+<style>
+  body {
+    background: radial-gradient(ellipse at 50% 30%, #10151d 70%, #090c11 100%);
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+    color: #fff;
+  }
+  .timeline-hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-top: 64px;
+    padding-bottom: 64px;
+    background: radial-gradient(ellipse at top, #141f33 60%, #0a101b 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .timeline-title {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 3rem;
+    font-weight: 700;
+    letter-spacing: -1px;
+    background: linear-gradient(90deg, #60a5fa, #d946ef, #06b6d4 80%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    text-align: center;
+    margin-bottom: 2.5rem;
+    animation: shimmer 3s infinite linear;
+  }
+  @keyframes shimmer {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+  }
+  .timeline-svg-box {
+    width: 90vw;
+    max-width: 1000px;
+    min-height: 320px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+  }
+  .glass {
+    background: rgba(30, 41, 59, 0.30);
+    box-shadow: 0 6px 32px 0 rgba(10,20,50,0.20);
+    backdrop-filter: blur(12px);
+    border: 1.5px solid rgba(59,130,246,0.10);
+    border-radius: 1.5rem;
+    padding: 1.3rem 1rem 1rem 1rem;
+    text-align: center;
+    margin-top: 1rem;
+  }
+  .timeline-legend {
+    margin-top: 2.5rem;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1.5rem;
+    max-width: 960px;
+    width: 90vw;
+    z-index: 3;
+  }
+  .legend-step {
+    color: #fff;
+    padding: 1rem 0.3rem;
+    border-radius: 1.2rem;
+    background: linear-gradient(135deg, rgba(30,64,175,0.10) 0%, rgba(236,72,153,0.09) 100%);
+    box-shadow: 0 0 0 0 transparent;
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    transition: box-shadow 0.35s;
+    position: relative;
+  }
+  .legend-step.active {
+    box-shadow: 0 0 16px 2px #60a5fa55, 0 2px 24px 1px #a78bfa33;
+    background: linear-gradient(135deg, #0ea5e9 15%, #d946ef 100%);
+    color: #fff;
+  }
+  .legend-label {
+    font-size: 1.1rem;
+    font-family: 'Unbounded', sans-serif;
+    letter-spacing: 0.05em;
+  }
+  .legend-desc {
+    font-size: 0.90rem;
+    color: #e0e7ef;
+    margin-top: 0.5rem;
+    font-weight: 400;
+  }
+  /* Particles bg */
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0.07;
+    z-index: 1;
+    animation: float 18s linear infinite;
+  }
+  .particle-1 { width: 160px; height: 160px; background: #22d3ee; left: 5vw; top: 12vh; animation-delay: 0s;}
+  .particle-2 { width: 240px; height: 240px; background: #d946ef; right: 6vw; top: 32vh; animation-delay: 4s;}
+  .particle-3 { width: 120px; height: 120px; background: #60a5fa; left: 23vw; bottom: 7vh; animation-delay: 7s;}
+  .particle-4 { width: 140px; height: 140px; background: #0ea5e9; right: 25vw; bottom: 12vh; animation-delay: 9s;}
+  @keyframes float {
+    0%,100% { transform: translateY(0px) scale(1);}
+    50% { transform: translateY(80px) scale(1.1);}
+  }
+  /* Responsive */
+  @media (max-width: 900px) {
+    .timeline-legend { grid-template-columns: 1fr 1fr; gap: 0.7rem; }
+    .timeline-title { font-size: 2.1rem; }
+    .timeline-svg-box { min-height: 200px; }
+  }
+  @media (max-width: 600px) {
+    .timeline-legend { grid-template-columns: 1fr; }
+    .timeline-title { font-size: 1.3rem; }
+    .timeline-svg-box { min-height: 110px; }
+    .glass { padding: 0.7rem 0.6rem; }
+    .legend-step { font-size: 0.92rem; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="timeline-hero">
+  <div class="particle particle-1"></div>
+  <div class="particle particle-2"></div>
+  <div class="particle particle-3"></div>
+  <div class="particle particle-4"></div>
+  <div class="glass" style="max-width:680px;margin-bottom:1.7rem;">
+    <div class="timeline-title">
+      Proceso de Alerta Inteligente IoT
+    </div>
+    <div style="font-size:1.14rem; color:#dbeafe;font-family:Inter,sans-serif;letter-spacing:0.01em;margin-top:0.7rem;">
+      Desde la activación hasta la confirmación,<br>visualiza cómo tu emergencia recorre el sistema en tiempo real.
+    </div>
+  </div>
+  <div class="timeline-svg-box">
+    <svg id="timeline-svg" width="100%" height="320" viewBox="0 0 900 320">
+      <path id="main-path"
+        d="M 90 160 Q 230 50 350 160 Q 470 270 610 160 Q 730 50 830 160"
+        stroke="#38bdf8"
+        stroke-width="10"
+        fill="none"
+        stroke-linecap="round"
+        style="filter:drop-shadow(0 0 20px #38bdf8cc)"
+      />
+      <!-- Nodos -->
+      <circle class="timeline-node" id="node-1" cx="90" cy="160" r="32" fill="#dc2626" filter="url(#glow1)"/>
+      <circle class="timeline-node" id="node-2" cx="230" cy="50" r="32" fill="#f59e42" filter="url(#glow2)"/>
+      <circle class="timeline-node" id="node-3" cx="350" cy="160" r="32" fill="#a78bfa" filter="url(#glow3)"/>
+      <circle class="timeline-node" id="node-4" cx="610" cy="160" r="32" fill="#38bdf8" filter="url(#glow4)"/>
+      <circle class="timeline-node" id="node-5" cx="830" cy="160" r="32" fill="#22d3ee" filter="url(#glow5)"/>
+      <!-- Emojis -->
+      <text x="90" y="168" font-size="2.3rem" text-anchor="middle" alignment-baseline="middle">🚨</text>
+      <text x="230" y="58" font-size="2.3rem" text-anchor="middle" alignment-baseline="middle">📡</text>
+      <text x="350" y="168" font-size="2.3rem" text-anchor="middle" alignment-baseline="middle">🤖</text>
+      <text x="610" y="168" font-size="2.3rem" text-anchor="middle" alignment-baseline="middle">💡</text>
+      <text x="830" y="168" font-size="2.3rem" text-anchor="middle" alignment-baseline="middle">✅</text>
+      <!-- Glow filters -->
+      <defs>
+        <filter id="glow1"><feGaussianBlur stdDeviation="9" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="glow2"><feGaussianBlur stdDeviation="7" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="glow3"><feGaussianBlur stdDeviation="7" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="glow4"><feGaussianBlur stdDeviation="7" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="glow5"><feGaussianBlur stdDeviation="9" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <!-- Partícula viajera -->
+      <circle id="traveler" r="14" fill="#fff" filter="url(#glow4)" style="opacity:0"/>
+    </svg>
+  </div>
+  <!-- Leyenda de pasos -->
+  <div class="timeline-legend" id="timeline-legend">
+    <div class="legend-step" id="legend-1"><div class="legend-label">Alerta</div><div class="legend-desc">Se activa emergencia</div></div>
+    <div class="legend-step" id="legend-2"><div class="legend-label">Envío</div><div class="legend-desc">MQTT Broker</div></div>
+    <div class="legend-step" id="legend-3"><div class="legend-label">Procesamiento</div><div class="legend-desc">IA Analiza</div></div>
+    <div class="legend-step" id="legend-4"><div class="legend-label">Notificación</div><div class="legend-desc">Dispositivos IoT</div></div>
+    <div class="legend-step" id="legend-5"><div class="legend-label">Confirmación</div><div class="legend-desc">Todo OK</div></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- GSAP CDN -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/DrawSVGPlugin.min.js"></script>
+<script>
+  // ANIMACIÓN GSAP PRO
+  window.addEventListener('DOMContentLoaded', () => {
+    // Línea principal: dibuja progresivamente
+    gsap.fromTo("#main-path", {
+      drawSVG: "0% 0%"
+    }, {
+      drawSVG: "0% 100%",
+      duration: 2.3,
+      ease: "power2.inOut",
+      onStart() {
+        // Reset nodos/leyendas
+        for(let i=1; i<=5; i++) {
+          gsap.set(`#node-${i}`, { scale: 0.45, opacity: 0.7 });
+          gsap.set(`#legend-${i}`, { className: "legend-step" });
+        }
+      }
+    });
+
+    // Partícula viaja sobre el path, deteniéndose en cada nodo
+    const path = document.querySelector("#main-path");
+    const traveler = document.querySelector("#traveler");
+    const nodes = [
+      {id: 1, pct: 0.00, cx: 90, cy: 160},
+      {id: 2, pct: 0.23, cx: 230, cy: 50},
+      {id: 3, pct: 0.45, cx: 350, cy: 160},
+      {id: 4, pct: 0.70, cx: 610, cy: 160},
+      {id: 5, pct: 0.97, cx: 830, cy: 160}
+    ];
+    // Función para obtener punto a lo largo del path SVG
+    function getPointAt(pct) {
+      const len = path.getTotalLength();
+      return path.getPointAtLength(len * pct);
+    }
+
+    function animateTraveler() {
+      gsap.set(traveler, { opacity: 1, scale: 0.8 });
+      let tl = gsap.timeline();
+      nodes.forEach((node, i) => {
+        let next = getPointAt(node.pct);
+        tl.to(traveler, {
+          duration: i === 0 ? 0.01 : 0.55,
+          motionPath: {
+            path: path,
+            align: path,
+            alignOrigin: [0.5, 0.5],
+            start: nodes[i-1]?.pct || 0,
+            end: node.pct
+          },
+          onStart: () => {
+            // Destaca el nodo y leyenda activa
+            gsap.to(`#node-${node.id}`, { scale: 1.13, opacity: 1, filter: "drop-shadow(0 0 24px #38bdf8cc)", duration: 0.29, ease: "elastic.out(1, 0.4)" });
+            gsap.to(`#legend-${node.id}`, { className: "legend-step active", duration: 0.2 });
+          },
+          onComplete: () => {
+            gsap.to(`#node-${node.id}`, { scale: 0.98, duration: 0.2, yoyo: true, repeat: 1 });
+            gsap.to(traveler, { scale: 1.06, duration: 0.15, yoyo: true, repeat: 1 });
+          }
+        }, i * 0.6);
+      });
+      tl.to(traveler, { opacity: 0, duration: 0.8, delay: 0.45 });
+    }
+
+    // Dibuja la línea, después anima traveler
+    setTimeout(animateTraveler, 1550);
+
+    // Interacción: si haces click en traveler, repite animación
+    traveler.addEventListener("click", animateTraveler);
+  });
+</script>
+{% endblock %}

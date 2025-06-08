@@ -1,0 +1,136 @@
+/* rescue.css - CSS encapsulado para el módulo RESCUE */
+@import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@700&display=swap');
+
+/* Contenedor principal */
+.rescue-7x9k-wrapper {
+  position: relative;
+  min-height: 100vh;
+}
+
+.rescue-7x9k-module {
+  --rescue-fluid-bp: clamp(0, 1vw + 0.15, 1);
+  --rescue-f5-min: 48;
+  --rescue-f5-max: 10;
+  --rescue-step-5: calc(
+    ((var(--rescue-f5-min) / 16) * 1rem) +
+    (var(--rescue-f5-max) - var(--rescue-f5-min)) * var(--rescue-fluid-bp)
+  );
+  font-family: 'Unbounded', sans-serif;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #000;
+  color: #fff;
+}
+
+.rescue-7x9k-module * {
+  box-sizing: border-box;
+}
+
+.rescue-7x9k-smooth-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.rescue-7x9k-module .pin-spacer {
+  pointer-events: none;
+}
+
+.rescue-7x9k-hero {
+  min-height: 100vh;
+  padding: 4rem 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding-top: 20vh;
+}
+
+.rescue-7x9k-heading {
+  position: relative;
+  z-index: 2;
+  mix-blend-mode: difference;
+  perspective: 1000px;
+  -webkit-backface-visibility: visible;
+  backface-visibility: visible;
+  transform: rotate(0.1deg);
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.rescue-7x9k-title {
+  position: relative;
+  font-size: clamp(3rem, 10vw, 12rem) !important;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 0.9;
+  font-weight: 700;
+  margin: 0;
+}
+
+.rescue-7x9k-clamp {
+  position: relative;
+  z-index: -1;
+  display: inline-block;
+}
+
+.rescue-7x9k-clamp svg {
+  position: absolute;
+  width: 112%;
+  top: 50%;
+  transform: translateY(-50%) rotate(2deg);
+  left: -6%;
+  opacity: 0.8;
+}
+
+.rescue-7x9k-images {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+  align-items: stretch;
+  justify-items: center;
+  margin-top: 8rem;
+  z-index: -1;
+  width: 100%;
+  max-width: 1400px;
+}
+
+.rescue-7x9k-images img {
+  width: 100%;
+  height: 50vh;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+  transition: transform 0.3s ease;
+}
+
+.rescue-7x9k-images img:hover {
+  transform: translateY(-10px);
+}
+
+.rescue-7x9k-spacer {
+  height: 100vh;
+}
+
+/* Media queries para responsive */
+@media (max-width: 768px) {
+  .rescue-7x9k-images {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .rescue-7x9k-images img {
+    height: 40vh;
+  }
+}
+
+@media (max-width: 480px) {
+  .rescue-7x9k-images {
+    grid-template-columns: 1fr;
+  }
+  
+  .rescue-7x9k-title {
+    font-size: clamp(3rem, 10vw, 8rem) !important;
+  }
+}

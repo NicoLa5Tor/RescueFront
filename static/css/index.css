@@ -1,0 +1,19 @@
+/* static/css/index.css */
+
+/* Presentation wrappers ensure sections stack cleanly */
+.presentation-overlay {
+    position: relative;
+    z-index: 0;
+}
+
+#clamp-presentation {
+    z-index: 1;
+}
+body {
+    overflow-x: hidden;
+  }
+  body {
+    margin: 0;
+    height: 100%;
+    font-weight: 300;
+  }
