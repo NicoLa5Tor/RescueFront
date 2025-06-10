@@ -190,7 +190,7 @@ var tl = gsap.timeline({
     start: "top top",
     end: "bottom 100%",
     scrub: 5,
-    markers: {color: "white"}
+    markers: false
   }
 })
 tl.to(tubePerc, {

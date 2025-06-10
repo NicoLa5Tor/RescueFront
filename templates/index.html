@@ -1,458 +1,71 @@
+{% extends 'base.html' %}
 
-
-
-{%extends 'base.html'%}
 {% block extra_css %}
-<link href="{{ url_for('static', filename='css/index.css') }}" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+<link href="{{ url_for('static', filename='css/gsap_css/clamp.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/gsap_css/hero.css') }}" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
-{% include 'GSAP_Templates/clamp.html' %}
-<div class="relative pb-32">  <!-- Aumenta pb-32 para más espacio abajo -->
-    {% include 'secundIndex.html' %}
+<!-- Clamp/Rescue Section -->
+
+<div id="gsap-smoother-wrapper">
+    <div id="gsap-smoother-content">
+      
+        <div class="rescue-section">
+          {% include 'GSAP_Templates/clamp.html' %}
+        </div>
+  
+        <section id="hero">
+          {% include 'GSAP_Templates/hero.html' %}
+         </section>
+  
+      <!-- Aquí puedes agregar más módulos o secciones -->
+      
+    </div>
 </div>
-<!-- Emergency Types -->
-<section class="py-20 bg-gray-50 relative overflow-hidden horizontal-section" id="emergency-types">
-    <div class="absolute inset-0 parallax-layer bg-grid-pattern opacity-20" data-speed="0.3"></div>
-    <div class="section-container scroll-content max-w-none">
-        <div class="text-center mb-16">
-            <span class="section-subtitle">Tipos de Emergencia</span>
-            <h2 class="section-heading">
-                5 Tipos de <span class="text-gradient">Alertas</span>
-            </h2>
-            <p class="section-description">
-                Sistema preparado para responder a diferentes tipos de emergencias empresariales
-            </p>
-        </div>
-
-        <div class="alert-list flex space-x-6 w-max">
-            <!-- Incendio -->
-            <div class="emergency-card bg-white rounded-xl shadow-lg p-6 transform hover:scale-105 transition-all duration-300 w-72 flex-shrink-0" data-emergency="fire">
-                <div class="text-center">
-                    <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center">
-                        <i class="fas fa-fire text-2xl text-red-600"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-2">Incendio</h3>
-                    <p class="text-gray-600 text-sm">Alerta Roja</p>
-                    <div class="mt-4 w-full h-1 bg-red-500 rounded-full"></div>
-                </div>
-            </div>
-            
-            <!-- Inundación -->
-            <div class="emergency-card bg-white rounded-xl shadow-lg p-6 transform hover:scale-105 transition-all duration-300 w-72 flex-shrink-0" data-emergency="flood">
-                <div class="text-center">
-                    <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-100 flex items-center justify-center">
-                        <i class="fas fa-water text-2xl text-blue-600"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-2">Inundación</h3>
-                    <p class="text-gray-600 text-sm">Alerta Azul</p>
-                    <div class="mt-4 w-full h-1 bg-blue-500 rounded-full"></div>
-                </div>
-            </div>
-            
-            <!-- Terremoto -->
-            <div class="emergency-card bg-white rounded-xl shadow-lg p-6 transform hover:scale-105 transition-all duration-300 w-72 flex-shrink-0" data-emergency="earthquake">
-                <div class="text-center">
-                    <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-yellow-100 flex items-center justify-center">
-                        <i class="fas fa-house-damage text-2xl text-yellow-600"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-2">Terremoto</h3>
-                    <p class="text-gray-600 text-sm">Alerta Amarilla</p>
-                    <div class="mt-4 w-full h-1 bg-yellow-500 rounded-full"></div>
-                </div>
-            </div>
-            
-            <!-- Seguridad -->
-            <div class="emergency-card bg-white rounded-xl shadow-lg p-6 transform hover:scale-105 transition-all duration-300 w-72 flex-shrink-0" data-emergency="security">
-                <div class="text-center">
-                    <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center">
-                        <i class="fas fa-shield-alt text-2xl text-green-600"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-2">Seguridad</h3>
-                    <p class="text-gray-600 text-sm">Alerta Verde</p>
-                    <div class="mt-4 w-full h-1 bg-green-500 rounded-full"></div>
-                </div>
-            </div>
-            
-            <!-- Alerta General -->
-            <div class="emergency-card bg-white rounded-xl shadow-lg p-6 transform hover:scale-105 transition-all duration-300 w-72 flex-shrink-0" data-emergency="general">
-                <div class="text-center">
-                    <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-orange-100 flex items-center justify-center">
-                        <i class="fas fa-exclamation-triangle text-2xl text-orange-600"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-2">Alerta General</h3>
-                    <p class="text-gray-600 text-sm">Alerta Naranja</p>
-                    <div class="mt-4 w-full h-1 bg-orange-500 rounded-full"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- System Components -->
-<section class="py-20 bg-white relative overflow-hidden horizontal-section" id="components">
-    <div class="absolute inset-0 parallax-layer bg-gradient-to-br from-white to-gray-100 opacity-20" data-speed="0.2" data-direction="horizontal"></div>
-    <div class="absolute inset-0 parallax-layer bg-gradient-to-br from-white to-gray-100 opacity-20" data-speed="0.2"></div>
-    <div class="section-container scroll-content max-w-none">
-        <div class="text-center mb-16">
-            <span class="section-subtitle">Componentes del Sistema</span>
-            <h2 class="section-heading">
-                Dispositivos <span class="text-gradient">IoT</span>
-            </h2>
-        </div>
-        
-        <div class="component-list flex space-x-8 w-max">
-            <!-- Semáforo ESP32 -->
-            <div class="component-card group w-80 flex-shrink-0">
-                <div class="bg-gradient-to-br from-red-50 to-red-100 rounded-t-xl p-8">
-                    <i class="fas fa-traffic-light text-5xl text-red-600 group-hover:scale-110 transition-transform"></i>
-                </div>
-                <div class="p-6">
-                    <h3 class="text-xl font-semibold mb-3">Semáforos ESP32</h3>
-                    <p class="text-gray-600 mb-4">Microcontrolador ESP32 con 5 tipos de alarma visual mediante MQTT</p>
-                    <ul class="text-sm text-gray-500 space-y-2">
-                        <li class="flex items-center">
-                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                            <span>Identificación única</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                            <span>Mensaje de supervisión</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            
-            <!-- Botonera -->
-            <div class="component-card group w-80 flex-shrink-0">
-                <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-t-xl p-8">
-                    <i class="fas fa-th text-5xl text-yellow-600 group-hover:scale-110 transition-transform"></i>
-                </div>
-                <div class="p-6">
-                    <h3 class="text-xl font-semibold mb-3">Botoneras</h3>
-                    <p class="text-gray-600 mb-4">5 botones pulsadores para generar cada tipo de alarma</p>
-                    <ul class="text-sm text-gray-500 space-y-2">
-                        <li class="flex items-center">
-                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                            <span>Código alfanumérico</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                            <span>Topic BOTONERAS/ID</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            
-            <!-- Televisores -->
-            <div class="component-card group w-80 flex-shrink-0">
-                <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-t-xl p-8">
-                    <i class="fas fa-tv text-5xl text-blue-600 group-hover:scale-110 transition-transform"></i>
-                </div>
-                <div class="p-6">
-                    <h3 class="text-xl font-semibold mb-3">Displays Raspberry Pi</h3>
-                    <p class="text-gray-600 mb-4">Sistema de presentación en Python sobre Raspberry Pi Zero W</p>
-                    <ul class="text-sm text-gray-500 space-y-2">
-                        <li class="flex items-center">
-                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                            <span>Información de emergencia</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                            <span>Topic TELEVISORES/ID</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            
-            <!-- Software Central -->
-            <div class="component-card group w-80 flex-shrink-0">
-                <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-t-xl p-8">
-                    <i class="fas fa-server text-5xl text-purple-600 group-hover:scale-110 transition-transform"></i>
-                </div>
-                <div class="p-6">
-                    <h3 class="text-xl font-semibold mb-3">Software Central</h3>
-                    <p class="text-gray-600 mb-4">Software Python que genera y recibe mensajes MQTT</p>
-                    <ul class="text-sm text-gray-500 space-y-2">
-                        <li class="flex items-center">
-                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                            <span>Mensajes de supervisión</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                            <span>Integración en la nube</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- MQTT Architecture -->
-<section class="py-20 bg-gray-50 relative overflow-hidden" id="architecture">
-    <div class="absolute inset-0 parallax-layer bg-grid-pattern opacity-20" data-speed="0.25"></div>
-    <div class="section-container">
-        <div class="text-center mb-16">
-            <span class="section-subtitle">Arquitectura</span>
-            <h2 class="section-heading">
-                Comunicación <span class="text-gradient">MQTT</span>
-            </h2>
-        </div>
-        
-        <div class="max-w-4xl mx-auto">
-            <div class="bg-white rounded-2xl shadow-xl p-8">
-                <h3 class="text-2xl font-semibold mb-6">Estructura de Topics</h3>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-                    <div>
-                        <h4 class="font-semibold mb-3">Topics de Dispositivos</h4>
-                        <ul class="space-y-2 text-gray-600">
-                            <li class="flex items-center">
-                                <i class="fas fa-folder text-yellow-500 mr-2"></i>
-                                Semáforos
-                            </li>
-                            <li class="flex items-center">
-                                <i class="fas fa-folder text-yellow-500 mr-2"></i>
-                                Botoneras
-                            </li>
-                            <li class="flex items-center">
-                                <i class="fas fa-folder text-yellow-500 mr-2"></i>
-                                Displays
-                            </li>
-                        </ul>
-                    </div>
-                    
-                    <div>
-                        <h4 class="font-semibold mb-3">Tipos de Mensajes</h4>
-                        <ul class="space-y-2 text-gray-600">
-                            <li class="flex items-center">
-                                <i class="fas fa-envelope text-blue-500 mr-2"></i>
-                                alarma
-                            </li>
-                            <li class="flex items-center">
-                                <i class="fas fa-envelope text-blue-500 mr-2"></i>
-                                supervision
-                            </li>
-                            <li class="flex items-center">
-                                <i class="fas fa-envelope text-blue-500 mr-2"></i>
-                                status
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- How it Works -->
-<section class="py-20 bg-white relative overflow-hidden" id="how-it-works">
-    <div class="absolute inset-0 parallax-layer bg-gradient-to-br from-white to-gray-100 opacity-20" data-speed="0.2"></div>
-    <div class="section-container">
-        <div class="text-center mb-16">
-            <span class="section-subtitle">Proceso</span>
-            <h2 class="section-heading">
-                <span class="text-gradient"> ¿Cómo Funciona</span>?
-            </h2>
-        </div>
-        
-        <div class="timeline-container max-w-4xl mx-auto">
-            <div class="timeline-line"></div>
-            
-            <!-- Step 1 -->
-            <div class="timeline-step" data-step="1">
-                <div class="timeline-content">
-                    <div class="timeline-icon bg-red-500">
-                        <i class="fas fa-hand-pointer"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-2">Activación de Emergencia</h3>
-                    <p class="text-gray-600">Se presiona el botón correspondiente en la botonera</p>
-                </div>
-            </div>
-            
-            <!-- Step 2 -->
-            <div class="timeline-step" data-step="2">
-                <div class="timeline-content">
-                    <div class="timeline-icon bg-blue-500">
-                        <i class="fas fa-wifi"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-2">Mensaje MQTT</h3>
-                    <p class="text-gray-600">Se envía la alerta al broker en la nube</p>
-                </div>
-            </div>
-            
-            <!-- Step 3 -->
-            <div class="timeline-step" data-step="3">
-                <div class="timeline-content">
-                    <div class="timeline-icon bg-purple-500">
-                        <i class="fas fa-microchip"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-2">Procesamiento Central</h3>
-                    <p class="text-gray-600">Software analiza y distribuye la alerta</p>
-                </div>
-            </div>
-            
-            <!-- Step 4 -->
-            <div class="timeline-step" data-step="4">
-                <div class="timeline-content">
-                    <div class="timeline-icon bg-green-500">
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-2">Activación de Dispositivos</h3>
-                    <p class="text-gray-600">Semáforos y displays muestran la información</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Interactive Demo -->
-<section class="py-20 bg-gray-900 text-white relative overflow-hidden" id="demo">
-    <div class="absolute inset-0 parallax-layer bg-grid-pattern opacity-10" data-speed="0.3"></div>
-    <div class="section-container">
-        <div class="text-center mb-16">
-            <span class="section-subtitle text-gray-400">Demostración</span>
-            <h2 class="section-heading text-white">
-                Prueba el <span class="text-gradient">Sistema</span>
-            </h2>
-        </div>
-        
-        <div class="max-w-6xl mx-auto">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div class="demo-panel">
-                    <h3 class="text-2xl font-semibold mb-6">Simula una Emergencia</h3>
-                    <div class="flex items-center gap-8">
-                        <div class="control-panel" id="demo-buttons">
-                            <button class="control-button red" onclick="simulateEmergency('ROJO')">
-                                <i class="fas fa-fire"></i>
-                            </button>
-                            <button class="control-button blue" onclick="simulateEmergency('AZUL')">
-                                <i class="fas fa-water"></i>
-                            </button>
-                            <button class="control-button yellow" onclick="simulateEmergency('AMARILLO')">
-                                <i class="fas fa-house-damage"></i>
-                            </button>
-                            <button class="control-button green" onclick="simulateEmergency('VERDE')">
-                                <i class="fas fa-shield-alt"></i>
-                            </button>
-                            <button class="control-button orange" onclick="simulateEmergency('NARANJA')">
-                                <i class="fas fa-exclamation-triangle"></i>
-                            </button>
-                        </div>
-                        <ul class="text-sm space-y-1">
-                            <li><span class="font-semibold text-red-400">Rojo:</span> Incendio</li>
-                            <li><span class="font-semibold text-blue-400">Azul:</span> Inundación</li>
-                            <li><span class="font-semibold text-yellow-500">Amarillo:</span> Terremoto</li>
-                            <li><span class="font-semibold text-green-500">Verde:</span> Seguridad</li>
-                            <li><span class="font-semibold text-orange-500">Naranja:</span> General</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="demo-panel">
-                    <h3 class="text-2xl font-semibold mb-6">Respuesta del Sistema</h3>
-                    <div class="demo-output-area">
-                        <div id="demo-output" class="space-y-4 text-center">
-                            <p class="text-gray-400">
-                                <i class="fas fa-info-circle mr-2"></i>
-                                Presiona un botón para simular una emergencia...
-                            </p>
-                        </div>
-                    </div>
-                    
-                    <!-- Visual Indicator -->
-                    <div class="mt-6 flex justify-center">
-                        <div class="text-center">
-                            <div id="demo-display" class="display-demo">
-                                <i class="fas fa-tv text-3xl"></i>
-                            </div>
-                            <p class="text-sm mt-2">Display</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- CTA Section -->
-<section class="py-20 bg-gradient-to-r from-blue-600 to-purple-600 text-white relative overflow-hidden">
-    <div class="absolute inset-0 parallax-layer bg-gradient-to-r from-blue-600 to-purple-600 opacity-50" data-speed="0.15"></div>
-    <div class="section-container text-center">
-        <h2 class="text-4xl lg:text-5xl font-bold mb-6">
-            ¿Listo para proteger tu empresa?
-        </h2>
-        <p class="text-xl mb-8 max-w-2xl mx-auto">
-            Implementa el sistema de emergencias más avanzado con tecnología IoT
-        </p>
-        <div class="flex flex-wrap gap-4 justify-center">
-            <a href="#contact" class="btn-white">
-                <i class="fas fa-envelope mr-2"></i>
-                Solicitar Información
-            </a>
-            <button class="btn-white-outline" onclick="scrollToSection('#components')">
-                <i class="fas fa-book mr-2"></i>
-                Ver Documentación
-            </button>
-        </div>
-    </div>
-</section>
-
-<!-- Contact -->
-<section class="py-20 bg-white relative overflow-hidden" id="contact">
-    <div class="absolute inset-0 parallax-layer bg-gradient-to-br from-white to-gray-100 opacity-20" data-speed="0.2"></div>
-    <div class="section-container">
-        <div class="max-w-4xl mx-auto">
-            <div class="text-center mb-12">
-                <h2 class="text-4xl font-bold mb-4">Contáctanos</h2>
-                <p class="text-xl text-gray-600">Solicita más información sobre el sistema</p>
-            </div>
-            
-            <form class="bg-gray-50 rounded-2xl p-8">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-gray-700 font-medium mb-2">Nombre</label>
-                        <input type="text" class="form-input w-full" placeholder="Tu nombre">
-                    </div>
-                    <div>
-                        <label class="block text-gray-700 font-medium mb-2">Email</label>
-                        <input type="email" class="form-input w-full" placeholder="tu@email.com">
-                    </div>
-                    <div>
-                        <label class="block text-gray-700 font-medium mb-2">Empresa</label>
-                        <input type="text" class="form-input w-full" placeholder="Nombre de tu empresa">
-                    </div>
-                    <div>
-                        <label class="block text-gray-700 font-medium mb-2">Teléfono</label>
-                        <input type="tel" class="form-input w-full" placeholder="+57 123 456 7890">
-                    </div>
-                </div>
-                <div class="mt-6">
-                    <label class="block text-gray-700 font-medium mb-2">Mensaje</label>
-                    <textarea class="form-input w-full" rows="4" placeholder="Cuéntanos sobre tus necesidades"></textarea>
-                </div>
-                <div class="mt-8 text-center">
-                    <button type="submit" class="btn-primary">
-                        <i class="fas fa-paper-plane mr-2"></i>
-                        Enviar Mensaje
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</section>
-
+  
 {% endblock %}
 
-{%block extra_js%}
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollSmoother.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/DrawSVGPlugin.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/MotionPathPlugin.min.js"></script>
+{% block extra_js %}
+<!-- Módulos específicos del index -->
+<script type="module" src="{{ url_for('static', filename='js/gsap_js/clamp.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/gsap_js/hero.js') }}"></script>
+<!-- <script src="{{ url_for('static', filename='js/gsap_js/timeline-module.js') }}"></script>
+<script src="{{ url_for('static', filename='js/gsap_js/emergency-module.js') }}"></script>
+<script src="{{ url_for('static', filename='js/gsap_js/components-module.js') }}"></script> -->
 
-{%endblock%}
+<!-- Inicializar módulos del index -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // Navegación suave
+    window.addEventListener('gsap:initialized', function() {
+        console.log('Módulos del index inicializados');
+        
+        // Smooth scroll para anchors
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    GSAPMain.scrollTo(target, { 
+                        offsetY: 50,
+                        duration: 1.2 
+                    });
+                }
+            });
+        });
+        
+        // Refresh al cambiar de tamaño
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                GSAPMain.refresh();
+            }, 250);
+        });
+    });
+});
+</script>
+{% endblock %}

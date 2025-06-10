@@ -1,7 +1,7 @@
 /* Hero Section Styles */
 #hero {
     position: relative;
-    background: linear-gradient(to bottom, #0f0f0f 0%, #000000 100%);
+    background: black;
 }
 
 /* Grid Background Pattern */

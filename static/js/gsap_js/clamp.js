@@ -1,103 +1,110 @@
-// rescue.js - JavaScript encapsulado
+// static/js/modules/clamp-module.js
 (function() {
-  'use strict';
-  
-  // Namespace para evitar conflictos
-  const RescueModule = {
-    smoother: null,
+    'use strict';
     
-    init: function() {
-      // Verificar que GSAP esté cargado
-      if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined' || typeof ScrollSmoother === 'undefined') {
-        console.error('RESCUE Module: GSAP, ScrollTrigger o ScrollSmoother no están cargados');
-        return;
-      }
-      
-      // Registrar plugins
-      gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
-      
-      this.smoother = ScrollSmoother.create({
-        wrapper: '#rescue-smooth-wrapper',
-        content: '#rescue-smooth-content',
-        smooth: 2,
-        effects: true,
-        smoothTouch: 0.1
-      });
-      
-      // Animación del SVG
-      gsap.from('.rescue-7x9k-draw', {
-        drawSVG: "0%",
-        ease: "expo.out",
-        scrollTrigger: {
-          trigger: '.rescue-7x9k-heading',
-          start: "clamp(top center)",
-          scrub: true,
-          pin: '.rescue-7x9k-pin',
-          pinSpacing: false,
-          markers: false,
-          id: 'rescue-svg-trigger'
+    const ClampModule = {
+        id: 'clamp-module',
+        container: null,
+        gsapContext: null,
+        
+        init: function(gsapMain) {
+            this.gsapMain = gsapMain;
+            
+            // Buscar el contenedor con la sección hero-clamp
+            this.container = document.querySelector('.hero-clamp');
+            
+            if (!this.container) {
+                console.warn(`Contenedor .hero-clamp no encontrado`);
+                return;
+            }
+            
+            console.log('Iniciando módulo Clamp');
+            this.setupAnimations();
+        },
+        
+        setupAnimations: function() {
+            const ctx = gsap.context(() => {
+                
+                // Registrar plugins localmente (por si acaso)
+                gsap.registerPlugin(ScrollTrigger, DrawSVGPlugin);
+                
+                // NO crear ScrollSmoother - usar el global de GSAPMain
+                
+                // Animación DrawSVG con ScrollTrigger
+                gsap.from('.draw', {
+                    drawSVG: "0%",
+                    ease: "expo.out",
+                    scrollTrigger: {
+                        trigger: '.heading',
+                        start: "clamp(top center)",
+                        scrub: true,
+                        pin: '.pin',
+                        pinSpacing: false,
+                        markers: false,
+                        // ScrollSmoother maneja el scroller automáticamente
+                    }
+                });
+                
+                // Animación de entrada para el título
+                gsap.from('.h1-clamp', {
+                    opacity: 0,
+                    y: 50,
+                    duration: 1.5,
+                    ease: "power3.out"
+                });
+                
+                
+                
+                // Efecto parallax adicional en el heading
+                gsap.to('.heading', {
+                    yPercent: -50,
+                    ease: "none",
+                    scrollTrigger: {
+                        trigger: '.hero-clamp',
+                        start: "top top",
+                        end: "bottom top",
+                        scrub: 1
+                    }
+                });
+                
+                // Rotación sutil del SVG al hacer scroll
+                gsap.to('.clamp svg', {
+                    rotation: 5,
+                    ease: "none",
+                    scrollTrigger: {
+                        trigger: '.heading',
+                        start: "top center",
+                        end: "bottom center",
+                        scrub: 2
+                    }
+                });
+                
+                // Asegurar que el logo SVG sea visible si existe
+                if (document.querySelector('.logo svg')) {
+                    gsap.set('.logo svg', { opacity: 1 });
+                }
+                
+            }, this.container);
+            
+            this.gsapContext = ctx;
+        },
+        
+        destroy: function() {
+            if (this.gsapContext) {
+                this.gsapContext.revert();
+            }
+            console.log(`Módulo ${this.id} destruido`);
         }
-      });
-      
-      // Parallax effect para las imágenes
-      gsap.utils.toArray('.rescue-7x9k-img').forEach((img, i) => {
-        const speed = img.getAttribute('data-speed');
-        gsap.to(img, {
-          yPercent: -30 * (i + 1),
-          ease: "none",
-          scrollTrigger: {
-            trigger: '.rescue-7x9k-images',
-            start: "top bottom",
-            end: "bottom top",
-            scrub: speed,
-            id: `rescue-img-${i}`
-          }
-        });
-      });
-      
-      // Fade in inicial
-      gsap.fromTo('.rescue-7x9k-module',
-        { opacity: 0 },
-        { opacity: 1, duration: 1, ease: "power2.out" }
-      );
-    },
+    };
     
-    destroy: function() {
-      // Limpiar ScrollTriggers específicos del módulo
-      ScrollTrigger.getAll().forEach(st => {
-        if (st.vars.id && st.vars.id.startsWith('rescue-')) {
-          st.kill();
+    // Registro del módulo
+    window.addEventListener('gsap:initialized', () => {
+        if (window.GSAPMain) {
+            GSAPMain.registerModule(ClampModule.id, ClampModule);
         }
-      });
-      
-      // Destruir smoother
-      if (this.smoother) {
-        this.smoother.kill();
-        this.smoother = null;
-      }
-    },
+    });
     
-    refresh: function() {
-      if (this.smoother) {
-        this.smoother.refresh();
-      }
-      ScrollTrigger.refresh();
+    if (window.GSAPMain && window.GSAPMain.initialized) {
+        GSAPMain.registerModule(ClampModule.id, ClampModule);
     }
-  };
-  
-  // Inicializar cuando el DOM esté listo
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => RescueModule.init());
-  } else {
-    RescueModule.init();
-  }
-  
-  // Exponer API pública si es necesario
-  window.RescueModule = {
-    refresh: () => RescueModule.refresh(),
-    destroy: () => RescueModule.destroy()
-   
-  };
-  window.smoother.kill();
-  window.smoother = null;
 })();

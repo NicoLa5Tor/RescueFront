@@ -1,195 +1,170 @@
-{%extends 'secundIndex.html'%}
 
-{% block extra_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/gsap_css/hero.css') }}">
-<!-- <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-     -->
-{% endblock %}
-<style>
-    
-</style>
-
-{% block content %}
-<section class="relative min-h-screen  bg-gradient-to-b from-slate-950 via-slate-900 to-black" id="hero" style="background: #000; height: max-content;">
-    <!-- Animated Background -->
-    <div class="absolute inset-0">
-        <!-- Grid Pattern -->
-        <div class="absolute inset-0 bg-grid-pattern opacity-5"></div>
-        
-        <!-- Animated Particles -->
-        <div class="particles-container absolute inset-0"></div>
-        
-        <!-- Gradient Orbs -->
-        <div class="gradient-orbs">
-            <div class="absolute top-0 left-1/4 w-96 h-96 bg-red-600 rounded-full filter blur-3xl opacity-10 animate-pulse"></div>
-            <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-orange-600 rounded-full filter blur-3xl opacity-10 animate-pulse animation-delay-2000"></div>
-        </div>
-        
-        <!-- Tech Lines -->
-        <svg class="absolute inset-0 w-full h-full opacity-20" preserveAspectRatio="none">
-            <defs>
-                <linearGradient id="line-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#ef4444" stop-opacity="0"/>
-                    <stop offset="50%" stop-color="#ef4444" stop-opacity="1"/>
-                    <stop offset="100%" stop-color="#ef4444" stop-opacity="0"/>
-                </linearGradient>
-            </defs>
-            <path class="tech-line" d="M0,100 Q250,50 500,100 T1000,100" stroke="url(#line-gradient)" stroke-width="2" fill="none"/>
-            <path class="tech-line" d="M0,200 Q250,150 500,200 T1000,200" stroke="url(#line-gradient)" stroke-width="2" fill="none"/>
-        </svg>
-    </div>
-
-    <!-- Main Content -->
-    <div class="container mx-auto px-4 relative z-10">
-        <div class="flex flex-col lg:flex-row items-center justify-between min-h-screen py-16 lg:py-20">
+    <section id="hero" class="relative min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-black">
+        <!-- Animated Background -->
+        <div class="absolute inset-0">
+            <!-- Grid Pattern -->
+            <div class="absolute inset-0 bg-grid-pattern opacity-5"></div>
             
-            <!-- Left Content -->
-            <div class="lg:w-1/2 text-white hero-content">
-                {% block hero_status %}
-                <!-- Status Badge -->
-                <div class="inline-flex items-center status-badge mb-8">
-                    <div class="status-indicator"></div>
-                    <span class="ml-3 text-sm font-medium text-gray-300 uppercase tracking-wider">
-                        {{ status_text|default('Sistema Activo 24/7') }}
-                    </span>
-                </div>
-                {% endblock %}
-                
-                {% block hero_title %}
-                <!-- Main Title -->
-                <h1 class="hero-title text-4xl sm:text-5xl lg:text-7xl font-bold mb-6 leading-tight">
-                    <span class="block overflow-hidden">
-                        <span class="title-word">{{ title_line1|default('Sistema de') }}</span>
-                    </span>
-                    <span class="block overflow-hidden">
-                        <span class="title-word gradient-text">{{ title_line2|default('Emergencias') }}</span>
-                    </span>
-                    <span class="block overflow-hidden">
-                        <span class="title-word">{{ title_line3|default('Empresarial') }}</span>
-                    </span>
-                </h1>
-                {% endblock %}
-                
-                {% block hero_description %}
-                <!-- Description -->
-                <p class="hero-description text-lg lg:text-xl text-gray-400 mb-10 leading-relaxed max-w-2xl">
-                    {{ description|default('Protección integral con tecnología IoT y comunicación MQTT para respuesta inmediata ante emergencias:') }}
-                    <span class="text-red-400">{{ alert1|default('incendios') }}</span>, 
-                    <span class="text-blue-400">{{ alert2|default('inundaciones') }}</span>, 
-                    <span class="text-yellow-400">{{ alert3|default('terremotos') }}</span>, 
-                    <span class="text-green-400">{{ alert4|default('seguridad') }}</span> y 
-                    <span class="text-purple-400">{{ alert5|default('alertas generales') }}</span>.
-                </p>
-                {% endblock %}
-                
-                {% block hero_cta %}
-                <!-- CTA Buttons -->
-                <div class="hero-buttons flex flex-col sm:flex-row gap-4">
-                    <button class="cta-primary group relative overflow-hidden" onclick="scrollToSection('#demo')">
-                        <span class="relative z-10 flex items-center justify-center">
-                            <i class="fas fa-play-circle mr-3"></i>
-                            {{ cta_primary|default('Ver Demostración') }}
-                        </span>
-                        <div class="button-bg"></div>
-                    </button>
-                    
-                    <button class="cta-secondary group" onclick="scrollToSection('#components')">
-                        <span class="flex items-center justify-center">
-                            <i class="fas fa-microchip mr-3"></i>
-                            {{ cta_secondary|default('Conocer Componentes') }}
-                        </span>
-                    </button>
-                </div>
-                {% endblock %}
-                
-                {% block hero_stats %}
-                <!-- Stats -->
-                <div class="hero-stats grid grid-cols-3 gap-6 mt-12">
-                    <div class="stat-item">
-                        <div class="stat-number text-3xl font-bold text-red-400">{{ stat1_value|default('5') }}</div>
-                        <div class="stat-label text-sm text-gray-500">{{ stat1_label|default('Tipos de Alerta') }}</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number text-3xl font-bold text-orange-400">{{ stat2_value|default('<100ms') }}</div>
-                        <div class="stat-label text-sm text-gray-500">{{ stat2_label|default('Tiempo Respuesta') }}</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number text-3xl font-bold text-yellow-400">{{ stat3_value|default('24/7') }}</div>
-                        <div class="stat-label text-sm text-gray-500">{{ stat3_label|default('Monitoreo') }}</div>
-                    </div>
-                </div>
-                {% endblock %}
+            <!-- Animated Particles -->
+            <div class="particles-container absolute inset-0"></div>
+            
+            <!-- Gradient Orbs -->
+            <div class="gradient-orbs">
+                <div class="absolute top-0 left-1/4 w-64 h-64 md:w-96 md:h-96 bg-red-600 rounded-full filter blur-3xl opacity-10 animate-pulse"></div>
+                <div class="absolute bottom-0 right-1/4 w-64 h-64 md:w-96 md:h-96 bg-orange-600 rounded-full filter blur-3xl opacity-10 animate-pulse animation-delay-2000"></div>
             </div>
             
-            <!-- Right Visual -->
-            <div class="lg:w-1/2 mt-12 lg:mt-0 lg:pl-12">
-                {% block hero_visual %}
-                <div class="hero-visual relative">
-                    <!-- Central Hub -->
-                    <div class="network-hub">
-                        <div class="hub-core">
-                            <i class="fas fa-shield-alt text-5xl"></i>
-                        </div>
-                        <div class="hub-rings">
-                            <div class="ring ring-1"></div>
-                            <div class="ring ring-2"></div>
-                            <div class="ring ring-3"></div>
-                        </div>
+            <!-- Tech Lines -->
+            <svg class="absolute inset-0 w-full h-full opacity-20" preserveAspectRatio="none">
+                <defs>
+                    <linearGradient id="line-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#ef4444" stop-opacity="0"/>
+                        <stop offset="50%" stop-color="#ef4444" stop-opacity="1"/>
+                        <stop offset="100%" stop-color="#ef4444" stop-opacity="0"/>
+                    </linearGradient>
+                </defs>
+                <path class="tech-line" d="M0,100 Q250,50 500,100 T1000,100" stroke="url(#line-gradient)" stroke-width="2" fill="none"/>
+                <path class="tech-line" d="M0,200 Q250,150 500,200 T1000,200" stroke="url(#line-gradient)" stroke-width="2" fill="none"/>
+            </svg>
+        </div>
+
+        <!-- Main Content -->
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="flex flex-col lg:flex-row items-center justify-between min-h-screen py-16 lg:py-20">
+                
+                <!-- Left Content -->
+                <div class="lg:w-1/2 text-white hero-content">
+                    <!-- Status Badge -->
+                    <div class="status-badge mb-6 md:mb-8">
+                        <div class="status-indicator"></div>
+                        <span class="ml-2 md:ml-3 text-xs md:text-sm font-medium text-gray-300 uppercase tracking-wider">
+                            Sistema Activo 24/7
+                        </span>
                     </div>
                     
-                    <!-- Orbiting Devices -->
-                    <div class="device-orbit">
-                        {% for device in devices|default([
-                            {'icon': 'fa-traffic-light', 'color': 'text-red-400', 'tooltip': 'Semáforo LED'},
-                            {'icon': 'fa-th', 'color': 'text-yellow-400', 'tooltip': 'Panel LED 8x8'},
-                            {'icon': 'fa-tv', 'color': 'text-green-400', 'tooltip': 'Pantalla OLED'},
-                            {'icon': 'fa-server', 'color': 'text-blue-400', 'tooltip': 'Servidor Central'},
-                            {'icon': 'fa-microchip', 'color': 'text-purple-400', 'tooltip': 'ESP32 IoT'}
-                        ]) %}
-                        <div class="orbit-device device-{{ loop.index }}" data-tooltip="{{ device.tooltip }}">
-                            <i class="fas {{ device.icon }} text-2xl {{ device.color }}"></i>
-                        </div>
-                        {% endfor %}
+                    <!-- Main Title -->
+                    <h1 class="hero-title text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4 md:mb-6 leading-tight">
+                        <span class="block overflow-hidden">
+                            <span class="title-word">Sistema de</span>
+                        </span>
+                        <span class="block overflow-hidden">
+                            <span class="title-word gradient-text">Emergencias</span>
+                        </span>
+                        <span class="block overflow-hidden">
+                            <span class="title-word">Empresarial</span>
+                        </span>
+                    </h1>
+                    
+                    <!-- Description -->
+                    <p class="hero-description text-base md:text-lg lg:text-xl text-gray-400 mb-8 md:mb-10 leading-relaxed max-w-2xl">
+                        Protección integral con tecnología IoT y comunicación MQTT para respuesta inmediata ante emergencias:
+                        <span class="text-red-400">incendios</span>, 
+                        <span class="text-blue-400">inundaciones</span>, 
+                        <span class="text-yellow-400">terremotos</span>, 
+                        <span class="text-green-400">seguridad</span> y 
+                        <span class="text-purple-400">alertas generales</span>.
+                    </p>
+                    
+                    <!-- CTA Buttons -->
+                    <div class="hero-buttons flex flex-col sm:flex-row gap-3 md:gap-4 w-full sm:w-auto">
+                        <button class="cta-primary group relative overflow-hidden" onclick="scrollToSection('#demo')">
+                            <span class="relative z-10 flex items-center justify-center">
+                                <i class="fas fa-play-circle mr-2 md:mr-3"></i>
+                                Ver Demostración
+                            </span>
+                            <div class="button-bg"></div>
+                        </button>
+                        <button class="cta-secondary group" onclick="scrollToSection('#components')">
+                            <span class="flex items-center justify-center">
+                                <i class="fas fa-microchip mr-2 md:mr-3"></i>
+                                Conocer Componentes
+                            </span>
+                        </button>
                     </div>
                     
-                    <!-- Connection Lines -->
-                    <svg class="absolute inset-0 w-full h-full pointer-events-none">
-                        <defs>
-                            <filter id="hero-glow">
-                                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-                                <feMerge>
-                                    <feMergeNode in="coloredBlur"/>
-                                    <feMergeNode in="SourceGraphic"/>
-                                </feMerge>
-                            </filter>
-                        </defs>
-                        <g class="connection-lines"></g>
-                    </svg>
+                    <!-- Stats -->
+                    <div class="hero-stats grid grid-cols-3 gap-3 md:gap-6 mt-8 md:mt-12">
+                        <div class="stat-item">
+                            <div class="stat-number text-red-400">5</div>
+                            <div class="stat-label">Tipos de Alerta</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number text-orange-400">&lt;100ms</div>
+                            <div class="stat-label">Tiempo Respuesta</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number text-yellow-400">24/7</div>
+                            <div class="stat-label">Monitoreo</div>
+                        </div>
+                    </div>
                 </div>
-                {% endblock %}
+                
+                <!-- Right Visual -->
+                <div class="lg:w-1/2 mt-12 lg:mt-0 lg:pl-8 xl:pl-12">
+                    <div class="hero-visual relative">
+                        <!-- Central Hub -->
+                        <div class="network-hub">
+                            <div class="hub-core">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="hub-rings">
+                                <div class="ring ring-1"></div>
+                                <div class="ring ring-2"></div>
+                                <div class="ring ring-3"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Orbiting Devices -->
+                        <div class="device-orbit">
+                            <div class="orbit-device device-1" data-tooltip="Semáforo LED">
+                                <i class="fas fa-traffic-light text-red-400"></i>
+                            </div>
+                            <div class="orbit-device device-2" data-tooltip="Panel LED 8x8">
+                                <i class="fas fa-th text-yellow-400"></i>
+                            </div>
+                            <div class="orbit-device device-3" data-tooltip="Pantalla OLED">
+                                <i class="fas fa-tv text-green-400"></i>
+                            </div>
+                            <div class="orbit-device device-4" data-tooltip="Servidor Central">
+                                <i class="fas fa-server text-blue-400"></i>
+                            </div>
+                            <div class="orbit-device device-5" data-tooltip="ESP32 IoT">
+                                <i class="fas fa-microchip text-purple-400"></i>
+                            </div>
+                        </div>
+                        
+                        <!-- Connection Lines -->
+                        <svg class="absolute inset-0 w-full h-full pointer-events-none">
+                            <defs>
+                                <filter id="hero-glow">
+                                    <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                                    <feMerge>
+                                        <feMergeNode in="coloredBlur"/>
+                                        <feMergeNode in="SourceGraphic"/>
+                                    </feMerge>
+                                </filter>
+                            </defs>
+                            <g class="connection-lines"></g>
+                        </svg>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-    
-    <!-- Scroll Indicator -->
-    <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2">
-        <div class="scroll-indicator-wrapper">
-            <div class="scroll-mouse">
-                <div class="scroll-wheel"></div>
+        
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 hidden md:block">
+            <div class="scroll-indicator-wrapper">
+                <div class="scroll-mouse">
+                    <div class="scroll-wheel"></div>
+                </div>
+                <span class="text-xs text-gray-500 mt-2 block">Desliza para explorar</span>
             </div>
-            <span class="text-xs text-gray-500 mt-2 block">{{ scroll_text|default('Desliza para explorar') }}</span>
         </div>
-    </div>
-    
-    <!-- Bottom Fade Transition -->
-    <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black to-transparent pointer-events-none"></div>
+        
+        <!-- Bottom Fade Transition -->
+        <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black to-transparent pointer-events-none"></div>
+    </section>
 
+ 
 
-</section>
-
-{% endblock %}
-{% block extra_js %}
-<!-- Hero Module JS -->
-<script type="module" src="{{ url_for('static', filename='js/gsap_js/hero.js') }}"></script>
-{% endblock %}
+  

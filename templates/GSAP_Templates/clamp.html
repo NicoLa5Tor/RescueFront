@@ -1,40 +1,27 @@
-{% block extra_css %}
-<link href="{{ url_for('static', filename='css/gsap_css/clamp.css') }}" rel="stylesheet">
+<header>
+    <!-- Puedes agregar contenido del header aquí si lo necesitas -->
+</header>
 
-{% endblock %}
-
-{% block content %}
-<!-- Módulo RESCUE encapsulado -->
-<div class="rescue-7x9k-wrapper">
-  <div class="rescue-7x9k-module">
-    <div class="rescue-7x9k-smooth-wrapper" id="rescue-smooth-wrapper">
-      <div class="rescue-7x9k-smooth-content" id="rescue-smooth-content">
-        <section class="rescue-7x9k-hero">
-          <div class="rescue-7x9k-heading">
-            <div class="rescue-7x9k-pin">
-              <h1 class="rescue-7x9k-title">
-                <span class="rescue-7x9k-clamp">RESCUE
-                  <svg class="rescue-7x9k-svg" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 842.14 500">
-                    <path class="rescue-7x9k-draw" d="M336.2,130.05C261.69,118,16.52,122,20.65,244.29c4.17,123,484.3,299.8,734.57,108.37,244-186.65-337.91-311-546.54-268.47" fill="none" stroke="#8486aa" stroke-miterlimit="10" stroke-width="8" />
-                  </svg>
+<section class="hero-clamp pad-l">
+    <div class="heading">
+        <div class="pin">
+            <h1 class="h1-clamp">
+                <span class="clamp">RESCUE
+                    <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 842.14 500">
+                        <path class="draw" d="M336.2,130.05C261.69,118,16.52,122,20.65,244.29c4.17,123,484.3,299.8,734.57,108.37,244-186.65-337.91-311-546.54-268.47" fill="none" stroke="#8486aa" stroke-miterlimit="10" stroke-width="8" />
+                    </svg>
                 </span>
-              </h1>
-            </div>
-          </div>
-          <div class="rescue-7x9k-images">
-            <img class="rescue-7x9k-img" data-speed="clamp(1.4)" src='https://upload.wikimedia.org/wikipedia/commons/b/b8/Deerfire.jpg' alt=''>
-            <img class="rescue-7x9k-img" data-speed="clamp(1.8)" src='https://media.cnn.com/api/v1/images/stellar/prod/cnne-1686833-inundaciones-texas-2024.jpg?c=16x9&q=h_833,w_1480,c_fill' alt=''>
-            <img class="rescue-7x9k-img" data-speed="clamp(2.2)" src='https://static.nationalgeographicla.com/files/styles/image_3200/public/nationalgeographic2780929.jpg?w=1900&h=1265' alt=''>
-            <img class="rescue-7x9k-img" data-speed="clamp(1.5)" src='https://estaticos.elcolombiano.com/binrepository/848x565/34c0/780d565/none/11101/WODW/46386792_46386792_20241027182030.jpg' alt=''>
-          </div>
-        </section>
-        <section class="rescue-7x9k-spacer"></section>
-      </div>
+                <span class="yt">SYSTEM</span>
+            </h1>
+        </div>
     </div>
-  </div>
-</div>
-{% endblock %}
+    <div class="images">
+        <img class="img-clamp" data-speed="clamp(2.4)" src="https://e00-elmundo.uecdn.es/assets/multimedia/imagenes/2022/02/23/16456127740623.jpg" alt="Incendio">
+        <img class="img-clamp" data-speed="clamp(1.8)" src="https://www.bomberosbogota.gov.co/sites/default/files/Documentacion/Prensa/Noticias/2022/inundaciones_3-min.jpeg" alt="Inundacion">
+        <img class="img-clamp" data-speed="clamp(2.2)" src="https://www.acnur.org/sites/default/files/styles/landscape_10/public/RF1333934.jpg?h=10d202d3&itok=eXU3VXbr" alt="Terremoto">
+        <img class="img-clamp" data-speed="clamp(1.5)" src="https://media.diariopopular.com.ar/p/0475e323ddf0bf0817a05f64f8cabaae/adjuntos/143/imagenes/008/017/0008017348/1140x0/smart/robos-hogaresjpg.jpg" alt="Robos">
+    </div>
+</section>
 
-{% block extra_js %}
-<script type="module" src="{{ url_for('static', filename='js/gsap_js/clamp.js') }}"></script>
-{% endblock %}
+<section class="spacer">
+</section>
