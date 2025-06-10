@@ -1,3 +1,24 @@
+(function() {
+  'use strict';
+
+  const TunnelModule = {
+    id: 'tunnel-module',
+    container: null,
+    init: function(gsapMain) {
+      this.gsapMain = gsapMain;
+      this.container = document.querySelector('#tunnel');
+      if (!this.container) {
+        console.warn('Tunnel section not found');
+        return;
+      }
+      initTunnel(this.container);
+    },
+    destroy: function() {}
+  };
+
+  function initTunnel(container) {
+    var canvas = container.querySelector('canvas.experience');
+
 var Mathutils = {
     normalize: function($value, $min, $max) {
         return ($value - $min) / ($max - $min);
@@ -32,7 +53,7 @@ var composer, params = {
 
 //Create a WebGL renderer
 var renderer = new THREE.WebGLRenderer({
-  canvas: document.querySelector("canvas"),
+  canvas: canvas,
   antialias: true,
   shadowMapEnabled: true,
   shadowMapType: THREE.PCFSoftShadowMap
@@ -227,7 +248,7 @@ function render(){
 }
 requestAnimationFrame(render);
 
-$('canvas').click(function(){
+canvas.addEventListener('click', function(){
   console.clear();
   markers.push(p1);
   console.log(JSON.stringify(markers));
@@ -336,3 +357,17 @@ document.addEventListener('mousemove', function(evt) {
   cameraRotationProxyX = Mathutils.map(evt.clientX, 0, window.innerWidth, 3.24, 3.04);
   cameraRotationProxyY = Mathutils.map(evt.clientY, 0, window.innerHeight, -0.1, 0.1);
 });
+
+  } // end initTunnel
+
+  window.addEventListener('gsap:initialized', () => {
+    if (window.GSAPMain) {
+      GSAPMain.registerModule(TunnelModule.id, TunnelModule);
+    }
+  });
+
+  if (window.GSAPMain && window.GSAPMain.initialized) {
+    GSAPMain.registerModule(TunnelModule.id, TunnelModule);
+  }
+
+})();

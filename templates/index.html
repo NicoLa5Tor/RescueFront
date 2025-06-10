@@ -4,6 +4,7 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="{{ url_for('static', filename='css/gsap_css/clamp.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/gsap_css/hero.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/gsap_css/tunnel.css') }}" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
@@ -19,6 +20,10 @@
         <section id="hero">
           {% include 'GSAP_Templates/hero.html' %}
          </section>
+
+        <section id="tunnel">
+          {% include 'GSAP_Templates/tunnel.html' %}
+        </section>
   
       <!-- Aquí puedes agregar más módulos o secciones -->
       
@@ -31,6 +36,14 @@
 <!-- Módulos específicos del index -->
 <script type="module" src="{{ url_for('static', filename='js/gsap_js/clamp.js') }}"></script>
 <script type="module" src="{{ url_for('static', filename='js/gsap_js/hero.js') }}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/100/three.min.js"></script>
+<script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/68819/EffectComposer.js"></script>
+<script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/68819/RenderPass.js"></script>
+<script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/68819/ShaderPass.js"></script>
+<script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/68819/CopyShader.js"></script>
+<script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/68819/LuminosityHighPassShader.js"></script>
+<script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/68819/UnrealBloomPass.js"></script>
+<script type="module" src="{{ url_for('static', filename='js/gsap_js/tunnel.js') }}"></script>
 <!-- <script src="{{ url_for('static', filename='js/gsap_js/timeline-module.js') }}"></script>
 <script src="{{ url_for('static', filename='js/gsap_js/emergency-module.js') }}"></script>
 <script src="{{ url_for('static', filename='js/gsap_js/components-module.js') }}"></script> -->
