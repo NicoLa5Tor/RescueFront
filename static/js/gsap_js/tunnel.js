@@ -207,12 +207,12 @@ gsap.registerPlugin(ScrollTrigger);
 
 var tl = gsap.timeline({
   scrollTrigger: {
-    trigger: ".scrollTarget",
+    trigger: container,
     start: "top top",
-    end: "bottom 100%",
+    end: "+=1000%",
     scrub: 5,
-    pin: container,
-    pinSpacing: false,
+    pin: true,
+    anticipatePin: 1,
     markers: false
   }
 })
