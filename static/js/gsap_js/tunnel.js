@@ -62,7 +62,8 @@ renderer.setSize(ww, wh);
 
 //Create an empty scene
 var scene = new THREE.Scene();
-scene.fog = new THREE.Fog(0x194794,0,100);
+scene.fog = new THREE.Fog(0x000000, 0, 100);
+
 
 var clock = new THREE.Clock();
 
@@ -125,7 +126,7 @@ path.tension = .5;
 //Create a new geometry with a different radius
 var geometry = new THREE.TubeGeometry( path, 300, 4, 32, false );
 
-var texture = new THREE.TextureLoader().load( 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/68819/3d_space_5.jpg' , function ( texture ) {
+var texture = new THREE.TextureLoader().load( 'static/assets/img/espacio2.png' , function ( texture ) {
 
     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
     texture.offset.set( 0, 0 );
@@ -148,7 +149,7 @@ var material = new THREE.MeshPhongMaterial({
   shininess: 20,
   bumpMap: mapHeight,
   bumpScale: -.03,
-  specular: 0x0b2349
+  specular: 0x000000
 });
 
 //Create a mesh

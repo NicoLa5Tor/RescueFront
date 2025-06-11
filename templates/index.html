@@ -10,25 +10,21 @@
 {% block content %}
 <!-- Clamp/Rescue Section -->
 
-<div id="gsap-smoother-wrapper">
-    <div id="gsap-smoother-content">
-      
-        <div class="rescue-section">
-          {% include 'GSAP_Templates/clamp.html' %}
-        </div>
-  
-        <section id="hero">
-          {% include 'GSAP_Templates/hero.html' %}
-         </section>
-
-        <section id="tunnel">
-          {% include 'GSAP_Templates/tunnel.html' %}
-        </section>
-  
-      <!-- Aquí puedes agregar más módulos o secciones -->
-      
-    </div>
+<div class="rescue-section">
+  {% include 'GSAP_Templates/clamp.html' %}
 </div>
+
+<section id="hero">
+  {% include 'GSAP_Templates/hero.html' %}
+</section>
+
+<!-- Gradiente de transición entre Hero y Tunnel -->
+
+<section id="tunnel">
+  {% include 'GSAP_Templates/tunnel.html' %}
+</section>
+
+<!-- Aquí puedes agregar más módulos o secciones -->
   
 {% endblock %}
 

@@ -320,6 +320,26 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Inicializar GSAPMain
     GSAPMain.init();
+
+    // Transición con gradiente hacia el módulo Tunnel
+    const hero = document.querySelector('#hero');
+    const tunnel = document.querySelector('#tunnel');
+    const overlay = document.querySelector('#hero-tunnel-overlay');
+    if (hero && tunnel && overlay) {
+        gsap.set(tunnel, { opacity: 0 });
+        gsap.timeline({
+            scrollTrigger: {
+                trigger: tunnel,
+                start: 'top bottom',
+                end: 'bottom top',
+                scrub: true
+            }
+        })
+        .to(overlay, { opacity: 1, ease: 'none', duration: 0.5 })
+        .to(overlay, { opacity: 0, ease: 'none', duration: 0.5 })
+        .to(tunnel, { opacity: 1, ease: 'none' }, 0)
+        .to(hero, { opacity: 0, ease: 'none' }, 0);
+    }
 });
 
 // Optimización de rendimiento para móviles
