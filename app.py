@@ -165,7 +165,7 @@ def inject_user():
 #=========== RUTAS DE PRUEBA ============
 @app.route("/pruebas")
 def pruebas():
-    return render_template("GSAP_Templates/tunnel.html")
+    return render_template("GSAP_Templates/header.html")
 
 # ========== MANEJO DE ERRORES ==========
 @app.errorhandler(404)
