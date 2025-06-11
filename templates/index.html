@@ -25,18 +25,15 @@
 
 <!-- Contact Section -->
 <section id="contact-us" class="relative min-h-screen">
-  <!-- El módulo de contacto generará todo el contenido aquí -->
-</section>
+{% include 'GSAP_Templates/contact.html' %}
 
-<!-- Aquí puedes agregar más módulos o secciones -->
+</section>
 {% endblock %}
 
 {% block extra_js %}
-<!-- Módulos específicos del index -->
 <script type="module" src="{{ url_for('static', filename='js/gsap_js/clamp.js') }}"></script>
 <script type="module" src="{{ url_for('static', filename='js/gsap_js/hero.js') }}"></script>
 
-<!-- Three.js y dependencias del tunnel -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/100/three.min.js"></script>
 <script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/68819/EffectComposer.js"></script>
 <script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/68819/RenderPass.js"></script>
@@ -45,18 +42,13 @@
 <script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/68819/LuminosityHighPassShader.js"></script>
 <script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/68819/UnrealBloomPass.js"></script>
 
-<!-- Módulos GSAP -->
 <script type="module" src="{{ url_for('static', filename='js/gsap_js/tunnel.js') }}"></script>
 <script type="module" src="{{ url_for('static', filename='js/gsap_js/contact.js') }}"></script>
 
-<!-- Inicializar módulos del index -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // Navegación suave
   window.addEventListener('gsap:initialized', function() {
     console.log('Módulos del index inicializados');
-    
-    // Smooth scroll para anchors
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', function(e) {
         e.preventDefault();
@@ -70,7 +62,6 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     });
     
-    // Función para scroll directo a contacto
     window.scrollToContact = function() {
       const contactSection = document.querySelector('#contact-us');
       if (contactSection) {
@@ -80,8 +71,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
       }
     };
-    
-    // Refresh al cambiar de tamaño
     let resizeTimer;
     window.addEventListener('resize', () => {
       clearTimeout(resizeTimer);
