@@ -320,6 +320,23 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Inicializar GSAPMain
     GSAPMain.init();
+
+    // Transición suave hacia el módulo Tunnel
+    const hero = document.querySelector('#hero');
+    const tunnel = document.querySelector('#tunnel');
+    if (hero && tunnel) {
+        gsap.set(tunnel, { opacity: 0 });
+        gsap.timeline({
+            scrollTrigger: {
+                trigger: tunnel,
+                start: 'top bottom',
+                end: 'top top',
+                scrub: true
+            }
+        })
+        .to(tunnel, { opacity: 1, ease: 'none' }, 0)
+        .to(hero, { opacity: 0, ease: 'none' }, 0);
+    }
 });
 
 // Optimización de rendimiento para móviles
