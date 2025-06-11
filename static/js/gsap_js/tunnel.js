@@ -211,6 +211,8 @@ var tl = gsap.timeline({
     start: "top top",
     end: "bottom 100%",
     scrub: 5,
+    pin: container,
+    pinSpacing: false,
     markers: false
   }
 })
