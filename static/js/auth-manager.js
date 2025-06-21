@@ -229,10 +229,7 @@ class AuthManager {
       // Construir URL completa
       let fullUrl = url.startsWith('http') ? url : `${this.API_BASE}${url}`
       
-      // 🔧 AGREGAR BARRA FINAL SI ES UNA URL DE API Y NO LA TIENE
-      if (fullUrl.includes('/api/') && !fullUrl.endsWith('/') && !fullUrl.includes('?')) {
-        fullUrl += '/'
-      }
+      // Mantener URL intacta para evitar 404 en endpoints que no aceptan barra final
       
       console.log("📡 Petición autenticada:", fullUrl)
       
