@@ -1,176 +1,770 @@
 {% extends "base.html" %}
+{% block title %}Usuarios - Sistema Multi-Tenant{% endblock %}
 
-{% block title %}Gestión de Usuarios - Admin{% endblock %}
+{% block extra_css %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<style>
+  .user-card {
+    transition: all 0.3s ease;
+  }
+  
+  .user-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+  
+  .empresa-selector {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+</style>
+{% endblock %}
+
+{% block navbar %}
+<!-- Top Navigation -->
+<nav class="bg-white shadow-sm border-b border-gray-200 fixed w-full top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-16">
+      <!-- Logo -->
+      <div class="flex items-center">
+        <button class="lg:hidden mr-3 p-2 text-gray-600 hover:text-blue-600" onclick="toggleSidebar()">
+          <i class="fas fa-bars"></i>
+        </button>
+        <div class="flex items-center space-x-3">
+          <i class="fas fa-shield-alt text-2xl text-blue-600"></i>
+          <span class="text-xl font-bold text-gray-900">Rescue Dashboard</span>
+        </div>
+      </div>
+      
+      <!-- User Menu -->
+      <div class="flex items-center space-x-4">
+        <button class="refresh-btn p-2 text-gray-600 hover:text-blue-600 transition-colors" title="Actualizar datos">
+          <i class="fas fa-sync-alt"></i>
+        </button>
+        
+        <div class="relative">
+          <button class="user-info-btn flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 transition-colors">
+            <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+              <span class="text-white text-sm font-medium user-initials">U</span>
+            </div>
+            <div class="hidden md:block text-left">
+              <p class="text-sm font-medium text-gray-900 user-name">Usuario</p>
+              <p class="text-xs text-gray-500 user-role">Rol</p>
+            </div>
+          </button>
+        </div>
+        
+        <button class="logout-btn p-2 text-red-600 hover:text-red-700 transition-colors" title="Cerrar sesión">
+          <i class="fas fa-sign-out-alt"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>
+{% endblock %}
 
 {% block content %}
-<div class="dashboard-container">
-    <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-        <div class="p-3">
-            <h5 class="text-white mb-4">
-                <i class="fas fa-user-shield me-2"></i>Panel Admin
-            </h5>
-            <nav>
-                <a href="{{ url_for('admin_dashboard') }}" class="sidebar-link">
-                    <i class="fas fa-tachometer-alt"></i>
-                    Dashboard
-                </a>
-                <a href="{{ url_for('admin_users') }}" class="sidebar-link active">
-                    <i class="fas fa-users"></i>
-                    Usuarios
-                </a>
-                <a href="{{ url_for('admin_empresas') }}" class="sidebar-link">
-                    <i class="fas fa-building"></i>
-                    Empresas
-                </a>
-                <a href="{{ url_for('admin_stats') }}" class="sidebar-link">
-                    <i class="fas fa-chart-bar"></i>
-                    Estadísticas
-                </a>
-            </nav>
-        </div>
-    </aside>
-
-    <!-- Main Content -->
-    <main class="dashboard-content">
-        <div class="container-fluid">
-            <!-- Header -->
-            <div class="row mb-4">
-                <div class="col">
-                    <h1 class="h3 mb-0">Gestión de Usuarios</h1>
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
-                            <li class="breadcrumb-item active">Usuarios</li>
-                        </ol>
-                    </nav>
-                </div>
-            </div>
-
-            <!-- Actions Bar -->
-            <div class="row mb-4">
-                <div class="col-md-6">
-                    <div class="input-group">
-                        <span class="input-group-text">
-                            <i class="fas fa-search"></i>
-                        </span>
-                        <input type="text" class="form-control" placeholder="Buscar usuarios..." 
-                               id="searchUsers" onkeyup="filterTable()">
-                    </div>
-                </div>
-                <div class="col-md-6 text-md-end mt-3 mt-md-0">
-                    <button class="btn btn-primary me-2" onclick="createUser()">
-                        <i class="fas fa-plus me-2"></i>Nuevo Usuario
-                    </button>
-                    <button class="btn btn-outline-primary me-2" onclick="filterUsersByAge()">
-                        <i class="fas fa-filter me-2"></i>Filtrar por Edad
-                    </button>
-                    <button class="btn btn-outline-secondary" onclick="loadUsers()">
-                        <i class="fas fa-sync me-2"></i>Actualizar
-                    </button>
-                </div>
-            </div>
-
-            <!-- Users Table -->
-            <div class="row">
-                <div class="col-12">
-                    <div class="modern-card">
-                        <div class="table-responsive">
-                            <table class="table table-hover" id="usersTable">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Usuario</th>
-                                        <th>Edad</th>
-                                        <th>Estado</th>
-                                        <th>Fecha Registro</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="usersTableBody">
-                                    <!-- Users will be loaded here -->
-                                </tbody>
-                            </table>
-                        </div>
-                        
-                        <!-- Loading State -->
-                        <div class="text-center py-5 d-none" id="loadingState">
-                            <div class="loading-spinner mb-3"></div>
-                            <p class="text-muted">Cargando usuarios...</p>
-                        </div>
-                        
-                        <!-- Empty State -->
-                        <div class="text-center py-5 d-none" id="emptyState">
-                            <i class="fas fa-users fa-3x text-muted mb-3"></i>
-                            <h5>No hay usuarios registrados</h5>
-                            <p class="text-muted">Comienza creando el primer usuario</p>
-                            <button class="btn btn-primary" onclick="createUser()">
-                                <i class="fas fa-plus me-2"></i>Crear Usuario
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-</div>
-
-<!-- Edit User Modal -->
-<div class="modal fade" id="editUserModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Editar Usuario</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form id="editUserForm">
-                    <input type="hidden" id="editUserId">
-                    <div class="mb-3">
-                        <label for="editUserName" class="form-label">Nombre</label>
-                        <input type="text" class="form-control" id="editUserName" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="editUserEmail" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="editUserEmail" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="editUserAge" class="form-label">Edad</label>
-                        <input type="number" class="form-control" id="editUserAge" min="1" max="120">
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="saveUserChanges()">
-                    <i class="fas fa-save me-2"></i>Guardar Cambios
-                </button>
-            </div>
-        </div>
+<div class="min-h-screen bg-gray-50 pt-16">
+  <!-- Sidebar -->
+  <div class="fixed inset-y-0 left-0 z-40 w-64 bg-white shadow-lg transform -translate-x-full transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0" id="sidebar">
+    <div class="flex items-center justify-center h-16 bg-gradient-to-r from-blue-600 to-purple-600">
+      <span class="text-white text-lg font-semibold">Menú Principal</span>
     </div>
+    
+    <nav class="mt-8">
+      <div class="px-4 space-y-2">
+        <a href="/admin" class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-blue-50 transition-colors">
+          <i class="fas fa-tachometer-alt mr-3"></i>
+          Dashboard
+        </a>
+        
+        <a href="/admin/empresas" class="admin-only flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-blue-50 transition-colors">
+          <i class="fas fa-building mr-3"></i>
+          Empresas
+        </a>
+        
+        <a href="/admin/users" class="flex items-center px-4 py-3 bg-blue-600 text-white rounded-lg">
+          <i class="fas fa-users mr-3"></i>
+          Usuarios
+        </a>
+        
+        <a href="/admin/stats" class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-blue-50 transition-colors">
+          <i class="fas fa-chart-bar mr-3"></i>
+          Estadísticas
+        </a>
+      </div>
+    </nav>
+  </div>
+
+  <!-- Main Content -->
+  <div class="lg:pl-64">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      
+      <!-- Header -->
+      <div class="mb-8">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 class="text-3xl font-bold text-gray-900">Gestión de Usuarios</h1>
+            <p class="text-gray-600 mt-2">Administra los usuarios de las empresas</p>
+          </div>
+          <div class="mt-4 sm:mt-0">
+            <button id="createUserBtn" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+              <i class="fas fa-user-plus mr-2"></i>
+              Nuevo Usuario
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empresa Selector -->
+      <div class="empresa-selector rounded-xl p-6 mb-8 text-white">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+          <div class="mb-4 sm:mb-0">
+            <h3 class="text-lg font-semibold">Seleccionar Empresa</h3>
+            <p class="text-blue-100 text-sm">Elige una empresa para gestionar sus usuarios</p>
+          </div>
+          <div class="sm:w-80">
+            <select id="empresaSelector" class="w-full px-4 py-3 bg-white text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              <option value="">Cargando empresas...</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Selected Empresa Info -->
+      <div id="selectedEmpresaInfo" class="hidden bg-white rounded-xl shadow-sm p-6 mb-8 border border-gray-200">
+        <div class="flex items-center space-x-4">
+          <div class="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+            <span class="text-white font-bold text-xl" id="empresaInitials">E</span>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-xl font-semibold text-gray-900" id="selectedEmpresaName">Empresa</h3>
+            <p class="text-gray-600" id="selectedEmpresaLocation">Ubicación</p>
+            <div class="flex items-center space-x-4 mt-2">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" id="selectedEmpresaStatus">
+                Estado
+              </span>
+              <span class="text-sm text-gray-500">
+                <i class="fas fa-users mr-1"></i>
+                <span id="selectedEmpresaUserCount">0</span> usuarios
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Users Stats -->
+      <div id="usersStats" class="hidden grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                <i class="fas fa-users text-blue-600"></i>
+              </div>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm font-medium text-gray-500">Total</p>
+              <p class="text-xl font-semibold text-gray-900" id="totalUsersCount">0</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                <i class="fas fa-user-check text-green-600"></i>
+              </div>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm font-medium text-gray-500">Activos</p>
+              <p class="text-xl font-semibold text-gray-900" id="activeUsersCount">0</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                <i class="fas fa-user-tag text-purple-600"></i>
+              </div>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm font-medium text-gray-500">Roles Únicos</p>
+              <p class="text-xl font-semibold text-gray-900" id="uniqueRolesCount">0</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                <i class="fas fa-calendar text-orange-600"></i>
+              </div>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm font-medium text-gray-500">Este Mes</p>
+              <p class="text-xl font-semibold text-gray-900" id="newUsersCount">0</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Users Grid -->
+      <div id="usersContainer" class="hidden">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="usersGrid">
+          <!-- Los usuarios se cargarán aquí dinámicamente -->
+        </div>
+      </div>
+
+      <!-- Users Table (Alternative View) -->
+      <div id="usersTableContainer" class="hidden">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div class="px-6 py-4 border-b border-gray-200">
+            <div class="flex items-center justify-between">
+              <h3 class="text-lg font-semibold text-gray-900">Lista de Usuarios</h3>
+              <div class="flex space-x-2">
+                <button id="gridViewBtn" class="p-2 text-gray-400 hover:text-blue-600 transition-colors" title="Vista de tarjetas">
+                  <i class="fas fa-th-large"></i>
+                </button>
+                <button id="tableViewBtn" class="p-2 text-blue-600" title="Vista de tabla">
+                  <i class="fas fa-table"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Usuario</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cédula</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rol</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Empresa</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="usersTableBody" class="bg-white divide-y divide-gray-200">
+                <!-- Los usuarios se cargarán aquí -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div id="emptyState" class="text-center py-12">
+        <div class="mx-auto h-24 w-24 text-gray-400 mb-4">
+          <i class="fas fa-users text-6xl"></i>
+        </div>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">Selecciona una empresa</h3>
+        <p class="text-gray-500 mb-6">Elige una empresa para ver y gestionar sus usuarios</p>
+      </div>
+
+      <!-- No Users State -->
+      <div id="noUsersState" class="hidden text-center py-12">
+        <div class="mx-auto h-24 w-24 text-gray-400 mb-4">
+          <i class="fas fa-user-slash text-6xl"></i>
+        </div>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">No hay usuarios</h3>
+        <p class="text-gray-500 mb-6">Esta empresa aún no tiene usuarios registrados</p>
+        <button class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white hover:bg-blue-700 transition-colors" onclick="createUser()">
+          <i class="fas fa-user-plus mr-2"></i>
+          Crear Primer Usuario
+        </button>
+      </div>
+
+      <!-- Loading State -->
+      <div id="loadingState" class="hidden text-center py-12">
+        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <p class="text-gray-500 mt-4">Cargando usuarios...</p>
+      </div>
+    </div>
+  </div>
 </div>
 
-<!-- Mobile Menu Toggle -->
-<button class="btn btn-primary d-md-none position-fixed bottom-0 start-0 m-3 rounded-circle" 
-        style="width: 56px; height: 56px; z-index: 1001;" 
-        onclick="document.getElementById('sidebar').classList.toggle('active')">
-    <i class="fas fa-bars"></i>
-</button>
-
-<script>
-// Simple filter function for the search
-function filterTable() {
-    const searchTerm = document.getElementById('searchUsers').value.toLowerCase();
-    const rows = document.querySelectorAll('#usersTableBody tr');
-    
-    rows.forEach(row => {
-        const text = row.textContent.toLowerCase();
-        row.style.display = text.includes(searchTerm) ? '' : 'none';
-    });
-}
-</script>
+<!-- Mobile Sidebar Overlay -->
+<div class="lg:hidden fixed inset-0 z-30 bg-black bg-opacity-50 hidden" id="sidebarOverlay"></div>
 {% endblock %}
 
 {% block extra_js %}
+<script src="{{ url_for('static', filename='js/models.js') }}"></script>
+<script src="{{ url_for('static', filename='js/auth-manager.js') }}"></script>
+<script src="{{ url_for('static', filename='js/api-client.js') }}"></script>
 <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+
+<script>
+let allUsers = [];
+let filteredUsers = [];
+let selectedEmpresa = null;
+let currentView = 'grid'; // 'grid' or 'table'
+
+// Mobile sidebar toggle
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  
+  sidebar.classList.toggle('-translate-x-full');
+  overlay.classList.toggle('hidden');
+}
+
+// Close sidebar when clicking overlay
+document.getElementById('sidebarOverlay')?.addEventListener('click', toggleSidebar);
+
+// Setup empresa selector
+async function setupEmpresaSelector() {
+  const selector = document.getElementById('empresaSelector');
+  if (!selector) return;
+
+  try {
+    const currentUser = window.apiClient.getCurrentUser();
+    let empresas;
+    
+    if (currentUser.isAdmin()) {
+      empresas = await window.apiClient.getEmpresas();
+    } else if (currentUser.isEmpresa()) {
+      const empresa = await window.apiClient.getEmpresa(currentUser.getEmpresaId());
+      empresas = [empresa];
+      selectedEmpresa = empresa.id;
+      window.apiClient.setSelectedEmpresa(empresa.id);
+    } else {
+      empresas = [];
+    }
+
+    selector.innerHTML = `
+      <option value="">Seleccionar empresa...</option>
+      ${empresas.map(empresa => `
+        <option value="${empresa.id}" ${empresa.id === selectedEmpresa ? 'selected' : ''}>
+          ${empresa.nombre} - ${empresa.ubicacion} (${empresa.activa ? 'Activa' : 'Inactiva'})
+        </option>
+      `).join('')}
+    `;
+
+    selector.addEventListener('change', async (e) => {
+      const empresaId = e.target.value;
+      if (empresaId) {
+        selectedEmpresa = empresaId;
+        window.apiClient.setSelectedEmpresa(empresaId);
+        await loadSelectedEmpresaInfo(empresaId);
+        await loadUsers();
+      } else {
+        selectedEmpresa = null;
+        window.apiClient.clearSelectedEmpresa();
+        showEmptyState();
+      }
+    });
+
+    // Load initial empresa if already selected
+    if (selectedEmpresa) {
+      await loadSelectedEmpresaInfo(selectedEmpresa);
+      await loadUsers();
+    }
+
+  } catch (error) {
+    console.error('Error setting up empresa selector:', error);
+    showNotification('Error al cargar empresas', 'error');
+  }
+}
+
+// Load selected empresa info
+async function loadSelectedEmpresaInfo(empresaId) {
+  try {
+    const empresa = await window.apiClient.getEmpresa(empresaId);
+    const usuarios = await window.apiClient.getUsuariosByEmpresa(empresaId);
+    
+    // Update empresa info card
+    document.getElementById('empresaInitials').textContent = empresa.getInitials();
+    document.getElementById('selectedEmpresaName').textContent = empresa.nombre;
+    document.getElementById('selectedEmpresaLocation').textContent = empresa.ubicacion;
+    document.getElementById('selectedEmpresaUserCount').textContent = usuarios.length;
+    
+    const statusElement = document.getElementById('selectedEmpresaStatus');
+    const statusBadge = empresa.getStatusBadge();
+    statusElement.textContent = statusBadge.text;
+    statusElement.className = `inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+      empresa.activa ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+    }`;
+    
+    // Show empresa info
+    document.getElementById('selectedEmpresaInfo').classList.remove('hidden');
+    
+  } catch (error) {
+    console.error('Error loading empresa info:', error);
+    showNotification('Error al cargar información de la empresa', 'error');
+  }
+}
+
+// Load users
+async function loadUsers() {
+  if (!selectedEmpresa) {
+    showEmptyState();
+    return;
+  }
+
+  showLoadingState();
+  
+  try {
+    allUsers = await window.apiClient.getUsuariosByEmpresa(selectedEmpresa);
+    filteredUsers = [...allUsers];
+    
+    if (allUsers.length === 0) {
+      showNoUsersState();
+    } else {
+      showUsersContent();
+      renderUsers();
+      updateStats();
+      updateRoleFilter();
+    }
+    
+  } catch (error) {
+    console.error('Error loading users:', error);
+    showNotification('Error al cargar usuarios', 'error');
+    showEmptyState();
+  }
+}
+
+// Render users based on current view
+function renderUsers() {
+  if (currentView === 'grid') {
+    renderUsersGrid();
+  } else {
+    renderUsersTable();
+  }
+}
+
+// Render users grid
+function renderUsersGrid() {
+  const container = document.getElementById('usersGrid');
+  if (!container) return;
+  
+  container.innerHTML = filteredUsers.map(user => `
+    <div class="user-card bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <!-- User Header -->
+      <div class="flex items-center space-x-4 mb-4">
+        <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+          <span class="text-white font-bold text-lg">${user.getInitials()}</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <h3 class="text-lg font-semibold text-gray-900 truncate">${user.nombre}</h3>
+          <p class="text-sm text-gray-500">ID: ${user.id}</p>
+        </div>
+      </div>
+      
+      <!-- User Info -->
+      <div class="space-y-2 mb-6">
+        <div class="flex items-center text-sm">
+          <i class="fas fa-id-card w-4 h-4 mr-2 text-gray-400"></i>
+          <span class="text-gray-600">Cédula:</span>
+          <span class="ml-2 font-medium text-gray-900">${user.cedula}</span>
+        </div>
+        <div class="flex items-center text-sm">
+          <i class="fas fa-user-tag w-4 h-4 mr-2 text-gray-400"></i>
+          <span class="text-gray-600">Rol:</span>
+          <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+            ${user.rol}
+          </span>
+        </div>
+        <div class="flex items-center text-sm">
+          <i class="fas fa-calendar w-4 h-4 mr-2 text-gray-400"></i>
+          <span class="text-gray-600">Creado:</span>
+          <span class="ml-2 text-gray-900">${user.getFormattedCreationDate()}</span>
+        </div>
+        ${user.empresa ? `
+          <div class="flex items-center text-sm">
+            <i class="fas fa-building w-4 h-4 mr-2 text-gray-400"></i>
+            <span class="text-gray-600">Empresa:</span>
+            <span class="ml-2 text-gray-900">${user.empresa.nombre}</span>
+          </div>
+        ` : ''}
+      </div>
+      
+      <!-- Actions -->
+      <div class="flex space-x-2">
+        <button 
+          onclick="viewUser('${user.id}')"
+          class="flex-1 inline-flex items-center justify-center px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+        >
+          <i class="fas fa-eye mr-1"></i>
+          Ver
+        </button>
+        
+        <button 
+          onclick="editUser('${user.id}')"
+          class="flex-1 inline-flex items-center justify-center px-3 py-2 border border-blue-300 rounded-lg text-sm font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 transition-colors"
+        >
+          <i class="fas fa-edit mr-1"></i>
+          Editar
+        </button>
+        
+        <button 
+          onclick="deleteUser('${user.id}')"
+          class="inline-flex items-center justify-center p-2 border border-red-300 rounded-lg text-red-700 bg-red-50 hover:bg-red-100 transition-colors"
+          title="Eliminar"
+        >
+          <i class="fas fa-trash"></i>
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// Render users table
+function renderUsersTable() {
+  const tbody = document.getElementById('usersTableBody');
+  if (!tbody) return;
+  
+  tbody.innerHTML = filteredUsers.map(user => `
+    <tr class="hover:bg-gray-50">
+      <td class="px-6 py-4 whitespace-nowrap">
+        <div class="flex items-center">
+          <div class="flex-shrink-0 h-10 w-10">
+            <div class="h-10 w-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+              <span class="text-white font-medium">${user.getInitials()}</span>
+            </div>
+          </div>
+          <div class="ml-4">
+            <div class="text-sm font-medium text-gray-900">${user.nombre}</div>
+            <div class="text-sm text-gray-500">ID: ${user.id}</div>
+          </div>
+        </div>
+      </td>
+      <td class="px-6 py-4 whitespace-nowrap">
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+          ${user.cedula}
+        </span>
+      </td>
+      <td class="px-6 py-4 whitespace-nowrap">
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+          ${user.rol}
+        </span>
+      </td>
+      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+        ${user.empresa?.nombre || 'N/A'}
+      </td>
+      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+        ${user.getFormattedCreationDate()}
+      </td>
+      <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+        <div class="flex space-x-2">
+          <button 
+            onclick="viewUser('${user.id}')"
+            class="text-blue-600 hover:text-blue-900 transition-colors"
+            title="Ver detalles"
+          >
+            <i class="fas fa-eye"></i>
+          </button>
+          <button 
+            onclick="editUser('${user.id}')"
+            class="text-yellow-600 hover:text-yellow-900 transition-colors"
+            title="Editar"
+          >
+            <i class="fas fa-edit"></i>
+          </button>
+          <button 
+            onclick="deleteUser('${user.id}')"
+            class="text-red-600 hover:text-red-900 transition-colors"
+            title="Eliminar"
+          >
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// Update statistics
+function updateStats() {
+  const total = filteredUsers.length;
+  const active = filteredUsers.length; // Todos activos por defecto
+  const uniqueRoles = new Set(filteredUsers.map(u => u.rol)).size;
+  
+  // Calculate new users this month
+  const thisMonth = new Date();
+  thisMonth.setDate(1);
+  const newThisMonth = filteredUsers.filter(u => 
+    u.fecha_creacion && new Date(u.fecha_creacion) >= thisMonth
+  ).length;
+  
+  document.getElementById('totalUsersCount').textContent = total;
+  document.getElementById('activeUsersCount').textContent = active;
+  document.getElementById('uniqueRolesCount').textContent = uniqueRoles;
+  document.getElementById('newUsersCount').textContent = newThisMonth;
+}
+
+// Update role filter options
+function updateRoleFilter() {
+  const roleFilter = document.getElementById('roleFilter');
+  if (!roleFilter) return;
+  
+  const roles = [...new Set(allUsers.map(u => u.rol))].sort();
+  const currentValue = roleFilter.value;
+  
+  roleFilter.innerHTML = `
+    <option value="">Todos los roles</option>
+    ${roles.map(rol => `
+      <option value="${rol}" ${rol === currentValue ? 'selected' : ''}>${rol}</option>
+    `).join('')}
+  `;
+}
+
+// Filter users
+function filterUsers() {
+  const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
+  const roleFilter = document.getElementById('roleFilter')?.value || '';
+  const sortBy = document.getElementById('sortBy')?.value || 'nombre';
+  
+  filteredUsers = allUsers.filter(user => {
+    const matchesSearch = user.nombre.toLowerCase().includes(searchTerm) ||
+                         user.cedula.toLowerCase().includes(searchTerm) ||
+                         user.rol.toLowerCase().includes(searchTerm);
+    
+    const matchesRole = roleFilter === '' || user.rol === roleFilter;
+    
+    return matchesSearch && matchesRole;
+  });
+  
+  // Sort
+  filteredUsers.sort((a, b) => {
+    switch (sortBy) {
+      case 'rol':
+        return a.rol.localeCompare(b.rol);
+      case 'cedula':
+        return a.cedula.localeCompare(b.cedula);
+      case 'fecha_creacion':
+        return new Date(b.fecha_creacion || 0) - new Date(a.fecha_creacion || 0);
+      default:
+        return a.nombre.localeCompare(b.nombre);
+    }
+  });
+  
+  renderUsers();
+  updateStats();
+}
+
+// Show/hide states
+function showEmptyState() {
+  hideAllStates();
+  document.getElementById('emptyState').classList.remove('hidden');
+  document.getElementById('selectedEmpresaInfo').classList.add('hidden');
+}
+
+function showNoUsersState() {
+  hideAllStates();
+  document.getElementById('noUsersState').classList.remove('hidden');
+}
+
+function showLoadingState() {
+  hideAllStates();
+  document.getElementById('loadingState').classList.remove('hidden');
+}
+
+function showUsersContent() {
+  hideAllStates();
+  document.getElementById('usersStats').classList.remove('hidden');
+  document.getElementById('searchFilters').classList.remove('hidden');
+  
+  if (currentView === 'grid') {
+    document.getElementById('usersContainer').classList.remove('hidden');
+    document.getElementById('usersTableContainer').classList.add('hidden');
+  } else {
+    document.getElementById('usersContainer').classList.add('hidden');
+    document.getElementById('usersTableContainer').classList.remove('hidden');
+  }
+}
+
+function hideAllStates() {
+  document.getElementById('emptyState').classList.add('hidden');
+  document.getElementById('noUsersState').classList.add('hidden');
+  document.getElementById('loadingState').classList.add('hidden');
+  document.getElementById('usersStats').classList.add('hidden');
+  document.getElementById('searchFilters').classList.add('hidden');
+  document.getElementById('usersContainer').classList.add('hidden');
+  document.getElementById('usersTableContainer').classList.add('hidden');
+}
+
+// View toggle
+function toggleView(view) {
+  currentView = view;
+  
+  const gridBtn = document.getElementById('gridViewBtn');
+  const tableBtn = document.getElementById('tableViewBtn');
+  
+  if (view === 'grid') {
+    gridBtn.classList.add('text-blue-600');
+    gridBtn.classList.remove('text-gray-400');
+    tableBtn.classList.add('text-gray-400');
+    tableBtn.classList.remove('text-blue-600');
+    
+    document.getElementById('usersContainer').classList.remove('hidden');
+    document.getElementById('usersTableContainer').classList.add('hidden');
+  } else {
+    tableBtn.classList.add('text-blue-600');
+    tableBtn.classList.remove('text-gray-400');
+    gridBtn.classList.add('text-gray-400');
+    gridBtn.classList.remove('text-blue-600');
+    
+    document.getElementById('usersContainer').classList.add('hidden');
+    document.getElementById('usersTableContainer').classList.remove('hidden');
+  }
+  
+  renderUsers();
+}
+
+// Override loadUsers function for this page
+window.loadUsers = loadUsers;
+
+// Setup event listeners
+document.addEventListener('DOMContentLoaded', async () => {
+  // Setup empresa selector
+  await setupEmpresaSelector();
+  
+  // Search and filter inputs
+  const searchInput = document.getElementById('searchInput');
+  const roleFilter = document.getElementById('roleFilter');
+  const sortBy = document.getElementById('sortBy');
+  
+  if (searchInput) {
+    searchInput.addEventListener('input', filterUsers);
+  }
+  
+  if (roleFilter) {
+    roleFilter.addEventListener('change', filterUsers);
+  }
+  
+  if (sortBy) {
+    sortBy.addEventListener('change', filterUsers);
+  }
+  
+  // Create user button
+  const createBtn = document.getElementById('createUserBtn');
+  if (createBtn) {
+    createBtn.addEventListener('click', () => {
+      if (!selectedEmpresa) {
+        showNotification('Selecciona una empresa primero', 'warning');
+        return;
+      }
+      createUser();
+    });
+  }
+  
+  // View toggle buttons
+  const gridViewBtn = document.getElementById('gridViewBtn');
+  const tableViewBtn = document.getElementById('tableViewBtn');
+  
+  if (gridViewBtn) {
+    gridViewBtn.addEventListener('click', () => toggleView('grid'));
+  }
+  
+  if (tableViewBtn) {
+    tableViewBtn.addEventListener('click', () => toggleView('table'));
+  }
+});
+</script>
 {% endblock %}
+
+{% block footer %}{% endblock %}
