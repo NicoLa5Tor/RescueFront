@@ -7,6 +7,8 @@ class AuthManager {
       this.token = null
       this.user = null
       this.tokenExpiry = null
+      // Keep reference to the original fetch before installing the interceptor
+      this.originalFetch = window.fetch
       this.API_BASE = window.API_BASE_URL || "http://localhost:5000"
       
       // 🔄 RESTAURAR SESIÓN AL INICIALIZAR
@@ -235,7 +237,8 @@ class AuthManager {
       console.log("📡 Petición autenticada:", fullUrl)
       
       // Realizar petición
-      const response = await fetch(fullUrl, {
+      const fetchFn = this.originalFetch || fetch
+      const response = await fetchFn(fullUrl, {
         ...options,
         headers
       })
@@ -283,8 +286,8 @@ class AuthManager {
      * Intercepta todas las peticiones fetch para añadir autorización automáticamente
      */
     setupFetchInterceptor() {
-      const originalFetch = window.fetch
       const authManager = this
+      this.originalFetch = window.fetch
       
       window.fetch = async function(url, options = {}) {
         // Solo interceptar peticiones a la API (no archivos estáticos ni login)
@@ -298,7 +301,7 @@ class AuthManager {
         }
         
         // Para peticiones que no son de API, usar fetch normal
-        return originalFetch(url, options)
+        return authManager.originalFetch(url, options)
       }
       
       console.log("🎯 Interceptor de fetch configurado")
