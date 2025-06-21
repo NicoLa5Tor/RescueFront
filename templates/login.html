@@ -2,15 +2,17 @@
 {% block title %}Iniciar Sesión - Sistema Multi-Tenant{% endblock %}
 
 {% block extra_css %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
 <link href="{{ url_for('static', filename='css/login.css') }}" rel="stylesheet">
 {% endblock %}
 
 {% block navbar %}
 <!-- Header minimalista para login -->
-<header class="login-header-nav">
-  <div class="login-header-content">
-    <a href="{{ url_for('index') }}" class="login-brand">
-      <i class="fas fa-building"></i>
+<header class="fixed top-0 left-0 right-0 z-50 bg-transparent border-b-0 py-4">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-center items-center">
+    <a href="{{ url_for('index') }}" class="flex items-center space-x-3 text-white hover:text-blue-200 transition-all duration-300 hover:translate-x-1 text-lg sm:text-xl font-bold">
+      <i class="fas fa-building text-xl sm:text-2xl bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent"></i>
       <span>Rescue</span>
     </a>
   </div>
@@ -18,7 +20,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="login-background">
+<div class="login-background min-h-screen fixed inset-0 w-full overflow-hidden">
   <!-- Partículas animadas -->
   <div class="particles">
     <div class="particle"></div>
@@ -30,101 +32,135 @@
   </div>
 
   <!-- Contenedor principal -->
-  <div class="login-container">
-    <div class="login-wrapper">
-      <div id="loginInfo" class="login-info fade-in-up">
-        <div class="plane-wrapper">
-          <svg id="planeSvg" width="180" height="60" viewBox="0 0 180 60">
-            <path id="planePath" d="M10,50 Q90,0 170,50" />
-          </svg>
-          <i id="planeIcon" class="fas fa-paper-plane plane-icon"></i>
+  <div class="relative z-10 min-h-screen flex items-center justify-center px-3 sm:px-4 lg:px-6 pt-16 pb-8">
+    <div class="w-full max-w-6xl mx-auto">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-center">
+        
+        <!-- Panel de información -->
+        <div id="loginInfo" class="flex flex-col items-center lg:items-start text-center lg:text-left space-y-4 fade-in-up">
+          <div class="plane-wrapper">
+            <svg id="planeSvg" viewBox="0 0 180 60" class="w-32 h-12 lg:w-40 lg:h-16">
+              <path id="planePath" d="M10,50 Q90,0 170,50" />
+            </svg>
+            <i id="planeIcon" class="fas fa-paper-plane plane-icon text-base lg:text-lg"></i>
+          </div>
+          <div class="space-y-3 max-w-lg lg:max-w-2xl">
+            <h2 class="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-gradient">
+              Bienvenido a <span id="infoHighlight" class="text-secondary-gradient">Rescue</span>
+            </h2>
+            <p class="text-sm sm:text-base lg:text-lg xl:text-xl text-white/80 leading-relaxed">
+              Accede para gestionar de forma segura tus recursos y empresas con la máxima confiabilidad.
+            </p>
+          </div>
         </div>
-        <h2 class="info-title">Bienvenido a <span id="infoHighlight">Rescue</span></h2>
-        <p class="info-text">Accede para gestionar de forma segura tus recursos y empresas.</p>
-      </div>
-      <div class="login-content">
-      <div id="loginCard" class="login-card fade-in-up">
-        <!-- Header del formulario -->
-        <div class="form-header">
-          <div id="brandLogo" class="brand-logo fade-in-scale">
-            <i class="fas fa-shield-alt"></i>
+
+        <!-- Formulario de login -->
+        <div class="w-full max-w-sm mx-auto lg:max-w-md">
+          <div id="loginCard" class="glass-card rounded-xl lg:rounded-2xl p-4 sm:p-6 lg:p-7 fade-in-up">
+            
+            <!-- Header del formulario -->
+            <div class="text-center mb-4 sm:mb-6">
+              <div id="brandLogo" class="brand-logo inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 rounded-xl mb-3 fade-in-scale">
+                <i class="fas fa-shield-alt text-white text-lg sm:text-xl drop-shadow-lg"></i>
+              </div>
+              <h1 id="loginTitle" class="text-xl sm:text-2xl font-bold text-gradient mb-1 fade-in-up">Bienvenido</h1>
+              <p id="loginSubtitle" class="text-xs sm:text-sm text-white/80 fade-in-up">Accede a tu cuenta</p>
+            </div>
+
+            <!-- Formulario -->
+            <form id="loginForm" class="space-y-3 sm:space-y-4" novalidate autocomplete="off">
+              
+              <!-- Usuario -->
+              <div class="form-group fade-in-up">
+                <label for="usuario" class="block text-xs sm:text-sm font-semibold text-white/90 mb-1.5 tracking-wide">Usuario</label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                    <i class="fas fa-user text-white/60 transition-all duration-300 text-sm"></i>
+                  </div>
+                  <input 
+                    type="text" 
+                    id="usuario" 
+                    name="usuario"
+                    class="input-glass w-full pl-9 pr-3 py-2.5 sm:py-3 rounded-lg text-sm font-medium"
+                    placeholder="Ingresa tu usuario"
+                    required
+                    autocomplete="username"
+                  >
+                </div>
+                <div class="error-message mt-1.5 text-xs flex items-center space-x-1 font-medium">
+                  <i class="fas fa-exclamation-circle text-xs"></i>
+                  <span>Por favor ingresa tu usuario</span>
+                </div>
+              </div>
+
+              <!-- Contraseña -->
+              <div class="form-group fade-in-up">
+                <label for="password" class="block text-xs sm:text-sm font-semibold text-white/90 mb-1.5 tracking-wide">Contraseña</label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                    <i class="fas fa-lock text-white/60 transition-all duration-300 text-sm"></i>
+                  </div>
+                  <input 
+                    type="password" 
+                    id="password" 
+                    name="password"
+                    class="input-glass w-full pl-9 pr-3 py-2.5 sm:py-3 rounded-lg text-sm font-medium"
+                    placeholder="Ingresa tu contraseña"
+                    required
+                    autocomplete="current-password"
+                  >
+                </div>
+                <div class="error-message mt-1.5 text-xs flex items-center space-x-1 font-medium">
+                  <i class="fas fa-exclamation-circle text-xs"></i>
+                  <span>Por favor ingresa tu contraseña</span>
+                </div>
+              </div>
+
+              <!-- Botón de envío -->
+              <button 
+                type="submit" 
+                id="submitBtn" 
+                class="btn-gradient w-full py-2.5 sm:py-3 px-4 rounded-lg text-sm font-semibold flex items-center justify-center space-x-2 mt-4 fade-in-up min-h-[40px] sm:min-h-[44px] tracking-wide"
+              >
+                <i id="loginIcon" class="fas fa-sign-in-alt text-sm"></i>
+                <span id="btnText">Iniciar Sesión</span>
+                <div id="loadingSpinner" class="loading-spinner hidden"></div>
+              </button>
+
+              <!-- Contraseña olvidada -->
+              <div class="text-center mt-3 sm:mt-4 fade-in-up">
+                <a href="#forgot" class="text-xs text-white/80 hover:text-blue-300 hover:underline transition-all duration-300 font-medium">
+                  ¿Olvidaste tu contraseña?
+                </a>
+              </div>
+            </form>
           </div>
-          <h1 id="loginTitle" class="login-title fade-in-up">Bienvenido</h1>
-          <p id="loginSubtitle" class="login-subtitle fade-in-up">Accede a tu cuenta</p>
+
+          <!-- Footer -->
+          <div class="text-center mt-4 sm:mt-6 fade-in-up">
+            <p class="text-xs text-white/70">
+              ¿No tienes cuenta? 
+              <a href="#contact" class="text-blue-300 hover:text-blue-100 hover:underline transition-all duration-300 font-semibold">
+                Contacta al administrador
+              </a>
+            </p>
+          </div>
         </div>
-
-        <!-- Formulario -->
-        <form id="loginForm" novalidate autocomplete="off">
-          <!-- Usuario -->
-          <div class="form-group fade-in-up">
-            <label for="usuario" class="form-label">Usuario</label>
-            <div class="input-container">
-              <i class="input-icon fas fa-user"></i>
-              <input 
-                type="text" 
-                id="usuario" 
-                name="usuario"
-                class="form-input"
-                placeholder="Ingresa tu usuario"
-                required
-                autocomplete="username"
-              >
-            </div>
-            <div class="error-message">
-              <i class="fas fa-exclamation-circle"></i>
-              <span>Por favor ingresa tu usuario</span>
-            </div>
-          </div>
-
-          <!-- Contraseña -->
-          <div class="form-group fade-in-up">
-            <label for="password" class="form-label">Contraseña</label>
-            <div class="input-container">
-              <i class="input-icon fas fa-lock"></i>
-              <input 
-                type="password" 
-                id="password" 
-                name="password"
-                class="form-input"
-                placeholder="Ingresa tu contraseña"
-                required
-                autocomplete="current-password"
-              >
-            </div>
-            <div class="error-message">
-              <i class="fas fa-exclamation-circle"></i>
-              <span>Por favor ingresa tu contraseña</span>
-            </div>
-          </div>
-
-          <!-- Botón de envío -->
-          <button type="submit" id="submitBtn" class="btn-primary fade-in-up">
-            <i id="loginIcon" class="fas fa-sign-in-alt"></i>
-            <span id="btnText">Iniciar Sesión</span>
-            <div id="loadingSpinner" class="loading-spinner hidden"></div>
-          </button>
-
-          <!-- Contraseña olvidada -->
-          <div class="forgot-password fade-in-up">
-            <a href="#forgot">¿Olvidaste tu contraseña?</a>
-          </div>
-        </form>
-      </div>
-
-      <!-- Footer -->
-      <div class="login-footer fade-in-up">
-        <p>¿No tienes cuenta? <a href="#contact">Contacta al administrador</a></p>
       </div>
     </div>
   </div>
 </div>
 
 <!-- Contenedor de notificaciones -->
-<div id="notificationContainer"></div>
+<div id="notificationContainer" class="fixed top-4 right-4 z-50 space-y-2"></div>
 {% endblock %}
-
 {% block extra_js %}
+<script>
+  // Configurar URL del backend
+  window.API_BASE_URL = '{{ api_url }}';
+</script>
+<script src="{{ url_for('static', filename='js/auth-manager.js') }}"></script>
+<script src="{{ url_for('static', filename='js/models.js') }}"></script>
 <script src="{{ url_for('static', filename='js/login.js') }}"></script>
 {% endblock %}
-
 {% block footer %}{% endblock %}

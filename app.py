@@ -1,7 +1,6 @@
-# app.py
-from flask import Flask, render_template, session, redirect, url_for, request, jsonify
+# app.py - Frontend con JWT Backend
+from flask import Flask, render_template, request, jsonify, redirect, url_for
 from flask_cors import CORS
-from functools import wraps
 import os
 from dotenv import load_dotenv
 
@@ -11,183 +10,198 @@ load_dotenv()
 # Crear la aplicación Flask
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-secret-key-change-in-production')
-app.config['SESSION_COOKIE_HTTPONLY'] = True
-app.config['SESSION_COOKIE_SECURE'] = False  # Cambiar a True en producción con HTTPS
-app.config['PERMANENT_SESSION_LIFETIME'] = 86400  # 24 horas
 
 # Habilitar CORS
 CORS(app, supports_credentials=True)
 
-# Configuración del backend API
-API_BASE_URL = os.getenv('API_BASE_URL', 'http://localhost:5000')
-
-# Decorador para rutas protegidas
-def login_required(role=None):
-    def decorator(f):
-        @wraps(f)
-        def decorated_function(*args, **kwargs):
-            if 'user_id' not in session:
-                if request.is_json:
-                    return jsonify({'error': 'No autorizado'}), 401
-                return redirect(url_for('login', next=request.url))
-            
-            if role and session.get('user_role') != role:
-                if request.is_json:
-                    return jsonify({'error': 'Acceso denegado'}), 403
-                return redirect(url_for('index'))
-                
-            return f(*args, **kwargs)
-        return decorated_function
-    return decorator
+# Configuración del backend API JWT
+API_BASE_URL = os.getenv('API_BASE_URL', 'http://localhost:5000')  # Backend JWT
 
 # ========== RUTAS PÚBLICAS ==========
 @app.route('/')
 def index():
     """Página principal - Landing page"""
-    return render_template('index.html')
+    return render_template('index.html', api_url=API_BASE_URL)
 
 @app.route('/login')
 def login():
-    """Página de login"""
-    if 'user_id' in session:
-        if session.get('user_role') == 'admin':
-            return redirect(url_for('admin_dashboard'))
-        else:
-            return redirect(url_for('empresa_dashboard'))
-    return render_template('login.html')
+    """Página de login - La seguridad la maneja JWT en el frontend"""
+    return render_template('login.html', api_url=API_BASE_URL)
 
 @app.route('/logout')
 def logout():
-    """Cerrar sesión"""
-    session.clear()
-    return redirect(url_for('index'))
+    """Cerrar sesión - Redirect para limpiar estados"""
+    return redirect(url_for('login'))
 
-# ========== RUTAS DE ADMINISTRADOR ==========
+# ========== RUTAS DEL DASHBOARD - SIN PROTECCIÓN DE SESSIONS ==========
+# La protección la maneja el JavaScript con JWT
+
 @app.route('/admin')
-@login_required(role='admin')
 def admin_dashboard():
-    """Dashboard del administrador"""
+    """Dashboard principal - Protegido por JWT en frontend"""
     return render_template('admin/dashboard.html', api_url=API_BASE_URL)
 
 @app.route('/admin/users')
-@login_required(role='admin')
 def admin_users():
-    """Gestión de usuarios - Admin"""
-    return render_template('admin/users.html', api_url=API_BASE_URL)
+    """Gestión de usuarios - Protegido por JWT en frontend"""
+    return render_template('users.html', api_url=API_BASE_URL)
 
 @app.route('/admin/empresas')
-@login_required(role='admin')
 def admin_empresas():
-    """Gestión de empresas - Admin"""
+    """Gestión de empresas - Protegido por JWT en frontend"""
     return render_template('admin/empresas.html', api_url=API_BASE_URL)
 
 @app.route('/admin/stats')
-@login_required(role='admin')
 def admin_stats():
-    """Estadísticas - Admin"""
-    return render_template('admin/stats.html', api_url=API_BASE_URL)
+    """Estadísticas - Protegido por JWT en frontend"""
+    return render_template('stats.html', api_url=API_BASE_URL)
 
-# ========== RUTAS DE EMPRESA ==========
+# ========== RUTAS DE EMPRESA (FUTURO) ==========
 @app.route('/empresa')
-@login_required(role='empresa')
 def empresa_dashboard():
-    """Dashboard de la empresa"""
-    empresa_id = session.get('empresa_id')
-    return render_template('empresa/dashboard.html', 
-                         api_url=API_BASE_URL, 
-                         empresa_id=empresa_id)
+    """Dashboard de empresa - Protegido por JWT en frontend"""
+    return render_template('empresa/dashboard.html', api_url=API_BASE_URL)
 
 @app.route('/empresa/empleados')
-@login_required(role='empresa')
 def empresa_empleados():
-    """Gestión de empleados - Empresa"""
-    empresa_id = session.get('empresa_id')
-    return render_template('empresa/empleados.html', 
-                         api_url=API_BASE_URL, 
-                         empresa_id=empresa_id)
+    """Gestión de empleados - Protegido por JWT en frontend"""
+    return render_template('empresa/empleados.html', api_url=API_BASE_URL)
 
 @app.route('/empresa/perfil')
-@login_required(role='empresa')
 def empresa_perfil():
-    """Perfil de la empresa"""
-    empresa_id = session.get('empresa_id')
-    return render_template('empresa/perfil.html', 
-                         api_url=API_BASE_URL, 
-                         empresa_id=empresa_id)
-
-# ========== API DE AUTENTICACIÓN ==========
-@app.route('/api/login', methods=['POST'])
-def api_login():
-    """Endpoint de login"""
-    data = request.get_json()
-    email = data.get('email')
-    password = data.get('password')
-    user_type = data.get('user_type')
-    
-    # Aquí deberías validar con tu API backend real
-    # Por ahora simulamos el login
-    if email and password:
-        # Simulación de respuesta del backend
-        if user_type == 'admin':
-            session['user_id'] = 1
-            session['user_email'] = email
-            session['user_role'] = 'admin'
-            session['user_name'] = 'Administrador'
-        else:
-            session['user_id'] = 1
-            session['user_email'] = email
-            session['user_role'] = 'empresa'
-            session['empresa_id'] = 1  # ID de la empresa
-            session['empresa_name'] = 'Mi Empresa S.A.'
-        
-        return jsonify({
-            'success': True,
-            'role': session['user_role'],
-            'redirect': url_for('admin_dashboard' if user_type == 'admin' else 'empresa_dashboard')
-        })
-    
-    return jsonify({'success': False, 'message': 'Credenciales inválidas'}), 401
+    """Perfil de empresa - Protegido por JWT en frontend"""
+    return render_template('empresa/perfil.html', api_url=API_BASE_URL)
 
 # ========== CONTEXTO GLOBAL ==========
 @app.context_processor
-def inject_user():
-    """Inyectar datos del usuario en todas las plantillas"""
+def inject_config():
+    """Inyectar configuración en todas las plantillas"""
     return dict(
-        current_user={
-            'id': session.get('user_id'),
-            'email': session.get('user_email'),
-            'role': session.get('user_role'),
-            'name': session.get('user_name'),
-            'empresa_id': session.get('empresa_id'),
-            'empresa_name': session.get('empresa_name')
-        } if 'user_id' in session else None
+        api_url=API_BASE_URL,
+        app_name="Rescue Dashboard",
+        version="1.0.0"
     )
-#=========== RUTAS DE PRUEBA ============
+
+# ========== RUTAS DE PRUEBA ============
 @app.route("/pruebas")
 def pruebas():
-    return render_template("GSAP_Templates/header.html")
+    """Ruta de pruebas"""
+    return render_template("GSAP_Templates/header.html", api_url=API_BASE_URL)
+
+# ========== MIDDLEWARE Y HEADERS DE SEGURIDAD ==========
+@app.after_request
+def after_request(response):
+    """Headers de seguridad"""
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'DENY'
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    
+    # Headers para desarrollo (quitar en producción)
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    
+    return response
 
 # ========== MANEJO DE ERRORES ==========
 @app.errorhandler(404)
 def not_found(error):
-    return render_template('errors/404.html'), 404
+    """Página no encontrada"""
+    if request.is_json:
+        return jsonify({'error': 'Recurso no encontrado'}), 404
+    return render_template('errors/404.html', api_url=API_BASE_URL), 404
 
 @app.errorhandler(500)
 def internal_error(error):
-    return render_template('errors/500.html'), 500
+    """Error interno del servidor"""
+    if request.is_json:
+        return jsonify({'error': 'Error interno del servidor'}), 500
+    return render_template('errors/500.html', api_url=API_BASE_URL), 500
+
+@app.errorhandler(403)
+def forbidden(error):
+    """Acceso denegado"""
+    if request.is_json:
+        return jsonify({'error': 'Acceso denegado'}), 403
+    return render_template('errors/403.html', api_url=API_BASE_URL), 403
 
 # ========== CONFIGURACIÓN DE JINJA2 ==========
 @app.template_filter('currency')
 def currency_filter(value):
     """Filtro para formatear moneda"""
-    return f"${value:,.2f}"
+    try:
+        return f"${value:,.2f}"
+    except (ValueError, TypeError):
+        return f"${0:,.2f}"
 
 @app.template_filter('date_format')
 def date_format_filter(value, format='%d/%m/%Y'):
     """Filtro para formatear fechas"""
     if value:
-        return value.strftime(format)
+        try:
+            if hasattr(value, 'strftime'):
+                return value.strftime(format)
+            else:
+                from datetime import datetime
+                return datetime.fromisoformat(str(value)).strftime(format)
+        except (AttributeError, ValueError, TypeError):
+            return str(value)
     return ''
 
+@app.template_filter('user_initials')
+def user_initials_filter(name):
+    """Filtro para obtener iniciales del usuario"""
+    if not name:
+        return 'U'
+    words = str(name).split()
+    if len(words) >= 2:
+        return f"{words[0][0]}{words[1][0]}".upper()
+    return name[0].upper() if name else 'U'
+
+@app.template_filter('truncate_words')
+def truncate_words_filter(text, length=50):
+    """Filtro para truncar texto por palabras"""
+    if not text:
+        return ''
+    if len(text) <= length:
+        return text
+    return text[:length].rsplit(' ', 1)[0] + '...'
+
+# ========== RUTAS PARA DESARROLLO ==========
+@app.route('/debug/info')
+def debug_info():
+    """Información de debug (solo en desarrollo)"""
+    if not app.debug:
+        return "Debug deshabilitado", 403
+    
+    return jsonify({
+        'app_name': 'Rescue Frontend',
+        'version': '1.0.0',
+        'api_base_url': API_BASE_URL,
+        'environment': 'development',
+        'routes': [str(rule) for rule in app.url_map.iter_rules()],
+        'static_folder': app.static_folder,
+        'template_folder': app.template_folder
+    })
+
+# ========== CONFIGURACIÓN PARA ARCHIVOS ESTÁTICOS ==========
+@app.route('/favicon.ico')
+def favicon():
+    """Favicon"""
+    return app.send_static_file('favicon.ico')
+
+# ========== CONFIGURACIÓN DE DEBUG ==========
 if __name__ == '__main__':
-    app.run(debug=True, port=5050)
+    print("🚀 Iniciando Rescue Frontend...")
+    print(f"📡 Backend API: {API_BASE_URL}")
+    print(f"🌐 Frontend URL: http://localhost:5050")
+    print("🔐 Autenticación: JWT (manejada por JavaScript)")
+    print("=" * 50)
+    
+    # Configuración de desarrollo
+    app.run(
+        debug=True, 
+        port=5050,
+        host='0.0.0.0',  # Permitir conexiones externas en desarrollo
+        threaded=True    # Mejorar performance en desarrollo
+    )
