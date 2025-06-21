@@ -165,7 +165,7 @@
   </aside>
 
   <!-- Main Content Area -->
-  <main class="lg:ml-80 p-6 lg:p-8">
+  <main class="lg:ml-80 p-6 lg:p-8 max-w-7xl mx-auto">
     <!-- Page Header -->
     <div class="mb-10 gsap-fade-in">
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
@@ -415,6 +415,7 @@
 <script src="{{ url_for('static', filename='js/models.js') }}"></script>
 <script src="{{ url_for('static', filename='js/api-client.js') }}"></script>
 <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+<script src="{{ url_for('static', filename='js/theme.js') }}"></script>
 
 <script>
 // GSAP Animations
@@ -927,8 +928,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initialize GSAP animations
   initGSAPAnimations();
   
-  // Initialize theme
-  initializeTheme();
   
   // Initialize dashboard with data
   const initializeDashboard = async () => {
@@ -1068,56 +1067,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initializeDashboard();
 });
 
-// Theme Management
-function initializeTheme() {
-  const themeToggle = document.getElementById('themeToggle');
-  const themeIcon = document.getElementById('themeIcon');
-  const html = document.documentElement;
-  
-  // Check saved theme or system preference
-  const savedTheme = localStorage.getItem('theme');
-  const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const isDark = savedTheme === 'dark' || (!savedTheme && systemDark);
-  
-  // Apply initial theme
-  if (isDark) {
-    html.classList.add('dark');
-    themeIcon.classList.remove('fa-moon');
-    themeIcon.classList.add('fa-sun');
-  }
-  
-  // Toggle theme function
-  themeToggle?.addEventListener('click', () => {
-    const isDark = html.classList.contains('dark');
-    
-    if (isDark) {
-      html.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-      themeIcon.classList.remove('fa-sun');
-      themeIcon.classList.add('fa-moon');
-      
-      // Animate theme change
-      gsap.to('body', {
-        backgroundColor: '#f9fafb',
-        duration: 0.3
-      });
-    } else {
-      html.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-      themeIcon.classList.remove('fa-moon');
-      themeIcon.classList.add('fa-sun');
-      
-      // Animate theme change
-      gsap.to('body', {
-        backgroundColor: '#111827',
-        duration: 0.3
-      });
-    }
-    
-    // Reinitialize charts with new theme
-    setTimeout(initializeCharts, 300);
-  });
-}
+// Theme management handled in static/js/theme.js
 
 // Cleanup on page unload
 window.addEventListener('beforeunload', () => {

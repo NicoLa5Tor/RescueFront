@@ -37,6 +37,10 @@
     border: 2px solid transparent;
     background-clip: padding-box;
   }
+
+  body {
+    overflow-x: hidden;
+  }
   
   /* Animated background */
   .animated-bg {
