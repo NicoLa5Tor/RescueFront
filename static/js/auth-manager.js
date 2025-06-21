@@ -7,8 +7,8 @@ class AuthManager {
       this.token = null
       this.user = null
       this.tokenExpiry = null
-      // Keep reference to the original fetch before installing the interceptor
-      this.originalFetch = window.fetch
+      // Keep reference to the original fetch (bound to window) before installing the interceptor
+      this.originalFetch = window.fetch.bind(window)
       this.API_BASE = window.API_BASE_URL || "http://localhost:5000"
       
       // 🔄 RESTAURAR SESIÓN AL INICIALIZAR
@@ -287,7 +287,8 @@ class AuthManager {
      */
     setupFetchInterceptor() {
       const authManager = this
-      this.originalFetch = window.fetch
+      // Preserve the original fetch (bound to window) for passthrough calls
+      this.originalFetch = window.fetch.bind(window)
       
       window.fetch = async function(url, options = {}) {
         // Solo interceptar peticiones a la API (no archivos estáticos ni login)
