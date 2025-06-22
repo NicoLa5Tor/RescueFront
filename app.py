@@ -299,11 +299,6 @@ def inject_config():
         version="1.0.0"
     )
 
-# ========== RUTAS DE PRUEBA ============
-@app.route("/pruebas")
-def pruebas():
-    """Ruta de pruebas"""
-    return render_template("GSAP_Templates/header.html", api_url=API_BASE_URL)
 
 # ========== MIDDLEWARE Y HEADERS DE SEGURIDAD ==========
 @app.after_request
@@ -383,23 +378,6 @@ def truncate_words_filter(text, length=50):
     if len(text) <= length:
         return text
     return text[:length].rsplit(' ', 1)[0] + '...'
-
-# ========== RUTAS PARA DESARROLLO ==========
-@app.route('/debug/info')
-def debug_info():
-    """Información de debug (solo en desarrollo)"""
-    if not app.debug:
-        return "Debug deshabilitado", 403
-    
-    return jsonify({
-        'app_name': 'Rescue Frontend',
-        'version': '1.0.0',
-        'api_base_url': API_BASE_URL,
-        'environment': 'development',
-        'routes': [str(rule) for rule in app.url_map.iter_rules()],
-        'static_folder': app.static_folder,
-        'template_folder': app.template_folder
-    })
 
 # ========== CONFIGURACIÓN PARA ARCHIVOS ESTÁTICOS ==========
 @app.route('/favicon.ico')
