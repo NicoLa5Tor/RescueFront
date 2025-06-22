@@ -344,36 +344,46 @@ function createDepartmentChart(empleados) {
 function createActivityChart() {
     const ctx = document.getElementById('activityChart')?.getContext('2d');
     if (!ctx) return;
-    
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie'],
-            datasets: [{
-                label: 'Actividad',
-                data: [65, 75, 70, 80, 85],
-                borderColor: '#667eea',
-                backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                tension: 0.4,
-                fill: true
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    display: false
+
+    let chartData = { labels: [], values: [], label: 'Actividad' };
+    apiClient.getEmpresaActivity(currentEmpresaId)
+        .then(data => {
+            chartData = data;
+        })
+        .catch(err => {
+            console.error('Error fetching activity:', err);
+        })
+        .finally(() => {
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: chartData.labels,
+                    datasets: [{
+                        label: chartData.label,
+                        data: chartData.values,
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
                 }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    max: 100
-                }
-            }
-        }
-    });
+            });
+        });
 }
 
 // Renderizar empleados recientes

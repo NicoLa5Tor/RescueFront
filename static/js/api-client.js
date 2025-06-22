@@ -371,6 +371,37 @@ class ApiClient {
         return this.generateBasicGlobalStats()
       }
     }
+
+    /**
+     * Obtener actividad global del sistema
+     */
+    async getAdminActivity() {
+      const response = await this.request('/api/admin/activity')
+      const data = await this.parseResponse(response)
+      return data.data
+    }
+
+    /**
+     * Obtener actividad de una empresa
+     */
+    async getEmpresaActivity(empresaId = null) {
+      const targetId = empresaId || this.selectedEmpresaId
+      if (!targetId) {
+        throw new Error('No hay empresa seleccionada')
+      }
+      const response = await this.request(`/api/empresas/${targetId}/activity`)
+      const data = await this.parseResponse(response)
+      return data.data
+    }
+
+    /**
+     * Obtener distribución de empresas
+     */
+    async getAdminDistribution() {
+      const response = await this.request('/api/admin/distribution')
+      const data = await this.parseResponse(response)
+      return data.data
+    }
   
     /**
      * Generar estadísticas básicas para una empresa

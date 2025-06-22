@@ -68,9 +68,8 @@ class ResponsiveDashboard {
   }
 
   handleInitError(error) {
-    console.warn('Using fallback initialization due to error:', error);
+    console.error('Dashboard initialization failed:', error);
     this.initializeComponents();
-    this.loadDemoData();
   }
 
   // ===== EVENT LISTENERS =====
@@ -473,55 +472,46 @@ class ResponsiveDashboard {
     this.createDistributionChart();
   }
 
-  createActivityChart() {
+  async createActivityChart() {
     const ctx = document.getElementById('dashboardChart')?.getContext('2d');
     if (!ctx) {
       console.warn('Dashboard chart canvas not found');
       return;
     }
 
-    // Destroy existing chart
     if (this.charts.activity) {
       this.charts.activity.destroy();
     }
 
     const height = this.isMobile() ? 200 : 300;
-    const gradient1 = ctx.createLinearGradient(0, 0, 0, height);
-    gradient1.addColorStop(0, 'rgba(147, 51, 234, 0.4)');
-    gradient1.addColorStop(1, 'rgba(147, 51, 234, 0.01)');
+    const gradient = ctx.createLinearGradient(0, 0, 0, height);
+    gradient.addColorStop(0, 'rgba(147, 51, 234, 0.4)');
+    gradient.addColorStop(1, 'rgba(147, 51, 234, 0.01)');
 
-    const gradient2 = ctx.createLinearGradient(0, 0, 0, height);
-    gradient2.addColorStop(0, 'rgba(59, 130, 246, 0.4)');
-    gradient2.addColorStop(1, 'rgba(59, 130, 246, 0.01)');
+    let chartData = { labels: [], values: [], label: 'Actividad' };
+    try {
+      if (this.currentUser?.isAdmin()) {
+        chartData = await window.apiClient.getAdminActivity();
+      } else if (this.currentUser?.isEmpresa()) {
+        chartData = await window.apiClient.getEmpresaActivity(this.currentUser.getEmpresaId());
+      }
+    } catch (err) {
+      console.error('Error fetching activity data:', err);
+    }
 
     this.charts.activity = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: this.isMobile() ? 
-          ['L', 'M', 'X', 'J', 'V', 'S', 'D'] : 
-          ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
+        labels: chartData.labels,
         datasets: [{
-          label: 'Usuarios Activos',
-          data: [65, 78, 90, 85, 92, 88, 95],
+          label: chartData.label,
+          data: chartData.values,
           borderColor: 'rgb(147, 51, 234)',
-          backgroundColor: gradient1,
+          backgroundColor: gradient,
           tension: 0.4,
           fill: true,
           pointBackgroundColor: 'white',
           pointBorderColor: 'rgb(147, 51, 234)',
-          pointBorderWidth: this.isMobile() ? 2 : 3,
-          pointRadius: this.isMobile() ? 3 : 5,
-          pointHoverRadius: this.isMobile() ? 5 : 7,
-          borderWidth: this.isMobile() ? 2 : 3
-        }, {
-          label: 'Nuevos Registros',
-          data: [28, 35, 40, 38, 45, 42, 48],
-          borderColor: 'rgb(59, 130, 246)',
-          backgroundColor: gradient2,
-          tension: 0.4,
-          fill: true,
-          pointBackgroundColor: 'white',
-          pointBorderColor: 'rgb(59, 130, 246)',
           pointBorderWidth: this.isMobile() ? 2 : 3,
           pointRadius: this.isMobile() ? 3 : 5,
           pointHoverRadius: this.isMobile() ? 5 : 7,
@@ -532,37 +522,35 @@ class ResponsiveDashboard {
     });
   }
 
-  createDistributionChart() {
+  async createDistributionChart() {
     const ctx = document.getElementById('distributionChart')?.getContext('2d');
     if (!ctx) {
       console.warn('Distribution chart canvas not found');
       return;
     }
 
-    // Destroy existing chart
     if (this.charts.distribution) {
       this.charts.distribution.destroy();
+    }
+
+    let chartData = { labels: [], values: [] };
+    try {
+      chartData = await window.apiClient.getAdminDistribution();
+    } catch (err) {
+      console.error('Error fetching distribution data:', err);
     }
 
     this.charts.distribution = new Chart(ctx, {
       type: 'doughnut',
       data: {
-        labels: this.isMobile() ? 
-          ['Premium', 'Estándar', 'Pro', 'Básicos'] : 
-          ['Empresas Premium', 'Empresas Estándar', 'Usuarios Pro', 'Usuarios Básicos'],
+        labels: chartData.labels,
         datasets: [{
-          data: [35, 25, 25, 15],
+          data: chartData.values,
           backgroundColor: [
-            'rgba(147, 51, 234, 0.8)',
-            'rgba(59, 130, 246, 0.8)',
-            'rgba(34, 197, 94, 0.8)',
-            'rgba(251, 146, 60, 0.8)'
+            'rgba(147, 51, 234, 0.8)'
           ],
           borderColor: [
-            'rgb(147, 51, 234)',
-            'rgb(59, 130, 246)',
-            'rgb(34, 197, 94)',
-            'rgb(251, 146, 60)'
+            'rgb(147, 51, 234)'
           ],
           borderWidth: this.isMobile() ? 1 : 2,
           hoverOffset: this.isMobile() ? 8 : 15
@@ -642,18 +630,16 @@ class ResponsiveDashboard {
     try {
       this.showLoadingState();
 
-      // Check for API client
+      // Ensure API client is available
       if (!window.apiClient) {
-        console.log('API client not available, using demo data');
-        this.loadDemoData();
-        return;
+        throw new Error('API client not available');
       }
 
       // Try to load real data with timeout
       const timeout = this.isMobile() ? 5000 : 10000;
       const loadPromise = Promise.race([
         this.loadRealData(),
-        new Promise((_, reject) => 
+        new Promise((_, reject) =>
           setTimeout(() => reject(new Error('Timeout')), timeout)
         )
       ]);
@@ -661,8 +647,7 @@ class ResponsiveDashboard {
       await loadPromise;
 
     } catch (error) {
-      console.log('Failed to load real data, using demo data:', error);
-      this.loadDemoData();
+      console.error('Failed to load dashboard data:', error);
     } finally {
       setTimeout(() => {
         this.hideLoadingState();
@@ -743,35 +728,9 @@ class ResponsiveDashboard {
 
     } catch (error) {
       console.error('Error loading activity lists:', error);
-      // Continue with demo data for lists
-      this.loadDemoActivityLists();
     }
   }
 
-  loadDemoData() {
-    // Update stats with demo values
-    const stats = {
-      totalEmpresasCount: 24,
-      totalUsersCount: 156,
-      activeEmpresasCount: 22,
-      activeUsersCount: 142,
-      empresaInfoCount: this.isMobile() ? 'Tech Solutions' : 'Tech Solutions S.A.',
-      empresaMembersCount: 18,
-      performanceCount: 6.5,
-      avgPerformanceCount: 6.5
-    };
-
-    Object.entries(stats).forEach(([id, value]) => {
-      this.updateElement(id, value);
-    });
-
-    this.loadDemoActivityLists();
-  }
-
-  loadDemoActivityLists() {
-    this.loadRecentCompanies();
-    this.loadRecentUsers();
-  }
 
   loadRecentCompanies(companies = null) {
     const container = document.getElementById('recentEmpresasContainer');
@@ -1008,21 +967,21 @@ class ResponsiveDashboard {
   }
 
   animateCounters() {
-    const counters = [
-      { id: 'totalEmpresasCount', value: 24 },
-      { id: 'totalUsersCount', value: 156 },
-      { id: 'activeEmpresasCount', value: 22 },
-      { id: 'activeUsersCount', value: 142 },
-      { id: 'empresaMembersCount', value: 18 },
-      { id: 'performanceCount', value: 6.5 },
-      { id: 'avgPerformanceCount', value: 6.5 }
+    const ids = [
+      'totalEmpresasCount',
+      'totalUsersCount',
+      'activeEmpresasCount',
+      'activeUsersCount',
+      'empresaMembersCount',
+      'performanceCount',
+      'avgPerformanceCount'
     ];
 
-    counters.forEach(counter => {
-      const element = document.getElementById(counter.id);
-      if (element && typeof counter.value === 'number') {
-        this.animateCounter(element, counter.value);
-      }
+    ids.forEach(id => {
+      const element = document.getElementById(id);
+      if (!element) return;
+      const value = parseFloat(element.textContent) || 0;
+      this.animateCounter(element, value);
     });
   }
 
@@ -2056,8 +2015,7 @@ window.dashboardAPI = {
   toggleTheme: () => window.responsiveDashboard?.toggleTheme(),
   openSidebar: () => window.responsiveDashboard?.openSidebar(),
   closeSidebar: () => window.responsiveDashboard?.closeSidebar(),
-  updateUserInfo: () => window.responsiveDashboard?.setupUserProfile(),
-  loadDemoData: () => window.responsiveDashboard?.loadDemoData()
+  updateUserInfo: () => window.responsiveDashboard?.setupUserProfile()
 };
 
 // Debug mode (only in development)
