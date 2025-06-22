@@ -45,8 +45,9 @@ class DashboardCore {
         this.initialized = true;
         console.log('✅ Dashboard Core initialized successfully');
         
-        // Emit ready event
+        // Emit ready event and load initial data
         this.emit('dashboard:ready');
+        this.loadDashboardData();
         
       } catch (error) {
         console.error('❌ Dashboard initialization error:', error);

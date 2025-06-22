@@ -1,0 +1,47 @@
+# Missing Backend Endpoints
+
+The frontend expects some API endpoints that are not present in the provided repository.
+Below are the endpoints with the expected input and output structures.
+
+1. **GET /api/admin/activity**
+   - **Description:** Returns global activity statistics for the line chart on the admin dashboard.
+   - **Output example:**
+     ```json
+     {
+       "success": true,
+       "data": {
+         "label": "Actividad",
+         "labels": ["2024-01-01", "2024-01-02"],
+         "values": [10, 12]
+       }
+     }
+     ```
+
+2. **GET /api/admin/distribution**
+   - **Description:** Provides distribution data for the doughnut chart.
+   - **Output example:**
+     ```json
+     {
+       "success": true,
+       "data": {
+         "labels": ["Categoria A", "Categoria B"],
+         "values": [5, 3]
+       }
+     }
+     ```
+
+3. **GET /api/empresas/<empresa_id>/activity**
+   - **Description:** Activity statistics for a specific company.
+   - **Parameters:**
+     - `empresa_id` – ID of the company to query.
+   - **Output example:**
+     ```json
+     {
+       "success": true,
+       "data": {
+         "label": "Actividad",
+         "labels": ["2024-01-01", "2024-01-02"],
+         "values": [4, 7]
+       }
+     }
+     ```
