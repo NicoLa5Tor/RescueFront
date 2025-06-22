@@ -155,25 +155,47 @@ def company_stats():
     return jsonify({'total_empresas': len(companies)})
 
 
+WEEK_LABELS = ["L", "M", "X", "J", "V", "S", "D"]
+
+
+def _generate_activity(count: int):
+    """Return a list of 7 numbers for demo activity charts."""
+    return [count for _ in WEEK_LABELS]
+
+
 @admin_bp.route('/activity', methods=['GET'])
 def admin_activity():
-    return jsonify({'total_users': len(users), 'total_empresas': len(companies)})
+    """Actividad general para el dashboard."""
+    data = {
+        "labels": WEEK_LABELS,
+        "values": _generate_activity(len(users)),
+        "label": "Actividad",
+    }
+    return jsonify({"success": True, "data": data})
 
 
 @admin_bp.route('/distribution', methods=['GET'])
 def admin_distribution():
-    distribution = {}
-    for c in companies.values():
-        loc = c.get('ubicacion')
-        distribution[loc] = distribution.get(loc, 0) + 1
-    return jsonify(distribution)
+    """Distribución de empresas registradas."""
+    data = {
+        "labels": ["Empresas Registradas"],
+        "values": [len(companies)],
+    }
+    return jsonify({"success": True, "data": data})
 
 
 @empresas_bp.route('/<int:empresa_id>/activity', methods=['GET'])
 def empresa_activity(empresa_id):
+    """Actividad específica de una empresa."""
     if empresa_id not in companies:
         abort(404)
-    return jsonify({'empresa_id': empresa_id, 'usuarios': len(company_users.get(empresa_id, {}))})
+    count = len(company_users.get(empresa_id, {}))
+    data = {
+        "labels": WEEK_LABELS,
+        "values": _generate_activity(count),
+        "label": "Actividad",
+    }
+    return jsonify({"success": True, "data": data})
 
 
 @empresa_users_bp.route('/<int:empresa_id>/usuarios', methods=['GET'])
