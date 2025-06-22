@@ -1,7 +1,9 @@
-# Missing Backend Endpoints
 
-The frontend expects some API endpoints that are not present in the provided repository.
-Below are the endpoints with the expected input and output structures.
+# Backend Endpoints Reference
+
+The dashboard relies on the following API endpoints to obtain its data. Some of
+them are currently missing in the backend implementation. For clarity the
+expected inputs and outputs are listed below.
 
 1. **GET /api/admin/activity**
    - **Description:** Returns global activity statistics for the line chart on the admin dashboard.
@@ -44,4 +46,58 @@ Below are the endpoints with the expected input and output structures.
          "values": [4, 7]
        }
      }
+     ```
+
+4. **GET /api/empresas/estadisticas**
+   - **Description:** Returns aggregated statistics about all registered companies.
+   - **Output example:**
+     ```json
+     {
+       "total": 25,
+       "activas": 20,
+       "por_ubicacion": {
+         "Bogotá": 10,
+         "Medellín": 5
+       }
+     }
+     ```
+
+5. **GET /api/users/**
+   - **Description:** Lists all users in the system.
+   - **Output example:**
+     ```json
+     [
+       {
+         "id": 1,
+         "name": "Juan",
+         "email": "juan@example.com",
+         "age": 25
+       }
+     ]
+     ```
+
+6. **GET /api/users/age-range?min_age=18&max_age=30**
+   - **Description:** Returns users filtered by the provided age range.
+   - **Output example:**
+     ```json
+     [
+       {
+         "id": 1,
+         "name": "Joven",
+         "age": 22
+       }
+     ]
+     ```
+
+7. **GET /api/empresas/buscar-por-ubicacion?ubicacion=Ciudad**
+   - **Description:** Searches for companies filtered by city or region.
+   - **Output example:**
+     ```json
+     [
+       {
+         "id": "e1",
+         "nombre": "EmpresaX",
+         "ubicacion": "Bogotá"
+       }
+     ]
      ```

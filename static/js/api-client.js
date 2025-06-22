@@ -173,10 +173,18 @@ class ApiClient {
      * Buscar empresas por ubicación
      */
     async searchEmpresasByUbicacion(ubicacion) {
-      const empresas = await this.getEmpresas()
-      return empresas.filter(empresa => 
-        empresa.ubicacion.toLowerCase().includes(ubicacion.toLowerCase())
-      )
+      try {
+        const response = await this.request(`/api/empresas/buscar-por-ubicacion?ubicacion=${encodeURIComponent(ubicacion)}`)
+        const data = await this.parseResponse(response)
+        return ModelFactory.createEmpresas(data)
+      } catch (error) {
+        // Fallback to client side filtering if endpoint is missing
+        console.warn('Endpoint buscar-por-ubicacion no disponible, filtrando localmente:', error)
+        const empresas = await this.getEmpresas()
+        return empresas.filter(empresa =>
+          empresa.ubicacion.toLowerCase().includes(ubicacion.toLowerCase())
+        )
+      }
     }
   
     // ===== USUARIOS =====
@@ -192,6 +200,15 @@ class ApiClient {
       }
   
       const response = await this.request(`/empresas/${targetEmpresaId}/usuarios`)
+      const data = await this.parseResponse(response)
+      return ModelFactory.createUsuarios(data)
+    }
+
+    /**
+     * Obtener todos los usuarios del sistema
+     */
+    async getAllUsers() {
+      const response = await this.request('/api/users/')
       const data = await this.parseResponse(response)
       return ModelFactory.createUsuarios(data)
     }
@@ -265,10 +282,16 @@ class ApiClient {
      * Filtrar usuarios por edad en una empresa
      */
     async filterUsuariosByAge(empresaId, minAge, maxAge) {
-      const usuarios = await this.getUsuariosByEmpresa(empresaId)
-      // Como no hay campo edad en el modelo actual, retornamos todos
-      // TODO: Implementar cuando se agregue campo edad
-      return usuarios
+      try {
+        const response = await this.request(`/api/users/age-range?min_age=${minAge}&max_age=${maxAge}`)
+        const data = await this.parseResponse(response)
+        const usuarios = ModelFactory.createUsuarios(data)
+        return usuarios.filter(u => u.empresa_id === empresaId)
+      } catch (error) {
+        console.warn('Endpoint age-range no disponible, filtrando localmente:', error)
+        const usuarios = await this.getUsuariosByEmpresa(empresaId)
+        return usuarios
+      }
     }
   
     // ===== MÉTODOS DE COMPATIBILIDAD (para mantener el código existente) =====
@@ -277,7 +300,10 @@ class ApiClient {
      * Obtener usuarios (usa empresa seleccionada)
      */
     async getUsers() {
-      return this.getUsuariosByEmpresa()
+      if (this.selectedEmpresaId) {
+        return this.getUsuariosByEmpresa()
+      }
+      return this.getAllUsers()
     }
   
     /**
@@ -328,10 +354,12 @@ class ApiClient {
      * Filtrar usuarios por edad (usa empresa seleccionada)
      */
     async getUsersByAge(minAge, maxAge) {
-      if (!this.selectedEmpresaId) {
-        throw new Error('No hay empresa seleccionada')
+      if (this.selectedEmpresaId) {
+        return this.filterUsuariosByAge(this.selectedEmpresaId, minAge, maxAge)
       }
-      return this.filterUsuariosByAge(this.selectedEmpresaId, minAge, maxAge)
+      const response = await this.request(`/api/users/age-range?min_age=${minAge}&max_age=${maxAge}`)
+      const data = await this.parseResponse(response)
+      return ModelFactory.createUsuarios(data)
     }
   
     // ===== ESTADÍSTICAS =====
@@ -361,15 +389,22 @@ class ApiClient {
      * Obtener estadísticas globales (para admins)
      */
     async getGlobalStats() {
-      try {
-        const response = await this.request('/api/admin/stats')
-        const data = await this.parseResponse(response)
-        return ModelFactory.createGlobalStats(data.data)
-      } catch (error) {
-        // Si no existe endpoint, generar estadísticas básicas
-        console.warn('Endpoint de estadísticas globales no disponible, generando datos básicos:', error)
-        return this.generateBasicGlobalStats()
+      const endpoints = ['/api/admin/stats', '/api/empresas/estadisticas']
+      for (const endpoint of endpoints) {
+        try {
+          const response = await this.request(endpoint)
+          const data = await this.parseResponse(response)
+          // /api/empresas/estadisticas devuelve el objeto directamente
+          if (data.data) {
+            return ModelFactory.createGlobalStats(data.data)
+          }
+          return ModelFactory.createGlobalStats(data)
+        } catch (error) {
+          console.warn(`Endpoint ${endpoint} no disponible:`, error)
+        }
       }
+      // Fallback a generación local
+      return this.generateBasicGlobalStats()
     }
 
     /**
