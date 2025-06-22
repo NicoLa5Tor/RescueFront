@@ -1,80 +1,74 @@
 {% extends "base.html" %}
-{% block title %}Dashboard Premium - Sistema Multi-Tenant{% endblock %}
+{% block title %}Dashboard - Sistema Multi-Tenant{% endblock %}
 
 {% block extra_css %}
+<!-- External Libraries -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<link href="{{ url_for('static', filename='css/dashboard-styles.css') }}" rel="stylesheet">
+
+<!-- Dashboard CSS (in order) -->
+<link href="{{ url_for('static', filename='css/dashboard/variables.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/dashboard/base.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/dashboard/navbar.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/dashboard/sidebar.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/dashboard/animations.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/dashboard/cards.css') }}" rel="stylesheet">
 {% endblock %}
 
 {% block navbar %}
-<!-- Premium Navigation Bar -->
-<nav class="navbar-premium fixed w-full top-0 z-50">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex justify-between items-center h-20">
-      <!-- Left Section -->
-      <div class="flex items-center space-x-4">
-        <!-- Mobile Menu Toggle -->
-        <button onclick="toggleSidebar()" class="lg:hidden p-3 rounded-xl hover:bg-gray-100 transition-all">
-          <i class="fas fa-bars text-xl text-gray-700"></i>
-        </button>
-        
-        <!-- Logo -->
-        <div class="logo-container flex items-center space-x-3 p-2 rounded-xl">
-          <div class="w-12 h-12 bg-gradient-to-br from-purple-600 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
-            <i class="fas fa-shield-alt text-white text-2xl"></i>
-          </div>
-          <div>
-            <h1 class="text-xl font-bold text-gray-900">Rescue Dashboard</h1>
-            <p class="text-xs text-gray-500 hidden sm:block">Sistema Multi-Tenant Premium</p>
-          </div>
-        </div>
-      </div>
+<nav class="navbar">
+  <div class="navbar__container">
+    <!-- Left Section -->
+    <div class="navbar__left">
+      <button class="navbar__menu-toggle" aria-label="Toggle menu">
+        <i class="fas fa-bars"></i>
+      </button>
       
-      <!-- Right Section -->
-      <div class="flex items-center space-x-3">
-        <!-- Search (Desktop) -->
-        <div class="hidden md:block">
-          <div class="relative group">
-            <input type="text" placeholder="Buscar..." 
-              class="w-72 px-5 py-3 pr-12 rounded-xl border border-gray-200 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all text-sm">
-            <button class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 group-hover:text-purple-600 transition-colors">
-              <i class="fas fa-search text-lg"></i>
-            </button>
-          </div>
+      <div class="navbar__logo">
+        <div class="navbar__logo-icon">
+          <i class="fas fa-shield-alt"></i>
         </div>
-        
-        <!-- Notifications -->
-        <div class="relative">
-          <button class="p-3 rounded-xl hover:bg-gray-100 transition-all group">
-            <i class="fas fa-bell text-xl text-gray-600 group-hover:text-purple-600"></i>
-            <span class="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse"></span>
-          </button>
-        </div>
-        
-        <!-- Theme Toggle -->
-        <button id="themeToggle" class="p-3 rounded-xl hover:bg-gray-100 transition-all group hidden sm:block">
-          <i class="fas fa-moon text-xl text-gray-600 group-hover:text-purple-600" id="themeIcon"></i>
-        </button>
-        
-        <!-- User Profile -->
-        <div class="relative">
-          <button class="user-info-btn flex items-center space-x-3 p-2 pr-4 rounded-xl hover:bg-gray-100 transition-all">
-            <div class="w-12 h-12 bg-gradient-to-br from-purple-600 to-blue-600 rounded-xl flex items-center justify-center shadow-md">
-              <span class="text-white font-bold user-initials">AD</span>
-            </div>
-            <div class="hidden sm:block text-left">
-              <p class="text-sm font-semibold text-gray-900 user-name">Admin</p>
-              <p class="text-xs text-gray-500 user-role">Administrador</p>
-            </div>
-            <i class="fas fa-chevron-down text-xs text-gray-400 ml-2"></i>
-          </button>
+        <div class="navbar__logo-text">
+          <h1 class="navbar__logo-title">Rescue Dashboard</h1>
+          <p class="navbar__logo-subtitle">Sistema Multi-Tenant</p>
         </div>
       </div>
+    </div>
+    
+    <!-- Center Section -->
+    <div class="navbar__center">
+      <div class="navbar__search">
+        <input type="text" class="navbar__search-input" placeholder="Buscar...">
+        <button class="navbar__search-button" aria-label="Search">
+          <i class="fas fa-search"></i>
+        </button>
+      </div>
+      <button class="navbar__search-mobile" aria-label="Search">
+        <i class="fas fa-search"></i>
+      </button>
+    </div>
+    
+    <!-- Right Section -->
+    <div class="navbar__right">
+      <button class="navbar__action" aria-label="Notifications">
+        <i class="fas fa-bell"></i>
+        <span class="navbar__notification-badge"></span>
+      </button>
+      
+      <button class="navbar__action navbar__theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <i class="fas fa-moon" id="themeIcon"></i>
+      </button>
+      
+      <button class="navbar__user">
+        <div class="navbar__user-avatar">
+          <span class="user-initials">AD</span>
+        </div>
+        <div class="navbar__user-info">
+          <p class="navbar__user-name">Admin</p>
+          <p class="navbar__user-role">Administrador</p>
+        </div>
+        <i class="fas fa-chevron-down navbar__user-chevron"></i>
+      </button>
     </div>
   </div>
 </nav>
@@ -84,104 +78,72 @@
 <!-- Animated Background -->
 <div class="animated-bg"></div>
 
-<!-- Main Layout -->
-<div class="min-h-screen pt-20">
-  <!-- Premium Sidebar -->
-  <aside class="sidebar-premium fixed inset-y-0 left-0 z-40 w-80 transform -translate-x-full transition-transform duration-300 ease-in-out lg:translate-x-0 pt-20" id="sidebar">
-    <div class="h-full px-6 py-8">
-      <!-- User Profile Section -->
-      <div class="mb-8 p-6 glass-card rounded-2xl">
-        <div class="flex items-center space-x-4">
-          <div class="w-16 h-16 bg-gradient-to-br from-purple-600 to-blue-600 rounded-2xl flex items-center justify-center">
-            <span class="text-white text-xl font-bold user-initials">AD</span>
+<div class="min-h-screen pt-16 sm:pt-20">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar__content">
+      <!-- User Profile -->
+      <div class="sidebar__profile">
+        <div class="sidebar__profile-content">
+          <div class="sidebar__profile-avatar">
+            <span class="user-initials">AD</span>
           </div>
-          <div>
-            <p class="font-semibold text-gray-900 user-name">Admin Principal</p>
-            <p class="text-sm text-gray-500 user-role">Super Administrador</p>
+          <div class="sidebar__profile-info">
+            <p class="sidebar__profile-name">Admin Principal</p>
+            <p class="sidebar__profile-role">Super Admin</p>
           </div>
         </div>
       </div>
       
-      <!-- Navigation Menu -->
-      <nav class="space-y-2">
-        <a href="/admin" class="sidebar-link active flex items-center p-4 group">
-          <div class="icon-container">
-            <i class="fas fa-th-large"></i>
+      <!-- Navigation -->
+      <nav class="sidebar__nav">
+        <div class="sidebar__nav-section">
+          <div class="sidebar__nav-list" id="sidebarNav">
+            <!-- Navigation items will be populated by JS -->
           </div>
-          <span class="ml-3 font-medium">Dashboard</span>
-          <span class="ml-auto bg-purple-100 text-purple-600 text-xs px-2 py-1 rounded-full">Nuevo</span>
-        </a>
-        
-        <a href="/admin/empresas" class="sidebar-link admin-only flex items-center p-4 group">
-          <div class="icon-container">
-            <i class="fas fa-building"></i>
-          </div>
-          <span class="ml-3 font-medium">Empresas</span>
-        </a>
-        
-        <a href="/admin/users" class="sidebar-link flex items-center p-4 group">
-          <div class="icon-container">
-            <i class="fas fa-users"></i>
-          </div>
-          <span class="ml-3 font-medium">Usuarios</span>
-        </a>
-        
-        <a href="/admin/stats" class="sidebar-link flex items-center p-4 group">
-          <div class="icon-container">
-            <i class="fas fa-chart-line"></i>
-          </div>
-          <span class="ml-3 font-medium">Estadísticas</span>
-        </a>
-        
-        <div class="mt-8 pt-8 border-t border-gray-200">
-          <a href="#" class="sidebar-link flex items-center p-4 group">
-            <div class="icon-container">
-              <i class="fas fa-cog"></i>
-            </div>
-            <span class="ml-3 font-medium">Configuración</span>
-          </a>
         </div>
       </nav>
       
       <!-- Company Selector -->
-      <div class="admin-only mt-8">
-        <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
-          Empresa Actual
-        </label>
-        <select id="sidebarEmpresaSelector" 
-          class="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all">
+      <div class="sidebar__company-selector admin-only">
+        <label class="sidebar__company-label">Empresa Actual</label>
+        <select id="sidebarEmpresaSelector" class="sidebar__company-select">
           <option value="">Todas las empresas</option>
         </select>
       </div>
       
-      <!-- Logout Button -->
-      <div class="mt-auto pt-8">
-        <button class="logout-btn w-full flex items-center justify-center p-4 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl transition-all group">
-          <i class="fas fa-sign-out-alt mr-3 group-hover:rotate-12 transition-transform"></i>
-          <span class="font-medium">Cerrar Sesión</span>
+      <!-- Logout -->
+      <div class="sidebar__logout">
+        <button class="sidebar__logout-btn">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Cerrar Sesión</span>
         </button>
       </div>
     </div>
   </aside>
 
-  <!-- Main Content Area -->
-  <main class="lg:ml-80 p-6 lg:p-8">
-    <!-- Page Header -->
-    <div class="mb-10 gsap-fade-in">
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+  <!-- Sidebar Overlay -->
+  <div class="sidebar__overlay" id="sidebarOverlay"></div>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Header -->
+    <div class="mb-8 gsap-fade-in">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
         <div>
-          <h1 class="text-4xl font-bold text-gray-900 mb-2">
+          <h1 class="text-2xl sm:text-4xl font-bold text-gray-900 dark:text-white">
             Bienvenido de vuelta 👋
           </h1>
-          <p class="text-lg text-gray-600">Aquí está el resumen de tu sistema hoy</p>
+          <p class="text-gray-600 dark:text-gray-400 mt-1">Resumen de tu sistema hoy</p>
         </div>
-        <div class="mt-6 sm:mt-0 flex space-x-3">
-          <button class="px-6 py-3 bg-white border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 transition-all flex items-center">
-            <i class="fas fa-calendar-alt mr-2"></i>
-            Últimos 30 días
+        <div class="flex flex-col xs:flex-row space-y-2 xs:space-y-0 xs:space-x-3">
+          <button class="btn-secondary">
+            <i class="fas fa-calendar-alt"></i>
+            <span class="hidden xs:inline">Últimos 30 días</span>
+            <span class="xs:hidden">30 días</span>
           </button>
-          <button class="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl hover:shadow-xl transition-all flex items-center">
-            <i class="fas fa-download mr-2"></i>
+          <button class="btn-primary">
+            <i class="fas fa-download"></i>
             Exportar
           </button>
         </div>
@@ -189,117 +151,57 @@
     </div>
 
     <!-- Stats Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
-      <!-- Total Companies Card -->
-      <div class="stats-card primary glass-card p-6 gsap-scale-in admin-only">
-        <div class="flex items-center justify-between mb-4">
-          <div class="stats-icon">
-            <i class="fas fa-building"></i>
-          </div>
-          <span class="text-sm font-medium text-green-600 bg-green-50 px-3 py-1 rounded-full">
-            <i class="fas fa-arrow-up mr-1"></i>12.5%
-          </span>
-        </div>
-        <h3 class="text-sm font-medium text-gray-600 mb-1">Total Empresas</h3>
-        <p class="text-3xl font-bold text-gray-900" id="totalEmpresasCount">0</p>
-        <p class="text-sm text-gray-500 mt-2">
-          <span class="font-semibold text-green-600" id="activeEmpresasCount">0</span> activas este mes
-        </p>
-      </div>
-
-      <!-- Total Users Card -->
-      <div class="stats-card success glass-card p-6 gsap-scale-in">
-        <div class="flex items-center justify-between mb-4">
-          <div class="stats-icon">
-            <i class="fas fa-users"></i>
-          </div>
-          <span class="text-sm font-medium text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
-            <i class="fas fa-arrow-up mr-1"></i>8.3%
-          </span>
-        </div>
-        <h3 class="text-sm font-medium text-gray-600 mb-1">Total Usuarios</h3>
-        <p class="text-3xl font-bold text-gray-900" id="totalUsersCount">0</p>
-        <p class="text-sm text-gray-500 mt-2">
-          <span class="font-semibold text-blue-600" id="activeUsersCount">0</span> activos hoy
-        </p>
-      </div>
-
-      <!-- My Company Card -->
-      <div class="stats-card secondary glass-card p-6 gsap-scale-in empresa-only">
-        <div class="flex items-center justify-between mb-4">
-          <div class="stats-icon">
-            <i class="fas fa-home"></i>
-          </div>
-          <span class="text-sm font-medium text-purple-600 bg-purple-50 px-3 py-1 rounded-full">
-            Premium
-          </span>
-        </div>
-        <h3 class="text-sm font-medium text-gray-600 mb-1">Mi Empresa</h3>
-        <p class="text-xl font-bold text-gray-900 truncate" id="empresaName">-</p>
-        <p class="text-sm text-gray-500 mt-2">
-          <span class="font-semibold text-purple-600" id="empresaUsersCount">0</span> miembros activos
-        </p>
-      </div>
-
-      <!-- Performance Card -->
-      <div class="stats-card warning glass-card p-6 gsap-scale-in admin-only">
-        <div class="flex items-center justify-between mb-4">
-          <div class="stats-icon">
-            <i class="fas fa-chart-line"></i>
-          </div>
-          <span class="text-sm font-medium text-orange-600 bg-orange-50 px-3 py-1 rounded-full">
-            <i class="fas fa-fire mr-1"></i>Top
-          </span>
-        </div>
-        <h3 class="text-sm font-medium text-gray-600 mb-1">Rendimiento</h3>
-        <p class="text-3xl font-bold text-gray-900" id="avgUsersPerCompany">0</p>
-        <p class="text-sm text-gray-500 mt-2">Usuarios promedio/empresa</p>
-      </div>
+    <div class="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8" id="statsGrid">
+      <!-- Loading skeletons -->
+      <div class="skeleton h-32 rounded-2xl"></div>
+      <div class="skeleton h-32 rounded-2xl"></div>
+      <div class="skeleton h-32 rounded-2xl"></div>
+      <div class="skeleton h-32 rounded-2xl"></div>
     </div>
 
     <!-- Charts Section -->
-    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-10">
-      <!-- Main Activity Chart -->
-      <div class="xl:col-span-2 chart-card glass-card gsap-slide-in">
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
+      <!-- Main Chart -->
+      <div class="xl:col-span-2 glass-card chart-card">
         <div class="chart-header">
           <div>
-            <h3 class="text-xl font-bold text-gray-900">Actividad del Sistema</h3>
-            <p class="text-sm text-gray-500 mt-1">Rendimiento en tiempo real</p>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white">Actividad del Sistema</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Rendimiento en tiempo real</p>
           </div>
           <div class="chart-controls">
-            <button class="chart-control-btn" onclick="refreshChart('dashboardChart')">
+            <button class="chart-control-btn" onclick="refreshChart('dashboardChart')" aria-label="Refresh chart">
               <i class="fas fa-sync-alt"></i>
             </button>
-            <button class="chart-control-btn" onclick="expandChart('dashboardChart')">
+            <button class="chart-control-btn" onclick="expandChart('dashboardChart')" aria-label="Expand chart">
               <i class="fas fa-expand"></i>
             </button>
-            <button class="chart-control-btn" onclick="downloadChart('dashboardChart')">
+            <button class="chart-control-btn" onclick="downloadChart('dashboardChart')" aria-label="Download chart">
               <i class="fas fa-download"></i>
             </button>
           </div>
         </div>
         <div class="p-6">
-          <div class="h-80">
+          <div class="h-64 sm:h-80">
             <canvas id="dashboardChart"></canvas>
           </div>
         </div>
       </div>
 
       <!-- Distribution Chart -->
-      <div class="chart-card glass-card gsap-slide-in">
+      <div class="glass-card chart-card">
         <div class="chart-header">
           <div>
-            <h3 class="text-xl font-bold text-gray-900">Distribución</h3>
-            <p class="text-sm text-gray-500 mt-1">Por categorías</p>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white">Distribución</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Por categorías</p>
           </div>
           <div class="chart-controls">
-            <button class="chart-control-btn" onclick="refreshChart('distributionChart')">
+            <button class="chart-control-btn" onclick="refreshChart('distributionChart')" aria-label="Refresh chart">
               <i class="fas fa-sync-alt"></i>
             </button>
           </div>
         </div>
         <div class="p-6">
-          <div class="h-80">
+          <div class="h-64 sm:h-80">
             <canvas id="distributionChart"></canvas>
           </div>
         </div>
@@ -307,823 +209,154 @@
     </div>
 
     <!-- Activity Lists -->
-    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-10">
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
       <!-- Recent Companies -->
-      <div class="glass-card rounded-2xl overflow-hidden gsap-fade-in admin-only">
-        <div class="p-6 border-b border-gray-100">
+      <div class="glass-card admin-only">
+        <div class="p-6 border-b border-gray-100 dark:border-gray-700">
           <div class="flex items-center justify-between">
             <div>
-              <h3 class="text-xl font-bold text-gray-900">Empresas Recientes</h3>
-              <p class="text-sm text-gray-500 mt-1">Últimas incorporaciones al sistema</p>
+              <h3 class="text-xl font-bold text-gray-900 dark:text-white">Empresas Recientes</h3>
+              <p class="text-sm text-gray-500 dark:text-gray-400">Últimas incorporaciones</p>
             </div>
-            <a href="/admin/empresas" class="text-purple-600 hover:text-purple-700 font-medium flex items-center group">
-              Ver todas
-              <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+            <a href="/admin/empresas" class="text-purple-600 hover:text-purple-700 font-medium">
+              Ver todas <i class="fas fa-arrow-right ml-1"></i>
             </a>
           </div>
         </div>
         <div class="p-6">
-          <div id="recentEmpresasContainer" class="space-y-4">
-            <!-- Loading skeletons -->
-            <div class="skeleton h-20 rounded-xl"></div>
-            <div class="skeleton h-20 rounded-xl"></div>
-            <div class="skeleton h-20 rounded-xl"></div>
+          <div id="recentEmpresasContainer">
+            <!-- Loading skeleton -->
+            <div class="space-y-4">
+              <div class="skeleton h-16 rounded-lg"></div>
+              <div class="skeleton h-16 rounded-lg"></div>
+              <div class="skeleton h-16 rounded-lg"></div>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Recent Users -->
-      <div class="glass-card rounded-2xl overflow-hidden gsap-fade-in">
-        <div class="p-6 border-b border-gray-100">
+      <div class="glass-card">
+        <div class="p-6 border-b border-gray-100 dark:border-gray-700">
           <div class="flex items-center justify-between">
             <div>
-              <h3 class="text-xl font-bold text-gray-900">Usuarios Recientes</h3>
-              <p class="text-sm text-gray-500 mt-1">Nuevos miembros del sistema</p>
+              <h3 class="text-xl font-bold text-gray-900 dark:text-white">Usuarios Recientes</h3>
+              <p class="text-sm text-gray-500 dark:text-gray-400">Nuevos miembros</p>
             </div>
-            <a href="/admin/users" class="text-purple-600 hover:text-purple-700 font-medium flex items-center group">
-              Ver todos
-              <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+            <a href="/admin/users" class="text-purple-600 hover:text-purple-700 font-medium">
+              Ver todos <i class="fas fa-arrow-right ml-1"></i>
             </a>
           </div>
         </div>
         <div class="p-6">
-          <div id="recentUsersContainer" class="space-y-4">
-            <!-- Loading skeletons -->
-            <div class="skeleton h-20 rounded-xl"></div>
-            <div class="skeleton h-20 rounded-xl"></div>
-            <div class="skeleton h-20 rounded-xl"></div>
+          <div id="recentUsersContainer">
+            <!-- Loading skeleton -->
+            <div class="space-y-4">
+              <div class="skeleton h-16 rounded-lg"></div>
+              <div class="skeleton h-16 rounded-lg"></div>
+              <div class="skeleton h-16 rounded-lg"></div>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Quick Actions -->
-    <div class="glass-card rounded-2xl p-8 gsap-fade-in">
+    <div class="glass-card p-6">
       <div class="mb-6">
-        <h3 class="text-2xl font-bold text-gray-900">Acciones Rápidas</h3>
-        <p class="text-gray-600 mt-2">Accede a las funciones más utilizadas con un solo clic</p>
+        <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Acciones Rápidas</h3>
+        <p class="text-gray-600 dark:text-gray-400">Funciones más utilizadas</p>
       </div>
-      
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <!-- Create Company -->
-        <button onclick="createEmpresa()" class="quick-action-btn primary super-admin-only group">
-          <div class="action-icon">
-            <i class="fas fa-plus-circle"></i>
-          </div>
-          <h4 class="font-semibold text-gray-900 group-hover:text-white relative z-10">Nueva Empresa</h4>
-          <p class="text-sm text-gray-500 mt-1 group-hover:text-white/80 relative z-10">Agregar empresa</p>
-        </button>
-        
-        <!-- Create User -->
-        <button onclick="createUser()" class="quick-action-btn success group">
-          <div class="action-icon">
-            <i class="fas fa-user-plus"></i>
-          </div>
-          <h4 class="font-semibold text-gray-900 group-hover:text-white relative z-10">Nuevo Usuario</h4>
-          <p class="text-sm text-gray-500 mt-1 group-hover:text-white/80 relative z-10">Registrar usuario</p>
-        </button>
-        
-        <!-- Generate Report -->
-        <button onclick="generateReport()" class="quick-action-btn warning group">
-          <div class="action-icon">
-            <i class="fas fa-file-chart-line"></i>
-          </div>
-          <h4 class="font-semibold text-gray-900 group-hover:text-white relative z-10">Generar Reporte</h4>
-          <p class="text-sm text-gray-500 mt-1 group-hover:text-white/80 relative z-10">Crear informe</p>
-        </button>
-        
-        <!-- System Info -->
-        <button onclick="showSystemInfo()" class="quick-action-btn primary group">
-          <div class="action-icon">
-            <i class="fas fa-info-circle"></i>
-          </div>
-          <h4 class="font-semibold text-gray-900 group-hover:text-white relative z-10">Info Sistema</h4>
-          <p class="text-sm text-gray-500 mt-1 group-hover:text-white/80 relative z-10">Ver detalles</p>
-        </button>
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4" id="quickActionsGrid">
+        <!-- Quick action buttons will be populated by JS -->
+        <div class="skeleton h-32 rounded-xl"></div>
+        <div class="skeleton h-32 rounded-xl"></div>
+        <div class="skeleton h-32 rounded-xl"></div>
+        <div class="skeleton h-32 rounded-xl"></div>
       </div>
     </div>
   </main>
 </div>
-
-<!-- Mobile Overlay -->
-<div class="lg:hidden fixed inset-0 z-30 bg-black/60 backdrop-blur-sm hidden transition-all" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 {% endblock %}
 
 {% block extra_js %}
-<script>window.API_BASE_URL = '{{ api_url }}';</script>
+<!-- External Libraries -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- API Configuration -->
+<script>
+  window.API_BASE_URL = '{{ api_url }}';
+  // Initialize theme from localStorage
+  (function() {
+    const savedTheme = localStorage.getItem('theme');
+    const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const isDark = savedTheme === 'dark' || (!savedTheme && systemDark);
+    
+    if (isDark) {
+      document.documentElement.classList.add('dark');
+    }
+  })();
+</script>
+
+<!-- Core Scripts -->
 <script src="{{ url_for('static', filename='js/auth-manager.js') }}"></script>
 <script src="{{ url_for('static', filename='js/models.js') }}"></script>
 <script src="{{ url_for('static', filename='js/api-client.js') }}"></script>
-<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
 
+<!-- Dashboard Core -->
+<script src="{{ url_for('static', filename='js/dashboard/sidebar-manager.js') }}"></script>
+<script src="{{ url_for('static', filename='js/dashboard/dashboard-core.js') }}"></script>
+
+<!-- Main Dashboard Script -->
+<script src="{{ url_for('static', filename='js/dashboard/dashboard.js') }}"></script>
+
+<!-- Quick Actions (can be moved to separate file) -->
 <script>
-// GSAP Animations
-gsap.registerPlugin(ScrollTrigger);
-
-// Initialize GSAP animations
-function initGSAPAnimations() {
-  // Fade in animations
-  gsap.from(".gsap-fade-in", {
-    opacity: 0,
-    y: 30,
-    duration: 1,
-    stagger: 0.1,
-    ease: "power3.out"
-  });
-  
-  // Scale in animations for cards
-  gsap.from(".gsap-scale-in", {
-    opacity: 0,
-    scale: 0.9,
-    duration: 0.8,
-    stagger: 0.1,
-    ease: "back.out(1.7)"
-  });
-  
-  // Slide in animations
-  gsap.from(".gsap-slide-in", {
-    opacity: 0,
-    x: -50,
-    duration: 1,
-    stagger: 0.2,
-    ease: "power3.out"
-  });
-  
-  // Hover animations for stats cards
-  document.querySelectorAll('.stats-card').forEach(card => {
-    card.addEventListener('mouseenter', () => {
-      gsap.to(card, {
-        y: -5,
-        scale: 1.02,
-        duration: 0.3,
-        ease: "power2.out"
-      });
-    });
-    
-    card.addEventListener('mouseleave', () => {
-      gsap.to(card, {
-        y: 0,
-        scale: 1,
-        duration: 0.3,
-        ease: "power2.out"
-      });
-    });
-  });
-  
-  // Animated counter effect
-  const animateCounter = (element, endValue) => {
-    const obj = { value: 0 };
-    gsap.to(obj, {
-      value: endValue,
-      duration: 2,
-      ease: "power2.out",
-      onUpdate: () => {
-        element.textContent = Math.floor(obj.value);
-      }
-    });
-  };
-  
-  // Apply counter animation to stats
-  window.animateStatsCounters = () => {
-    const counters = [
-      { id: 'totalEmpresasCount', value: 24 },
-      { id: 'totalUsersCount', value: 156 },
-      { id: 'activeEmpresasCount', value: 22 },
-      { id: 'activeUsersCount', value: 142 },
-      { id: 'empresaUsersCount', value: 18 },
-      { id: 'avgUsersPerCompany', value: 6.5 }
-    ];
-    
-    counters.forEach(counter => {
-      const element = document.getElementById(counter.id);
-      if (element && counter.value) {
-        animateCounter(element, counter.value);
-      }
-    });
-  };
-}
-
-// Chart instances
-let dashboardChartInstance = null;
-let distributionChartInstance = null;
-
-// Enhanced chart initialization
-function initializeCharts() {
-  // Destroy existing charts
-  if (dashboardChartInstance) {
-    dashboardChartInstance.destroy();
-  }
-  if (distributionChartInstance) {
-    distributionChartInstance.destroy();
-  }
-  
-  // Activity Chart with gradient
-  const ctx1 = document.getElementById('dashboardChart')?.getContext('2d');
-  if (ctx1) {
-    const gradient1 = ctx1.createLinearGradient(0, 0, 0, 300);
-    gradient1.addColorStop(0, 'rgba(147, 51, 234, 0.4)');
-    gradient1.addColorStop(1, 'rgba(147, 51, 234, 0.01)');
-    
-    const gradient2 = ctx1.createLinearGradient(0, 0, 0, 300);
-    gradient2.addColorStop(0, 'rgba(59, 130, 246, 0.4)');
-    gradient2.addColorStop(1, 'rgba(59, 130, 246, 0.01)');
-    
-    dashboardChartInstance = new Chart(ctx1, {
-      type: 'line',
-      data: {
-        labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
-        datasets: [{
-          label: 'Usuarios Activos',
-          data: [65, 78, 90, 85, 92, 88, 95],
-          borderColor: 'rgb(147, 51, 234)',
-          backgroundColor: gradient1,
-          tension: 0.4,
-          fill: true,
-          pointBackgroundColor: 'white',
-          pointBorderColor: 'rgb(147, 51, 234)',
-          pointBorderWidth: 3,
-          pointRadius: 5,
-          pointHoverRadius: 7
-        }, {
-          label: 'Nuevos Registros',
-          data: [28, 35, 40, 38, 45, 42, 48],
-          borderColor: 'rgb(59, 130, 246)',
-          backgroundColor: gradient2,
-          tension: 0.4,
-          fill: true,
-          pointBackgroundColor: 'white',
-          pointBorderColor: 'rgb(59, 130, 246)',
-          pointBorderWidth: 3,
-          pointRadius: 5,
-          pointHoverRadius: 7
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        interaction: {
-          mode: 'index',
-          intersect: false
-        },
-        plugins: {
-          legend: {
-            display: true,
-            position: 'bottom',
-            labels: {
-              usePointStyle: true,
-              padding: 20,
-              font: {
-                size: 12,
-                family: "'Inter', sans-serif"
-              }
-            }
-          },
-          tooltip: {
-            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-            padding: 12,
-            cornerRadius: 8,
-            titleFont: {
-              size: 14,
-              weight: '600'
-            },
-            bodyFont: {
-              size: 13
-            }
-          }
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            grid: {
-              drawBorder: false,
-              color: 'rgba(0, 0, 0, 0.05)'
-            },
-            ticks: {
-              font: {
-                size: 11
-              }
-            }
-          },
-          x: {
-            grid: {
-              display: false
-            },
-            ticks: {
-              font: {
-                size: 11
-              }
-            }
-          }
-        }
-      }
-    });
-  }
-  
-  // Distribution Chart
-  const ctx2 = document.getElementById('distributionChart')?.getContext('2d');
-  if (ctx2) {
-    distributionChartInstance = new Chart(ctx2, {
-      type: 'doughnut',
-      data: {
-        labels: ['Empresas Premium', 'Empresas Estándar', 'Usuarios Pro', 'Usuarios Básicos'],
-        datasets: [{
-          data: [35, 25, 25, 15],
-          backgroundColor: [
-            'rgba(147, 51, 234, 0.8)',
-            'rgba(59, 130, 246, 0.8)',
-            'rgba(34, 197, 94, 0.8)',
-            'rgba(251, 146, 60, 0.8)'
-          ],
-          borderColor: [
-            'rgb(147, 51, 234)',
-            'rgb(59, 130, 246)',
-            'rgb(34, 197, 94)',
-            'rgb(251, 146, 60)'
-          ],
-          borderWidth: 2,
-          hoverOffset: 15
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: true,
-            position: 'bottom',
-            labels: {
-              usePointStyle: true,
-              padding: 15,
-              font: {
-                size: 11,
-                family: "'Inter', sans-serif"
-              }
-            }
-          },
-          tooltip: {
-            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-            padding: 12,
-            cornerRadius: 8
-          }
-        }
-      }
-    });
+// Quick action functions
+function createEmpresa() {
+  if (window.dashboard?.handleQuickAction) {
+    window.dashboard.handleQuickAction('create-empresa');
   }
 }
 
-// Chart control functions
-function refreshChart(chartId) {
-  gsap.to(`#${chartId}`, {
-    rotation: 360,
-    duration: 0.5,
-    onComplete: () => {
-      gsap.set(`#${chartId}`, { rotation: 0 });
-      initializeCharts();
-    }
-  });
-}
-
-function expandChart(chartId) {
-  // Implement fullscreen chart view
-  Swal.fire({
-    title: 'Vista Expandida',
-    text: 'Funcionalidad de expansión en desarrollo',
-    icon: 'info',
-    confirmButtonColor: '#8b5cf6'
-  });
-}
-
-function downloadChart(chartId) {
-  const chart = chartId === 'dashboardChart' ? dashboardChartInstance : distributionChartInstance;
-  if (chart) {
-    const url = chart.toBase64Image();
-    const link = document.createElement('a');
-    link.download = `${chartId}-${new Date().toISOString().split('T')[0]}.png`;
-    link.href = url;
-    link.click();
+function createUser() {
+  if (window.dashboard?.handleQuickAction) {
+    window.dashboard.handleQuickAction('create-user');
   }
 }
 
-// Sidebar toggle with GSAP
-function toggleSidebar() {
-  const sidebar = document.getElementById('sidebar');
-  const overlay = document.getElementById('sidebarOverlay');
-  const isOpen = !sidebar.classList.contains('-translate-x-full');
-  
-  if (isOpen) {
-    gsap.to(sidebar, {
-      x: -320,
-      duration: 0.3,
-      ease: "power2.inOut",
-      onComplete: () => {
-        sidebar.classList.add('-translate-x-full');
-      }
-    });
-    overlay.classList.add('hidden');
-    document.body.style.overflow = '';
-  } else {
-    sidebar.classList.remove('-translate-x-full');
-    gsap.fromTo(sidebar, 
-      { x: -320 },
-      { x: 0, duration: 0.3, ease: "power2.out" }
-    );
-    overlay.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-  }
-}
-
-// Quick actions
 function generateReport() {
-  Swal.fire({
-    title: 'Generar Reporte',
-    html: `
-      <div class="text-left space-y-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de Reporte</label>
-          <select class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-4 focus:ring-purple-100 focus:border-purple-500">
-            <option>Reporte Mensual</option>
-            <option>Reporte Trimestral</option>
-            <option>Reporte Anual</option>
-            <option>Reporte Personalizado</option>
-          </select>
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Formato</label>
-          <div class="grid grid-cols-3 gap-3">
-            <button class="p-3 border-2 border-purple-500 rounded-lg text-purple-600 hover:bg-purple-50">
-              <i class="fas fa-file-pdf text-2xl"></i>
-              <p class="text-xs mt-1">PDF</p>
-            </button>
-            <button class="p-3 border-2 border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50">
-              <i class="fas fa-file-excel text-2xl"></i>
-              <p class="text-xs mt-1">Excel</p>
-            </button>
-            <button class="p-3 border-2 border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50">
-              <i class="fas fa-file-csv text-2xl"></i>
-              <p class="text-xs mt-1">CSV</p>
-            </button>
-          </div>
-        </div>
-      </div>
-    `,
-    showCancelButton: true,
-    confirmButtonText: 'Generar',
-    cancelButtonText: 'Cancelar',
-    confirmButtonColor: '#8b5cf6',
-    width: '500px'
-  }).then((result) => {
-    if (result.isConfirmed) {
-      // Show progress
-      let timerInterval;
-      Swal.fire({
-        title: 'Generando reporte...',
-        html: 'Progreso: <b>0%</b>',
-        timer: 3000,
-        timerProgressBar: true,
-        didOpen: () => {
-          Swal.showLoading();
-          const b = Swal.getHtmlContainer().querySelector('b');
-          let progress = 0;
-          timerInterval = setInterval(() => {
-            progress += 10;
-            b.textContent = progress + '%';
-          }, 300);
-        },
-        willClose: () => {
-          clearInterval(timerInterval);
-        }
-      }).then(() => {
-        Swal.fire({
-          icon: 'success',
-          title: '¡Reporte generado!',
-          text: 'El reporte se ha descargado correctamente',
-          confirmButtonColor: '#8b5cf6'
-        });
-      });
-    }
-  });
+  if (window.dashboard?.handleQuickAction) {
+    window.dashboard.handleQuickAction('generate-report');
+  }
 }
 
 function showSystemInfo() {
-  Swal.fire({
-    title: 'Información del Sistema',
-    html: `
-      <div class="text-left space-y-4">
-        <div class="grid grid-cols-2 gap-4">
-          <div class="p-4 bg-purple-50 rounded-lg">
-            <i class="fas fa-server text-purple-600 text-2xl mb-2"></i>
-            <p class="text-sm text-gray-600">Versión</p>
-            <p class="font-semibold">v2.1.0</p>
-          </div>
-          <div class="p-4 bg-blue-50 rounded-lg">
-            <i class="fas fa-database text-blue-600 text-2xl mb-2"></i>
-            <p class="text-sm text-gray-600">Base de Datos</p>
-            <p class="font-semibold">MongoDB</p>
-          </div>
-          <div class="p-4 bg-green-50 rounded-lg">
-            <i class="fas fa-shield-alt text-green-600 text-2xl mb-2"></i>
-            <p class="text-sm text-gray-600">Estado</p>
-            <p class="font-semibold text-green-600">Operativo</p>
-          </div>
-          <div class="p-4 bg-orange-50 rounded-lg">
-            <i class="fas fa-clock text-orange-600 text-2xl mb-2"></i>
-            <p class="text-sm text-gray-600">Uptime</p>
-            <p class="font-semibold">99.9%</p>
-          </div>
-        </div>
-        <div class="mt-4 p-4 bg-gray-50 rounded-lg">
-          <p class="text-sm text-gray-600">Última actualización</p>
-          <p class="font-semibold">${new Date().toLocaleString()}</p>
-        </div>
-      </div>
-    `,
-    confirmButtonText: 'Cerrar',
-    confirmButtonColor: '#8b5cf6',
-    width: '600px',
-    showClass: {
-      popup: 'animate__animated animate__fadeIn'
-    }
-  });
-}
-
-// Enhanced notification
-function showNotification(message, type = 'info') {
-  const icons = {
-    success: 'fas fa-check-circle',
-    error: 'fas fa-exclamation-circle',
-    warning: 'fas fa-exclamation-triangle',
-    info: 'fas fa-info-circle'
-  };
-  
-  const colors = {
-    success: 'green',
-    error: 'red',
-    warning: 'yellow',
-    info: 'blue'
-  };
-  
-  Swal.fire({
-    toast: true,
-    position: 'top-end',
-    icon: type,
-    title: message,
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true,
-    customClass: {
-      popup: 'colored-toast'
-    },
-    didOpen: (toast) => {
-      toast.addEventListener('mouseenter', Swal.stopTimer);
-      toast.addEventListener('mouseleave', Swal.resumeTimer);
-    }
-  });
-}
-
-// Update sidebar empresa selector
-async function updateSidebarEmpresaSelector() {
-  const selector = document.getElementById('sidebarEmpresaSelector');
-  if (!selector || !window.apiClient) return;
-
-  try {
-    const currentUser = window.apiClient.getCurrentUser();
-    if (!currentUser?.isAdmin()) return;
-
-    const empresas = await window.apiClient.getEmpresas();
-    const selectedEmpresa = window.apiClient.getSelectedEmpresaId();
-    
-    selector.innerHTML = `
-      <option value="">Todas las empresas</option>
-      ${empresas.map(empresa => `
-        <option value="${empresa.id}" ${empresa.id === selectedEmpresa ? 'selected' : ''}>
-          ${empresa.nombre}
-        </option>
-      `).join('')}
-    `;
-
-    selector.addEventListener('change', (e) => {
-      const empresaId = e.target.value;
-      if (empresaId) {
-        window.apiClient.setSelectedEmpresa(empresaId);
-        const empresaName = empresas.find(e => e.id === empresaId)?.nombre;
-        showNotification(`Empresa seleccionada: ${empresaName}`, 'success');
-      } else {
-        window.apiClient.clearSelectedEmpresa();
-        showNotification('Viendo todas las empresas', 'info');
-      }
-      
-      if (window.loadDashboardData) {
-        window.loadDashboardData();
-      }
-    });
-
-  } catch (error) {
-    console.error('Error updating sidebar selector:', error);
+  if (window.dashboard?.handleQuickAction) {
+    window.dashboard.handleQuickAction('system-info');
   }
 }
 
-// Initialize on DOM load
-document.addEventListener('DOMContentLoaded', () => {
-  // Initialize GSAP animations
-  initGSAPAnimations();
-  
-  // Initialize theme
-  initializeTheme();
-  
-  // Initialize dashboard with data
-  const initializeDashboard = async () => {
-    try {
-      // Wait for API client
-      if (!window.apiClient) {
-        setTimeout(initializeDashboard, 100);
-        return;
-      }
-      
-      // Update sidebar selector
-      await updateSidebarEmpresaSelector();
-      
-      // Load dashboard data or use demo data
-      if (window.loadDashboardData) {
-        try {
-          await window.loadDashboardData();
-        } catch (error) {
-          console.log('Using demo data:', error);
-          loadDemoData();
-        }
-      } else {
-        loadDemoData();
-      }
-      
-      // Initialize charts after data
-      setTimeout(() => {
-        initializeCharts();
-        window.animateStatsCounters();
-        
-        // Remove loading skeletons
-        document.querySelectorAll('.skeleton').forEach(el => {
-          el.remove();
-        });
-      }, 500);
-      
-    } catch (error) {
-      console.error('Dashboard initialization error:', error);
-      loadDemoData();
-    }
-  };
-  
-  // Load demo data function
-  function loadDemoData() {
-    // Set demo stats
-    document.getElementById('totalEmpresasCount').textContent = '24';
-    document.getElementById('totalUsersCount').textContent = '156';
-    document.getElementById('activeEmpresasCount').textContent = '22';
-    document.getElementById('activeUsersCount').textContent = '142';
-    document.getElementById('empresaUsersCount').textContent = '18';
-    document.getElementById('avgUsersPerCompany').textContent = '6.5';
-    document.getElementById('empresaName').textContent = 'Tech Solutions S.A.';
-    
-    // Demo recent companies
-    const empresasHTML = `
-      <div class="activity-item">
-        <div class="avatar bg-gradient-to-br from-purple-600 to-blue-600">
-          <span>TS</span>
-        </div>
-        <div class="flex-1">
-          <h4 class="font-semibold text-gray-900">Tech Solutions</h4>
-          <p class="text-sm text-gray-500">Agregada hace 2 horas</p>
-        </div>
-        <span class="text-xs bg-green-100 text-green-600 px-3 py-1 rounded-full">Activa</span>
-      </div>
-      <div class="activity-item">
-        <div class="avatar bg-gradient-to-br from-green-600 to-teal-600">
-          <span>IM</span>
-        </div>
-        <div class="flex-1">
-          <h4 class="font-semibold text-gray-900">Innovate Media</h4>
-          <p class="text-sm text-gray-500">Agregada hace 5 horas</p>
-        </div>
-        <span class="text-xs bg-green-100 text-green-600 px-3 py-1 rounded-full">Activa</span>
-      </div>
-      <div class="activity-item">
-        <div class="avatar bg-gradient-to-br from-orange-600 to-red-600">
-          <span>DS</span>
-        </div>
-        <div class="flex-1">
-          <h4 class="font-semibold text-gray-900">Digital Services</h4>
-          <p class="text-sm text-gray-500">Agregada ayer</p>
-        </div>
-        <span class="text-xs bg-yellow-100 text-yellow-600 px-3 py-1 rounded-full">Pendiente</span>
-      </div>
-    `;
-    
-    // Demo recent users
-    const usersHTML = `
-      <div class="activity-item">
-        <div class="avatar bg-gradient-to-br from-purple-600 to-pink-600">
-          <span>JD</span>
-        </div>
-        <div class="flex-1">
-          <h4 class="font-semibold text-gray-900">Juan Díaz</h4>
-          <p class="text-sm text-gray-500">juan@techsolutions.com</p>
-        </div>
-        <span class="text-xs bg-blue-100 text-blue-600 px-3 py-1 rounded-full">Admin</span>
-      </div>
-      <div class="activity-item">
-        <div class="avatar bg-gradient-to-br from-blue-600 to-cyan-600">
-          <span>MR</span>
-        </div>
-        <div class="flex-1">
-          <h4 class="font-semibold text-gray-900">María Rodríguez</h4>
-          <p class="text-sm text-gray-500">maria@innovatemedia.com</p>
-        </div>
-        <span class="text-xs bg-green-100 text-green-600 px-3 py-1 rounded-full">Usuario</span>
-      </div>
-      <div class="activity-item">
-        <div class="avatar bg-gradient-to-br from-green-600 to-emerald-600">
-          <span>CP</span>
-        </div>
-        <div class="flex-1">
-          <h4 class="font-semibold text-gray-900">Carlos Pérez</h4>
-          <p class="text-sm text-gray-500">carlos@digitalservices.co</p>
-        </div>
-        <span class="text-xs bg-purple-100 text-purple-600 px-3 py-1 rounded-full">Premium</span>
-      </div>
-    `;
-    
-    const empresasContainer = document.getElementById('recentEmpresasContainer');
-    const usersContainer = document.getElementById('recentUsersContainer');
-    
-    if (empresasContainer) empresasContainer.innerHTML = empresasHTML;
-    if (usersContainer) usersContainer.innerHTML = usersHTML;
-    
-    // Initialize charts
-    setTimeout(() => {
-      initializeCharts();
-      if (window.animateStatsCounters) {
-        window.animateStatsCounters();
-      }
-    }, 100);
+function refreshChart(chartId) {
+  if (window.dashboard?.charts) {
+    window.dashboard.charts.refresh(chartId);
   }
-  
-  initializeDashboard();
-});
-
-// Theme Management
-function initializeTheme() {
-  const themeToggle = document.getElementById('themeToggle');
-  const themeIcon = document.getElementById('themeIcon');
-  const html = document.documentElement;
-  
-  // Check saved theme or system preference
-  const savedTheme = localStorage.getItem('theme');
-  const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const isDark = savedTheme === 'dark' || (!savedTheme && systemDark);
-  
-  // Apply initial theme
-  if (isDark) {
-    html.classList.add('dark');
-    themeIcon.classList.remove('fa-moon');
-    themeIcon.classList.add('fa-sun');
-  }
-  
-  // Toggle theme function
-  themeToggle?.addEventListener('click', () => {
-    const isDark = html.classList.contains('dark');
-    
-    if (isDark) {
-      html.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-      themeIcon.classList.remove('fa-sun');
-      themeIcon.classList.add('fa-moon');
-      
-      // Animate theme change
-      gsap.to('body', {
-        backgroundColor: '#f9fafb',
-        duration: 0.3
-      });
-    } else {
-      html.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-      themeIcon.classList.remove('fa-moon');
-      themeIcon.classList.add('fa-sun');
-      
-      // Animate theme change
-      gsap.to('body', {
-        backgroundColor: '#111827',
-        duration: 0.3
-      });
-    }
-    
-    // Reinitialize charts with new theme
-    setTimeout(initializeCharts, 300);
-  });
 }
 
-// Cleanup on page unload
-window.addEventListener('beforeunload', () => {
-  if (dashboardChartInstance) dashboardChartInstance.destroy();
-  if (distributionChartInstance) distributionChartInstance.destroy();
-});
+function expandChart(chartId) {
+  if (window.dashboard?.charts) {
+    window.dashboard.charts.expand(chartId);
+  }
+}
+
+function downloadChart(chartId) {
+  if (window.dashboard?.charts) {
+    window.dashboard.charts.download(chartId);
+  }
+}
 </script>
 {% endblock %}
 

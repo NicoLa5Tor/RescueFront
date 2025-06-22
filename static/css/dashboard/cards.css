@@ -1,0 +1,460 @@
+/* ===== CARDS COMPONENTS ===== */
+
+/* ===== STATS CARDS ===== */
+
+.stats-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-2xl);
+    transition: var(--transition-normal);
+    cursor: pointer;
+    min-height: 120px;
+  }
+  
+  .stats-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 150px;
+    height: 150px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    transform: translate(30%, -30%);
+    pointer-events: none;
+  }
+  
+  .stats-card:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: var(--shadow-xl);
+  }
+  
+  @media (max-width: 768px) {
+    .stats-card:hover {
+      transform: translateY(-2px) scale(1.01);
+    }
+    
+    .stats-card {
+      min-height: 100px;
+    }
+  }
+  
+  /* Stats card variants */
+  .stats-card.primary {
+    background: linear-gradient(135deg, var(--primary-50) 0%, var(--primary-100) 100%);
+    border: 1px solid var(--primary-200);
+  }
+  
+  .stats-card.success {
+    background: linear-gradient(135deg, var(--success-50) 0%, #ecfdf5 100%);
+    border: 1px solid #bbf7d0;
+  }
+  
+  .stats-card.warning {
+    background: linear-gradient(135deg, var(--warning-50) 0%, #fef3c7 100%);
+    border: 1px solid #fde68a;
+  }
+  
+  .stats-card.secondary {
+    background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
+    border: 1px solid #f9a8d4;
+  }
+  
+  /* Stats icon */
+  .stats-icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-xl);
+    font-size: 20px;
+    transition: var(--transition-normal);
+    flex-shrink: 0;
+    box-shadow: var(--shadow-md);
+  }
+  
+  @media (min-width: 640px) {
+    .stats-icon {
+      width: 56px;
+      height: 56px;
+      font-size: 24px;
+    }
+  }
+  
+  .stats-card:hover .stats-icon {
+    transform: rotate(10deg) scale(1.1);
+  }
+  
+  /* Stats icon variants */
+  .stats-card.primary .stats-icon {
+    background: var(--gradient-primary);
+    color: white;
+  }
+  
+  .stats-card.success .stats-icon {
+    background: var(--gradient-success);
+    color: white;
+  }
+  
+  .stats-card.warning .stats-icon {
+    background: var(--gradient-secondary);
+    color: white;
+  }
+  
+  .stats-card.secondary .stats-icon {
+    background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+    color: white;
+  }
+  
+  /* ===== ACTIVITY CARDS ===== */
+  
+  .activity-item {
+    display: flex;
+    align-items: center;
+    padding: var(--space-4);
+    border-radius: var(--radius-xl);
+    background: rgba(0, 0, 0, 0.02);
+    transition: var(--transition-normal);
+    cursor: pointer;
+    min-height: 72px;
+  }
+  
+  .activity-item:hover {
+    background: var(--primary-50);
+    transform: translateX(4px);
+    box-shadow: var(--shadow-md);
+  }
+  
+  .activity-item .avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-xl);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    color: white;
+    margin-right: var(--space-4);
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+    font-size: 16px;
+    box-shadow: var(--shadow-md);
+  }
+  
+  .activity-item .avatar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+  }
+  
+  .activity-item:hover .avatar::before {
+    transform: translateX(100%);
+  }
+  
+  .activity-item .content {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .activity-item .title {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 var(--space-1) 0;
+    font-size: var(--font-size-sm);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  @media (min-width: 640px) {
+    .activity-item .title {
+      font-size: var(--font-size-base);
+    }
+  }
+  
+  .activity-item .subtitle {
+    color: var(--text-secondary);
+    margin: 0;
+    font-size: var(--font-size-xs);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  @media (min-width: 640px) {
+    .activity-item .subtitle {
+      font-size: var(--font-size-sm);
+    }
+  }
+  
+  .activity-item .badge {
+    font-size: var(--font-size-xs);
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    margin-left: auto;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  
+  /* ===== QUICK ACTION CARDS ===== */
+  
+  .quick-action-btn {
+    position: relative;
+    padding: var(--space-6);
+    border-radius: var(--radius-xl);
+    border: 2px dashed;
+    background: transparent;
+    overflow: hidden;
+    transition: var(--transition-normal);
+    cursor: pointer;
+    min-height: 140px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  
+  @media (max-width: 768px) {
+    .quick-action-btn {
+      padding: var(--space-4);
+      min-height: 120px;
+    }
+  }
+  
+  .quick-action-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 0.6s ease;
+    z-index: -1;
+  }
+  
+  .quick-action-btn:hover::before {
+    width: 300px;
+    height: 300px;
+  }
+  
+  /* Quick action variants */
+  .quick-action-btn.primary {
+    border-color: var(--primary-300);
+    color: var(--primary-600);
+  }
+  
+  .quick-action-btn.primary:hover {
+    border-color: var(--primary-600);
+    color: white;
+  }
+  
+  .quick-action-btn.primary::before {
+    background: var(--gradient-primary);
+  }
+  
+  .quick-action-btn.success {
+    border-color: #86efac;
+    color: var(--success-600);
+  }
+  
+  .quick-action-btn.success:hover {
+    border-color: var(--success-600);
+    color: white;
+  }
+  
+  .quick-action-btn.success::before {
+    background: var(--gradient-success);
+  }
+  
+  .quick-action-btn.warning {
+    border-color: #fbbf24;
+    color: var(--warning-600);
+  }
+  
+  .quick-action-btn.warning:hover {
+    border-color: var(--warning-600);
+    color: white;
+  }
+  
+  .quick-action-btn.warning::before {
+    background: var(--gradient-secondary);
+  }
+  
+  .quick-action-btn .action-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto var(--space-3) auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-xl);
+    background: currentColor;
+    transition: var(--transition-normal);
+    position: relative;
+    z-index: 1;
+  }
+  
+  @media (min-width: 640px) {
+    .quick-action-btn .action-icon {
+      width: 56px;
+      height: 56px;
+    }
+  }
+  
+  .quick-action-btn .action-icon i {
+    color: white;
+    font-size: 20px;
+  }
+  
+  @media (min-width: 640px) {
+    .quick-action-btn .action-icon i {
+      font-size: 24px;
+    }
+  }
+  
+  .quick-action-btn:hover .action-icon {
+    transform: scale(1.1) rotate(5deg);
+  }
+  
+  .quick-action-btn .action-title {
+    font-weight: 600;
+    margin: 0 0 var(--space-1) 0;
+    position: relative;
+    z-index: 1;
+    font-size: var(--font-size-sm);
+  }
+  
+  @media (min-width: 640px) {
+    .quick-action-btn .action-title {
+      font-size: var(--font-size-base);
+    }
+  }
+  
+  .quick-action-btn .action-subtitle {
+    font-size: var(--font-size-xs);
+    opacity: 0.8;
+    margin: 0;
+    position: relative;
+    z-index: 1;
+  }
+  
+  @media (min-width: 640px) {
+    .quick-action-btn .action-subtitle {
+      font-size: var(--font-size-sm);
+    }
+  }
+  
+  /* ===== CARD LAYOUTS ===== */
+  
+  .card-grid {
+    display: grid;
+    gap: var(--space-4);
+  }
+  
+  @media (min-width: 640px) {
+    .card-grid {
+      gap: var(--space-6);
+    }
+  }
+  
+  .card-grid-1 { grid-template-columns: 1fr; }
+  .card-grid-2 { grid-template-columns: repeat(2, 1fr); }
+  .card-grid-3 { grid-template-columns: repeat(3, 1fr); }
+  .card-grid-4 { grid-template-columns: repeat(4, 1fr); }
+  
+  @media (max-width: 640px) {
+    .card-grid-2,
+    .card-grid-3,
+    .card-grid-4 {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  @media (min-width: 640px) and (max-width: 1024px) {
+    .card-grid-3,
+    .card-grid-4 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  /* ===== DARK MODE ===== */
+  
+  .dark .stats-card.primary {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(124, 58, 237, 0.1) 100%);
+    border-color: rgba(139, 92, 246, 0.3);
+  }
+  
+  .dark .stats-card.success {
+    background: linear-gradient(135deg, rgba(5, 150, 105, 0.1) 0%, rgba(4, 120, 87, 0.1) 100%);
+    border-color: rgba(5, 150, 105, 0.3);
+  }
+  
+  .dark .stats-card.warning {
+    background: linear-gradient(135deg, rgba(217, 119, 6, 0.1) 0%, rgba(180, 83, 9, 0.1) 100%);
+    border-color: rgba(217, 119, 6, 0.3);
+  }
+  
+  .dark .stats-card.secondary {
+    background: linear-gradient(135deg, rgba(236, 72, 153, 0.1) 0%, rgba(190, 24, 93, 0.1) 100%);
+    border-color: rgba(236, 72, 153, 0.3);
+  }
+  
+  .dark .activity-item {
+    background: rgba(255, 255, 255, 0.05);
+  }
+  
+  .dark .activity-item:hover {
+    background: rgba(139, 92, 246, 0.1);
+  }
+  
+  .dark .quick-action-btn.primary {
+    border-color: rgba(139, 92, 246, 0.5);
+    color: #a78bfa;
+  }
+  
+  .dark .quick-action-btn.success {
+    border-color: rgba(5, 150, 105, 0.5);
+    color: #6ee7b7;
+  }
+  
+  .dark .quick-action-btn.warning {
+    border-color: rgba(217, 119, 6, 0.5);
+    color: #fbbf24;
+  }
+  
+  /* ===== ACCESSIBILITY ===== */
+  
+  .stats-card:focus-visible,
+  .activity-item:focus-visible,
+  .quick-action-btn:focus-visible {
+    outline: 2px solid var(--primary-600);
+    outline-offset: 2px;
+  }
+  
+  /* ===== PRINT STYLES ===== */
+  
+  @media print {
+    .stats-card,
+    .activity-item,
+    .quick-action-btn {
+      background: white !important;
+      border: 1px solid #000 !important;
+      box-shadow: none !important;
+      transform: none !important;
+    }
+    
+    .quick-action-btn {
+      display: none !important;
+    }
+  }
