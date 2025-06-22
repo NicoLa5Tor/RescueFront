@@ -1,0 +1,33 @@
+# Backend API requirements for dashboard
+
+The new dashboard relies entirely on backend data. These endpoints should be implemented on the backend:
+
+1. **GET `/api/admin/activity`**
+   - Returns activity data for the main chart.
+   - Example response:
+   ```json
+   {
+     "success": true,
+     "data": {
+       "labels": ["L", "M", "X", "J", "V", "S", "D"],
+       "values": [65, 78, 90, 85, 92, 88, 95],
+       "label": "Actividad"
+     }
+   }
+   ```
+
+2. **GET `/api/empresas/<id>/activity`**
+   - Same structure as the admin endpoint but scoped to a company.
+
+3. **GET `/api/admin/distribution`**
+   - Provides totals for registered companies used in the distribution chart.
+   - Example response:
+   ```json
+   {
+     "success": true,
+     "data": {
+       "labels": ["Empresas Registradas"],
+       "values": [120]
+     }
+   }
+   ```

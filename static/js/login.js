@@ -250,6 +250,13 @@ function initLoginForm() {
         console.log("🔍 ¿Tiene user?", !!data.user)
 
         if (data?.success && data?.token) {
+          // Solo permitir acceso a administradores y empresas
+          const tipo = data.user?.tipo || ''
+          if (tipo !== 'admin' && tipo !== 'empresa') {
+            showNotification('Acceso restringido para este usuario', 'error', 5000)
+            return
+          }
+
           // Usar AuthManager para almacenar el token de forma segura
           const tokenStored = window.authManager.setToken(data)
           console.log("🔍 TOKEN ALMACENADO:", tokenStored)

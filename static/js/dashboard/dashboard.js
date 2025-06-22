@@ -99,7 +99,6 @@
       // Initialize basic functionality
       initializeBasicSidebar();
       initializeBasicTheme();
-      loadDemoDataFallback();
       
       console.log('✅ Fallback dashboard mode initialized');
     }
@@ -233,81 +232,11 @@
   
     // Load demo data in fallback mode
     function loadDemoDataFallback() {
-      // Remove skeletons
+      // Solo eliminar skeletons para evitar datos ficticios
       setTimeout(() => {
         document.querySelectorAll('.skeleton').forEach(el => el.remove());
       }, 1000);
-  
-      // Basic stats
-      const stats = {
-        totalEmpresasCount: 24,
-        totalUsersCount: 156,
-        activeEmpresasCount: 22,
-        activeUsersCount: 142,
-        empresaMembersCount: 18,
-        avgPerformanceCount: 6.5
-      };
-  
-      Object.entries(stats).forEach(([id, value]) => {
-        const element = document.getElementById(id);
-        if (element) {
-          element.textContent = value;
-        }
-      });
-  
-      // Basic navigation
-      const nav = document.getElementById('sidebarNav');
-      if (nav) {
-        nav.innerHTML = `
-          <a href="/admin" class="sidebar__link sidebar__link--active">
-            <div class="sidebar__link-icon"><i class="fas fa-th-large"></i></div>
-            <span class="sidebar__link-text">Dashboard</span>
-          </a>
-          <a href="/admin/users" class="sidebar__link">
-            <div class="sidebar__link-icon"><i class="fas fa-users"></i></div>
-            <span class="sidebar__link-text">Usuarios</span>
-          </a>
-          <a href="/admin/stats" class="sidebar__link">
-            <div class="sidebar__link-icon"><i class="fas fa-chart-line"></i></div>
-            <span class="sidebar__link-text">Estadísticas</span>
-          </a>
-        `;
-      }
-  
-      // Basic quick actions
-      const quickActions = document.getElementById('quickActionsGrid');
-      if (quickActions) {
-        quickActions.innerHTML = `
-          <button onclick="window.dashboard?.handleQuickAction('create-user')" class="quick-action-btn p-4 rounded-xl border-2 border-dashed border-purple-300 hover:border-purple-500 transition-all">
-            <div class="w-12 h-12 mx-auto mb-3 flex items-center justify-center rounded-xl bg-purple-100 text-purple-600">
-              <i class="fas fa-user-plus text-xl"></i>
-            </div>
-            <h4 class="font-semibold">Nuevo Usuario</h4>
-            <p class="text-xs text-gray-500 mt-1">Registrar usuario</p>
-          </button>
-          <button onclick="window.dashboard?.handleQuickAction('generate-report')" class="quick-action-btn p-4 rounded-xl border-2 border-dashed border-blue-300 hover:border-blue-500 transition-all">
-            <div class="w-12 h-12 mx-auto mb-3 flex items-center justify-center rounded-xl bg-blue-100 text-blue-600">
-              <i class="fas fa-file-chart-line text-xl"></i>
-            </div>
-            <h4 class="font-semibold">Generar Reporte</h4>
-            <p class="text-xs text-gray-500 mt-1">Crear informe</p>
-          </button>
-          <button onclick="window.dashboard?.handleQuickAction('system-info')" class="quick-action-btn p-4 rounded-xl border-2 border-dashed border-green-300 hover:border-green-500 transition-all">
-            <div class="w-12 h-12 mx-auto mb-3 flex items-center justify-center rounded-xl bg-green-100 text-green-600">
-              <i class="fas fa-info-circle text-xl"></i>
-            </div>
-            <h4 class="font-semibold">Info Sistema</h4>
-            <p class="text-xs text-gray-500 mt-1">Ver detalles</p>
-          </button>
-          <button onclick="window.dashboard?.handleQuickAction('settings')" class="quick-action-btn p-4 rounded-xl border-2 border-dashed border-orange-300 hover:border-orange-500 transition-all">
-            <div class="w-12 h-12 mx-auto mb-3 flex items-center justify-center rounded-xl bg-orange-100 text-orange-600">
-              <i class="fas fa-cog text-xl"></i>
-            </div>
-            <h4 class="font-semibold">Configuración</h4>
-            <p class="text-xs text-gray-500 mt-1">Ajustes</p>
-          </button>
-        `;
-      }
+    }
     }
   
     // Error handling setup

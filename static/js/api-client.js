@@ -5,10 +5,10 @@
  * Maneja autenticación automática y modelos
  */
 class ApiClient {
-    constructor() {
-      this.baseURL = window.authManager?.API_BASE || 'http://localhost:5000'
-      this.selectedEmpresaId = this.getStoredEmpresaId()
-    }
+  constructor() {
+    this.baseURL = window.authManager?.API_BASE || 'http://localhost:5000'
+    this.selectedEmpresaId = this.getStoredEmpresaId()
+  }
   
     /**
      * Realizar petición HTTP autenticada
@@ -370,6 +370,25 @@ class ApiClient {
         console.warn('Endpoint de estadísticas globales no disponible, generando datos básicos:', error)
         return this.generateBasicGlobalStats()
       }
+    }
+
+    /**
+     * Obtener datos de actividad para gráficos
+     */
+    async getActivityData(empresaId = null) {
+      const endpoint = empresaId ? `/api/empresas/${empresaId}/activity` : '/api/admin/activity'
+      const response = await this.request(endpoint)
+      const data = await this.parseResponse(response)
+      return data.data
+    }
+
+    /**
+     * Obtener datos de distribución de empresas
+     */
+    async getDistributionData() {
+      const response = await this.request('/api/admin/distribution')
+      const data = await this.parseResponse(response)
+      return data.data
     }
   
     /**

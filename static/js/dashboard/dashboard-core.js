@@ -126,19 +126,16 @@ class DashboardCore {
     }
   
     handleInitError(error) {
-      console.warn('🔄 Using fallback initialization due to error:', error);
-      
-      // Basic initialization without advanced features
+      console.warn('Initialization error:', error);
+
       this.initializeUI();
-      this.loadDemoData();
-      
-      // Show error notification if possible
+
       if (window.Swal) {
         Swal.fire({
-          title: 'Modo Demostración',
-          text: 'El dashboard está funcionando con datos de demostración.',
-          icon: 'info',
-          confirmButtonColor: '#8b5cf6',
+          title: 'Error',
+          text: 'No fue posible cargar el dashboard.',
+          icon: 'error',
+          confirmButtonColor: '#ef4444',
           timer: 3000
         });
       }
@@ -494,28 +491,22 @@ class DashboardCore {
     async loadDashboardData() {
       try {
         this.showLoadingState();
-  
-        // Check for API client
+
         if (!window.apiClient) {
-          console.log('API client not available, using demo data');
-          this.loadDemoData();
-          return;
+          throw new Error('API client not available');
         }
-  
-        // Try to load real data with timeout
+
         const timeout = this.isMobile() ? 5000 : 10000;
-        const loadPromise = Promise.race([
+        await Promise.race([
           this.loadRealData(),
-          new Promise((_, reject) => 
+          new Promise((_, reject) =>
             setTimeout(() => reject(new Error('Timeout')), timeout)
           )
         ]);
-  
-        await loadPromise;
-  
+
       } catch (error) {
-        console.log('Failed to load real data, using demo data:', error);
-        this.loadDemoData();
+        console.error('Error loading dashboard data:', error);
+        this.notifications?.show('Error al cargar datos del dashboard', 'error');
       } finally {
         setTimeout(() => {
           this.hideLoadingState();
