@@ -109,7 +109,8 @@ class DashboardCore {
         charts: {
           create: () => {},
           update: () => {},
-          destroy: () => {}
+          destroy: () => {},
+          handleResize: () => {}
         },
         stats: {
           update: () => {},
@@ -123,6 +124,12 @@ class DashboardCore {
       };
   
       return fallbacks[type] || {};
+    }
+
+    setupResponsiveHandlers() {
+      this.updatePermissionsVisibility();
+      this.setupEmpresaSelector();
+      this.setupUserProfile();
     }
   
     handleInitError(error) {
