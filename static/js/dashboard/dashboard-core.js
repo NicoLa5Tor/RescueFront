@@ -4,6 +4,7 @@ class DashboardCore {
       this.initialized = false;
       this.currentUser = null;
       this.selectedEmpresa = null;
+      this.empresas = [];
       
       // Breakpoints
       this.breakpoints = {
@@ -32,6 +33,9 @@ class DashboardCore {
         
         // Wait for authentication
         await this.waitForAuth();
+
+        // Preload companies immediately after login
+        await this.preloadEmpresas();
         
         // Initialize managers
         await this.initializeManagers();
@@ -67,6 +71,16 @@ class DashboardCore {
         };
         checkAuth();
       });
+    }
+
+    async preloadEmpresas() {
+      if (!window.apiClient) return;
+      try {
+        this.empresas = await window.apiClient.getEmpresas();
+      } catch (error) {
+        console.error('Error preloading empresas:', error);
+        this.empresas = [];
+      }
     }
   
     async initializeManagers() {
@@ -415,7 +429,8 @@ class DashboardCore {
           return;
         }
   
-        const empresas = await window.apiClient.getEmpresas();
+        const empresas = this.empresas || await window.apiClient.getEmpresas();
+        this.empresas = empresas;
         const selectedEmpresa = window.apiClient.getSelectedEmpresaId();
   
         selector.innerHTML = `
@@ -546,10 +561,12 @@ class DashboardCore {
   
     async loadAdminData() {
       try {
-        const [empresas, stats] = await Promise.all([
-          window.apiClient.getEmpresas(),
-          window.apiClient.getGlobalStats()
-        ]);
+        const empresas = this.empresas && this.empresas.length
+          ? this.empresas
+          : await window.apiClient.getEmpresas();
+        this.empresas = empresas;
+
+        const stats = await window.apiClient.getGlobalStats();
   
         this.updateElement('totalEmpresasCount', empresas.length);
         this.updateElement('activeEmpresasCount', empresas.filter(e => e.activa).length);

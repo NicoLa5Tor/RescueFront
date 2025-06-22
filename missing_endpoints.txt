@@ -101,3 +101,39 @@ expected inputs and outputs are listed below.
        }
      ]
      ```
+8. **GET /api/empresas/**
+   - **Description:** Lists all registered companies.
+   - **Output example:**
+     ```json
+     {
+       "count": 1,
+       "data": [
+         {
+           "_id": "684cc59ab4471d8d3d191c44",
+           "activa": true,
+           "creado_por": "684cb4dd54b46b6fa2c59f39",
+           "descripcion": "Empresa de desarrollo de software y consultoría tecnológica",
+           "fecha_actualizacion": "2025-06-20T20:25:27.708000",
+           "fecha_creacion": "2025-06-14T00:43:06.220000",
+           "nombre": "TechCorp",
+           "ubicacion": "Bogotá, Colombia"
+         }
+       ],
+       "success": true
+     }
+     ```
+
+9. **GET /empresas/<empresa_id>/usuarios**
+   - **Description:** Returns users associated with a specific company.
+   - **Parameters:**
+     - `empresa_id` – ID of the company.
+   - **Output example:**
+     ```json
+     [
+       {
+         "id": "u1",
+         "name": "Carlos",
+         "email": "carlos@empresa.com"
+       }
+     ]
+     ```
