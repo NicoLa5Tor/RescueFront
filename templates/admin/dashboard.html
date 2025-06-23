@@ -7,6 +7,7 @@
 <script src="https://cdn.tailwindcss.com"></script>
 
 <!-- Dashboard CSS (in order) -->
+<link href="{{ url_for('static', filename='css/dashboard/main-layout.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/dashboard/variables.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/dashboard/base.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/dashboard/navbar.css') }}" rel="stylesheet">
@@ -308,6 +309,7 @@
 
 <!-- Dashboard Core -->
 <script src="{{ url_for('static', filename='js/dashboard/sidebar-manager.js') }}"></script>
+<script src="{{ url_for('static', filename='js/dashboard/basic-managers.js') }}"></script>
 <script src="{{ url_for('static', filename='js/dashboard/dashboard-core.js') }}"></script>
 
 <!-- Main Dashboard Script -->
