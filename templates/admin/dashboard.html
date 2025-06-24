@@ -293,14 +293,16 @@
             </tr>
           </thead>
           <tbody id="activityLogsTableBody">
-            {% for item in top_activity %}
+            {% for log in activity_logs[:10] %}
             <tr class="border-t border-gray-100 dark:border-gray-700">
               <td class="px-2 py-1">{{ loop.index }}</td>
-              <td class="px-2 py-1 font-mono text-xs">{{ item.empresa_id }}</td>
-              <td class="px-2 py-1">{{ item.count }}</td>
+              <td class="px-2 py-1 font-mono text-xs">{{ log.get('empresa_id') or log.get('empresaId') or '-' }}</td>
+              <td class="px-2 py-1">
+                {{ log.get('accion') or log.get('action') or log.get('evento') or log.get('message') or log | tojson }}
+              </td>
             </tr>
             {% endfor %}
-            {% if not top_activity %}
+            {% if not activity_logs %}
             <tr class="border-t border-gray-100 dark:border-gray-700">
               <td colspan="3" class="px-2 py-4 text-center text-gray-500">Sin datos</td>
             </tr>

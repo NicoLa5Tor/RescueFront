@@ -94,12 +94,13 @@ def admin_dashboard():
             activity_data = res.json().get('data', {})
 
     top_activity = []
+    activity_logs = []
     if user.get('tipo') == 'admin':
         res = g.api_client.get_admin_activity_only()
         if res.ok:
-            logs = res.json().get('data', [])
+            activity_logs = res.json().get('data', [])
             from collections import Counter
-            counts = Counter(log.get('empresa_id') for log in logs)
+            counts = Counter(log.get('empresa_id') for log in activity_logs)
             top_activity = [
                 {'empresa_id': eid, 'count': cnt}
                 for eid, cnt in counts.most_common(10)
@@ -110,6 +111,7 @@ def admin_dashboard():
         api_url=PROXY_PREFIX,
         activity_data=activity_data,
         top_activity=top_activity,
+        activity_logs=activity_logs,
     )
 
 @app.route('/admin/users')
