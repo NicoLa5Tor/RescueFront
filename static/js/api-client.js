@@ -417,6 +417,15 @@ class ApiClient {
     }
 
     /**
+     * Obtener logs de actividad de empresas (solo admins)
+     */
+    async getAdminActivityLogs() {
+      const response = await this.request('/api/admin/activity-admin')
+      const data = await this.parseResponse(response)
+      return data.data
+    }
+
+    /**
      * Obtener actividad de una empresa
      */
     async getEmpresaActivity(empresaId = null) {

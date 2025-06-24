@@ -574,9 +574,41 @@ class DashboardCore {
       this.updateElement('totalUsersCount', stats.total_usuarios);
       this.updateElement('avgPerformanceCount', stats.getAverageUsersPerCompany());
 
+      // Cargar logs de actividad para tabla
+      this.loadAdminActivityLogs();
+
     } catch (error) {
       console.error('Error loading admin data:', error);
       throw error;
+    }
+  }
+
+  async loadAdminActivityLogs() {
+    const tbody = document.getElementById('activityLogsTableBody');
+    if (!tbody) return;
+
+    try {
+      const logs = await window.apiClient.getAdminActivityLogs();
+      if (!Array.isArray(logs) || logs.length === 0) {
+        tbody.innerHTML = '<tr class="border-t border-gray-100 dark:border-gray-700"><td colspan="3" class="px-2 py-4 text-center text-gray-500">Sin datos</td></tr>';
+        return;
+      }
+
+      const rows = logs.slice(0, 10).map((log, idx) => {
+        const empresa = log.empresa_id || log.empresaId || '-';
+        const info = log.accion || log.action || log.evento || log.message || JSON.stringify(log);
+        return `
+          <tr class="border-t border-gray-100 dark:border-gray-700">
+            <td class="px-2 py-1">${idx + 1}</td>
+            <td class="px-2 py-1 font-mono text-xs">${empresa}</td>
+            <td class="px-2 py-1">${info}</td>
+          </tr>`;
+      }).join('');
+      tbody.innerHTML = rows;
+
+    } catch (err) {
+      console.error('Error loading admin activity logs:', err);
+      tbody.innerHTML = '<tr class="border-t border-gray-100 dark:border-gray-700"><td colspan="3" class="px-2 py-4 text-center text-red-500">Error al cargar</td></tr>';
     }
   }
 
