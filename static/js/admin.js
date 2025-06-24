@@ -488,7 +488,10 @@ class ResponsiveDashboard {
     gradient.addColorStop(0, 'rgba(147, 51, 234, 0.4)');
     gradient.addColorStop(1, 'rgba(147, 51, 234, 0.01)');
 
-    const chartData = window.ACTIVITY_DATA || { labels: [], values: [], label: 'Actividad' };
+    let chartData = window.ACTIVITY_DATA || { labels: [], values: [], label: 'Actividad' };
+    if (!chartData.labels || chartData.labels.length === 0) {
+      chartData = { labels: ['Sin datos'], values: [0], label: 'Actividad' };
+    }
 
     this.charts.activity = new Chart(ctx, {
       type: 'line',

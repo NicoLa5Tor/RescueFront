@@ -152,12 +152,27 @@
     </div>
 
     <!-- Stats Grid -->
-    <div class="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8" id="statsGrid">
-      <!-- Loading skeletons -->
-      <div class="skeleton h-32 rounded-2xl"></div>
-      <div class="skeleton h-32 rounded-2xl"></div>
-      <div class="skeleton h-32 rounded-2xl"></div>
-      <div class="skeleton h-32 rounded-2xl"></div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-8" id="statsGrid">
+      <div class="glass-card p-4 text-center">
+        <p class="text-sm text-gray-500">Total Empresas</p>
+        <p id="totalEmpresasCount" class="text-2xl font-bold">0</p>
+        <p class="text-xs text-gray-500">Activas <span id="activeEmpresasCount">0</span></p>
+      </div>
+      <div class="glass-card p-4 text-center">
+        <p class="text-sm text-gray-500">Total Usuarios</p>
+        <p id="totalUsersCount" class="text-2xl font-bold">0</p>
+        <p class="text-xs text-gray-500">Activos <span id="activeUsersCount">0</span></p>
+      </div>
+      <div class="glass-card p-4 text-center">
+        <p class="text-sm text-gray-500">Empresa</p>
+        <p id="empresaInfoCount" class="text-2xl font-bold">-</p>
+        <p class="text-xs text-gray-500">Miembros <span id="empresaMembersCount">0</span></p>
+      </div>
+      <div class="glass-card p-4 text-center">
+        <p class="text-sm text-gray-500">Rendimiento</p>
+        <p id="performanceCount" class="text-2xl font-bold">0</p>
+        <p class="text-xs text-gray-500">Promedio <span id="avgPerformanceCount">0</span></p>
+      </div>
     </div>
 
     <!-- Charts Section -->
@@ -360,6 +375,35 @@ function downloadChart(chartId) {
     window.dashboard.charts.download(chartId);
   }
 }
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const ctx = document.getElementById('dashboardChart');
+    if (!ctx || typeof Chart === 'undefined') return;
+    const data = window.ACTIVITY_DATA || {};
+    const labels = (data.labels && data.labels.length) ? data.labels : ['Sin datos'];
+    const values = (data.values && data.values.length) ? data.values : [0];
+    const label = data.label || 'Actividad';
+    const gradient = ctx.getContext('2d').createLinearGradient(0, 0, 0, ctx.height || 200);
+    gradient.addColorStop(0, 'rgba(147, 51, 234, 0.4)');
+    gradient.addColorStop(1, 'rgba(147, 51, 234, 0.01)');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: label,
+          data: values,
+          borderColor: 'rgb(147, 51, 234)',
+          backgroundColor: gradient,
+          tension: 0.4,
+          fill: true
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+  });
 </script>
 {% endblock %}
 
