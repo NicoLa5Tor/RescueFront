@@ -112,6 +112,11 @@ def admin_dashboard():
                 {'empresa_id': eid, 'count': cnt}
                 for eid, cnt in counts.most_common(10)
             ]
+            activity_data = {
+                'labels': [entry['empresa_id'] for entry in top_activity],
+                'values': [entry['count'] for entry in top_activity],
+                'label': 'Logs por empresa'
+            }
 
     return render_template(
         'admin/dashboard.html',
