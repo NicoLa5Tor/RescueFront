@@ -488,18 +488,7 @@ class ResponsiveDashboard {
     gradient.addColorStop(0, 'rgba(147, 51, 234, 0.4)');
     gradient.addColorStop(1, 'rgba(147, 51, 234, 0.01)');
 
-    let chartData = window.ACTIVITY_DATA || { labels: [], values: [], label: 'Actividad' };
-    if (!window.ACTIVITY_DATA) {
-      try {
-        if (this.currentUser?.isAdmin()) {
-          chartData = await window.apiClient.getAdminActivity();
-        } else if (this.currentUser?.isEmpresa()) {
-          chartData = await window.apiClient.getEmpresaActivity(this.currentUser.getEmpresaId());
-        }
-      } catch (err) {
-        console.error('Error fetching activity data:', err);
-      }
-    }
+    const chartData = window.ACTIVITY_DATA || { labels: [], values: [], label: 'Actividad' };
 
     this.charts.activity = new Chart(ctx, {
       type: 'line',

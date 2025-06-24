@@ -104,6 +104,7 @@ class EndpointTestClient:
         return self._request("GET", "/api/empresas/estadisticas")
 
     def get_empresa_activity(self, empresa_id: str) -> requests.Response:
+        print("se usa el get activity")
         return self._request("GET", f"/api/empresas/{empresa_id}/activity")
 
     # ------------------------------------------------------------------
