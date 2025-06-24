@@ -394,29 +394,26 @@ function downloadChart(chartId) {
   }
 }
 document.addEventListener('DOMContentLoaded', function () {
-  const ctx = document.getElementById('dashboardChart')?.getContext('2d');
-  if (!ctx || typeof Chart === 'undefined') return;
+  const canvas = document.getElementById('dashboardChart');
+  if (!canvas || typeof Chart === 'undefined') return;
+  const ctx = canvas.getContext('2d');
 
-  const data = window.ACTIVITY_DATA || { labels: [], values: [], label: 'Actividad' };
-  if (!data.labels || data.labels.length === 0) {
-    data.labels = ['Sin datos'];
-    data.values = [0];
-  }
+  const raw = window.ACTIVITY_DATA || { labels: [], values: [], label: 'Actividad' };
+  const labels = raw.labels && raw.labels.length ? raw.labels : ['Sin datos'];
+  const values = raw.values && raw.values.length ? raw.values : [0];
+
+  const colors = labels.map((_, i) => `hsl(${(i * 37) % 360},70%,60%)`);
 
   new Chart(ctx, {
-    type: 'line',
+    type: 'bar',
     data: {
-      labels: data.labels,
+      labels,
       datasets: [{
-        label: data.label || 'Actividad',
-        data: data.values,
-        borderColor: 'rgb(147, 51, 234)',
-        backgroundColor: 'rgba(147, 51, 234, 0.2)',
-        tension: 0.4,
-        fill: true,
-        pointBackgroundColor: '#ffffff',
-        pointBorderColor: 'rgb(147, 51, 234)',
-        borderWidth: 2
+        label: raw.label || 'Actividad',
+        data: values,
+        backgroundColor: colors,
+        borderColor: colors,
+        borderWidth: 1
       }]
     },
     options: {
@@ -424,6 +421,9 @@ document.addEventListener('DOMContentLoaded', function () {
       maintainAspectRatio: false,
       scales: {
         y: { beginAtZero: true }
+      },
+      plugins: {
+        legend: { display: false }
       }
     }
   });
