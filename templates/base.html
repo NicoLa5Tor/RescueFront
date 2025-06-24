@@ -55,10 +55,19 @@
     <script>
         window.API_BASE_URL = '{{ api_url if api_url else "http://localhost:5000" }}';
         window.CURRENT_USER = '{% if current_user %}{{ current_user | tojson | safe }}{% else %}null{% endif %}';
+        {% if session.get('token') %}
+        window.INIT_TOKEN = "{{ session.get('token') }}";
+        {% endif %}
     </script>
     
     <!-- GSAP Main Controller -->
     <script type="module" src="{{ url_for('static', filename='js/gsap_main.js') }}"></script>
+
+    <script>
+      if (window.INIT_TOKEN && window.authManager) {
+        window.authManager.setToken({token: window.INIT_TOKEN, user: window.CURRENT_USER ? JSON.parse(window.CURRENT_USER) : null});
+      }
+    </script>
     
     <!-- Utils -->
     <!-- <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
