@@ -393,6 +393,41 @@ function downloadChart(chartId) {
     window.dashboard.charts.download(chartId);
   }
 }
+document.addEventListener('DOMContentLoaded', function () {
+  const ctx = document.getElementById('dashboardChart')?.getContext('2d');
+  if (!ctx || typeof Chart === 'undefined') return;
+
+  const data = window.ACTIVITY_DATA || { labels: [], values: [], label: 'Actividad' };
+  if (!data.labels || data.labels.length === 0) {
+    data.labels = ['Sin datos'];
+    data.values = [0];
+  }
+
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: data.labels,
+      datasets: [{
+        label: data.label || 'Actividad',
+        data: data.values,
+        borderColor: 'rgb(147, 51, 234)',
+        backgroundColor: 'rgba(147, 51, 234, 0.2)',
+        tension: 0.4,
+        fill: true,
+        pointBackgroundColor: '#ffffff',
+        pointBorderColor: 'rgb(147, 51, 234)',
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: { beginAtZero: true }
+      }
+    }
+  });
+});
 </script>
 {% endblock %}
 

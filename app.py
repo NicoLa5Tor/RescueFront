@@ -88,7 +88,6 @@ def admin_dashboard():
     user = session.get('user', {})
     empresa_id = user.get('empresa_id')
     activity_data = {}
-    print(user)
     # if empresa_id:
     #     res = g.api_client.get_empresa_activity(empresa_id)
     #     if res.ok:
@@ -99,9 +98,7 @@ def admin_dashboard():
     if user.get('role') == 'super_admin':
         res = g.api_client.get_admin_activity()
         if res.ok:
-            print("entra a res")
             activity_logs = res.json().get('data', [])
-            print(f"lo de res es {activity_logs}")
             from collections import Counter
             counts = Counter(
                 (log.get('empresa_id') or log.get('empresaId'))
