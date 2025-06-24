@@ -85,16 +85,31 @@ def admin_dashboard():
     """Dashboard principal - Protegido por JWT en frontend"""
     if 'token' not in session:
         return redirect(url_for('login'))
-    empresa_id = session.get('user', {}).get('empresa_id')
+    user = session.get('user', {})
+    empresa_id = user.get('empresa_id')
     activity_data = {}
     if empresa_id:
         res = g.api_client.get_empresa_activity(empresa_id)
         if res.ok:
             activity_data = res.json().get('data', {})
+
+    top_activity = []
+    if user.get('tipo') == 'admin':
+        res = g.api_client.get_admin_activity_only()
+        if res.ok:
+            logs = res.json().get('data', [])
+            from collections import Counter
+            counts = Counter(log.get('empresa_id') for log in logs)
+            top_activity = [
+                {'empresa_id': eid, 'count': cnt}
+                for eid, cnt in counts.most_common(10)
+            ]
+
     return render_template(
         'admin/dashboard.html',
         api_url=PROXY_PREFIX,
-        activity_data=activity_data
+        activity_data=activity_data,
+        top_activity=top_activity,
     )
 
 @app.route('/admin/users')

@@ -116,6 +116,10 @@ class EndpointTestClient:
     def get_admin_distribution(self) -> requests.Response:
         return self._request("GET", "/api/admin/distribution")
 
+    def get_admin_activity_only(self) -> requests.Response:
+        """GET /api/admin/activity-admin - Ver logs solo para admins"""
+        return self._request("GET", "/api/admin/activity-admin")
+
     # ------------------------------------------------------------------
     # Multi-tenant endpoints
     # ------------------------------------------------------------------

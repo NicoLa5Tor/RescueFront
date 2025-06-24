@@ -185,13 +185,13 @@
             <p class="text-sm text-gray-500 dark:text-gray-400">Rendimiento por empresa</p>
           </div>
           <div class="chart-controls">
-            <button class="chart-control-btn" onclick="refreshChart('dashboardChart')" aria-label="Refresh chart">
+            <button class="chart-control-btn" aria-label="Refresh chart">
               <i class="fas fa-sync-alt"></i>
             </button>
-            <button class="chart-control-btn" onclick="expandChart('dashboardChart')" aria-label="Expand chart">
+            <button class="chart-control-btn" aria-label="Expand chart">
               <i class="fas fa-expand"></i>
             </button>
-            <button class="chart-control-btn" onclick="downloadChart('dashboardChart')" aria-label="Download chart">
+            <button class="chart-control-btn" aria-label="Download chart">
               <i class="fas fa-download"></i>
             </button>
           </div>
@@ -211,7 +211,7 @@
             <p class="text-sm text-gray-500 dark:text-gray-400">Por categorías</p>
           </div>
           <div class="chart-controls">
-            <button class="chart-control-btn" onclick="refreshChart('distributionChart')" aria-label="Refresh chart">
+            <button class="chart-control-btn" aria-label="Refresh chart">
               <i class="fas fa-sync-alt"></i>
             </button>
           </div>
@@ -277,18 +277,36 @@
       </div>
     </div>
 
-    <!-- Quick Actions -->
-    <div class="glass-card p-6">
-      <div class="mb-6">
-        <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Acciones Rápidas</h3>
-        <p class="text-gray-600 dark:text-gray-400">Funciones más utilizadas</p>
+    <!-- Top Activity Table -->
+    <div class="glass-card admin-only mt-6">
+      <div class="p-6 border-b border-gray-100 dark:border-gray-700">
+        <h3 class="text-xl font-bold text-gray-900 dark:text-white">Top 10 Actividad</h3>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Empresas con más logs</p>
       </div>
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4" id="quickActionsGrid">
-        <!-- Quick action buttons will be populated by JS -->
-        <div class="skeleton h-32 rounded-xl"></div>
-        <div class="skeleton h-32 rounded-xl"></div>
-        <div class="skeleton h-32 rounded-xl"></div>
-        <div class="skeleton h-32 rounded-xl"></div>
+      <div class="p-6 overflow-x-auto">
+        <table class="min-w-full text-sm text-left">
+          <thead>
+            <tr class="text-gray-700 dark:text-gray-300">
+              <th class="px-2 py-1">#</th>
+              <th class="px-2 py-1">Empresa ID</th>
+              <th class="px-2 py-1">Logs</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in top_activity %}
+            <tr class="border-t border-gray-100 dark:border-gray-700">
+              <td class="px-2 py-1">{{ loop.index }}</td>
+              <td class="px-2 py-1 font-mono text-xs">{{ item.empresa_id }}</td>
+              <td class="px-2 py-1">{{ item.count }}</td>
+            </tr>
+            {% endfor %}
+            {% if not top_activity %}
+            <tr class="border-t border-gray-100 dark:border-gray-700">
+              <td colspan="3" class="px-2 py-4 text-center text-gray-500">Sin datos</td>
+            </tr>
+            {% endif %}
+          </tbody>
+        </table>
       </div>
     </div>
   </main>
@@ -318,64 +336,7 @@
   })();
 </script>
 
-<!-- Core Scripts -->
-<script src="{{ url_for('static', filename='js/auth-manager.js') }}"></script>
-<script src="{{ url_for('static', filename='js/models.js') }}"></script>
-<script src="{{ url_for('static', filename='js/api-client.js') }}"></script>
-
-<!-- Dashboard Core -->
-<script src="{{ url_for('static', filename='js/dashboard/sidebar-manager.js') }}"></script>
-<script src="{{ url_for('static', filename='js/dashboard/basic-managers.js') }}"></script>
-<script src="{{ url_for('static', filename='js/dashboard/dashboard-core.js') }}"></script>
-
-<!-- Main Dashboard Script -->
-<script src="{{ url_for('static', filename='js/dashboard/dashboard.js') }}"></script>
-
-<!-- Quick Actions (can be moved to separate file) -->
-<script>
-// Quick action functions
-function createEmpresa() {
-  if (window.dashboard?.handleQuickAction) {
-    window.dashboard.handleQuickAction('create-empresa');
-  }
-}
-
-function createUser() {
-  if (window.dashboard?.handleQuickAction) {
-    window.dashboard.handleQuickAction('create-user');
-  }
-}
-
-function generateReport() {
-  if (window.dashboard?.handleQuickAction) {
-    window.dashboard.handleQuickAction('generate-report');
-  }
-}
-
-function showSystemInfo() {
-  if (window.dashboard?.handleQuickAction) {
-    window.dashboard.handleQuickAction('system-info');
-  }
-}
-
-function refreshChart(chartId) {
-  if (window.dashboard?.charts) {
-    window.dashboard.charts.refresh(chartId);
-  }
-}
-
-function expandChart(chartId) {
-  if (window.dashboard?.charts) {
-    window.dashboard.charts.expand(chartId);
-  }
-}
-
-function downloadChart(chartId) {
-  if (window.dashboard?.charts) {
-    window.dashboard.charts.download(chartId);
-  }
-}
-</script>
+<!-- Core Scripts removed: backend handled by Flask -->
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
