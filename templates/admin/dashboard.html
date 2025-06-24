@@ -166,8 +166,8 @@
       <div class="xl:col-span-2 glass-card chart-card">
         <div class="chart-header">
           <div>
-            <h3 class="text-xl font-bold text-gray-900 dark:text-white">Actividad del Sistema</h3>
-            <p class="text-sm text-gray-500 dark:text-gray-400">Rendimiento en tiempo real</p>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white">Actividad de Empresas</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Rendimiento por empresa</p>
           </div>
           <div class="chart-controls">
             <button class="chart-control-btn" onclick="refreshChart('dashboardChart')" aria-label="Refresh chart">
@@ -290,6 +290,7 @@
 <!-- API Configuration -->
 <script>
   window.API_BASE_URL = '{{ api_url }}';
+  window.ACTIVITY_DATA = {{ activity_data | tojson | safe }};
   // Initialize theme from localStorage
   (function() {
     const savedTheme = localStorage.getItem('theme');
