@@ -100,7 +100,11 @@ def admin_dashboard():
         if res.ok:
             activity_logs = res.json().get('data', [])
             from collections import Counter
-            counts = Counter(log.get('empresa_id') for log in activity_logs)
+            counts = Counter(
+                (log.get('empresa_id') or log.get('empresaId'))
+                for log in activity_logs
+                if log.get('empresa_id') or log.get('empresaId')
+            )
             top_activity = [
                 {'empresa_id': eid, 'count': cnt}
                 for eid, cnt in counts.most_common(10)

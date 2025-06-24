@@ -104,7 +104,7 @@ class EndpointTestClient:
         return self._request("GET", "/api/empresas/estadisticas")
 
     def get_empresa_activity(self, empresa_id: str) -> requests.Response:
-        print("se usa el get activity")
+        """GET /api/empresas/{empresa_id}/activity - Actividad de empresa"""
         return self._request("GET", f"/api/empresas/{empresa_id}/activity")
 
     # ------------------------------------------------------------------
@@ -117,7 +117,7 @@ class EndpointTestClient:
         return self._request("GET", "/api/admin/distribution")
 
     def get_admin_activity_only(self) -> requests.Response:
-        """GET /api/admin/activity-admin - Ver logs solo para admins"""
+        """GET /api/admin/activity-admin - Actividad detallada de empresas"""
         return self._request("GET", "/api/admin/activity-admin")
 
     # ------------------------------------------------------------------
