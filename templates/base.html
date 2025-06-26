@@ -63,11 +63,7 @@
     <!-- GSAP Main Controller -->
     <script type="module" src="{{ url_for('static', filename='js/gsap_main.js') }}"></script>
 
-    <script>
-      if (window.INIT_TOKEN && window.authManager) {
-        window.authManager.setToken({token: window.INIT_TOKEN, user: window.CURRENT_USER ? JSON.parse(window.CURRENT_USER) : null});
-      }
-    </script>
+
     
     <!-- Utils -->
     <!-- <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
