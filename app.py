@@ -142,7 +142,7 @@ def admin_stats():
     """Estadísticas - Protegido por JWT en frontend"""
     if 'token' not in session:
         return redirect(url_for('login'))
-    return render_template('stats.html', api_url=PROXY_PREFIX)
+    return render_template('admin/stats.html', api_url=PROXY_PREFIX)
 
 # ========== RUTAS DE EMPRESA (FUTURO) ==========
 @app.route('/empresa')
