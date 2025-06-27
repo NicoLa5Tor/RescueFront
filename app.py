@@ -121,6 +121,7 @@ def admin_dashboard():
         activity_data=activity_data,
         top_activity=top_activity,
         activity_logs=activity_logs,
+        active_page='dashboard'
     )
 
 @app.route('/admin/users')
@@ -128,21 +129,21 @@ def admin_users():
     """Gestión de usuarios - Protegido por JWT en frontend"""
     if 'token' not in session:
         return redirect(url_for('login'))
-    return render_template('users.html', api_url=PROXY_PREFIX)
+    return render_template('users.html', api_url=PROXY_PREFIX, active_page='users')
 
 @app.route('/admin/empresas')
 def admin_empresas():
     """Gestión de empresas - Protegido por JWT en frontend"""
     if 'token' not in session:
         return redirect(url_for('login'))
-    return render_template('admin/empresas.html', api_url=PROXY_PREFIX)
+    return render_template('admin/empresas.html', api_url=PROXY_PREFIX, active_page='empresas')
 
 @app.route('/admin/stats')
 def admin_stats():
     """Estadísticas - Protegido por JWT en frontend"""
     if 'token' not in session:
         return redirect(url_for('login'))
-    return render_template('admin/stats.html', api_url=PROXY_PREFIX)
+    return render_template('admin/stats.html', api_url=PROXY_PREFIX, active_page='stats')
 
 # ========== RUTAS DE EMPRESA (FUTURO) ==========
 @app.route('/empresa')

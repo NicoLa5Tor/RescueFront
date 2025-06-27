@@ -100,7 +100,18 @@
       <nav class="sidebar__nav">
         <div class="sidebar__nav-section">
           <div class="sidebar__nav-list" id="sidebarNav">
-            <!-- Navigation items will be populated by JS -->
+            <a href="{{ url_for('admin_dashboard') }}" class="sidebar__link {% if active_page=='dashboard' %}sidebar__link--active{% endif %}">
+              <div class="sidebar__link-icon"><i class="fas fa-tachometer-alt"></i></div>
+              <span class="sidebar__link-text">Dashboard</span>
+            </a>
+            <a href="{{ url_for('admin_empresas') }}" class="sidebar__link {% if active_page=='empresas' %}sidebar__link--active{% endif %}">
+              <div class="sidebar__link-icon"><i class="fas fa-building"></i></div>
+              <span class="sidebar__link-text">Empresas</span>
+            </a>
+            <a href="{{ url_for('admin_stats') }}" class="sidebar__link {% if active_page=='stats' %}sidebar__link--active{% endif %}">
+              <div class="sidebar__link-icon"><i class="fas fa-chart-bar"></i></div>
+              <span class="sidebar__link-text">Estadísticas</span>
+            </a>
           </div>
         </div>
       </nav>
