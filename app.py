@@ -138,6 +138,17 @@ def admin_empresas():
         return redirect(url_for('login'))
     return render_template('admin/empresas.html', api_url=PROXY_PREFIX, active_page='empresas')
 
+@app.route('/admin/empresas/')
+def admin_empresas_slash():
+    """Allow trailing slash for empresas"""
+    return redirect(url_for('admin_empresas'))
+
+@app.route('/admin/empresa')
+@app.route('/admin/empresa/')
+def admin_empresa_alias():
+    """Legacy singular path redirect"""
+    return redirect(url_for('admin_empresas'))
+
 @app.route('/admin/stats')
 def admin_stats():
     """Estadísticas - Protegido por JWT en frontend"""
