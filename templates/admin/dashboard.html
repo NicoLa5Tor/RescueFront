@@ -360,50 +360,7 @@
 <script src="{{ url_for('static', filename='js/dashboard/dashboard.js') }}"></script>
 
 {% block page_js %}
-<!-- Quick Actions (can be moved to separate file) -->
 <script>
-// Quick action functions
-function createEmpresa() {
-  if (window.dashboard?.handleQuickAction) {
-    window.dashboard.handleQuickAction('create-empresa');
-  }
-}
-
-function createUser() {
-  if (window.dashboard?.handleQuickAction) {
-    window.dashboard.handleQuickAction('create-user');
-  }
-}
-
-function generateReport() {
-  if (window.dashboard?.handleQuickAction) {
-    window.dashboard.handleQuickAction('generate-report');
-  }
-}
-
-function showSystemInfo() {
-  if (window.dashboard?.handleQuickAction) {
-    window.dashboard.handleQuickAction('system-info');
-  }
-}
-
-function refreshChart(chartId) {
-  if (window.dashboard?.charts) {
-    window.dashboard.charts.refresh(chartId);
-  }
-}
-
-function expandChart(chartId) {
-  if (window.dashboard?.charts) {
-    window.dashboard.charts.expand(chartId);
-  }
-}
-
-function downloadChart(chartId) {
-  if (window.dashboard?.charts) {
-    window.dashboard.charts.download(chartId);
-  }
-}
 document.addEventListener('DOMContentLoaded', function () {
   const canvas = document.getElementById('dashboardChart');
   if (!canvas || typeof Chart === 'undefined') return;
