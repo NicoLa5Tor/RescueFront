@@ -5,33 +5,284 @@
 {% block main_content %}
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
   <div class="mb-8">
-    <h1 class="text-3xl font-bold text-gray-900">Estadísticas del Sistema</h1>
-    <p class="text-gray-600 mt-2">Resumen de actividad reciente</p>
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Estadísticas Avanzadas</h1>
+        <p class="text-gray-600 dark:text-gray-400 mt-2">Análisis detallado del rendimiento del sistema</p>
+      </div>
+      <div class="flex space-x-3">
+        <button class="btn-secondary">
+          <i class="fas fa-calendar-alt"></i>
+          Período
+        </button>
+        <button class="btn-primary">
+          <i class="fas fa-download"></i>
+          Exportar
+        </button>
+      </div>
+    </div>
   </div>
-  <div class="glass-card p-6">
-    <canvas id="statsChart" class="w-full h-64"></canvas>
+  
+  <!-- Advanced Stats Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <!-- User Growth -->
+    <div class="glass-card p-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Crecimiento de Usuarios</p>
+          <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ statistics_data.detailed_stats.user_growth.current_month }}</p>
+          <p class="text-sm text-green-600 dark:text-green-400 mt-1">
+            +{{ statistics_data.detailed_stats.user_growth.growth_percentage }}% vs mes anterior
+          </p>
+        </div>
+        <div class="p-3 bg-blue-100 dark:bg-blue-900 rounded-lg">
+          <i class="fas fa-user-plus text-blue-600 dark:text-blue-400 text-xl"></i>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Revenue Stats -->
+    <div class="glass-card p-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Ingresos Mensuales</p>
+          <p class="text-2xl font-bold text-gray-900 dark:text-white">${{ "{:,}".format(statistics_data.detailed_stats.revenue_stats.monthly_revenue) }}</p>
+          <p class="text-sm text-green-600 dark:text-green-400 mt-1">
+            +{{ statistics_data.detailed_stats.revenue_stats.revenue_growth }}% crecimiento
+          </p>
+        </div>
+        <div class="p-3 bg-green-100 dark:bg-green-900 rounded-lg">
+          <i class="fas fa-dollar-sign text-green-600 dark:text-green-400 text-xl"></i>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Active Sessions -->
+    <div class="glass-card p-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Sesiones Activas</p>
+          <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ statistics_data.detailed_stats.engagement_metrics.active_sessions }}</p>
+          <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            {{ statistics_data.detailed_stats.engagement_metrics.avg_session_duration }} min promedio
+          </p>
+        </div>
+        <div class="p-3 bg-purple-100 dark:bg-purple-900 rounded-lg">
+          <i class="fas fa-users text-purple-600 dark:text-purple-400 text-xl"></i>
+        </div>
+      </div>
+    </div>
+    
+    <!-- System Health -->
+    <div class="glass-card p-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Uptime</p>
+          <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ statistics_data.detailed_stats.system_health.uptime_percentage }}%</p>
+          <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            {{ statistics_data.detailed_stats.system_health.response_time }}ms respuesta
+          </p>
+        </div>
+        <div class="p-3 bg-red-100 dark:bg-red-900 rounded-lg">
+          <i class="fas fa-server text-red-600 dark:text-red-400 text-xl"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Charts Section -->
+  <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
+    <!-- Geographic Distribution -->
+    <div class="glass-card">
+      <div class="p-6 border-b border-gray-100 dark:border-gray-700">
+        <h3 class="text-xl font-bold text-gray-900 dark:text-white">Distribución Geográfica</h3>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Usuarios por región</p>
+      </div>
+      <div class="p-6">
+        <div class="h-64">
+          <canvas id="geographicChart"></canvas>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Performance Trend -->
+    <div class="glass-card">
+      <div class="p-6 border-b border-gray-100 dark:border-gray-700">
+        <h3 class="text-xl font-bold text-gray-900 dark:text-white">Tendencia de Rendimiento</h3>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Últimos 6 meses</p>
+      </div>
+      <div class="p-6">
+        <div class="h-64">
+          <canvas id="performanceChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Detailed Tables -->
+  <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+    <!-- Geographic Details -->
+    <div class="glass-card">
+      <div class="p-6 border-b border-gray-100 dark:border-gray-700">
+        <h3 class="text-xl font-bold text-gray-900 dark:text-white">Detalles por Región</h3>
+      </div>
+      <div class="p-6">
+        <div class="space-y-4">
+          {% for city, count in statistics_data.geographic_distribution.items() %}
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+              <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                <span class="text-white text-xs font-bold">{{ city[:2].upper() }}</span>
+              </div>
+              <span class="font-medium text-gray-900 dark:text-white">{{ city }}</span>
+            </div>
+            <div class="text-right">
+              <span class="text-lg font-bold text-gray-900 dark:text-white">{{ count }}</span>
+              <p class="text-xs text-gray-500 dark:text-gray-400">usuarios</p>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    
+    <!-- System Metrics -->
+    <div class="glass-card">
+      <div class="p-6 border-b border-gray-100 dark:border-gray-700">
+        <h3 class="text-xl font-bold text-gray-900 dark:text-white">Métricas del Sistema</h3>
+      </div>
+      <div class="p-6">
+        <div class="space-y-6">
+          <div>
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Tasa de Error</span>
+              <span class="text-sm text-gray-900 dark:text-white">{{ statistics_data.detailed_stats.system_health.error_rate }}%</span>
+            </div>
+            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+              <div class="bg-red-600 h-2 rounded-full" style="width: {{ statistics_data.detailed_stats.system_health.error_rate * 10 }}%"></div>
+            </div>
+          </div>
+          
+          <div>
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Tasa de Rebote</span>
+              <span class="text-sm text-gray-900 dark:text-white">{{ statistics_data.detailed_stats.engagement_metrics.bounce_rate }}%</span>
+            </div>
+            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+              <div class="bg-yellow-500 h-2 rounded-full" style="width: {{ statistics_data.detailed_stats.engagement_metrics.bounce_rate }}%"></div>
+            </div>
+          </div>
+          
+          <div>
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Uptime</span>
+              <span class="text-sm text-gray-900 dark:text-white">{{ statistics_data.detailed_stats.system_health.uptime_percentage }}%</span>
+            </div>
+            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+              <div class="bg-green-600 h-2 rounded-full" style="width: {{ statistics_data.detailed_stats.system_health.uptime_percentage }}%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 {% endblock %}
 
 {% block page_js %}
+<script id="statisticsData" type="application/json">
+{{ statistics_data | tojson }}
+</script>
+
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-    const canvas = document.getElementById('statsChart');
-    if (!canvas || typeof Chart === 'undefined') return;
-    const ctx = canvas.getContext('2d');
-    new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['A', 'B', 'C'],
-        datasets: [{
-          label: 'Datos',
-          data: [5, 3, 8],
-          backgroundColor: ['#8b5cf6', '#f472b6', '#60a5fa']
-        }]
-      },
-      options: { responsive: true, maintainAspectRatio: false }
-    });
+    const data = JSON.parse(document.getElementById('statisticsData').textContent);
+    
+    // Geographic Distribution Chart
+    const geographicCanvas = document.getElementById('geographicChart');
+    if (geographicCanvas && typeof Chart !== 'undefined') {
+      const ctx = geographicCanvas.getContext('2d');
+      const geographicData = data.geographic_distribution;
+      
+      new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: Object.keys(geographicData),
+          datasets: [{
+            data: Object.values(geographicData),
+            backgroundColor: [
+              '#8b5cf6', '#f472b6', '#60a5fa', '#34d399', 
+              '#fbbf24', '#ef4444', '#06b6d4'
+            ],
+            borderWidth: 2,
+            borderColor: '#ffffff'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                padding: 15,
+                usePointStyle: true,
+                color: document.documentElement.classList.contains('dark') ? '#e5e7eb' : '#374151'
+              }
+            }
+          }
+        }
+      });
+    }
+    
+    // Performance Trend Chart
+    const performanceCanvas = document.getElementById('performanceChart');
+    if (performanceCanvas && typeof Chart !== 'undefined' && data.chart_data && data.chart_data.performance) {
+      const ctx = performanceCanvas.getContext('2d');
+      
+      new Chart(ctx, {
+        type: 'line',
+        data: data.chart_data.performance,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: false,
+              min: 60,
+              max: 100,
+              grid: {
+                color: document.documentElement.classList.contains('dark') ? '#374151' : '#e5e7eb'
+              },
+              ticks: {
+                color: document.documentElement.classList.contains('dark') ? '#e5e7eb' : '#374151'
+              }
+            },
+            x: {
+              grid: {
+                color: document.documentElement.classList.contains('dark') ? '#374151' : '#e5e7eb'
+              },
+              ticks: {
+                color: document.documentElement.classList.contains('dark') ? '#e5e7eb' : '#374151'
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              labels: {
+                color: document.documentElement.classList.contains('dark') ? '#e5e7eb' : '#374151'
+              }
+            }
+          },
+          elements: {
+            point: {
+              radius: 6,
+              hoverRadius: 8
+            }
+          }
+        }
+      });
+    }
   });
 </script>
 {% endblock %}

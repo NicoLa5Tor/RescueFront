@@ -1,0 +1,793 @@
+{% extends "admin/dashboard.html" %}
+
+{% block title %}Hardware - Sistema Multi-Tenant{% endblock %}
+
+{% block extra_css %}
+{{ super() }}
+<link href="{{ url_for('static', filename='css/modals.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block main_content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- Header -->
+  <div class="mb-8">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Gestión de Hardware</h1>
+        <p class="text-gray-600 dark:text-gray-400 mt-2">Administra el inventario de hardware disponible</p>
+      </div>
+      <div class="flex space-x-3">
+        <button class="btn-secondary" onclick="toggleView()">
+          <i class="fas fa-th-list" id="viewToggleIcon"></i>
+          <span id="viewToggleText">Vista Tabla</span>
+        </button>
+        <button class="btn-primary" onclick="openCreateModal()">
+          <i class="fas fa-plus"></i>
+          Nuevo Hardware
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="glass-card p-6">
+      <div class="flex items-center">
+        <div class="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
+          <i class="fas fa-microchip text-blue-600 dark:text-blue-400"></i>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Items</p>
+          <p class="text-2xl font-bold text-gray-900 dark:text-white" id="totalItemsCount">{{ hardware_data.hardware_stats.total_items }}</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="glass-card p-6">
+      <div class="flex items-center">
+        <div class="p-2 bg-green-100 dark:bg-green-900 rounded-lg">
+          <i class="fas fa-check-circle text-green-600 dark:text-green-400"></i>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Disponibles</p>
+          <p class="text-2xl font-bold text-gray-900 dark:text-white" id="availableItemsCount">{{ hardware_data.hardware_stats.available_items }}</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="glass-card p-6">
+      <div class="flex items-center">
+        <div class="p-2 bg-red-100 dark:bg-red-900 rounded-lg">
+          <i class="fas fa-exclamation-triangle text-red-600 dark:text-red-400"></i>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Sin Stock</p>
+          <p class="text-2xl font-bold text-gray-900 dark:text-white" id="outOfStockCount">{{ hardware_data.hardware_stats.out_of_stock }}</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="glass-card p-6">
+      <div class="flex items-center">
+        <div class="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
+          <i class="fas fa-dollar-sign text-purple-600 dark:text-purple-400"></i>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Valor Total</p>
+<p class="text-2xl font-bold text-gray-900 dark:text-white" id="totalValueCount">{{ hardware_data.hardware_stats.total_value | currency }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="glass-card p-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Buscar</label>
+        <input type="text" id="searchInput" placeholder="Buscar hardware..." 
+               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tipo</label>
+        <select id="typeFilter" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+          <option value="">Todos los tipos</option>
+          <option value="Servidor">Servidor</option>
+          <option value="Router">Router</option>
+          <option value="Switch">Switch</option>
+          <option value="Firewall">Firewall</option>
+          <option value="Access Point">Access Point</option>
+          <option value="Storage">Storage</option>
+          <option value="Monitor">Monitor</option>
+          <option value="Laptop">Laptop</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Estado</label>
+        <select id="statusFilter" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+          <option value="">Todos los estados</option>
+          <option value="available">Disponible</option>
+          <option value="out_of_stock">Sin Stock</option>
+          <option value="discontinued">Descontinuado</option>
+        </select>
+      </div>
+      <div class="flex items-end">
+        <button class="btn-secondary w-full" onclick="clearFilters()">
+          <i class="fas fa-filter-circle-xmark"></i>
+          Limpiar Filtros
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hardware Grid View -->
+  <div id="hardwareGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for hardware in hardware_data.hardware_list %}
+    <div class="glass-card hover:shadow-lg transition-shadow duration-300 hardware-item" 
+         data-type="{{ hardware.type }}" data-status="{{ hardware.status }}" data-name="{{ hardware.name }}">
+      <div class="p-6">
+        <div class="flex items-center justify-between mb-4">
+          <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-600 rounded-lg flex items-center justify-center">
+            <i class="fas fa-microchip text-white text-xl"></i>
+          </div>
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                 {% if hardware.status == 'available' %}bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200
+                 {% elif hardware.status == 'out_of_stock' %}bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200
+                 {% else %}bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200{% endif %}">
+            {% if hardware.status == 'available' %}Disponible
+            {% elif hardware.status == 'out_of_stock' %}Sin Stock
+            {% else %}Descontinuado{% endif %}
+          </span>
+        </div>
+        
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">{{ hardware.name }}</h3>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">{{ hardware.brand }} - {{ hardware.model }}</p>
+        
+        <div class="space-y-2 mb-4">
+          <div class="flex justify-between text-sm">
+            <span class="text-gray-500 dark:text-gray-400">Precio:</span>
+<span class="font-medium text-gray-900 dark:text-white">{{ hardware.price | currency }}</span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-gray-500 dark:text-gray-400">Stock:</span>
+            <span class="font-medium text-gray-900 dark:text-white">{{ hardware.stock }} unidades</span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-gray-500 dark:text-gray-400">Garantía:</span>
+            <span class="font-medium text-gray-900 dark:text-white">{{ hardware.warranty_months }} meses</span>
+          </div>
+        </div>
+        
+        <div class="flex space-x-1">
+          <button class="flex-1 btn-secondary text-xs py-1" onclick="viewHardware('{{ hardware.id }}')" title="Ver detalles">
+            <i class="fas fa-eye"></i>
+          </button>
+          <button class="flex-1 btn-primary text-xs py-1" onclick="editHardware('{{ hardware.id }}')" title="Editar">
+            <i class="fas fa-edit"></i>
+          </button>
+          <button class="flex-1 {% if hardware.activa %}btn-warning{% else %}btn-success{% endif %} text-xs py-1" 
+                  onclick="toggleHardwareStatus('{{ hardware.id }}', {{ 'false' if hardware.activa else 'true' }})" 
+                  title="{% if hardware.activa %}Desactivar{% else %}Activar{% endif %}">
+            <i class="fas {% if hardware.activa %}fa-power-off{% else %}fa-play{% endif %}"></i>
+          </button>
+          <button class="flex-1 btn-danger text-xs py-1" onclick="deleteHardware('{{ hardware.id }}')" title="Eliminar">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Hardware Table View -->
+  <div id="hardwareTable" class="hidden glass-card overflow-hidden">
+    <div class="p-6 border-b border-gray-100 dark:border-gray-700">
+      <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Lista de Hardware</h3>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <thead class="bg-gray-50 dark:bg-gray-700">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Hardware</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Tipo</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Precio</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Stock</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Estado</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Acciones</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+          {% for hardware in hardware_data.hardware_list %}
+          <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="flex items-center">
+                <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-600 rounded-lg flex items-center justify-center">
+                  <i class="fas fa-microchip text-white"></i>
+                </div>
+                <div class="ml-4">
+                  <div class="text-sm font-medium text-gray-900 dark:text-white">{{ hardware.name }}</div>
+                  <div class="text-sm text-gray-500 dark:text-gray-400">{{ hardware.brand }} - {{ hardware.model }}</div>
+                </div>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ hardware.type }}</td>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ hardware.price | currency }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ hardware.stock }}</td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                     {% if hardware.status == 'available' %}bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200
+                     {% elif hardware.status == 'out_of_stock' %}bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200
+                     {% else %}bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200{% endif %}">
+                {% if hardware.status == 'available' %}Disponible
+                {% elif hardware.status == 'out_of_stock' %}Sin Stock
+                {% else %}Descontinuado{% endif %}
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+              <div class="flex space-x-2">
+                <button class="text-purple-600 hover:text-purple-700 dark:text-purple-400" onclick="viewHardware('{{ hardware.id }}')">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button class="text-blue-600 hover:text-blue-700 dark:text-blue-400" onclick="editHardware('{{ hardware.id }}')">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="text-red-600 hover:text-red-700 dark:text-red-400" onclick="deleteHardware('{{ hardware.id }}')">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Create/Edit Hardware Modal -->
+<div id="hardwareModal" class="modal-backdrop hidden">
+  <div class="modal-container">
+    <div class="modal-header">
+      <h3 class="modal-title" id="modalTitle">Nuevo Hardware</h3>
+      <button type="button" class="modal-close" onclick="closeModal()" aria-label="Cerrar modal">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <div class="modal-body">
+      <form id="hardwareForm">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="hardwareName" class="form-label">Nombre *</label>
+            <input type="text" id="hardwareName" class="form-input" required
+                   placeholder="Ej: Dell PowerEdge R740">
+          </div>
+          
+          <div class="form-group">
+            <label for="hardwareType" class="form-label">Tipo *</label>
+            <select id="hardwareType" class="form-select" required>
+              <option value="">Seleccionar tipo</option>
+              <option value="Servidor">Servidor</option>
+              <option value="Router">Router</option>
+              <option value="Switch">Switch</option>
+              <option value="Firewall">Firewall</option>
+              <option value="Access Point">Access Point</option>
+              <option value="Storage">Storage</option>
+              <option value="Monitor">Monitor</option>
+              <option value="Laptop">Laptop</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="hardwareBrand" class="form-label">Marca *</label>
+            <input type="text" id="hardwareBrand" class="form-input" required
+                   placeholder="Ej: Dell, HP, Cisco">
+          </div>
+          
+          <div class="form-group">
+            <label for="hardwareModel" class="form-label">Modelo *</label>
+            <input type="text" id="hardwareModel" class="form-input" required
+                   placeholder="Ej: R740, OptiPlex 7090">
+          </div>
+          
+          <div class="form-group">
+            <label for="hardwarePrice" class="form-label">Precio (USD) *</label>
+            <input type="number" id="hardwarePrice" class="form-input" required 
+                   min="0" step="0.01" placeholder="0.00">
+          </div>
+          
+          <div class="form-group">
+            <label for="hardwareStock" class="form-label">Stock *</label>
+            <input type="number" id="hardwareStock" class="form-input" required 
+                   min="0" placeholder="Cantidad disponible">
+          </div>
+          
+          <div class="form-group">
+            <label for="hardwareStatus" class="form-label">Estado</label>
+            <select id="hardwareStatus" class="form-select" required>
+              <option value="available">Disponible</option>
+              <option value="out_of_stock">Sin Stock</option>
+              <option value="discontinued">Descontinuado</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="hardwareWarranty" class="form-label">Garantía</label>
+            <select id="hardwareWarranty" class="form-select" required>
+              <option value="12">12 meses</option>
+              <option value="24">24 meses</option>
+              <option value="36">36 meses</option>
+            </select>
+          </div>
+          
+          <div class="form-group form-group-full">
+            <label for="hardwareDescription" class="form-label">Descripción</label>
+            <textarea id="hardwareDescription" class="form-textarea" rows="3"
+                      placeholder="Descripción detallada del hardware..."></textarea>
+          </div>
+        </div>
+      </form>
+    </div>
+    
+    <div class="modal-footer">
+      <button type="button" class="modal-btn modal-btn-secondary" onclick="closeModal()">
+        <i class="fas fa-times"></i>
+        Cancelar
+      </button>
+      <button type="submit" form="hardwareForm" class="modal-btn modal-btn-primary" id="submitButton">
+        <i class="fas fa-save"></i>
+        <span id="submitButtonText">Crear Hardware</span>
+      </button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block page_js %}
+<script src="{{ url_for('static', filename='js/api-client.js') }}"></script>
+<script>
+let currentView = 'grid';
+let editingHardware = null;
+
+// View toggle functionality
+function toggleView() {
+  const grid = document.getElementById('hardwareGrid');
+  const table = document.getElementById('hardwareTable');
+  const icon = document.getElementById('viewToggleIcon');
+  const text = document.getElementById('viewToggleText');
+  
+  if (currentView === 'grid') {
+    grid.classList.add('hidden');
+    table.classList.remove('hidden');
+    icon.className = 'fas fa-th';
+    text.textContent = 'Vista Tarjetas';
+    currentView = 'table';
+  } else {
+    grid.classList.remove('hidden');
+    table.classList.add('hidden');
+    icon.className = 'fas fa-th-list';
+    text.textContent = 'Vista Tabla';
+    currentView = 'grid';
+  }
+}
+
+// Modal functionality
+function openCreateModal() {
+  editingHardware = null;
+  document.getElementById('modalTitle').textContent = 'Nuevo Hardware';
+  document.getElementById('submitButtonText').textContent = 'Crear Hardware';
+  document.getElementById('hardwareForm').reset();
+  document.getElementById('hardwareModal').classList.remove('hidden');
+}
+
+function editHardware(id) {
+  editingHardware = id;
+  document.getElementById('modalTitle').textContent = 'Editar Hardware';
+  document.getElementById('submitButtonText').textContent = 'Actualizar Hardware';
+  
+  // Here you would load the hardware data - for now using dummy data
+  document.getElementById('hardwareName').value = 'Dell Servidor R740';
+  document.getElementById('hardwareType').value = 'Servidor';
+  document.getElementById('hardwareBrand').value = 'Dell';
+  document.getElementById('hardwareModel').value = 'R740';
+  document.getElementById('hardwarePrice').value = '2500';
+  document.getElementById('hardwareStock').value = '5';
+  document.getElementById('hardwareStatus').value = 'available';
+  document.getElementById('hardwareWarranty').value = '24';
+  
+  document.getElementById('hardwareModal').classList.remove('hidden');
+}
+
+function closeModal() {
+  document.getElementById('hardwareModal').classList.add('hidden');
+  editingHardware = null;
+}
+
+function viewHardware(id) {
+  alert(`Ver detalles del hardware ID: ${id}\n\nEsta funcionalidad se conectará al backend para mostrar información detallada.`);
+}
+
+function deleteHardware(id) {
+  deleteHardwareAPI(id);
+}
+
+function toggleHardwareStatus(id, activa) {
+  toggleHardwareStatusAPI(id, activa);
+}
+
+// Initialize API client
+let apiClient;
+let currentToken = null;
+
+// Get token from session and initialize
+fetch('/proxy/health')
+  .then(response => {
+    if (response.ok) {
+      apiClient = new EndpointTestClient('/proxy');
+      console.log('API Client initialized');
+      // Load hardware data on page load
+      setTimeout(() => {
+        loadHardware();
+        loadHardwareTypes();
+        loadEmpresas();
+      }, 1000);
+    }
+  })
+  .catch(err => console.error('Error initializing API client:', err));
+
+// Functions for CRUD operations
+async function loadHardware() {
+  try {
+    const response = await apiClient.get_hardware_list();
+    const data = await response.json();
+    
+    if (data.success) {
+      console.log('Hardware loaded:', data);
+      renderHardware(data.data);
+      updateStats(data);
+    } else {
+      console.error('Error loading hardware:', data.errors);
+    }
+  } catch (error) {
+    console.error('Error al cargar hardware:', error);
+  }
+}
+
+async function createHardwareAPI(hardwareData) {
+  try {
+    const response = await apiClient.create_hardware(hardwareData);
+    const data = await response.json();
+    
+    if (data.success) {
+      alert('Hardware creado exitosamente');
+      loadHardware();
+      closeModal();
+    } else {
+      alert('Error: ' + (data.errors ? data.errors.join(', ') : 'Error desconocido'));
+    }
+  } catch (error) {
+    console.error('Error al crear hardware:', error);
+    alert('Error de conexión');
+  }
+}
+
+async function updateHardwareAPI(id, hardwareData) {
+  try {
+    const response = await apiClient.update_hardware(id, hardwareData);
+    const data = await response.json();
+    
+    if (data.success) {
+      alert('Hardware actualizado exitosamente');
+      loadHardware();
+      closeModal();
+    } else {
+      alert('Error: ' + (data.errors ? data.errors.join(', ') : 'Error desconocido'));
+    }
+  } catch (error) {
+    console.error('Error al actualizar hardware:', error);
+    alert('Error de conexión');
+  }
+}
+
+async function deleteHardwareAPI(id) {
+  if (!confirm('¿Estás seguro de que quieres eliminar este hardware?')) {
+    return;
+  }
+  
+  try {
+    const response = await apiClient.delete_hardware(id);
+    const data = await response.json();
+    
+    if (data.success) {
+      alert('Hardware eliminado exitosamente');
+      loadHardware();
+    } else {
+      alert('Error: ' + (data.errors ? data.errors.join(', ') : 'Error desconocido'));
+    }
+  } catch (error) {
+    console.error('Error al eliminar hardware:', error);
+    alert('Error de conexión');
+  }
+}
+
+async function toggleHardwareStatusAPI(id, activa) {
+  const action = activa ? 'activar' : 'desactivar';
+  if (!confirm(`¿Estás seguro de que quieres ${action} este hardware?`)) {
+    return;
+  }
+  
+  try {
+    const response = await apiClient.toggle_hardware_status(id, activa);
+    const data = await response.json();
+    
+    if (data.success) {
+      alert(data.message || `Hardware ${action}do exitosamente`);
+      loadHardware();
+    } else {
+      alert('Error: ' + (data.errors ? data.errors.join(', ') : 'Error desconocido'));
+    }
+  } catch (error) {
+    console.error('Error al cambiar estado del hardware:', error);
+    alert('Error de conexión');
+  }
+}
+
+// Render hardware data
+function renderHardware(hardwareList) {
+  const gridContainer = document.getElementById('hardwareGrid');
+  const tableBody = document.querySelector('#hardwareTable tbody');
+  
+  // Clear existing content
+  gridContainer.innerHTML = '';
+  tableBody.innerHTML = '';
+  
+  hardwareList.forEach(hardware => {
+    // Create grid card
+    const gridCard = createHardwareCard(hardware);
+    gridContainer.appendChild(gridCard);
+    
+    // Create table row
+    const tableRow = createHardwareTableRow(hardware);
+    tableBody.appendChild(tableRow);
+  });
+}
+
+// Create hardware card for grid view
+function createHardwareCard(hardware) {
+  const div = document.createElement('div');
+  div.className = 'glass-card hover:shadow-lg transition-shadow duration-300 hardware-item';
+  div.setAttribute('data-type', hardware.tipo);
+  div.setAttribute('data-status', hardware.datos?.status || 'available');
+  div.setAttribute('data-name', hardware.nombre);
+  
+  div.innerHTML = `
+    <div class="p-6">
+      <div class="flex items-center justify-between mb-4">
+        <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-600 rounded-lg flex items-center justify-center">
+          <i class="fas fa-microchip text-white text-xl"></i>
+        </div>
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+          ${hardware.datos?.status || 'Disponible'}
+        </span>
+      </div>
+      
+      <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">${hardware.nombre}</h3>
+      <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">${hardware.datos?.brand || 'N/A'} - ${hardware.datos?.model || 'N/A'}</p>
+      
+      <div class="space-y-2 mb-4">
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-500 dark:text-gray-400">Tipo:</span>
+          <span class="font-medium text-gray-900 dark:text-white">${hardware.tipo}</span>
+        </div>
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-500 dark:text-gray-400">Empresa:</span>
+          <span class="font-medium text-gray-900 dark:text-white">${hardware.empresa_nombre || 'N/A'}</span>
+        </div>
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-500 dark:text-gray-400">Precio:</span>
+          <span class="font-medium text-gray-900 dark:text-white">$${hardware.datos?.price || 0}</span>
+        </div>
+      </div>
+      
+      <div class="flex space-x-2">
+        <button class="flex-1 btn-secondary text-sm" onclick="viewHardware('${hardware._id}')">
+          <i class="fas fa-eye"></i>
+          Ver
+        </button>
+        <button class="flex-1 btn-primary text-sm" onclick="editHardware('${hardware._id}')">
+          <i class="fas fa-edit"></i>
+          Editar
+        </button>
+        <button class="btn-danger text-sm px-3" onclick="deleteHardware('${hardware._id}')">
+          <i class="fas fa-trash"></i>
+        </button>
+      </div>
+    </div>
+  `;
+  
+  return div;
+}
+
+// Create hardware table row
+function createHardwareTableRow(hardware) {
+  const tr = document.createElement('tr');
+  tr.className = 'hover:bg-gray-50 dark:hover:bg-gray-700';
+  
+  tr.innerHTML = `
+    <td class="px-6 py-4 whitespace-nowrap">
+      <div class="flex items-center">
+        <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-600 rounded-lg flex items-center justify-center">
+          <i class="fas fa-microchip text-white"></i>
+        </div>
+        <div class="ml-4">
+          <div class="text-sm font-medium text-gray-900 dark:text-white">${hardware.nombre}</div>
+          <div class="text-sm text-gray-500 dark:text-gray-400">${hardware.datos?.brand || 'N/A'} - ${hardware.datos?.model || 'N/A'}</div>
+        </div>
+      </div>
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">${hardware.tipo}</td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">$${hardware.datos?.price || 0}</td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">${hardware.datos?.stock || 0}</td>
+    <td class="px-6 py-4 whitespace-nowrap">
+      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+        ${hardware.datos?.status || 'Disponible'}
+      </span>
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+      <div class="flex space-x-2">
+        <button class="text-purple-600 hover:text-purple-700 dark:text-purple-400" onclick="viewHardware('${hardware._id}')">
+          <i class="fas fa-eye"></i>
+        </button>
+        <button class="text-blue-600 hover:text-blue-700 dark:text-blue-400" onclick="editHardware('${hardware._id}')">
+          <i class="fas fa-edit"></i>
+        </button>
+        <button class="text-red-600 hover:text-red-700 dark:text-red-400" onclick="deleteHardware('${hardware._id}')">
+          <i class="fas fa-trash"></i>
+        </button>
+      </div>
+    </td>
+  `;
+  
+  return tr;
+}
+
+// Update stats
+function updateStats(data) {
+  if (data.count !== undefined) {
+    const totalElement = document.getElementById('totalItemsCount');
+    if (totalElement) totalElement.textContent = data.count;
+  }
+}
+
+// Load hardware types from backend
+async function loadHardwareTypes() {
+  try {
+    const response = await apiClient.get_hardware_types();
+    const data = await response.json();
+    
+    if (data.success) {
+      console.log('Hardware types loaded:', data);
+      populateTypeDropdowns(data.data);
+    } else {
+      console.error('Error loading hardware types:', data.errors);
+    }
+  } catch (error) {
+    console.error('Error al cargar tipos de hardware:', error);
+  }
+}
+
+// Load empresas from backend
+async function loadEmpresas() {
+  try {
+    const response = await apiClient.get_empresas();
+    const data = await response.json();
+    
+    if (data.success) {
+      console.log('Empresas loaded:', data);
+      // Store empresas for form usage
+      window.empresas = data.data;
+    } else {
+      console.error('Error loading empresas:', data.errors);
+    }
+  } catch (error) {
+    console.error('Error al cargar empresas:', error);
+  }
+}
+
+// Populate type dropdowns with backend data
+function populateTypeDropdowns(types) {
+  const typeSelect = document.getElementById('hardwareType');
+  const filterSelect = document.getElementById('typeFilter');
+  
+  // Clear existing options (except the first "Select" option)
+  typeSelect.innerHTML = '<option value="">Seleccionar tipo</option>';
+  filterSelect.innerHTML = '<option value="">Todos los tipos</option>';
+  
+  types.forEach(type => {
+    const option1 = document.createElement('option');
+    option1.value = type.nombre;
+    option1.textContent = type.nombre;
+    typeSelect.appendChild(option1);
+    
+    const option2 = document.createElement('option');
+    option2.value = type.nombre;
+    option2.textContent = type.nombre;
+    filterSelect.appendChild(option2);
+  });
+}
+
+// Form submission handling
+document.getElementById('hardwareForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  
+  const formData = {
+    nombre: document.getElementById('hardwareName').value,
+    tipo: document.getElementById('hardwareType').value,
+    empresa_nombre: 'Mi Empresa 3', // You'll need to get this from the user session or dropdown
+    sede: 'Principal', // You'll need to get this from the user session or dropdown
+    datos: {
+      brand: document.getElementById('hardwareBrand').value,
+      model: document.getElementById('hardwareModel').value,
+      price: parseFloat(document.getElementById('hardwarePrice').value),
+      stock: parseInt(document.getElementById('hardwareStock').value),
+      status: document.getElementById('hardwareStatus').value,
+      warranty: parseInt(document.getElementById('hardwareWarranty').value),
+      description: document.getElementById('hardwareDescription').value
+    }
+  };
+  
+  if (editingHardware) {
+    updateHardwareAPI(editingHardware, formData);
+  } else {
+    createHardwareAPI(formData);
+  }
+});
+
+// Filter functionality
+function clearFilters() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('typeFilter').value = '';
+  document.getElementById('statusFilter').value = '';
+  filterHardware();
+}
+
+function filterHardware() {
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const type = document.getElementById('typeFilter').value;
+  const status = document.getElementById('statusFilter').value;
+  
+  const items = document.querySelectorAll('.hardware-item');
+  
+  items.forEach(item => {
+    const name = item.dataset.name.toLowerCase();
+    const itemType = item.dataset.type;
+    const itemStatus = item.dataset.status;
+    
+    const matchesSearch = name.includes(search);
+    const matchesType = !type || itemType === type;
+    const matchesStatus = !status || itemStatus === status;
+    
+    if (matchesSearch && matchesType && matchesStatus) {
+      item.style.display = 'block';
+    } else {
+      item.style.display = 'none';
+    }
+  });
+}
+
+// Add event listeners for filters
+document.getElementById('searchInput').addEventListener('input', filterHardware);
+document.getElementById('typeFilter').addEventListener('change', filterHardware);
+document.getElementById('statusFilter').addEventListener('change', filterHardware);
+
+// Close modal when clicking outside
+document.getElementById('hardwareModal').addEventListener('click', function(e) {
+  if (e.target === this) {
+    closeModal();
+  }
+});
+</script>
+{% endblock %}

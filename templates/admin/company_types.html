@@ -1,0 +1,447 @@
+{% extends "admin/dashboard.html" %}
+
+{% block title %}Tipos de Empresa - Sistema Multi-Tenant{% endblock %}
+
+{% block main_content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- Header -->
+  <div class="mb-8">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Tipos de Empresa</h1>
+        <p class="text-gray-600 dark:text-gray-400 mt-2">Administra las categorías de empresas para estadísticas</p>
+      </div>
+      <div class="flex space-x-3">
+        <button class="btn-secondary" onclick="exportTypes()">
+          <i class="fas fa-download"></i>
+          Exportar
+        </button>
+        <button class="btn-primary" onclick="openCreateModal()">
+          <i class="fas fa-plus"></i>
+          Nuevo Tipo
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="glass-card p-6">
+      <div class="flex items-center">
+        <div class="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
+          <i class="fas fa-layer-group text-blue-600 dark:text-blue-400"></i>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Tipos</p>
+          <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ company_types_data.company_types_stats.total_types }}</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="glass-card p-6">
+      <div class="flex items-center">
+        <div class="p-2 bg-green-100 dark:bg-green-900 rounded-lg">
+          <i class="fas fa-check-circle text-green-600 dark:text-green-400"></i>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Activos</p>
+          <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ company_types_data.company_types_stats.active_types }}</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="glass-card p-6">
+      <div class="flex items-center">
+        <div class="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
+          <i class="fas fa-building text-purple-600 dark:text-purple-400"></i>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Empresas</p>
+          <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ company_types_data.company_types_stats.total_companies }}</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="glass-card p-6">
+      <div class="flex items-center">
+        <div class="p-2 bg-orange-100 dark:bg-orange-900 rounded-lg">
+          <i class="fas fa-chart-bar text-orange-600 dark:text-orange-400"></i>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Promedio por Tipo</p>
+          <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ company_types_data.company_types_stats.avg_companies_per_type }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Company Types Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for company_type in company_types_data.company_types %}
+    <div class="glass-card hover:shadow-lg transition-all duration-300 company-type-item" data-status="{{ company_type.active }}">
+      <div class="p-6">
+        <div class="flex items-center justify-between mb-4">
+          <div class="w-12 h-12 rounded-lg flex items-center justify-center" style="background-color: {{ company_type.color }}20;">
+            <i class="{{ company_type.icon }} text-xl" style="color: {{ company_type.color }};"></i>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                   {% if company_type.active %}bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200
+                   {% else %}bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200{% endif %}">
+              {% if company_type.active %}Activo{% else %}Inactivo{% endif %}
+            </span>
+            <div class="flex space-x-1">
+              <button class="p-1 text-gray-400 hover:text-purple-600 dark:hover:text-purple-400" onclick="editCompanyType('{{ company_type.id }}')">
+                <i class="fas fa-edit text-sm"></i>
+              </button>
+              <button class="p-1 text-gray-400 hover:text-red-600 dark:hover:text-red-400" onclick="deleteCompanyType('{{ company_type.id }}')">
+                <i class="fas fa-trash text-sm"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">{{ company_type.name }}</h3>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4 line-clamp-2">{{ company_type.description }}</p>
+        
+        <div class="space-y-3 mb-4">
+          <div class="flex justify-between text-sm">
+            <span class="text-gray-500 dark:text-gray-400">Empresas:</span>
+            <span class="font-medium text-gray-900 dark:text-white">{{ company_type.companies_count }}</span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-gray-500 dark:text-gray-400">Creado:</span>
+            <span class="font-medium text-gray-900 dark:text-white">{{ company_type.created_at }}</span>
+          </div>
+        </div>
+        
+        <div class="mb-4">
+          <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">Características:</p>
+          <div class="flex flex-wrap gap-1">
+            {% for feature in company_type.features[:2] %}
+            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+              {{ feature }}
+            </span>
+            {% endfor %}
+            {% if company_type.features|length > 2 %}
+            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+              +{{ company_type.features|length - 2 }}
+            </span>
+            {% endif %}
+          </div>
+        </div>
+        
+        <div class="flex space-x-2">
+          <button class="flex-1 btn-secondary text-sm" onclick="viewCompanyType('{{ company_type.id }}')">
+            <i class="fas fa-eye"></i>
+            Ver Detalles
+          </button>
+          <button class="flex-1 btn-primary text-sm" onclick="toggleStatus('{{ company_type.id }}', {{ company_type.active|lower }})">
+            <i class="fas fa-{% if company_type.active %}pause{% else %}play{% endif %}"></i>
+            {% if company_type.active %}Desactivar{% else %}Activar{% endif %}
+          </button>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Create/Edit Company Type Modal -->
+<div id="companyTypeModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+  <div class="flex items-center justify-center min-h-screen px-4">
+    <div class="fixed inset-0 bg-black bg-opacity-50" onclick="closeModal()"></div>
+    <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full mx-auto">
+      <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white" id="modalTitle">Nuevo Tipo de Empresa</h3>
+      </div>
+      <form id="companyTypeForm" class="p-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nombre</label>
+            <input type="text" id="typeName" required
+                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Color</label>
+            <div class="flex space-x-2">
+              <input type="color" id="typeColor" required
+                     class="w-16 h-10 border border-gray-300 dark:border-gray-600 rounded-lg">
+              <input type="text" id="typeColorHex" placeholder="#8b5cf6" required
+                     class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Icono</label>
+            <select id="typeIcon" required
+                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+              <option value="">Seleccionar icono</option>
+              <option value="fas fa-laptop-code">💻 Tecnología</option>
+              <option value="fas fa-handshake">🤝 Servicios</option>
+              <option value="fas fa-industry">🏭 Manufactura</option>
+              <option value="fas fa-store">🏪 Retail</option>
+              <option value="fas fa-heart">❤️ Salud</option>
+              <option value="fas fa-graduation-cap">🎓 Educación</option>
+              <option value="fas fa-chart-line">📈 Finanzas</option>
+              <option value="fas fa-building">🏢 Corporativo</option>
+              <option value="fas fa-cogs">⚙️ Industrial</option>
+              <option value="fas fa-leaf">🌱 Sostenible</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Estado</label>
+            <select id="typeStatus" required
+                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+              <option value="true">Activo</option>
+              <option value="false">Inactivo</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="mt-6">
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Descripción</label>
+          <textarea id="typeDescription" rows="3" required
+                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"></textarea>
+        </div>
+        
+        <div class="mt-6">
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Características</label>
+          <div id="featuresContainer">
+            <div class="flex space-x-2 mb-2">
+              <input type="text" placeholder="Agregar característica..." 
+                     class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                     onkeypress="handleFeatureKeyPress(event)">
+              <button type="button" class="btn-secondary" onclick="addFeature()">
+                <i class="fas fa-plus"></i>
+              </button>
+            </div>
+            <div id="featuresList" class="space-y-2">
+              <!-- Features will be added here -->
+            </div>
+          </div>
+        </div>
+        
+        <div class="flex justify-end space-x-3 mt-6">
+          <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>
+          <button type="submit" class="btn-primary">
+            <span id="submitButtonText">Crear Tipo</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- View Details Modal -->
+<div id="detailsModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+  <div class="flex items-center justify-center min-h-screen px-4">
+    <div class="fixed inset-0 bg-black bg-opacity-50" onclick="closeDetailsModal()"></div>
+    <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-lg w-full mx-auto">
+      <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white" id="detailsTitle">Detalles del Tipo</h3>
+      </div>
+      <div class="p-6">
+        <div id="detailsContent">
+          <!-- Details will be loaded here -->
+        </div>
+        <div class="flex justify-end mt-6">
+          <button class="btn-secondary" onclick="closeDetailsModal()">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block page_js %}
+<script>
+let editingCompanyType = null;
+let currentFeatures = [];
+
+// Modal functionality
+function openCreateModal() {
+  editingCompanyType = null;
+  currentFeatures = [];
+  document.getElementById('modalTitle').textContent = 'Nuevo Tipo de Empresa';
+  document.getElementById('submitButtonText').textContent = 'Crear Tipo';
+  document.getElementById('companyTypeForm').reset();
+  document.getElementById('featuresList').innerHTML = '';
+  document.getElementById('companyTypeModal').classList.remove('hidden');
+}
+
+function editCompanyType(id) {
+  editingCompanyType = id;
+  document.getElementById('modalTitle').textContent = 'Editar Tipo de Empresa';
+  document.getElementById('submitButtonText').textContent = 'Actualizar Tipo';
+  
+  // Here you would load the company type data - for now using dummy data
+  document.getElementById('typeName').value = 'Tecnología';
+  document.getElementById('typeColor').value = '#8b5cf6';
+  document.getElementById('typeColorHex').value = '#8b5cf6';
+  document.getElementById('typeIcon').value = 'fas fa-laptop-code';
+  document.getElementById('typeStatus').value = 'true';
+  document.getElementById('typeDescription').value = 'Empresas dedicadas al desarrollo de software y tecnología';
+  
+  // Load features
+  currentFeatures = ['Desarrollo de Software', 'Consultoría IT', 'Soporte Técnico'];
+  updateFeaturesList();
+  
+  document.getElementById('companyTypeModal').classList.remove('hidden');
+}
+
+function closeModal() {
+  document.getElementById('companyTypeModal').classList.add('hidden');
+  editingCompanyType = null;
+  currentFeatures = [];
+}
+
+function viewCompanyType(id) {
+  document.getElementById('detailsTitle').textContent = 'Detalles: Tecnología';
+  document.getElementById('detailsContent').innerHTML = `
+    <div class="space-y-4">
+      <div class="flex items-center space-x-3">
+        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+          <i class="fas fa-laptop-code text-purple-600 text-xl"></i>
+        </div>
+        <div>
+          <h4 class="font-semibold text-gray-900 dark:text-white">Tecnología</h4>
+          <p class="text-sm text-gray-500 dark:text-gray-400">ID: ${id}</p>
+        </div>
+      </div>
+      <div>
+        <h5 class="font-medium text-gray-900 dark:text-white mb-2">Descripción</h5>
+        <p class="text-sm text-gray-600 dark:text-gray-400">Empresas dedicadas al desarrollo de software y tecnología</p>
+      </div>
+      <div>
+        <h5 class="font-medium text-gray-900 dark:text-white mb-2">Estadísticas</h5>
+        <div class="grid grid-cols-2 gap-4 text-sm">
+          <div>
+            <span class="text-gray-500 dark:text-gray-400">Empresas:</span>
+            <span class="font-medium text-gray-900 dark:text-white ml-2">24</span>
+          </div>
+          <div>
+            <span class="text-gray-500 dark:text-gray-400">Estado:</span>
+            <span class="font-medium text-green-600 ml-2">Activo</span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <h5 class="font-medium text-gray-900 dark:text-white mb-2">Características</h5>
+        <div class="flex flex-wrap gap-2">
+          <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-xs">Desarrollo de Software</span>
+          <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-xs">Consultoría IT</span>
+          <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-xs">Soporte Técnico</span>
+        </div>
+      </div>
+    </div>
+  `;
+  document.getElementById('detailsModal').classList.remove('hidden');
+}
+
+function closeDetailsModal() {
+  document.getElementById('detailsModal').classList.add('hidden');
+}
+
+function deleteCompanyType(id) {
+  if (confirm('¿Estás seguro de que quieres eliminar este tipo de empresa?\n\nEsta acción no se puede deshacer y afectará las estadísticas.')) {
+    alert(`Tipo de empresa ${id} eliminado\n\nEsta acción se procesará en el backend.`);
+  }
+}
+
+function toggleStatus(id, currentStatus) {
+  const newStatus = !currentStatus;
+  const action = newStatus ? 'activar' : 'desactivar';
+  
+  if (confirm(`¿Estás seguro de que quieres ${action} este tipo de empresa?`)) {
+    alert(`Tipo de empresa ${id} ${newStatus ? 'activado' : 'desactivado'} exitosamente`);
+    // Here you would make an API call to update the status
+  }
+}
+
+function exportTypes() {
+  alert('Exportando tipos de empresa...\n\nEsta funcionalidad generará un archivo CSV con todos los tipos.');
+}
+
+// Features management
+function addFeature() {
+  const input = document.querySelector('#featuresContainer input[type="text"]');
+  const feature = input.value.trim();
+  
+  if (feature && !currentFeatures.includes(feature)) {
+    currentFeatures.push(feature);
+    input.value = '';
+    updateFeaturesList();
+  }
+}
+
+function removeFeature(index) {
+  currentFeatures.splice(index, 1);
+  updateFeaturesList();
+}
+
+function updateFeaturesList() {
+  const container = document.getElementById('featuresList');
+  container.innerHTML = currentFeatures.map((feature, index) => `
+    <div class="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded">
+      <span class="text-sm text-gray-900 dark:text-white">${feature}</span>
+      <button type="button" class="text-red-600 hover:text-red-700" onclick="removeFeature(${index})">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  `).join('');
+}
+
+function handleFeatureKeyPress(event) {
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    addFeature();
+  }
+}
+
+// Color input synchronization
+document.getElementById('typeColor').addEventListener('change', function() {
+  document.getElementById('typeColorHex').value = this.value;
+});
+
+document.getElementById('typeColorHex').addEventListener('input', function() {
+  if (/^#[0-9A-F]{6}$/i.test(this.value)) {
+    document.getElementById('typeColor').value = this.value;
+  }
+});
+
+// Form submission
+document.getElementById('companyTypeForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  
+  const formData = {
+    name: document.getElementById('typeName').value,
+    description: document.getElementById('typeDescription').value,
+    color: document.getElementById('typeColorHex').value,
+    icon: document.getElementById('typeIcon').value,
+    active: document.getElementById('typeStatus').value === 'true',
+    features: currentFeatures
+  };
+  
+  if (editingCompanyType) {
+    alert(`Tipo de empresa ${editingCompanyType} actualizado exitosamente\n\nDatos: ${JSON.stringify(formData, null, 2)}`);
+  } else {
+    alert(`Nuevo tipo de empresa creado exitosamente\n\nDatos: ${JSON.stringify(formData, null, 2)}`);
+  }
+  
+  closeModal();
+});
+
+// Close modals when clicking outside
+document.getElementById('companyTypeModal').addEventListener('click', function(e) {
+  if (e.target === this) {
+    closeModal();
+  }
+});
+
+document.getElementById('detailsModal').addEventListener('click', function(e) {
+  if (e.target === this) {
+    closeDetailsModal();
+  }
+});
+</script>
+{% endblock %}
