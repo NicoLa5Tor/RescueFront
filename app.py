@@ -8,7 +8,9 @@ from flask import (
     url_for,
     session,
     g,
+    abort,
 )
+from functools import wraps
 from flask_cors import CORS
 from python_api_client import EndpointTestClient
 import os
@@ -34,6 +36,25 @@ PROXY_PREFIX = '/proxy'
 def attach_api_client():
     token = session.get('token')
     g.api_client = EndpointTestClient(BACKEND_API_URL, token)
+
+
+def role_required(*roles):
+    """Decorator to restrict access based on the user's role."""
+
+    def decorator(view_func):
+        @wraps(view_func)
+        def wrapped_view(*args, **kwargs):
+            if 'token' not in session:
+                return redirect(url_for('login'))
+
+            user_role = session.get('user', {}).get('role')
+            if roles and user_role not in roles:
+                abort(403)
+            return view_func(*args, **kwargs)
+
+        return wrapped_view
+
+    return decorator
 
 # ========== RUTAS PÚBLICAS ==========
 @app.route('/')
@@ -81,10 +102,9 @@ def proxy_api(endpoint):
 # La protección la maneja el JavaScript con JWT
 
 @app.route('/admin')
+@role_required('super_admin')
 def admin_dashboard():
     """Dashboard principal - Protegido por JWT en frontend"""
-    if 'token' not in session:
-        return redirect(url_for('login'))
     user = session.get('user', {})
     empresa_id = user.get('empresa_id')
     activity_data = {}
@@ -125,57 +145,60 @@ def admin_dashboard():
     )
 
 @app.route('/admin/users')
+@role_required('super_admin', 'empresa')
 def admin_users():
     """Gestión de usuarios - Protegido por JWT en frontend"""
-    if 'token' not in session:
-        return redirect(url_for('login'))
     return render_template('users.html', api_url=PROXY_PREFIX, active_page='users')
 
 @app.route('/admin/empresas')
+@role_required('super_admin')
 def admin_empresas():
     """Gestión de empresas - Protegido por JWT en frontend"""
-    if 'token' not in session:
-        return redirect(url_for('login'))
     return render_template('admin/empresas.html', api_url=PROXY_PREFIX, active_page='empresas')
 
 @app.route('/admin/empresas/')
+@role_required('super_admin')
 def admin_empresas_slash():
     """Allow trailing slash for empresas"""
     return redirect(url_for('admin_empresas'))
 
 @app.route('/admin/empresa')
 @app.route('/admin/empresa/')
+@role_required('super_admin')
 def admin_empresa_alias():
     """Legacy singular path redirect"""
     return redirect(url_for('admin_empresas'))
 
 @app.route('/admin/stats')
+@role_required('super_admin', 'empresa')
 def admin_stats():
     """Estadísticas - Protegido por JWT en frontend"""
-    if 'token' not in session:
-        return redirect(url_for('login'))
     return render_template('admin/stats.html', api_url=PROXY_PREFIX, active_page='stats')
+
+
+@app.route('/admin/hardware')
+@role_required('super_admin', 'empresa')
+def admin_hardware():
+    """Gestión de hardware - Protegido por JWT en frontend"""
+    return render_template('admin/hardware.html', api_url=PROXY_PREFIX, active_page='hardware')
 
 # ========== RUTAS DE EMPRESA (FUTURO) ==========
 @app.route('/empresa')
+@role_required('empresa')
 def empresa_dashboard():
     """Dashboard de empresa - Protegido por JWT en frontend"""
-    if 'token' not in session:
-        return redirect(url_for('login'))
     return render_template('empresa/dashboard.html', api_url=PROXY_PREFIX)
 
 @app.route('/empresa/empleados')
+@role_required('empresa')
 def empresa_empleados():
     """Gestión de empleados - Protegido por JWT en frontend"""
-    if 'token' not in session:
-        return redirect(url_for('login'))
     return render_template('empresa/empleados.html', api_url=PROXY_PREFIX)
 
 @app.route('/empresa/perfil')
+@role_required('empresa')
 def empresa_perfil():
     """Perfil de empresa - Protegido por JWT en frontend"""
-    if 'token' not in session:
-        return redirect(url_for('login'))
     return render_template('empresa/perfil.html', api_url=PROXY_PREFIX)
 
 # ========== CONTEXTO GLOBAL ==========
