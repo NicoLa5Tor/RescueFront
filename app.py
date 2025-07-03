@@ -13,7 +13,12 @@ from flask_cors import CORS
 from python_api_client import EndpointTestClient
 import os
 from dotenv import load_dotenv
-from dashboard_data_providers import get_dashboard_stats, get_companies_stats, get_detailed_statistics, get_hardware_data, get_company_types_data
+from dashboard_data_providers import (
+    get_dashboard_stats,
+    get_companies_stats,
+    get_detailed_statistics,
+    get_company_types_data,
+)
 
 # Cargar variables de entorno
 load_dotenv()
@@ -141,9 +146,9 @@ def admin_dashboard():
     )
 
 @app.route('/admin/users')
-@require_role(['super_admin'])
+@require_role(['super_admin', 'empresa'])
 def admin_users():
-    """Gestión de usuarios - Solo para super_admin"""
+    """Gestión de usuarios - Para super_admin y empresa"""
     return render_template('admin/users.html', api_url=PROXY_PREFIX, active_page='users')
 
 @app.route('/admin/empresas')
@@ -177,7 +182,7 @@ def admin_empresa_alias():
 @app.route('/admin/stats')
 @require_role(['super_admin', 'empresa'])
 def admin_stats():
-    """Estadísticas - Accesible para super_admin y empresa"""
+    """Estadísticas - Para super_admin y empresa"""
     # Get detailed statistics dummy data from Python providers
     statistics_data = get_detailed_statistics()
     
@@ -189,9 +194,9 @@ def admin_stats():
     )
 
 @app.route('/admin/hardware')
-@require_role(['super_admin'])
+@require_role(['super_admin', 'empresa'])
 def admin_hardware():
-    """Gestión de hardware - Solo para super_admin"""
+    """Gestión de hardware - Para super_admin y empresa"""
     
     # Get real hardware data from backend
     try:
@@ -356,7 +361,7 @@ def favicon():
 if __name__ == '__main__':
     print("🚀 Iniciando Rescue Frontend...")
     print(f"📡 Backend API: {BACKEND_API_URL}")
-    print(f"🌐 Frontend URL: http://localhost:5050")
+    print("🌐 Frontend URL: http://localhost:5050")
     print("🔐 Autenticación: manejada por Flask y proxy interno")
     print("=" * 50)
     
