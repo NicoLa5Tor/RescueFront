@@ -67,6 +67,7 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 600;
   line-height: 1.2;
   margin-bottom: var(--space-2);
+  color: var(--text-primary) !important;
 }
 
 h1 { font-size: var(--font-size-3xl); }
@@ -76,7 +77,7 @@ h4 { font-size: var(--font-size-lg); }
 
 p {
   margin-bottom: var(--space-3);
-  color: var(--text-secondary);
+  color: var(--text-primary) !important;
 }
 
 /* Links */

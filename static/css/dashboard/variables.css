@@ -275,7 +275,7 @@
   --bg-primary: var(--gray-900);
   --bg-secondary: var(--gray-800);
   --bg-tertiary: var(--gray-700);
-  --text-primary: var(--gray-100);
+  --text-primary: #ffffff;
   --text-secondary: var(--gray-400);
   --text-tertiary: var(--gray-500);
   --border-color: rgba(255, 255, 255, 0.1);
