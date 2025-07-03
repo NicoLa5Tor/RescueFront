@@ -8,7 +8,7 @@
   <div class="mb-8">
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
       <div>
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Tipos de Empresa</h1>
+        <h1 class="text-3xl font-bold text-black dark:text-white">Tipos de Empresa</h1>
         <p class="text-gray-600 dark:text-gray-400 mt-2">Administra las categorías de empresas para estadísticas</p>
       </div>
       <div class="flex space-x-3">
@@ -33,7 +33,7 @@
         </div>
         <div class="ml-4">
           <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Tipos</p>
-          <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ company_types_data.company_types_stats.total_types }}</p>
+          <p class="text-2xl font-bold text-black dark:text-white">{{ company_types_data.company_types_stats.total_types }}</p>
         </div>
       </div>
     </div>
@@ -45,7 +45,7 @@
         </div>
         <div class="ml-4">
           <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Activos</p>
-          <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ company_types_data.company_types_stats.active_types }}</p>
+          <p class="text-2xl font-bold text-black dark:text-white">{{ company_types_data.company_types_stats.active_types }}</p>
         </div>
       </div>
     </div>
@@ -57,7 +57,7 @@
         </div>
         <div class="ml-4">
           <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Empresas</p>
-          <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ company_types_data.company_types_stats.total_companies }}</p>
+          <p class="text-2xl font-bold text-black dark:text-white">{{ company_types_data.company_types_stats.total_companies }}</p>
         </div>
       </div>
     </div>
@@ -69,7 +69,7 @@
         </div>
         <div class="ml-4">
           <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Promedio por Tipo</p>
-          <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ company_types_data.company_types_stats.avg_companies_per_type }}</p>
+          <p class="text-2xl font-bold text-black dark:text-white">{{ company_types_data.company_types_stats.avg_companies_per_type }}</p>
         </div>
       </div>
     </div>
@@ -101,17 +101,17 @@
           </div>
         </div>
         
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">{{ company_type.name }}</h3>
+        <h3 class="text-lg font-semibold text-black dark:text-white mb-2">{{ company_type.name }}</h3>
         <p class="text-sm text-gray-500 dark:text-gray-400 mb-4 line-clamp-2">{{ company_type.description }}</p>
         
         <div class="space-y-3 mb-4">
           <div class="flex justify-between text-sm">
             <span class="text-gray-500 dark:text-gray-400">Empresas:</span>
-            <span class="font-medium text-gray-900 dark:text-white">{{ company_type.companies_count }}</span>
+            <span class="font-medium text-black dark:text-white">{{ company_type.companies_count }}</span>
           </div>
           <div class="flex justify-between text-sm">
             <span class="text-gray-500 dark:text-gray-400">Creado:</span>
-            <span class="font-medium text-gray-900 dark:text-white">{{ company_type.created_at }}</span>
+            <span class="font-medium text-black dark:text-white">{{ company_type.created_at }}</span>
           </div>
         </div>
         
@@ -153,14 +153,14 @@
     <div class="fixed inset-0 bg-black bg-opacity-50" onclick="closeModal()"></div>
     <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full mx-auto">
       <div class="p-6 border-b border-gray-200 dark:border-gray-700">
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-white" id="modalTitle">Nuevo Tipo de Empresa</h3>
+        <h3 class="text-lg font-semibold text-black dark:text-white" id="modalTitle">Nuevo Tipo de Empresa</h3>
       </div>
       <form id="companyTypeForm" class="p-6">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nombre</label>
             <input type="text" id="typeName" required
-                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-black dark:text-white">
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Color</label>
@@ -168,13 +168,13 @@
               <input type="color" id="typeColor" required
                      class="w-16 h-10 border border-gray-300 dark:border-gray-600 rounded-lg">
               <input type="text" id="typeColorHex" placeholder="#8b5cf6" required
-                     class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                     class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-black dark:text-white">
             </div>
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Icono</label>
             <select id="typeIcon" required
-                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-black dark:text-white">
               <option value="">Seleccionar icono</option>
               <option value="fas fa-laptop-code">💻 Tecnología</option>
               <option value="fas fa-handshake">🤝 Servicios</option>
@@ -191,7 +191,7 @@
           <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Estado</label>
             <select id="typeStatus" required
-                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-black dark:text-white">
               <option value="true">Activo</option>
               <option value="false">Inactivo</option>
             </select>
@@ -201,7 +201,7 @@
         <div class="mt-6">
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Descripción</label>
           <textarea id="typeDescription" rows="3" required
-                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"></textarea>
+                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-black dark:text-white"></textarea>
         </div>
         
         <div class="mt-6">
@@ -209,7 +209,7 @@
           <div id="featuresContainer">
             <div class="flex space-x-2 mb-2">
               <input type="text" placeholder="Agregar característica..." 
-                     class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                     class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-black dark:text-white"
                      onkeypress="handleFeatureKeyPress(event)">
               <button type="button" class="btn-secondary" onclick="addFeature()">
                 <i class="fas fa-plus"></i>
@@ -238,7 +238,7 @@
     <div class="fixed inset-0 bg-black bg-opacity-50" onclick="closeDetailsModal()"></div>
     <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-lg w-full mx-auto">
       <div class="p-6 border-b border-gray-200 dark:border-gray-700">
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-white" id="detailsTitle">Detalles del Tipo</h3>
+        <h3 class="text-lg font-semibold text-black dark:text-white" id="detailsTitle">Detalles del Tipo</h3>
       </div>
       <div class="p-6">
         <div id="detailsContent">
@@ -304,20 +304,20 @@ function viewCompanyType(id) {
           <i class="fas fa-laptop-code text-purple-600 text-xl"></i>
         </div>
         <div>
-          <h4 class="font-semibold text-gray-900 dark:text-white">Tecnología</h4>
+          <h4 class="font-semibold text-black dark:text-white">Tecnología</h4>
           <p class="text-sm text-gray-500 dark:text-gray-400">ID: ${id}</p>
         </div>
       </div>
       <div>
-        <h5 class="font-medium text-gray-900 dark:text-white mb-2">Descripción</h5>
+        <h5 class="font-medium text-black dark:text-white mb-2">Descripción</h5>
         <p class="text-sm text-gray-600 dark:text-gray-400">Empresas dedicadas al desarrollo de software y tecnología</p>
       </div>
       <div>
-        <h5 class="font-medium text-gray-900 dark:text-white mb-2">Estadísticas</h5>
+        <h5 class="font-medium text-black dark:text-white mb-2">Estadísticas</h5>
         <div class="grid grid-cols-2 gap-4 text-sm">
           <div>
             <span class="text-gray-500 dark:text-gray-400">Empresas:</span>
-            <span class="font-medium text-gray-900 dark:text-white ml-2">24</span>
+            <span class="font-medium text-black dark:text-white ml-2">24</span>
           </div>
           <div>
             <span class="text-gray-500 dark:text-gray-400">Estado:</span>
@@ -326,7 +326,7 @@ function viewCompanyType(id) {
         </div>
       </div>
       <div>
-        <h5 class="font-medium text-gray-900 dark:text-white mb-2">Características</h5>
+        <h5 class="font-medium text-black dark:text-white mb-2">Características</h5>
         <div class="flex flex-wrap gap-2">
           <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-xs">Desarrollo de Software</span>
           <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-xs">Consultoría IT</span>
@@ -383,7 +383,7 @@ function updateFeaturesList() {
   const container = document.getElementById('featuresList');
   container.innerHTML = currentFeatures.map((feature, index) => `
     <div class="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded">
-      <span class="text-sm text-gray-900 dark:text-white">${feature}</span>
+      <span class="text-sm text-black dark:text-white">${feature}</span>
       <button type="button" class="text-red-600 hover:text-red-700" onclick="removeFeature(${index})">
         <i class="fas fa-times"></i>
       </button>

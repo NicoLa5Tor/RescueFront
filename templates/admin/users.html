@@ -8,7 +8,7 @@
   <div class="mb-8">
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
       <div>
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Gestión de Usuarios</h1>
+        <h1 class="text-3xl font-bold text-black dark:text-white">Gestión de Usuarios</h1>
         <p class="text-gray-600 dark:text-gray-400 mt-2">Administra los usuarios de las empresas</p>
       </div>
       <div class="flex space-x-3">
@@ -28,11 +28,11 @@
   <div class="glass-card p-6 mb-8">
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
       <div>
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Seleccionar Empresa</h3>
+        <h3 class="text-lg font-semibold text-black dark:text-white">Seleccionar Empresa</h3>
         <p class="text-gray-500 dark:text-gray-400 text-sm">Elige una empresa para gestionar sus usuarios</p>
       </div>
       <div class="sm:w-80">
-        <select id="empresaSelector" class="w-full px-4 py-3 bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+        <select id="empresaSelector" class="w-full px-4 py-3 bg-white dark:bg-gray-700 text-black dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
           <option value="">Cargando empresas...</option>
         </select>
       </div>
@@ -46,7 +46,7 @@
         <span class="text-white font-bold text-xl" id="empresaInitials">E</span>
       </div>
       <div class="flex-1">
-        <h3 class="text-xl font-semibold text-gray-900 dark:text-white" id="selectedEmpresaName">Empresa</h3>
+        <h3 class="text-xl font-semibold text-black dark:text-white" id="selectedEmpresaName">Empresa</h3>
         <p class="text-gray-600 dark:text-gray-400" id="selectedEmpresaLocation">Ubicación</p>
         <div class="flex items-center space-x-4 mt-2">
           <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" id="selectedEmpresaStatus">
@@ -70,7 +70,7 @@
         </div>
         <div class="ml-4">
           <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total</p>
-          <p class="text-2xl font-bold text-gray-900 dark:text-white" id="totalUsersCount">0</p>
+          <p class="text-2xl font-bold text-black dark:text-white" id="totalUsersCount">0</p>
         </div>
       </div>
     </div>
@@ -82,7 +82,7 @@
         </div>
         <div class="ml-4">
           <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Activos</p>
-          <p class="text-2xl font-bold text-gray-900 dark:text-white" id="activeUsersCount">0</p>
+          <p class="text-2xl font-bold text-black dark:text-white" id="activeUsersCount">0</p>
         </div>
       </div>
     </div>
@@ -94,7 +94,7 @@
         </div>
         <div class="ml-4">
           <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Roles Únicos</p>
-          <p class="text-2xl font-bold text-gray-900 dark:text-white" id="uniqueRolesCount">0</p>
+          <p class="text-2xl font-bold text-black dark:text-white" id="uniqueRolesCount">0</p>
         </div>
       </div>
     </div>
@@ -106,7 +106,7 @@
         </div>
         <div class="ml-4">
           <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Este Mes</p>
-          <p class="text-2xl font-bold text-gray-900 dark:text-white" id="newUsersCount">0</p>
+          <p class="text-2xl font-bold text-black dark:text-white" id="newUsersCount">0</p>
         </div>
       </div>
     </div>
@@ -124,7 +124,7 @@
     <div class="glass-card overflow-hidden">
       <div class="p-6 border-b border-gray-100 dark:border-gray-700">
         <div class="flex items-center justify-between">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Lista de Usuarios</h3>
+          <h3 class="text-lg font-semibold text-black dark:text-white">Lista de Usuarios</h3>
           <div class="flex space-x-2">
             <button id="gridViewBtn" class="p-2 text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors" title="Vista de tarjetas">
               <i class="fas fa-th-large"></i>
@@ -160,7 +160,7 @@
     <div class="mx-auto h-24 w-24 text-gray-400 mb-4">
       <i class="fas fa-users text-6xl"></i>
     </div>
-    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Selecciona una empresa</h3>
+    <h3 class="text-lg font-medium text-black dark:text-white mb-2">Selecciona una empresa</h3>
     <p class="text-gray-500 dark:text-gray-400 mb-6">Elige una empresa para ver y gestionar sus usuarios</p>
   </div>
 
@@ -169,7 +169,7 @@
     <div class="mx-auto h-24 w-24 text-gray-400 mb-4">
       <i class="fas fa-user-slash text-6xl"></i>
     </div>
-    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No hay usuarios</h3>
+    <h3 class="text-lg font-medium text-black dark:text-white mb-2">No hay usuarios</h3>
     <p class="text-gray-500 dark:text-gray-400 mb-6">Esta empresa aún no tiene usuarios registrados</p>
     <button class="btn-primary" onclick="createUser()">
       <i class="fas fa-user-plus"></i>
