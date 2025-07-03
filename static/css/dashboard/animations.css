@@ -347,37 +347,37 @@
   /* ===== GSAP COMPATIBLE CLASSES ===== */
   
   /* Initial states for GSAP animations */
-  .gsap-fade-in {
+  html.gsap-enabled .gsap-fade-in {
     opacity: 0;
     transform: translateY(30px);
   }
-  
-  .gsap-fade-in-left {
+
+  html.gsap-enabled .gsap-fade-in-left {
     opacity: 0;
     transform: translateX(-30px);
   }
-  
-  .gsap-fade-in-right {
+
+  html.gsap-enabled .gsap-fade-in-right {
     opacity: 0;
     transform: translateX(30px);
   }
-  
-  .gsap-scale-in {
+
+  html.gsap-enabled .gsap-scale-in {
     opacity: 0;
     transform: scale(0.8);
   }
-  
-  .gsap-slide-up {
+
+  html.gsap-enabled .gsap-slide-up {
     opacity: 0;
     transform: translateY(50px);
   }
-  
-  .gsap-slide-down {
+
+  html.gsap-enabled .gsap-slide-down {
     opacity: 0;
     transform: translateY(-50px);
   }
-  
-  .gsap-rotate-in {
+
+  html.gsap-enabled .gsap-rotate-in {
     opacity: 0;
     transform: rotate(-180deg) scale(0.5);
   }
@@ -505,13 +505,13 @@
       scroll-behavior: auto !important;
     }
     
-    .gsap-fade-in,
-    .gsap-fade-in-left,
-    .gsap-fade-in-right,
-    .gsap-scale-in,
-    .gsap-slide-up,
-    .gsap-slide-down,
-    .gsap-rotate-in {
+    html.gsap-enabled .gsap-fade-in,
+    html.gsap-enabled .gsap-fade-in-left,
+    html.gsap-enabled .gsap-fade-in-right,
+    html.gsap-enabled .gsap-scale-in,
+    html.gsap-enabled .gsap-slide-up,
+    html.gsap-enabled .gsap-slide-down,
+    html.gsap-enabled .gsap-rotate-in {
       opacity: 1;
       transform: none;
     }

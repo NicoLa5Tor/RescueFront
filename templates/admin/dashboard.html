@@ -316,16 +316,6 @@
 <script>
   window.API_BASE_URL = '{{ api_url }}';
   window.ACTIVITY_DATA = '{{ (activity_data | default(None)) | tojson | safe }}';
-  // Initialize theme from localStorage
-  (function() {
-    const savedTheme = localStorage.getItem('theme');
-    const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const isDark = savedTheme === 'dark' || (!savedTheme && systemDark);
-
-    if (isDark) {
-      document.documentElement.classList.add('dark');
-    }
-  })();
 </script>
 
 <!-- Core Scripts -->
