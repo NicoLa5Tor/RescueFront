@@ -10,10 +10,16 @@
             const savedTheme = localStorage.getItem('theme');
             const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             const isDark = savedTheme === 'dark' || (!savedTheme && systemDark);
+
             if (isDark) {
                 document.documentElement.classList.add('dark');
-                document.body.classList.add('dark');
             }
+
+            document.addEventListener('DOMContentLoaded', () => {
+                if (isDark) {
+                    document.body.classList.add('dark');
+                }
+            });
         })();
     </script>
     
