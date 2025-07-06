@@ -7,22 +7,39 @@
 <link href="{{ url_for('static', filename='css/modals.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/hardware/hardware-main.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/company-types/company-types-main.css') }}" rel="stylesheet">
+<style>
+/* Asegurar visibilidad por defecto - OVERRIDE para tipos de empresa */
+.ios-header-container,
+.ios-stats-grid .ios-stat-card,
+.ios-hardware-grid .ios-hardware-card {
+  opacity: 1 !important;
+  transform: none !important;
+  visibility: visible !important;
+}
+
+/* Asegurar que las tarjetas sean visibles desde el inicio */
+.company-type-item {
+  opacity: 1 !important;
+  transform: none !important;
+  visibility: visible !important;
+}
+</style>
 {% endblock %}
 
 {% block main_content %}
 <div class="company-types-container">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Enhanced iOS Header -->
-    <div class="ios-ct-header-container">
-      <div class="ios-ct-header">
-        <div class="ios-ct-header-content">
-          <div class="ios-ct-header-text">
-            <div class="ios-ct-header-icon">
+    <!-- Enhanced iOS Header - HARDWARE STYLE -->
+    <div class="ios-header-container mb-8">
+      <div class="ios-header-backdrop">
+        <div class="ios-header-content">
+          <div class="ios-header-text">
+            <div class="ios-header-icon">
               <i class="fas fa-layer-group"></i>
             </div>
             <div>
-              <h1 class="ios-ct-header-title">Tipos de Empresa</h1>
-              <p class="ios-ct-header-subtitle">
+              <h1 class="ios-header-title">Gestión de Tipos de Empresa</h1>
+              <p class="ios-header-subtitle">
                 Administra las categorías con tecnología de vanguardia
                 {% if include_inactive %}
                   <span class="inline-block ml-2 px-2 py-1 bg-orange-500 text-white text-xs rounded-full">
@@ -36,16 +53,16 @@
               </p>
             </div>
           </div>
-          <div class="ios-ct-header-actions">
-            <button class="ios-ct-action-btn ios-ct-action-btn-secondary" onclick="exportTypes()">
+          <div class="ios-header-actions">
+            <button class="ios-action-btn ios-action-btn-secondary" onclick="exportTypes()">
               <i class="fas fa-download"></i>
               <span>Exportar</span>
             </button>
-            <button class="ios-ct-action-btn {% if include_inactive %}ios-ct-action-btn-warning{% else %}ios-ct-action-btn-secondary{% endif %}" onclick="toggleIncludeInactive()">
+            <button class="ios-action-btn {% if include_inactive %}ios-action-btn-warning{% else %}ios-action-btn-secondary{% endif %}" onclick="toggleIncludeInactive()">
               <i class="fas fa-{% if include_inactive %}eye-slash{% else %}eye{% endif %}"></i>
               <span>{% if include_inactive %}Solo Activos{% else %}Ver Todos{% endif %}</span>
             </button>
-            <button class="ios-ct-action-btn ios-ct-action-btn-primary" onclick="openCreateModal()">
+            <button class="ios-action-btn ios-action-btn-primary" onclick="openCreateModal()">
               <i class="fas fa-plus"></i>
               <span>Nuevo Tipo</span>
             </button>
@@ -54,136 +71,109 @@
       </div>
     </div>
 
-    <!-- Enhanced iOS Stats Cards -->
-    <div class="ios-ct-stats-grid">
-      <div class="ios-ct-stat-card" data-stat="total">
-        <div class="ios-ct-stat-header">
-          <div class="ios-ct-stat-icon ios-ct-stat-icon-blue">
+    <!-- Enhanced iOS Stats Cards - HARDWARE STYLE -->
+    <div class="ios-stats-grid">
+      <div class="ios-stat-card" data-stat="total">
+        <div class="ios-stat-icon ios-stat-icon-blue">
+          <i class="fas fa-layer-group"></i>
+        </div>
+        <div class="ios-stat-content">
+          <div class="ios-stat-label">Total Tipos</div>
+          <div class="ios-stat-value" id="totalTypesCount">{{ company_types_data.company_types_stats.total_types }}</div>
+          <div class="ios-stat-trend">Categorías disponibles</div>
+        </div>
+        <div class="ios-stat-shimmer"></div>
+      </div>
+      
+      <div class="ios-stat-card" data-stat="active">
+        <div class="ios-stat-icon ios-stat-icon-green">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="ios-stat-content">
+          <div class="ios-stat-label">Activos</div>
+          <div class="ios-stat-value" id="activeTypesCount">{{ company_types_data.company_types_stats.active_types }}</div>
+          <div class="ios-stat-trend">Funcionando correctamente</div>
+        </div>
+        <div class="ios-stat-shimmer"></div>
+      </div>
+      
+      <div class="ios-stat-card" data-stat="companies">
+        <div class="ios-stat-icon ios-stat-icon-purple">
+          <i class="fas fa-building"></i>
+        </div>
+        <div class="ios-stat-content">
+          <div class="ios-stat-label">Total Empresas</div>
+          <div class="ios-stat-value" id="totalCompaniesCount">{{ company_types_data.company_types_stats.total_companies }}</div>
+          <div class="ios-stat-trend">Empresas categorizadas</div>
+        </div>
+        <div class="ios-stat-shimmer"></div>
+      </div>
+      
+      <div class="ios-stat-card" data-stat="average">
+        <div class="ios-stat-icon ios-stat-icon-orange">
+          <i class="fas fa-chart-bar"></i>
+        </div>
+        <div class="ios-stat-content">
+          <div class="ios-stat-label">Promedio por Tipo</div>
+          <div class="ios-stat-value" id="avgCompaniesCount">{{ company_types_data.company_types_stats.avg_companies_per_type }}</div>
+          <div class="ios-stat-trend">Distribución equilibrada</div>
+        </div>
+        <div class="ios-stat-shimmer"></div>
+      </div>
+    </div>
+
+
+  <!-- Enhanced iOS Company Types Grid - HARDWARE STYLE -->
+    <div class="ios-hardware-grid" id="companyTypesGrid">
+      {% for company_type in company_types_data.company_types %}
+      <div class="ios-hardware-card company-type-item" data-type-id="{{ company_type.id }}" data-status="{{ company_type.active|lower }}">
+        <div class="ios-card-header">
+          <div class="ios-card-icon">
             <i class="fas fa-layer-group"></i>
           </div>
-          <div class="ios-ct-stat-content">
-            <div class="ios-ct-stat-label">Total Tipos</div>
-            <div class="ios-ct-stat-value" id="totalTypesCount">{{ company_types_data.company_types_stats.total_types }}</div>
-            <div class="ios-ct-stat-trend">Categorías disponibles</div>
-          </div>
+          <span class="ios-status-badge {% if company_type.active %}ios-status-available{% else %}ios-status-discontinued{% endif %}">
+            {% if company_type.active %}Activo{% else %}Inactivo{% endif %}
+          </span>
         </div>
-        <div class="ios-ct-stat-shimmer"></div>
-      </div>
-      
-      <div class="ios-ct-stat-card" data-stat="active">
-        <div class="ios-ct-stat-header">
-          <div class="ios-ct-stat-icon ios-ct-stat-icon-green">
-            <i class="fas fa-check-circle"></i>
+        
+        <h3 class="ios-card-title">{{ company_type.name }}</h3>
+        <p class="ios-card-subtitle">{{ company_type.description|truncate(60) }}</p>
+        
+        <div class="ios-card-info">
+          <div class="ios-info-item">
+            <span class="ios-info-label">Empresas</span>
+            <span class="ios-info-value">{{ company_type.companies_count }}</span>
           </div>
-          <div class="ios-ct-stat-content">
-            <div class="ios-ct-stat-label">Activos</div>
-            <div class="ios-ct-stat-value" id="activeTypesCount">{{ company_types_data.company_types_stats.active_types }}</div>
-            <div class="ios-ct-stat-trend">Funcionando correctamente</div>
+          <div class="ios-info-item">
+            <span class="ios-info-label">Estado</span>
+            <span class="ios-info-value">{{ company_type.active and 'Activo' or 'Inactivo' }}</span>
           </div>
-        </div>
-        <div class="ios-ct-stat-shimmer"></div>
-      </div>
-      
-      <div class="ios-ct-stat-card" data-stat="companies">
-        <div class="ios-ct-stat-header">
-          <div class="ios-ct-stat-icon ios-ct-stat-icon-purple">
-            <i class="fas fa-building"></i>
+          <div class="ios-info-item">
+            <span class="ios-info-label">Características</span>
+            <span class="ios-info-value">{{ company_type.features|length if company_type.features else 0 }}</span>
           </div>
-          <div class="ios-ct-stat-content">
-            <div class="ios-ct-stat-label">Total Empresas</div>
-            <div class="ios-ct-stat-value" id="totalCompaniesCount">{{ company_types_data.company_types_stats.total_companies }}</div>
-            <div class="ios-ct-stat-trend">Empresas categorizadas</div>
-          </div>
-        </div>
-        <div class="ios-ct-stat-shimmer"></div>
-      </div>
-      
-      <div class="ios-ct-stat-card" data-stat="average">
-        <div class="ios-ct-stat-header">
-          <div class="ios-ct-stat-icon ios-ct-stat-icon-orange">
-            <i class="fas fa-chart-bar"></i>
-          </div>
-          <div class="ios-ct-stat-content">
-            <div class="ios-ct-stat-label">Promedio por Tipo</div>
-            <div class="ios-ct-stat-value" id="avgCompaniesCount">{{ company_types_data.company_types_stats.avg_companies_per_type }}</div>
-            <div class="ios-ct-stat-trend">Distribución equilibrada</div>
-          </div>
-        </div>
-        <div class="ios-ct-stat-shimmer"></div>
-    </div>
-  </div>
-
-
-  <!-- Enhanced iOS Company Types Grid -->
-    <div class="ios-ct-cards-grid" id="companyTypesGrid">
-      {% for company_type in company_types_data.company_types %}
-      <div class="ios-ct-card company-type-item" data-type-id="{{ company_type.id }}" data-status="{{ company_type.active|lower }}">
-        <div class="ios-ct-card-header">
-          <div class="ios-ct-card-icon-container">
-            <div class="ios-ct-card-icon" style="background: {{ company_type.color }}; box-shadow: 0 8px 20px {{ company_type.color }}40;">
-              <i class="{{ company_type.icon }}"></i>
-            </div>
-            <div class="ios-ct-card-meta">
-              <span class="ios-ct-status-badge {% if company_type.active %}ios-ct-status-active{% else %}ios-ct-status-inactive{% endif %}">
-                {% if company_type.active %}Activo{% else %}Inactivo{% endif %}
-              </span>
-            </div>
-          </div>
-          <div class="ios-ct-card-actions">
-            <button class="ios-ct-card-btn edit" onclick="editCompanyType('{{ company_type.id }}')" title="Editar">
-              <i class="fas fa-edit"></i>
-            </button>
+          <div class="ios-info-item">
+            <span class="ios-info-label">Creado</span>
+            <span class="ios-info-value">{{ company_type.created_at }}</span>
           </div>
         </div>
         
-        <h3 class="ios-ct-card-title">{{ company_type.name }}</h3>
-        <p class="ios-ct-card-description">{{ company_type.description }}</p>
-        
-        <div class="ios-ct-card-stats">
-          <div class="ios-ct-stat-item">
-            <span class="ios-ct-stat-label">Empresas</span>
-            <span class="ios-ct-stat-value">{{ company_type.companies_count }}</span>
-          </div>
-          <div class="ios-ct-stat-item">
-            <span class="ios-ct-stat-label">Creado</span>
-            <span class="ios-ct-stat-value">{{ company_type.created_at }}</span>
-          </div>
-        </div>
-        
-        <div class="ios-ct-card-features">
-          <div class="ios-ct-features-label">Características</div>
-          <div class="ios-ct-features-list">
-            {% if company_type.features and company_type.features|length > 0 %}
-              {% for feature in company_type.features[:3] %}
-              <span class="ios-ct-feature-tag">{{ feature }}</span>
-              {% endfor %}
-              {% if company_type.features|length > 3 %}
-              <span class="ios-ct-feature-tag">+{{ company_type.features|length - 3 }}</span>
-              {% endif %}
-            {% else %}
-              <span class="ios-ct-feature-tag ios-ct-feature-empty">No definidas</span>
-            {% endif %}
-          </div>
-        </div>
-        
-        <div class="ios-ct-card-actions-bottom">
-          <button class="ios-ct-action-btn ios-ct-action-btn-secondary" onclick="viewCompanyType('{{ company_type.id }}')">
+        <div class="ios-card-actions">
+          <button class="ios-card-btn" onclick="viewCompanyType('{{ company_type.id }}')" title="Ver detalles">
             <i class="fas fa-eye"></i>
-            Ver Detalles
           </button>
-          {% if company_type.companies_count > 0 %}
-          <button class="ios-ct-action-btn ios-ct-action-btn-info" onclick="viewCompaniesOfType('{{ company_type.id }}', '{{ company_type.name }}')" title="Ver empresas de este tipo">
-            <i class="fas fa-building"></i>
-            Ver Empresas ({{ company_type.companies_count }})
+          <button class="ios-card-btn ios-card-btn-primary" onclick="editCompanyType('{{ company_type.id }}')" title="Editar">
+            <i class="fas fa-edit"></i>
           </button>
-          {% endif %}
-          <button class="ios-ct-action-btn ios-ct-action-btn-primary" onclick="toggleStatus('{{ company_type.id }}', {{ company_type.active|lower }})">
-            <i class="fas fa-{% if company_type.active %}pause{% else %}play{% endif %}"></i>
-            {% if company_type.active %}Desactivar{% else %}Activar{% endif %}
+          <button class="ios-card-btn {{ company_type.active and 'ios-card-btn-warning' or 'ios-card-btn-success' }}" 
+                  onclick="toggleStatus('{{ company_type.id }}', {{ company_type.active|lower }})" 
+                  title="{{ company_type.active and 'Desactivar' or 'Activar' }}">
+            <i class="fas {{ company_type.active and 'fa-power-off' or 'fa-play' }}"></i>
           </button>
         </div>
         
-        <div class="ios-ct-card-shimmer"></div>
+        <!-- iOS Card Shimmer Effect -->
+        <div class="ios-card-shimmer"></div>
       </div>
       {% endfor %}
     </div>
@@ -370,8 +360,104 @@
 
 {% block extra_js %}
 {{ super() }}
-<!-- Company Types GSAP Animations -->
-<script src="{{ url_for('static', filename='js/company-types-animations.js') }}"></script>
+<!-- Hardware GSAP Animations - SAME AS HARDWARE -->
+<script src="{{ url_for('static', filename='js/hardware-animations.js') }}"></script>
+<!-- Performance optimizer específico para tipos de empresa -->
+<script>
+  // Función GLOBAL para aplicar optimizaciones a una tarjeta específica (usando GSAP global)
+  function applyCardOptimizations(card) {
+    // Usar las animaciones GSAP globales ya disponibles
+    if (window.HardwareAnimations) {
+      // Las animaciones de hover ya están configuradas en hardware-animations.js
+      console.log('🔧 Optimizaciones GSAP aplicadas a tarjeta individual');
+      return;
+    }
+    
+    // Fallback para compatibilidad si GSAP no está disponible
+    const shimmer = card.querySelector('.ios-card-shimmer');
+    if (shimmer && !window.GSAPUtils?.prefersReducedMotion()) {
+      shimmer.style.opacity = '0';
+      shimmer.style.transform = 'rotate(45deg) translateX(-100%)';
+      console.log('🔧 Fallback aplicado a tarjeta individual');
+    }
+  }
+  
+  // Función para aplicar optimizaciones a tarjetas ya existentes
+  function applyOptimizationsToExistingCards() {
+    const existingCards = document.querySelectorAll('.ios-hardware-card');
+    existingCards.forEach(card => {
+      applyCardOptimizations(card);
+    });
+    console.log(`🔧 Optimizaciones aplicadas a ${existingCards.length} tarjetas existentes`);
+  }
+  
+  // Función para forzar visibilidad de elementos si GSAP falla
+  function ensureContentVisibility() {
+    const elements = [
+      '.ios-header-container',
+      '.ios-stats-grid .ios-stat-card',
+      '.ios-hardware-grid .ios-hardware-card'
+    ];
+    
+    elements.forEach(selector => {
+      const elementsList = document.querySelectorAll(selector);
+      elementsList.forEach(el => {
+        el.style.opacity = '1';
+        el.style.transform = 'none';
+        el.style.visibility = 'visible';
+      });
+    });
+    
+    console.log('👁️ Forzada visibilidad de elementos');
+  }
+  
+  document.addEventListener('DOMContentLoaded', function() {
+    console.log('🛠️ Company Types page loaded with GSAP optimizations');
+    
+    // Asegurar que el contenido sea visible inmediatamente
+    ensureContentVisibility();
+    
+    // Intentar usar animaciones de hardware
+    if (window.HardwareAnimations) {
+      console.log('✅ Usando HardwareAnimations para tipos de empresa');
+      window.HardwareAnimations.init();
+    } else {
+      console.warn('⚠️ HardwareAnimations no disponible, usando fallback');
+      // Fallback - asegurar que todo sea visible
+      setTimeout(ensureContentVisibility, 100);
+    }
+    
+    // Observer para tarjetas que se añaden dinámicamente
+    const companyTypesGrid = document.getElementById('companyTypesGrid');
+    if (companyTypesGrid) {
+      const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          mutation.addedNodes.forEach(function(node) {
+            if (node.nodeType === 1 && node.classList.contains('ios-hardware-card')) {
+              console.log('👀 Nueva tarjeta detectada, aplicando animación GSAP...');
+              
+              // Usar animación GSAP para nueva tarjeta
+              if (window.HardwareAnimations) {
+                window.HardwareAnimations.animateNewCard(node);
+              } else {
+                applyCardOptimizations(node);
+              }
+            }
+          });
+        });
+      });
+      
+      observer.observe(companyTypesGrid, {
+        childList: true,
+        subtree: true
+      });
+      
+      console.log('👀 Observer configurado para detectar nuevas tarjetas');
+    }
+    
+    console.log('✅ Company Types page optimizations applied successfully');
+  });
+</script>
 {% endblock %}
 
 {% block page_js %}
@@ -386,12 +472,30 @@ let currentFeatures = [];
 document.addEventListener('DOMContentLoaded', function() {
   console.log('🚀 Initializing company types with simple filtering');
   
+  // Forzar visibilidad inmediata para evitar problemas
+  const forceVisibility = () => {
+    const allElements = document.querySelectorAll('.ios-header-container, .ios-stat-card, .ios-hardware-card, .company-type-item');
+    allElements.forEach(el => {
+      el.style.opacity = '1';
+      el.style.transform = 'none';
+      el.style.visibility = 'visible';
+    });
+    console.log(`👁️ Forzada visibilidad de ${allElements.length} elementos`);
+  };
+  
+  // Ejecutar inmediatamente
+  forceVisibility();
+  
   // Get initial state from URL parameter
   const showInactive = {{ 'true' if include_inactive else 'false' }};
   console.log(`🔧 Show inactive: ${showInactive}`);
   
   // Apply initial filter - by default show only active types
-  filterTypesByActiveStatus(showInactive);
+  setTimeout(() => {
+    filterTypesByActiveStatus(showInactive);
+    // Forzar visibilidad nuevamente después del filtro
+    forceVisibility();
+  }, 100);
 });
 
 // Modal functionality - EXACT HARDWARE STYLE
@@ -956,21 +1060,21 @@ function toggleIncludeInactive() {
   
   console.log(`🔄 Toggle: Currently showing inactive: ${currentlyShowingInactive}, New: ${newShowInactive}`);
   
-  // Update button appearance
+  // Update button appearance - HARDWARE STYLE
   const button = event.target.closest('button');
   const buttonIcon = button.querySelector('i');
   const buttonText = button.querySelector('span');
   
   if (newShowInactive) {
     // Show all types
-    button.classList.remove('ios-ct-action-btn-secondary');
-    button.classList.add('ios-ct-action-btn-warning');
+    button.classList.remove('ios-action-btn-secondary');
+    button.classList.add('ios-action-btn-warning');
     buttonIcon.className = 'fas fa-eye-slash';
     buttonText.textContent = 'Solo Activos';
   } else {
     // Show only active
-    button.classList.remove('ios-ct-action-btn-warning');
-    button.classList.add('ios-ct-action-btn-secondary');
+    button.classList.remove('ios-action-btn-warning');
+    button.classList.add('ios-action-btn-secondary');
     buttonIcon.className = 'fas fa-eye';
     buttonText.textContent = 'Ver Todos';
   }
@@ -1001,10 +1105,12 @@ function filterTypesByActiveStatus(showInactive) {
     
     // Simple logic: show if active OR if we want to show inactive too
     if (isActive || showInactive) {
-      card.style.display = 'block';
+      card.style.display = '';
+      card.classList.remove('hidden');
       visibleCount++;
     } else {
       card.style.display = 'none';
+      card.classList.add('hidden');
     }
   });
   
@@ -1014,9 +1120,9 @@ function filterTypesByActiveStatus(showInactive) {
   console.log(`✨ Filter applied: ${visibleCount} types visible`);
 }
 
-// Simple header badge update
+// Simple header badge update - HARDWARE STYLE
 function updateHeaderBadge(showInactive, visibleCount) {
-  const headerSubtitle = document.querySelector('.ios-ct-header-subtitle');
+  const headerSubtitle = document.querySelector('.ios-header-subtitle');
   if (headerSubtitle) {
     const badgeSpan = headerSubtitle.querySelector('span');
     if (badgeSpan) {
@@ -1104,16 +1210,16 @@ function handleFeatureKeyPress(event) {
   }
 }
 
-// Color input synchronization
-document.getElementById('typeColor').addEventListener('change', function() {
-  document.getElementById('typeColorHex').value = this.value;
-});
+// Color input synchronization - COMMENTED OUT (elements don't exist)
+// document.getElementById('typeColor').addEventListener('change', function() {
+//   document.getElementById('typeColorHex').value = this.value;
+// });
 
-document.getElementById('typeColorHex').addEventListener('input', function() {
-  if (/^#[0-9A-F]{6}$/i.test(this.value)) {
-    document.getElementById('typeColor').value = this.value;
-  }
-});
+// document.getElementById('typeColorHex').addEventListener('input', function() {
+//   if (/^#[0-9A-F]{6}$/i.test(this.value)) {
+//     document.getElementById('typeColor').value = this.value;
+//   }
+// });
 
 // API Helper functions
 async function callAPI(method, endpoint, data = null) {
@@ -1131,7 +1237,7 @@ async function callAPI(method, endpoint, data = null) {
   
   try {
     console.log(`🔄 API Call: ${method} ${endpoint}`);
-    const response = await fetch(`{{ api_url }}${endpoint}`, options);
+    const response = await fetch(`/proxy${endpoint}`, options);
     const result = await response.json();
     
     console.log(`📡 API Response: ${response.status}`, result);
@@ -1242,34 +1348,61 @@ function showNotification(message, type = 'info') {
   showEnhancedNotification(message, type);
 }
 
-// Form submission with real API calls
+// Form submission with real API calls - FIXED
 document.getElementById('companyTypeForm').addEventListener('submit', async function(e) {
   e.preventDefault();
   
+  console.log('🚀 Form submission started');
+  
+  // Validation
+  const typeName = document.getElementById('typeName');
+  const typeDescription = document.getElementById('typeDescription');
+  const typeStatus = document.getElementById('typeStatus');
   const submitBtn = document.querySelector('#submitButtonText');
+  
+  if (!typeName || !typeDescription || !typeStatus || !submitBtn) {
+    console.error('❌ Form elements missing:', {
+      typeName: !!typeName,
+      typeDescription: !!typeDescription,
+      typeStatus: !!typeStatus,
+      submitBtn: !!submitBtn
+    });
+    showEnhancedNotification('Error: Elementos del formulario no encontrados', 'error');
+    return;
+  }
+  
+  if (!typeName.value.trim() || !typeDescription.value.trim()) {
+    showEnhancedNotification('Por favor completa todos los campos obligatorios', 'error');
+    return;
+  }
+  
   const originalText = submitBtn.textContent;
   submitBtn.textContent = 'Guardando...';
   
   const formData = {
-    nombre: document.getElementById('typeName').value,
-    descripcion: document.getElementById('typeDescription').value,
-    caracteristicas: currentFeatures,
-    activo: document.getElementById('typeStatus').value === 'true',
-    creado_por: '{{ current_user._id if current_user else "" }}' // Get from session
+    nombre: typeName.value.trim(),
+    descripcion: typeDescription.value.trim(),
+    caracteristicas: currentFeatures || [],
+    activo: typeStatus.value === 'true'
   };
+  
+  console.log('📤 Sending data:', formData);
   
   try {
     let result;
     if (editingCompanyType) {
       // Update existing type
+      console.log('🔄 Updating existing type:', editingCompanyType);
       result = await callAPI('PUT', `/api/tipos_empresa/${editingCompanyType}`, formData);
       showClientUpdateModal('El tipo de empresa se ha actualizado exitosamente.');
     } else {
       // Create new type
+      console.log('✨ Creating new type');
       result = await callAPI('POST', '/api/tipos_empresa', formData);
       showClientUpdateModal('El nuevo tipo de empresa se ha creado exitosamente.');
     }
     
+    console.log('✅ Operation successful:', result);
     closeModal();
     
     // Reload page to show changes
@@ -1278,6 +1411,7 @@ document.getElementById('companyTypeForm').addEventListener('submit', async func
     }, 1500);
     
   } catch (error) {
+    console.error('💥 Form submission error:', error);
     showEnhancedNotification(error.message, 'error');
     submitBtn.textContent = originalText;
   }
