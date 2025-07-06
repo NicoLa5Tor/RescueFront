@@ -20,21 +20,34 @@ from dashboard_data_providers import (
     get_company_types_data,
 )
 
-# Cargar variables de entorno
-load_dotenv()
+# Importar configuración centralizada
+from config import (
+    BACKEND_API_URL, 
+    PROXY_PREFIX, 
+    SECRET_KEY, 
+    SESSION_LIFETIME,
+    DEBUG_MODE,
+    CORS_ORIGINS,
+    validate_config,
+    print_config
+)
+
+# Validar configuración al inicio
+validate_config()
+print_config()
 
 # Crear la aplicación Flask
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-secret-key-change-in-production')
+app.config['SECRET_KEY'] = SECRET_KEY
 
+# Configurar sesiones temporales (no persistentes)
+app.config['PERMANENT_SESSION_LIFETIME'] = SESSION_LIFETIME
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SECURE'] = False  # True en producción con HTTPS
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 
 # Habilitar CORS
-CORS(app, supports_credentials=True)
-
-# Configuración del backend API JWT
-BACKEND_API_URL = os.getenv('API_BASE_URL', 'http://localhost:5002')
-# Prefijo interno para las llamadas desde el frontend (proxy)
-PROXY_PREFIX = '/proxy'
+CORS(app, supports_credentials=True, origins=CORS_ORIGINS)
 
 # Helper function to check roles
 def require_role(allowed_roles):
@@ -75,9 +88,28 @@ def require_role(allowed_roles):
         return decorated_function
     return decorator
 
+# Validar conectividad con backend
+def validate_backend_connection():
+    """Valida si el backend está disponible"""
+    try:
+        client = EndpointTestClient(BACKEND_API_URL)
+        response = client.health()
+        return response.ok
+    except Exception as e:
+        print(f"❌ Backend no disponible: {e}")
+        return False
+
 # Inicializar cliente de API antes de cada request
 @app.before_request
 def attach_api_client():
+    # Validar conectividad con backend para rutas protegidas (solo admin routes)
+    protected_routes = ['admin_dashboard', 'admin_users', 'admin_empresas', 'admin_stats', 'admin_hardware']
+    if request.endpoint in protected_routes:
+        if not validate_backend_connection():
+            print("❌ Backend no disponible, limpiando sesión")
+            session.clear()
+            return redirect(url_for('login', error='backend_unavailable'))
+    
     token = session.get('token')
     g.api_client = EndpointTestClient(BACKEND_API_URL, token)
 
@@ -90,6 +122,17 @@ def index():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     """Página de login con manejo de sesión en servidor"""
+    # Verificar si el backend está disponible
+    if not validate_backend_connection():
+        error = 'El servidor no está disponible. Intenta más tarde.'
+        return render_template('login.html', api_url=PROXY_PREFIX, error=error)
+    
+    # Obtener mensaje de error desde URL params
+    error_param = request.args.get('error')
+    initial_error = None
+    if error_param == 'backend_unavailable':
+        initial_error = 'La sesión expiró porque el servidor no está disponible.'
+    
     if request.method == 'POST':
         usuario = request.form.get('usuario')
         password = request.form.get('password')
@@ -99,6 +142,8 @@ def login():
             data = res.json()
             session['token'] = data.get('token')
             session['user'] = data.get('user')
+            # NO hacer la sesión permanente - será temporal por defecto
+            session.permanent = False
             
             # Redirect based on user role
             user_role = data.get('user', {}).get('role')
@@ -108,7 +153,8 @@ def login():
                 return redirect(url_for('admin_dashboard'))
         error = res.json().get('message', 'Credenciales inválidas')
         return render_template('login.html', api_url=PROXY_PREFIX, error=error)
-    return render_template('login.html', api_url=PROXY_PREFIX)
+    
+    return render_template('login.html', api_url=PROXY_PREFIX, error=initial_error)
 
 @app.route('/logout')
 def logout():
@@ -117,17 +163,53 @@ def logout():
     return redirect(url_for('login'))
 
 # Proxy de todas las peticiones hacia el backend
-@app.route(f'{PROXY_PREFIX}/<path:endpoint>', methods=['GET', 'POST', 'PUT', 'DELETE'])
+@app.route(f'{PROXY_PREFIX}/<path:endpoint>', methods=['GET', 'POST', 'PUT', 'DELETE', 'PATCH'])
 def proxy_api(endpoint):
     if 'token' not in session:
         return jsonify({'error': 'No autenticado'}), 401
 
+    print(f"🔄 PROXY: {request.method} /{endpoint} - Token presente: {bool(session.get('token'))}")
+    
+    # Debug especial para toggle-status
+    if 'toggle-status' in endpoint:
+        print(f"⚡ TOGGLE DEBUG:")
+        print(f"  - Endpoint completo: /{endpoint}")
+        print(f"  - Método: {request.method}")
+        print(f"  - Headers: {dict(request.headers)}")
+        print(f"  - Token en sesión: {session.get('token')[:20] if session.get('token') else 'NO TOKEN'}...")
+    
     data = None
-    if request.method in ['POST', 'PUT']:
+    if request.method in ['POST', 'PUT', 'PATCH']:
         data = request.get_json(silent=True)
+        print(f"📦 PROXY: Datos enviados - {data}")
 
-    resp = g.api_client._request(request.method, f'/{endpoint}', params=request.args, data=data)
-    return (resp.content, resp.status_code, resp.headers.items())
+    try:
+        resp = g.api_client._request(request.method, f'/{endpoint}', params=request.args, data=data)
+        print(f"📡 PROXY: Respuesta del backend - Status: {resp.status_code}, Content-Length: {len(resp.content) if resp.content else 0}")
+        
+        # Log del contenido para endpoints críticos
+        if endpoint in ['api/hardware', 'api/empresas', 'api/hardware-types'] or 'toggle-status' in endpoint:
+            try:
+                content_json = resp.json()
+                print(f"📋 PROXY: Contenido de /{endpoint}:")
+                print(f"  - Success: {content_json.get('success', 'N/A')}")
+                print(f"  - Count: {content_json.get('count', 'N/A')}")
+                print(f"  - Data length: {len(content_json.get('data', [])) if content_json.get('data') else 0}")
+                if content_json.get('data') and len(content_json.get('data', [])) > 0:
+                    first_item = content_json['data'][0]
+                    print(f"  - Primer elemento: {list(first_item.keys()) if hasattr(first_item, 'keys') else type(first_item)}")
+                    
+                # Log especial para toggle-status
+                if 'toggle-status' in endpoint:
+                    print(f"  - Message: {content_json.get('message', 'N/A')}")
+                    print(f"  - Errors: {content_json.get('errors', 'N/A')}")
+            except Exception as e:
+                print(f"🚨 PROXY: No se pudo parsear JSON de /{endpoint}: {e}")
+        
+        return (resp.content, resp.status_code, resp.headers.items())
+    except Exception as e:
+        print(f"💥 PROXY ERROR en /{endpoint}: {e}")
+        return jsonify({'error': 'Error del servidor'}), 500
 
 # ========== RUTAS DEL DASHBOARD - PROTEGIDAS POR SESION Y ROL ==========
 

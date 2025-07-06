@@ -54,6 +54,10 @@ class EndpointTestClient {
         return this._request('GET', '/api/hardware');
     }
 
+    async get_hardware_details(hardwareId) {
+        return this._request('GET', `/api/hardware/${hardwareId}`);
+    }
+
     async get_hardware(hardwareId) {
         return this._request('GET', `/api/hardware/${hardwareId}`);
     }
@@ -72,6 +76,15 @@ class EndpointTestClient {
 
     async get_hardware_by_empresa(empresaId) {
         return this._request('GET', `/api/hardware/empresa/${empresaId}`);
+    }
+
+    // New endpoints for hardware including inactive
+    async get_hardware_list_including_inactive() {
+        return this._request('GET', '/api/hardware/all-including-inactive');
+    }
+
+    async get_hardware_by_empresa_including_inactive(empresaId) {
+        return this._request('GET', `/api/hardware/empresa/${empresaId}/including-inactive`);
     }
 
     // Hardware types endpoints

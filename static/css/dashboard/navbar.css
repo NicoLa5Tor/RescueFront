@@ -287,14 +287,12 @@
 .navbar__logo-title {
   font-size: var(--text-sm);
   font-weight: var(--font-bold);
-  color: #fff !important;
   line-height: var(--leading-tight);
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   /* Smooth text transitions */
-  transition: color var(--transition-fast);
 }
 
 .navbar__logo-subtitle {

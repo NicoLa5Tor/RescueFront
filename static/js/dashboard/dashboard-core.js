@@ -32,12 +32,7 @@ class DashboardCore {
             delay: 0.4,
         });
 
-        gsap.from('.navbar', {
-            y: -100,
-            opacity: 0,
-            duration: 0.8,
-            ease: 'power3.out',
-        });
+      
     }
 
     hideLoadingState() {

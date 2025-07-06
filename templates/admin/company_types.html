@@ -2,6 +2,11 @@
 
 {% block title %}Tipos de Empresa - Sistema Multi-Tenant{% endblock %}
 
+{% block extra_css %}
+{{ super() }}
+<link href="{{ url_for('static', filename='css/modals.css') }}" rel="stylesheet">
+{% endblock %}
+
 {% block main_content %}
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
   <!-- Header -->
@@ -148,14 +153,17 @@
 </div>
 
 <!-- Create/Edit Company Type Modal -->
-<div id="companyTypeModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
-  <div class="flex items-center justify-center min-h-screen px-4">
-    <div class="fixed inset-0 bg-black bg-opacity-50" onclick="closeModal()"></div>
-    <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full mx-auto">
-      <div class="p-6 border-b border-gray-200 dark:border-gray-700">
-        <h3 class="text-lg font-semibold text-black dark:text-white" id="modalTitle">Nuevo Tipo de Empresa</h3>
-      </div>
-      <form id="companyTypeForm" class="p-6">
+<div id="companyTypeModal" class="modal-backdrop hidden">
+  <div class="modal-container max-w-2xl">
+    <div class="modal-header">
+      <h3 class="modal-title" id="modalTitle">Nuevo Tipo de Empresa</h3>
+      <button type="button" class="modal-close" onclick="closeModal()" aria-label="Cerrar modal">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <div class="modal-body!bg-[#8b5cf6]" style="border: 3px solid #000 !important;">
+      <form id="companyTypeForm">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nombre</label>
@@ -221,33 +229,43 @@
           </div>
         </div>
         
-        <div class="flex justify-end space-x-3 mt-6">
-          <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>
-          <button type="submit" class="btn-primary">
-            <span id="submitButtonText">Crear Tipo</span>
-          </button>
-        </div>
       </form>
+    </div>
+    
+    <div class="modal-footer">
+      <button type="button" class="modal-btn modal-btn-secondary" onclick="closeModal()">
+        <i class="fas fa-times"></i>
+        Cancelar
+      </button>
+      <button type="submit" form="companyTypeForm" class="modal-btn modal-btn-primary">
+        <i class="fas fa-save"></i>
+        <span id="submitButtonText">Crear Tipo</span>
+      </button>
     </div>
   </div>
 </div>
 
 <!-- View Details Modal -->
-<div id="detailsModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
-  <div class="flex items-center justify-center min-h-screen px-4">
-    <div class="fixed inset-0 bg-black bg-opacity-50" onclick="closeDetailsModal()"></div>
-    <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-lg w-full mx-auto">
-      <div class="p-6 border-b border-gray-200 dark:border-gray-700">
-        <h3 class="text-lg font-semibold text-black dark:text-white" id="detailsTitle">Detalles del Tipo</h3>
+<div id="detailsModal" class="modal-backdrop hidden">
+  <div class="modal-container max-w-lg">
+    <div class="modal-header">
+      <h3 class="modal-title" id="detailsTitle">Detalles del Tipo</h3>
+      <button type="button" class="modal-close" onclick="closeDetailsModal()" aria-label="Cerrar modal">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <div class="modal-body">
+      <div id="detailsContent">
+        <!-- Details will be loaded here -->
       </div>
-      <div class="p-6">
-        <div id="detailsContent">
-          <!-- Details will be loaded here -->
-        </div>
-        <div class="flex justify-end mt-6">
-          <button class="btn-secondary" onclick="closeDetailsModal()">Cerrar</button>
-        </div>
-      </div>
+    </div>
+    
+    <div class="modal-footer">
+      <button type="button" class="modal-btn modal-btn-secondary" onclick="closeDetailsModal()">
+        <i class="fas fa-times"></i>
+        Cerrar
+      </button>
     </div>
   </div>
 </div>
@@ -266,6 +284,9 @@ function openCreateModal() {
   document.getElementById('submitButtonText').textContent = 'Crear Tipo';
   document.getElementById('companyTypeForm').reset();
   document.getElementById('featuresList').innerHTML = '';
+  
+  // Prevent body scroll
+  document.body.classList.add('modal-open');
   document.getElementById('companyTypeModal').classList.remove('hidden');
 }
 
@@ -286,11 +307,15 @@ function editCompanyType(id) {
   currentFeatures = ['Desarrollo de Software', 'Consultoría IT', 'Soporte Técnico'];
   updateFeaturesList();
   
+  // Prevent body scroll
+  document.body.classList.add('modal-open');
   document.getElementById('companyTypeModal').classList.remove('hidden');
 }
 
 function closeModal() {
   document.getElementById('companyTypeModal').classList.add('hidden');
+  // Restore body scroll
+  document.body.classList.remove('modal-open');
   editingCompanyType = null;
   currentFeatures = [];
 }
@@ -335,11 +360,16 @@ function viewCompanyType(id) {
       </div>
     </div>
   `;
+  
+  // Prevent body scroll
+  document.body.classList.add('modal-open');
   document.getElementById('detailsModal').classList.remove('hidden');
 }
 
 function closeDetailsModal() {
   document.getElementById('detailsModal').classList.add('hidden');
+  // Restore body scroll
+  document.body.classList.remove('modal-open');
 }
 
 function deleteCompanyType(id) {
@@ -441,6 +471,21 @@ document.getElementById('companyTypeModal').addEventListener('click', function(e
 document.getElementById('detailsModal').addEventListener('click', function(e) {
   if (e.target === this) {
     closeDetailsModal();
+  }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    // Check which modal is open and close it
+    const companyTypeModal = document.getElementById('companyTypeModal');
+    const detailsModal = document.getElementById('detailsModal');
+    
+    if (!companyTypeModal.classList.contains('hidden')) {
+      closeModal();
+    } else if (!detailsModal.classList.contains('hidden')) {
+      closeDetailsModal();
+    }
   }
 });
 </script>

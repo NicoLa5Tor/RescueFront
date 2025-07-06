@@ -5,6 +5,326 @@
 {% block extra_css %}
 {{ super() }}
 <link href="{{ url_for('static', filename='css/modals.css') }}" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<style>
+  .form-input-readonly {
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    background-color: #f9fafb;
+    color: #374151;
+    font-size: 0.875rem;
+    min-height: 1.5rem;
+  }
+  
+  .dark .form-input-readonly {
+    background-color: #374151;
+    border-color: #4b5563;
+    color: #e5e7eb;
+  }
+  
+  /* Enhanced Toggle Modal Styles */
+  .toggle-modal-backdrop {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.75) !important;
+    backdrop-filter: blur(8px);
+    z-index: 9999 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 2rem !important;
+  }
+  
+  .toggle-modal-backdrop.hidden {
+    display: none !important;
+  }
+  
+  .toggle-modal-container {
+    border: 3px solid var(--border-color, #e5e7eb) !important;
+    border-radius: 20px;
+    padding: 3rem 2.5rem !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4) !important;
+    max-width: 450px;
+    width: 90%;
+    max-height: 80vh !important;
+    text-align: center;
+    position: relative;
+    z-index: 10000 !important;
+    transform: translateY(0) !important;
+  }
+  
+  /* Dark mode specific */
+  .dark .toggle-modal-container {
+    background: var(--bg-secondary, #1f2937) !important;
+    border-color: var(--border-color, #374151) !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8) !important;
+  }
+  
+  .toggle-modal-container::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transform: rotate(45deg);
+    animation: shimmer 3s infinite;
+  }
+  
+  @keyframes shimmer {
+    0% { transform: translateX(-100%) rotate(45deg); }
+    100% { transform: translateX(100%) rotate(45deg); }
+  }
+  
+  .toggle-modal-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin: 0 auto 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3) !important;
+  }
+  
+  .toggle-modal-icon.activate {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+  }
+  
+  .toggle-modal-icon.deactivate {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+  }
+  
+  .toggle-modal-title {
+    font-size: 1.75rem !important;
+    font-weight: bold !important;
+    color: var(--text-primary, #111827) !important;
+    margin-bottom: 1.25rem !important;
+    position: relative;
+    z-index: 10001 !important;
+  }
+  
+  .dark .toggle-modal-title {
+    color: var(--text-primary, #ffffff) !important;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5) !important;
+  }
+  
+  .toggle-modal-message {
+    color: var(--text-secondary, #374151) !important;
+    font-size: 1.1rem !important;
+    margin-bottom: 2.5rem !important;
+    position: relative;
+    z-index: 10001 !important;
+    line-height: 1.6 !important;
+    padding: 0 1rem !important;
+  }
+  
+  .dark .toggle-modal-message {
+    color: var(--text-secondary, #e2e8f0) !important;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5) !important;
+  }
+  
+  .toggle-modal-buttons {
+    display: flex !important;
+    gap: 1rem !important;
+    justify-content: center !important;
+    position: relative;
+    z-index: 10001 !important;
+  }
+  
+  .toggle-btn {
+    padding: 1rem 2rem !important;
+    border: none !important;
+    border-radius: 12px !important;
+    font-weight: 600 !important;
+    font-size: 1rem !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    min-width: 120px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.5rem !important;
+  }
+  
+  .toggle-btn-confirm {
+    background: #10b981 !important;
+    color: #ffffff !important;
+    border: 2px solid #059669 !important;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3) !important;
+  }
+  
+  .toggle-btn-confirm:hover {
+    background: #059669 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4) !important;
+  }
+  
+  .toggle-btn-cancel {
+    background: #6b7280 !important;
+    color: #ffffff !important;
+    border: 2px solid #4b5563 !important;
+    box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3) !important;
+  }
+  
+  .toggle-btn-cancel:hover {
+    background: #4b5563 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 16px rgba(107, 114, 128, 0.4) !important;
+  }
+  
+  /* Fallback styles for modal visibility */
+  #toggleHardwareModal {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  }
+  
+  #toggleHardwareModal * {
+    box-sizing: border-box !important;
+  }
+  
+  #toggleHardwareModal .toggle-modal-container {
+    min-height: 300px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+  
+  /* Force visibility for debugging */
+  .debug-visible {
+  
+    color: white !important;
+    border: 5px solid yellow !important;
+    padding: 20px !important;
+    z-index: 99999 !important;
+  }
+  
+  /* Client Update Modal Styles (Separate from Toggle Modal) */
+  .client-update-backdrop {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.85) !important;
+    backdrop-filter: blur(8px);
+    z-index: 9998 !important;
+    display: flex !important;
+    align-items: flex-start !important;
+    justify-content: center !important;
+    padding-top: 8vh !important;
+  }
+  
+  .client-update-backdrop.hidden {
+    display: none !important;
+  }
+  
+  .client-update-container {
+    background: #065f46 !important;
+    border: 3px solid #10b981 !important;
+    border-radius: 20px;
+    padding: 2.5rem 2rem 2.5rem 2rem !important;
+    box-shadow: 0 25px 50px -12px rgba(16, 185, 129, 0.5) !important;
+    max-width: 420px;
+    width: 90%;
+    max-height: 70vh !important;
+    text-align: center;
+    position: relative;
+    z-index: 9999 !important;
+    margin: 1rem auto !important;
+    transform: translateY(-20px) !important;
+  }
+  
+  /* Responsive adjustments for client update modal */
+  @media (max-height: 600px) {
+    .client-update-backdrop {
+      padding-top: 5vh !important;
+    }
+    .client-update-container {
+      transform: translateY(-10px) !important;
+    }
+  }
+  
+  @media (min-height: 800px) {
+    .client-update-backdrop {
+      padding-top: 12vh !important;
+    }
+    .client-update-container {
+      transform: translateY(-30px) !important;
+    }
+  }
+  
+  .client-update-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    margin: 0 auto 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    position: relative;
+    z-index: 1;
+    background: linear-gradient(135deg, #10b981, #059669) !important;
+    color: white !important;
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4) !important;
+  }
+  
+  .client-update-title {
+    font-size: 1.6rem !important;
+    font-weight: bold !important;
+    color: #ffffff !important;
+    margin-bottom: 1rem !important;
+    position: relative;
+    z-index: 10001 !important;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5) !important;
+  }
+  
+  .client-update-message {
+    color: #d1fae5 !important;
+    font-size: 1rem !important;
+    margin-bottom: 2rem !important;
+    position: relative;
+    z-index: 10001 !important;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5) !important;
+    line-height: 1.5 !important;
+    padding: 0 0.5rem !important;
+  }
+  
+  .client-update-button {
+    padding: 1rem 2rem !important;
+    border: none !important;
+    border-radius: 12px !important;
+    font-weight: 600 !important;
+    font-size: 1rem !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    min-width: 120px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.5rem !important;
+    color: #065f46 !important;
+    border: 2px solid #10b981 !important;
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3) !important;
+    margin: 0 auto !important;
+  }
+  
+  .client-update-button:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.4) !important;
+  }
+</style>
 {% endblock %}
 
 {% block main_content %}
@@ -13,8 +333,8 @@
   <div class="mb-8">
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
       <div>
-        <h1 class="text-3xl font-bold text-black dark:text-white">Gestión de Hardware</h1>
-        <p class="text-gray-600 dark:text-gray-400 mt-2">Administra el inventario de hardware disponible</p>
+        <h1 class="text-3xl font-bold text-white">Gestión de Hardware</h1>
+        <p class="text-gray-600 text-white mt-2">Administra el inventario de hardware disponible</p>
       </div>
       <div class="flex space-x-3">
         <button class="btn-secondary" onclick="toggleView()">
@@ -82,7 +402,7 @@
 
   <!-- Filters -->
   <div class="glass-card p-6 mb-8">
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
       <div>
         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Buscar</label>
         <input type="text" id="searchInput" placeholder="Buscar hardware..." 
@@ -92,14 +412,7 @@
         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tipo</label>
         <select id="typeFilter" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-black dark:text-white">
           <option value="">Todos los tipos</option>
-          <option value="Servidor">Servidor</option>
-          <option value="Router">Router</option>
-          <option value="Switch">Switch</option>
-          <option value="Firewall">Firewall</option>
-          <option value="Access Point">Access Point</option>
-          <option value="Storage">Storage</option>
-          <option value="Monitor">Monitor</option>
-          <option value="Laptop">Laptop</option>
+          <!-- Options will be loaded dynamically from backend -->
         </select>
       </div>
       <div>
@@ -109,6 +422,14 @@
           <option value="available">Disponible</option>
           <option value="out_of_stock">Sin Stock</option>
           <option value="discontinued">Descontinuado</option>
+          <option value="inactive">Inactivo</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Mostrar</label>
+        <select id="includeInactiveFilter" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-black dark:text-white">
+          <option value="active">Solo Activos</option>
+          <option value="all">Todos (Activos + Inactivos)</option>
         </select>
       </div>
       <div class="flex items-end">
@@ -166,15 +487,9 @@
             <i class="fas fa-edit"></i>
           </button>
           <button class="flex-1 {% if hardware.activa %}btn-warning{% else %}btn-success{% endif %} text-xs py-1" 
-                  onclick="toggleHardwareStatus('{{ hardware.id }}', {{ 'false' if hardware.activa else 'true' }})" 
+                  onclick="toggleHardwareStatus('{{ hardware.id }}', '{{ 'false' if hardware.activa else 'true' }}')" 
                   title="{% if hardware.activa %}Desactivar{% else %}Activar{% endif %}">
             <i class="fas {% if hardware.activa %}fa-power-off{% else %}fa-play{% endif %}"></i>
-          </button>
-          <button class="flex-1 btn-danger text-xs py-1" onclick="deleteHardware('{{ hardware.id }}')" title="Eliminar">
-            <i class="fas fa-trash"></i>
-          </button>
-        </div>
-            <i class="fas fa-trash"></i>
           </button>
         </div>
       </div>
@@ -183,163 +498,462 @@
   </div>
 
   <!-- Hardware Table View -->
-  <div id="hardwareTable" class="hidden glass-card overflow-hidden">
-    <div class="p-6 border-b border-gray-100 dark:border-gray-700">
-      <h3 class="text-lg font-semibold text-black dark:text-white">Lista de Hardware</h3>
-    </div>
-    <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-        <thead class="bg-gray-50 dark:bg-gray-700">
-          <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Hardware</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Tipo</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Precio</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Stock</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Estado</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Acciones</th>
-          </tr>
-        </thead>
-        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-          {% for hardware in hardware_data.hardware_list %}
-          <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
-            <td class="px-6 py-4 whitespace-nowrap">
-              <div class="flex items-center">
-                <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-600 rounded-lg flex items-center justify-center">
-                  <i class="fas fa-microchip text-white"></i>
+  <div id="hardwareTable" class="hidden">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl overflow-hidden border border-gray-200 dark:border-gray-700">
+      <!-- Table Header -->
+      <div class="bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 px-6 py-4">
+        <div class="flex items-center space-x-3">
+          <div class="w-8 h-8 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
+            <i class="fas fa-table text-white"></i>
+          </div>
+          <h3 class="text-xl font-bold text-white">Lista de Hardware</h3>
+        </div>
+      </div>
+      
+      <!-- Table Container -->
+      <div class="overflow-x-auto">
+        <table class="min-w-full">
+          <thead>
+            <tr class="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800">
+              <th class="px-6 py-4 text-left text-sm font-bold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
+                <div class="flex items-center space-x-2">
+                  <i class="fas fa-microchip text-purple-500"></i>
+                  <span>Hardware</span>
                 </div>
-                <div class="ml-4">
-                  <div class="text-sm font-medium text-black dark:text-white">{{ hardware.name }}</div>
-                  <div class="text-sm text-gray-500 dark:text-gray-400">{{ hardware.brand }} - {{ hardware.model }}</div>
+              </th>
+              <th class="px-6 py-4 text-left text-sm font-bold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
+                <div class="flex items-center space-x-2">
+                  <i class="fas fa-layer-group text-blue-500"></i>
+                  <span>Tipo</span>
                 </div>
-              </div>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-black dark:text-white">{{ hardware.type }}</td>
-<td class="px-6 py-4 whitespace-nowrap text-sm text-black dark:text-white">{{ hardware.price | currency }}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-black dark:text-white">{{ hardware.stock }}</td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                     {% if hardware.status == 'available' %}bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200
-                     {% elif hardware.status == 'out_of_stock' %}bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200
-                     {% else %}bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200{% endif %}">
-                {% if hardware.status == 'available' %}Disponible
-                {% elif hardware.status == 'out_of_stock' %}Sin Stock
-                {% else %}Descontinuado{% endif %}
-              </span>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-              <div class="flex space-x-2">
-                <button class="text-purple-600 hover:text-purple-700 dark:text-purple-400" onclick="viewHardware('{{ hardware.id }}')">
-                  <i class="fas fa-eye"></i>
-                </button>
-                <button class="text-blue-600 hover:text-blue-700 dark:text-blue-400" onclick="editHardware('{{ hardware.id }}')">
-                  <i class="fas fa-edit"></i>
-                </button>
-                <button class="text-red-600 hover:text-red-700 dark:text-red-400" onclick="deleteHardware('{{ hardware.id }}')">
-                  <i class="fas fa-trash"></i>
-                </button>
-              </div>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+              </th>
+              <th class="px-6 py-4 text-left text-sm font-bold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
+                <div class="flex items-center space-x-2">
+                  <i class="fas fa-dollar-sign text-green-500"></i>
+                  <span>Precio</span>
+                </div>
+              </th>
+              <th class="px-6 py-4 text-left text-sm font-bold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
+                <div class="flex items-center space-x-2">
+                  <i class="fas fa-boxes text-orange-500"></i>
+                  <span>Stock</span>
+                </div>
+              </th>
+              <th class="px-6 py-4 text-left text-sm font-bold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
+                <div class="flex items-center space-x-2">
+                  <i class="fas fa-signal text-red-500"></i>
+                  <span>Estado</span>
+                </div>
+              </th>
+              <th class="px-6 py-4 text-center text-sm font-bold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
+                <div class="flex items-center justify-center space-x-2">
+                  <i class="fas fa-cogs text-indigo-500"></i>
+                  <span>Acciones</span>
+                </div>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+            {% for hardware in hardware_data.hardware_list %}
+            <tr class="group hover:bg-gradient-to-r hover:from-purple-50 hover:to-blue-50 dark:hover:from-purple-900/10 dark:hover:to-blue-900/10 transition-all duration-200 hover:shadow-md">
+              <td class="px-6 py-5 whitespace-nowrap">
+                <div class="flex items-center">
+                  <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-200">
+                    <i class="fas fa-microchip text-white text-lg"></i>
+                  </div>
+                  <div class="ml-4">
+                    <div class="text-sm font-bold text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-200">{{ hardware.name }}</div>
+                    <div class="text-sm text-gray-500 dark:text-gray-400 font-medium">{{ hardware.brand }} - {{ hardware.model }}</div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-6 py-5 whitespace-nowrap">
+                <span class="inline-flex items-center px-3 py-1 rounded-lg text-sm font-semibold bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                  <i class="fas fa-layer-group mr-2"></i>
+                  {{ hardware.type }}
+                </span>
+              </td>
+              <td class="px-6 py-5 whitespace-nowrap">
+                <div class="flex items-center">
+                  <i class="fas fa-dollar-sign text-green-500 mr-2"></i>
+                  <span class="text-lg font-bold text-green-600 dark:text-green-400">{{ hardware.price | currency }}</span>
+                </div>
+              </td>
+              <td class="px-6 py-5 whitespace-nowrap">
+                <div class="flex items-center">
+                  <i class="fas fa-boxes text-orange-500 mr-2"></i>
+                  <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ hardware.stock }}</span>
+                  <span class="text-xs text-gray-500 dark:text-gray-400 ml-1">unidades</span>
+                </div>
+              </td>
+              <td class="px-6 py-5 whitespace-nowrap">
+                <span class="inline-flex items-center px-3 py-2 rounded-lg text-sm font-bold shadow-sm
+                       {% if hardware.status == 'available' %}bg-gradient-to-r from-green-400 to-emerald-500 text-white
+                       {% elif hardware.status == 'out_of_stock' %}bg-gradient-to-r from-red-400 to-pink-500 text-white
+                       {% else %}bg-gradient-to-r from-gray-400 to-slate-500 text-white{% endif %}">
+                  {% if hardware.status == 'available' %}
+                    <i class="fas fa-check-circle mr-2"></i>Disponible
+                  {% elif hardware.status == 'out_of_stock' %}
+                    <i class="fas fa-exclamation-triangle mr-2"></i>Sin Stock
+                  {% else %}
+                    <i class="fas fa-times-circle mr-2"></i>Descontinuado
+                  {% endif %}
+                </span>
+              </td>
+              <td class="px-6 py-5 whitespace-nowrap">
+                <div class="flex items-center justify-center space-x-2">
+                  <button class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-purple-100 text-purple-600 hover:bg-purple-200 dark:bg-purple-900 dark:text-purple-400 dark:hover:bg-purple-800 transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5" 
+                          onclick="viewHardware('{{ hardware.id }}')" title="Ver detalles">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  <button class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-blue-100 text-blue-600 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-400 dark:hover:bg-blue-800 transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5" 
+                          onclick="editHardware('{{ hardware.id }}')" title="Editar">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="inline-flex items-center justify-center w-10 h-10 rounded-lg {% if hardware.activa %}bg-orange-100 text-orange-600 hover:bg-orange-200 dark:bg-orange-900 dark:text-orange-400 dark:hover:bg-orange-800{% else %}bg-green-100 text-green-600 hover:bg-green-200 dark:bg-green-900 dark:text-green-400 dark:hover:bg-green-800{% endif %} transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5" 
+                          onclick="toggleHardwareStatus('{{ hardware.id }}', '{{ 'false' if hardware.activa else 'true' }}')" 
+                          title="{% if hardware.activa %}Desactivar{% else %}Activar{% endif %}">
+                    <i class="fas {% if hardware.activa %}fa-power-off{% else %}fa-play{% endif %}"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>
 
 <!-- Create/Edit Hardware Modal -->
-<div id="hardwareModal" class="modal-backdrop hidden">
-  <div class="modal-container">
-    <div class="modal-header">
-      <h3 class="modal-title" id="modalTitle">Nuevo Hardware</h3>
-      <button type="button" class="modal-close" onclick="closeModal()" aria-label="Cerrar modal">
-        <i class="fas fa-times"></i>
-      </button>
+<div id="hardwareModal" class="ios-modal-backdrop hidden ">
+  <div class="ios-blur-modal-container w-full max-w-4xl">
+    <!-- Modal Header -->
+    <div class="ios-blur-header">
+      <div class="flex items-center justify-between w-full">
+        <div class="flex items-center space-x-3">
+          <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+            <i class="fas fa-microchip text-white text-xl"></i>
+          </div>
+          <div>
+            <h3 class="text-2xl font-bold text-white" id="modalTitle">Nuevo Hardware</h3>
+            <p class="text-sm text-white/70">Complete los campos para registrar el hardware</p>
+          </div>
+        </div>
+        <button type="button" class="ios-blur-btn ios-blur-btn-secondary !p-2 !min-w-0" onclick="closeModal()" aria-label="Cerrar modal">
+          <i class="fas fa-times text-lg"></i>
+        </button>
+      </div>
     </div>
     
-    <div class="modal-body">
+    <!-- Modal Body -->
+    <div class="ios-blur-body">
       <form id="hardwareForm">
         <div class="form-grid">
+          <!-- Nombre del Hardware -->
           <div class="form-group">
-            <label for="hardwareName" class="form-label">Nombre *</label>
-            <input type="text" id="hardwareName" class="form-input" required
+            <label for="hardwareName" class="block text-sm font-semibold text-white/90 mb-2">
+              <i class="fas fa-tag text-purple-400 mr-2"></i>Nombre *
+            </label>
+            <input type="text" id="hardwareName" class="ios-blur-input" required
                    placeholder="Ej: Dell PowerEdge R740">
           </div>
           
+          <!-- Tipo de Hardware -->
           <div class="form-group">
-            <label for="hardwareType" class="form-label">Tipo *</label>
-            <select id="hardwareType" class="form-select" required>
+            <label for="hardwareType" class="block text-sm font-semibold text-white/90 mb-2">
+              <i class="fas fa-layer-group text-blue-400 mr-2"></i>Tipo *
+            </label>
+            <select id="hardwareType" class="ios-blur-input" required>
               <option value="">Seleccionar tipo</option>
-              <option value="Servidor">Servidor</option>
-              <option value="Router">Router</option>
-              <option value="Switch">Switch</option>
-              <option value="Firewall">Firewall</option>
-              <option value="Access Point">Access Point</option>
-              <option value="Storage">Storage</option>
-              <option value="Monitor">Monitor</option>
-              <option value="Laptop">Laptop</option>
+              <!-- Options will be loaded dynamically from backend -->
             </select>
           </div>
           
+          <!-- Empresa -->
           <div class="form-group">
-            <label for="hardwareBrand" class="form-label">Marca *</label>
-            <input type="text" id="hardwareBrand" class="form-input" required
+            <label for="hardwareEmpresa" class="block text-sm font-semibold text-white/90 mb-2">
+              <i class="fas fa-building text-cyan-400 mr-2"></i>Empresa *
+            </label>
+            <select id="hardwareEmpresa" class="ios-blur-input" required onchange="loadSedesByEmpresa()">
+              <option value="">Seleccionar empresa</option>
+              <!-- Options will be loaded dynamically from backend -->
+            </select>
+          </div>
+          
+          <!-- Sede -->
+          <div class="form-group">
+            <label for="hardwareSede" class="block text-sm font-semibold text-white/90 mb-2">
+              <i class="fas fa-map-marker-alt text-rose-400 mr-2"></i>Sede *
+            </label>
+            <select id="hardwareSede" class="ios-blur-input" required disabled>
+              <option value="">Seleccionar sede</option>
+              <!-- Options will be loaded dynamically based on selected empresa -->
+            </select>
+          </div>
+          
+          <!-- Marca -->
+          <div class="form-group">
+            <label for="hardwareBrand" class="block text-sm font-semibold text-white/90 mb-2">
+              <i class="fas fa-industry text-green-400 mr-2"></i>Marca *
+            </label>
+            <input type="text" id="hardwareBrand" class="ios-blur-input" required
                    placeholder="Ej: Dell, HP, Cisco">
           </div>
           
+          <!-- Modelo -->
           <div class="form-group">
-            <label for="hardwareModel" class="form-label">Modelo *</label>
-            <input type="text" id="hardwareModel" class="form-input" required
+            <label for="hardwareModel" class="block text-sm font-semibold text-white/90 mb-2">
+              <i class="fas fa-cube text-orange-400 mr-2"></i>Modelo *
+            </label>
+            <input type="text" id="hardwareModel" class="ios-blur-input" required
                    placeholder="Ej: R740, OptiPlex 7090">
           </div>
           
+          <!-- Precio -->
           <div class="form-group">
-            <label for="hardwarePrice" class="form-label">Precio (USD) *</label>
-            <input type="number" id="hardwarePrice" class="form-input" required 
-                   min="0" step="0.01" placeholder="0.00">
+            <label for="hardwarePrice" class="block text-sm font-semibold text-white/90 mb-2">
+              <i class="fas fa-dollar-sign text-yellow-400 mr-2"></i>Precio (USD) *
+            </label>
+            <div class="relative">
+              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/60 font-semibold">$</span>
+              <input type="number" id="hardwarePrice" class="ios-blur-input !pl-8" required 
+                     min="0" step="0.01" placeholder="0.00">
+            </div>
           </div>
           
+          <!-- Stock -->
           <div class="form-group">
-            <label for="hardwareStock" class="form-label">Stock *</label>
-            <input type="number" id="hardwareStock" class="form-input" required 
+            <label for="hardwareStock" class="block text-sm font-semibold text-white/90 mb-2">
+              <i class="fas fa-boxes text-indigo-400 mr-2"></i>Stock *
+            </label>
+            <input type="number" id="hardwareStock" class="ios-blur-input" required 
                    min="0" placeholder="Cantidad disponible">
           </div>
           
+          <!-- Estado -->
           <div class="form-group">
-            <label for="hardwareStatus" class="form-label">Estado</label>
-            <select id="hardwareStatus" class="form-select" required>
-              <option value="available">Disponible</option>
-              <option value="out_of_stock">Sin Stock</option>
-              <option value="discontinued">Descontinuado</option>
+            <label for="hardwareStatus" class="block text-sm font-semibold text-white/90 mb-2">
+              <i class="fas fa-signal text-red-400 mr-2"></i>Estado
+            </label>
+            <select id="hardwareStatus" class="ios-blur-input" required>
+              <option value="available">🟢 Disponible</option>
+              <option value="out_of_stock">🔴 Sin Stock</option>
+              <option value="discontinued">⚫ Descontinuado</option>
             </select>
           </div>
           
+          <!-- Garantía -->
           <div class="form-group">
-            <label for="hardwareWarranty" class="form-label">Garantía</label>
-            <select id="hardwareWarranty" class="form-select" required>
-              <option value="12">12 meses</option>
-              <option value="24">24 meses</option>
-              <option value="36">36 meses</option>
+            <label for="hardwareWarranty" class="block text-sm font-semibold text-white/90 mb-2">
+              <i class="fas fa-shield-alt text-teal-400 mr-2"></i>Garantía
+            </label>
+            <select id="hardwareWarranty" class="ios-blur-input" required>
+              <option value="12">📅 12 meses</option>
+              <option value="24">📅 24 meses</option>
+              <option value="36">📅 36 meses</option>
             </select>
           </div>
           
+          <!-- Descripción -->
           <div class="form-group form-group-full">
-            <label for="hardwareDescription" class="form-label">Descripción</label>
-            <textarea id="hardwareDescription" class="form-textarea" rows="3"
-                      placeholder="Descripción detallada del hardware..."></textarea>
+            <label for="hardwareDescription" class="block text-sm font-semibold text-white/90 mb-2">
+              <i class="fas fa-align-left text-gray-400 mr-2"></i>Descripción
+            </label>
+            <textarea id="hardwareDescription" class="ios-blur-input !min-h-[6rem] resize-y" rows="3"
+                      placeholder="Descripción detallada del hardware, características técnicas, especificaciones..."></textarea>
           </div>
         </div>
       </form>
     </div>
     
-    <div class="modal-footer">
-      <button type="button" class="modal-btn modal-btn-secondary" onclick="closeModal()">
-        <i class="fas fa-times"></i>
+    <!-- Modal Footer -->
+    <div class="ios-blur-footer">
+      <button type="button" class="ios-blur-btn ios-blur-btn-secondary" onclick="closeModal()">
+        <i class="fas fa-times mr-2"></i>
         Cancelar
       </button>
-      <button type="submit" form="hardwareForm" class="modal-btn modal-btn-primary" id="submitButton">
-        <i class="fas fa-save"></i>
+      <button type="submit" form="hardwareForm" class="ios-blur-btn ios-blur-btn-primary" id="submitButton">
+        <i class="fas fa-save mr-2"></i>
         <span id="submitButtonText">Crear Hardware</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- View Hardware Details Modal -->
+<div id="viewHardwareModal" class="ios-modal-backdrop hidden">
+  <div class="ios-blur-modal-container w-full max-w-4xl">
+    <!-- Modal Header -->
+    <div class="ios-blur-header">
+      <div class="flex items-center justify-between w-full">
+        <div class="flex items-center space-x-3">
+          <div class="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
+            <i class="fas fa-eye text-white text-xl"></i>
+          </div>
+          <div>
+            <h3 class="text-2xl font-bold text-white">Detalles del Hardware</h3>
+            <p class="text-sm text-white/70">Información completa del hardware seleccionado</p>
+          </div>
+        </div>
+        <button type="button" class="ios-blur-btn ios-blur-btn-secondary !p-2 !min-w-0" onclick="closeViewModal()" aria-label="Cerrar modal">
+          <i class="fas fa-times text-lg"></i>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="ios-blur-body">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-gradient-to-br from-purple-500 via-pink-500 to-red-500 rounded-xl p-5 shadow-lg transform hover:scale-105 transition-all duration-300">
+          <label class="block text-sm font-bold text-white mb-3 drop-shadow-lg">
+            <i class="fas fa-tag mr-2 text-yellow-200"></i>Nombre
+          </label>
+          <div class="text-xl font-bold text-white drop-shadow-md" id="viewHardwareName">-</div>
+        </div>
+        
+        <div class="bg-gradient-to-br from-blue-500 via-cyan-500 to-teal-500 rounded-xl p-5 shadow-lg transform hover:scale-105 transition-all duration-300">
+          <label class="block text-sm font-bold text-white mb-3 drop-shadow-lg">
+            <i class="fas fa-layer-group mr-2 text-yellow-200"></i>Tipo
+          </label>
+          <div class="text-xl font-bold text-white drop-shadow-md" id="viewHardwareType">-</div>
+        </div>
+        
+        <div class="bg-gradient-to-br from-green-500 via-emerald-500 to-teal-500 rounded-xl p-5 shadow-lg transform hover:scale-105 transition-all duration-300">
+          <label class="block text-sm font-bold text-white mb-3 drop-shadow-lg">
+            <i class="fas fa-building mr-2 text-yellow-200"></i>Empresa
+          </label>
+          <div class="text-xl font-bold text-white drop-shadow-md" id="viewHardwareEmpresa">-</div>
+        </div>
+        
+        <div class="bg-gradient-to-br from-orange-500 via-red-500 to-pink-500 rounded-xl p-5 shadow-lg transform hover:scale-105 transition-all duration-300">
+          <label class="block text-sm font-bold text-white mb-3 drop-shadow-lg">
+            <i class="fas fa-map-marker-alt mr-2 text-yellow-200"></i>Sede
+          </label>
+          <div class="text-xl font-bold text-white drop-shadow-md" id="viewHardwareSede">-</div>
+        </div>
+        
+        <div class="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-xl p-5 shadow-lg transform hover:scale-105 transition-all duration-300">
+          <label class="block text-sm font-bold text-white mb-3 drop-shadow-lg">
+            <i class="fas fa-industry mr-2 text-yellow-200"></i>Marca
+          </label>
+          <div class="text-xl font-bold text-white drop-shadow-md" id="viewHardwareBrand">-</div>
+        </div>
+        
+        <div class="bg-gradient-to-br from-pink-500 via-rose-500 to-red-500 rounded-xl p-5 shadow-lg transform hover:scale-105 transition-all duration-300">
+          <label class="block text-sm font-bold text-white mb-3 drop-shadow-lg">
+            <i class="fas fa-cube mr-2 text-yellow-200"></i>Modelo
+          </label>
+          <div class="text-xl font-bold text-white drop-shadow-md" id="viewHardwareModel">-</div>
+        </div>
+        
+        <div class="bg-gradient-to-br from-yellow-500 via-orange-500 to-red-500 rounded-xl p-5 shadow-lg transform hover:scale-105 transition-all duration-300">
+          <label class="block text-sm font-bold text-white mb-3 drop-shadow-lg">
+            <i class="fas fa-dollar-sign mr-2 text-yellow-200"></i>Precio (USD)
+          </label>
+          <div class="text-xl font-bold text-white drop-shadow-md" id="viewHardwarePrice">-</div>
+        </div>
+        
+        <div class="bg-gradient-to-br from-cyan-500 via-blue-500 to-indigo-500 rounded-xl p-5 shadow-lg transform hover:scale-105 transition-all duration-300">
+          <label class="block text-sm font-bold text-white mb-3 drop-shadow-lg">
+            <i class="fas fa-boxes mr-2 text-yellow-200"></i>Stock
+          </label>
+          <div class="text-xl font-bold text-white drop-shadow-md" id="viewHardwareStock">-</div>
+        </div>
+        
+        <div class="bg-gradient-to-br from-gray-700 via-gray-800 to-gray-900 rounded-xl p-5 shadow-lg transform hover:scale-105 transition-all duration-300">
+          <label class="block text-sm font-bold text-white mb-3 drop-shadow-lg">
+            <i class="fas fa-signal mr-2 text-yellow-200"></i>Estado
+          </label>
+          <div class="text-xl font-bold text-white drop-shadow-md" id="viewHardwareStatus">-</div>
+        </div>
+        
+        <div class="bg-gradient-to-br from-emerald-500 via-green-500 to-lime-500 rounded-xl p-5 shadow-lg transform hover:scale-105 transition-all duration-300">
+          <label class="block text-sm font-bold text-white mb-3 drop-shadow-lg">
+            <i class="fas fa-shield-alt mr-2 text-yellow-200"></i>Garantía
+          </label>
+          <div class="text-xl font-bold text-white drop-shadow-md" id="viewHardwareWarranty">-</div>
+        </div>
+        
+        <div class="bg-gradient-to-br from-red-500 via-pink-500 to-rose-500 rounded-xl p-5 shadow-lg transform hover:scale-105 transition-all duration-300">
+          <label class="block text-sm font-bold text-white mb-3 drop-shadow-lg">
+            <i class="fas fa-toggle-on mr-2 text-yellow-200"></i>Estado Activo
+          </label>
+          <div class="text-xl font-bold text-white drop-shadow-md" id="viewHardwareActive">-</div>
+        </div>
+        
+        <div class="col-span-1 md:col-span-2 bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900 rounded-xl p-5 shadow-lg transform hover:scale-105 transition-all duration-300">
+          <label class="block text-sm font-bold text-white mb-3 drop-shadow-lg">
+            <i class="fas fa-calendar-alt mr-2 text-yellow-200"></i>Fecha de Creación
+          </label>
+          <div class="text-xl font-bold text-white drop-shadow-md" id="viewHardwareCreated">-</div>
+        </div>
+        
+        <div class="col-span-1 md:col-span-2 bg-gradient-to-br from-violet-600 via-purple-700 to-indigo-800 rounded-xl p-5 shadow-lg transform hover:scale-105 transition-all duration-300">
+          <label class="block text-sm font-bold text-white mb-3 drop-shadow-lg">
+            <i class="fas fa-align-left mr-2 text-yellow-200"></i>Descripción
+          </label>
+          <div class="text-lg font-medium text-white drop-shadow-md leading-relaxed" id="viewHardwareDescription">
+            <em class="text-gray-200">Sin descripción disponible</em>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Modal Footer -->
+    <div class="ios-blur-footer">
+      <button type="button" class="ios-blur-btn ios-blur-btn-secondary" onclick="closeViewModal()">
+        <i class="fas fa-times mr-2"></i>
+        Cerrar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Enhanced Toggle Hardware Status Modal -->
+<div id="toggleHardwareModal" class="ios-modal-backdrop hidden">
+  <div class="ios-blur-modal-container max-w-md" id="toggleModalContainer">
+    <div class="ios-blur-header text-center">
+      <div class="toggle-modal-icon mx-auto mb-4" id="toggleModalIcon">
+        <i class="fas fa-power-off text-4xl" id="toggleModalIconFa"></i>
+      </div>
+      <h3 class="text-2xl font-bold text-white mb-2" id="toggleModalTitle">Activar Hardware</h3>
+    </div>
+    <div class="ios-blur-body text-center">
+      <p class="text-white/80 text-lg mb-6" id="toggleModalMessage">
+        ¿Estás seguro de que quieres activar este hardware?
+      </p>
+      <div class="flex gap-4 justify-center">
+        <button class="ios-blur-btn ios-blur-btn-secondary" onclick="closeToggleModal()">
+          <i class="fas fa-times mr-2"></i>
+          Cancelar
+        </button>
+        <button class="ios-blur-btn ios-blur-btn-primary" id="toggleConfirmBtn" onclick="confirmToggleHardware()">
+          <i class="fas fa-check mr-2" id="toggleConfirmIcon"></i>
+          <span id="toggleConfirmText">Activar</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Client Update Success Modal -->
+<div id="clientUpdateModal" class="ios-modal-backdrop hidden">
+  <div class="ios-blur-modal-container max-w-md" id="updateModalContainer">
+    <div class="ios-blur-header text-center">
+      <div class="client-update-icon mx-auto mb-4" id="updateModalIcon">
+        <i class="fas fa-sync-alt text-4xl text-emerald-400" id="updateModalIconFa"></i>
+      </div>
+      <h3 class="text-2xl font-bold text-white mb-2" id="updateModalTitle">Cliente Actualizado</h3>
+    </div>
+    <div class="ios-blur-body text-center">
+      <p class="text-white/80 text-lg mb-6" id="updateModalMessage">
+        El cliente se ha actualizado exitosamente.
+      </p>
+      <button class="ios-blur-btn ios-blur-btn-primary mx-auto" onclick="closeUpdateModal()">
+        <i class="fas fa-check mr-2"></i>
+        Aceptar
       </button>
     </div>
   </div>
@@ -348,9 +962,35 @@
 
 {% block page_js %}
 <script src="{{ url_for('static', filename='js/api-client.js') }}"></script>
+<script src="{{ url_for('static', filename='js/modal-utils.js') }}"></script>
+<script src="{{ url_for('static', filename='js/dashboard/basic-managers.js') }}"></script>
 <script>
 let currentView = 'grid';
 let editingHardware = null;
+
+// Initialize modals when page loads
+function initializeModals() {
+  console.log('🚀 Initializing modals...');
+  
+  if (window.modalManager) {
+    // Setup all modals in the page
+    const modalIds = ['hardwareModal', 'viewHardwareModal'];
+    modalIds.forEach(modalId => {
+      window.modalManager.setupModal(modalId);
+      console.log(`✅ Modal ${modalId} configured`);
+    });
+  } else {
+    console.warn('⚠️ ModalManager not available');
+  }
+  
+  // Ensure theme is properly applied
+  if (window.ThemeManager) {
+    console.log('✅ ThemeManager available, theme should be persistent');
+  }
+}
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', initializeModals);
 
 // View toggle functionality
 function toggleView() {
@@ -374,53 +1014,1018 @@ function toggleView() {
   }
 }
 
-// Modal functionality
+// Modal functionality with enhanced animations
 function openCreateModal() {
   editingHardware = null;
   document.getElementById('modalTitle').textContent = 'Nuevo Hardware';
   document.getElementById('submitButtonText').textContent = 'Crear Hardware';
   document.getElementById('hardwareForm').reset();
-  document.getElementById('hardwareModal').classList.remove('hidden');
+  
+  // Scroll to top first, then show modal
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  
+  // Delay modal opening to allow scroll to complete
+  setTimeout(() => {
+    // Prevent body scrolling
+    const scrollPosition = window.pageYOffset;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollPosition}px`;
+    document.body.style.width = '100%';
+    document.body.classList.add('ios-modal-open');
+    
+    // Open modal using modal manager
+    if (window.modalManager) {
+      window.modalManager.openModal('hardwareModal');
+      // Set up modal if not already configured
+      window.modalManager.setupModal('hardwareModal');
+    } else {
+      // Fallback for compatibility
+      const modal = document.getElementById('hardwareModal');
+      modal.classList.remove('hidden');
+    }
+  }, 300);
 }
 
-function editHardware(id) {
-  editingHardware = id;
-  document.getElementById('modalTitle').textContent = 'Editar Hardware';
-  document.getElementById('submitButtonText').textContent = 'Actualizar Hardware';
+async function editHardware(id) {
+  try {
+    editingHardware = id;
+    document.getElementById('modalTitle').textContent = 'Editar Hardware';
+    document.getElementById('submitButtonText').textContent = 'Actualizar Hardware';
+    
+    // Intentar cargar los datos reales del hardware
+    try {
+      console.log('🔄 Cargando datos para editar hardware:', id);
+      const response = await apiClient.get_hardware_details(id);
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          console.log('📋 Datos del hardware cargados para edición:', data.data);
+          loadHardwareDataIntoForm(data.data);
+        } else {
+          console.warn('⚠️ Error en respuesta del API:', data.errors);
+          loadDummyDataIntoForm(); // Fallback a datos dummy
+        }
+      } else {
+        console.warn('⚠️ Error HTTP al cargar datos:', response.status);
+        loadDummyDataIntoForm(); // Fallback a datos dummy
+      }
+    } catch (error) {
+      console.error('💥 Error al cargar datos del hardware:', error);
+      loadDummyDataIntoForm(); // Fallback a datos dummy
+    }
+    
+    // Scroll to top first, then show modal
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
+    // Delay modal opening to allow scroll to complete
+    setTimeout(() => {
+      // Prevent body scrolling
+      const scrollPosition = window.pageYOffset;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollPosition}px`;
+      document.body.style.width = '100%';
+      document.body.classList.add('ios-modal-open');
+      
+      // Open modal using modal manager
+      if (window.modalManager) {
+        window.modalManager.openModal('hardwareModal');
+        // Set up modal if not already configured
+        window.modalManager.setupModal('hardwareModal');
+      } else {
+        // Fallback for compatibility
+        const modal = document.getElementById('hardwareModal');
+        modal.classList.remove('hidden');
+      }
+    }, 300);
+    
+  } catch (error) {
+    console.error('💥 Error al abrir modal de edición:', error);
+    alert('Error al abrir el modal de edición. Por favor, inténtalo de nuevo.');
+  }
+}
+
+// Función para cargar datos reales en el formulario
+function loadHardwareDataIntoForm(hardware) {
+  try {
+    // Función helper para obtener valor seguro
+    const getSafeValue = (obj, path, defaultValue = '') => {
+      try {
+        const keys = path.split('.');
+        let current = obj;
+        for (const key of keys) {
+          if (current === null || current === undefined) {
+            return defaultValue;
+          }
+          current = current[key];
+        }
+        return current !== null && current !== undefined ? current : defaultValue;
+      } catch (e) {
+        return defaultValue;
+      }
+    };
+    
+    // Función helper para establecer valor en input de forma segura
+    const setInputValue = (inputId, value) => {
+      try {
+        const input = document.getElementById(inputId);
+        if (input) {
+          input.value = value || '';
+        } else {
+          console.warn(`Input con ID '${inputId}' no encontrado`);
+        }
+      } catch (e) {
+        console.error(`Error al establecer valor en input '${inputId}':`, e);
+      }
+    };
+    
+    // Extraer datos anidados
+    let datos = {};
+    if (hardware.datos) {
+      if (typeof hardware.datos === 'object') {
+        datos = hardware.datos.datos || hardware.datos;
+      } else if (typeof hardware.datos === 'string') {
+        try {
+          const parsed = JSON.parse(hardware.datos);
+          datos = parsed.datos || parsed;
+        } catch (e) {
+          console.warn('Error parsing datos string:', e);
+          datos = {};
+        }
+      }
+    }
+    
+    console.log('📊 Datos extraídos para formulario:', datos);
+    
+    // Llenar el formulario con los datos reales
+    setInputValue('hardwareName', getSafeValue(hardware, 'nombre'));
+    setInputValue('hardwareType', getSafeValue(hardware, 'tipo'));
+    
+    // Set empresa and sede
+    const empresaId = getSafeValue(hardware, 'empresa_id');
+    if (empresaId) {
+      setInputValue('hardwareEmpresa', empresaId);
+      // Trigger sede loading after empresa is set
+      setTimeout(() => {
+        loadSedesByEmpresa();
+        // Set sede after sedes are loaded
+        setTimeout(() => {
+          setInputValue('hardwareSede', getSafeValue(hardware, 'sede'));
+        }, 100);
+      }, 100);
+    }
+    
+    setInputValue('hardwareBrand', 
+      getSafeValue(datos, 'brand') || 
+      getSafeValue(datos, 'marca') || 
+      getSafeValue(hardware, 'marca')
+    );
+    
+    setInputValue('hardwareModel', 
+      getSafeValue(datos, 'model') || 
+      getSafeValue(datos, 'modelo') || 
+      getSafeValue(hardware, 'modelo')
+    );
+    
+    setInputValue('hardwarePrice', 
+      getSafeValue(datos, 'price') || 
+      getSafeValue(datos, 'precio') || 
+      getSafeValue(hardware, 'precio')
+    );
+    
+    setInputValue('hardwareStock', 
+      getSafeValue(datos, 'stock') || 
+      getSafeValue(hardware, 'stock')
+    );
+    
+    // Estado
+    const status = getSafeValue(datos, 'status') || 
+                  getSafeValue(datos, 'estado') || 
+                  getSafeValue(hardware, 'status') || 
+                  getSafeValue(hardware, 'estado') || 
+                  'available';
+    setInputValue('hardwareStatus', status);
+    
+    // Garantía
+    const warranty = getSafeValue(datos, 'warranty') || 
+                    getSafeValue(datos, 'garantia') || 
+                    getSafeValue(hardware, 'warranty') || 
+                    getSafeValue(hardware, 'garantia') || 
+                    '12';
+    setInputValue('hardwareWarranty', warranty);
+    
+    // Descripción
+    const description = getSafeValue(datos, 'description') || 
+                       getSafeValue(datos, 'descripcion') || 
+                       getSafeValue(hardware, 'descripcion');
+    setInputValue('hardwareDescription', description);
+    
+    console.log('✅ Datos cargados en el formulario correctamente');
+    
+  } catch (error) {
+    console.error('💥 Error al cargar datos en el formulario:', error);
+    loadDummyDataIntoForm(); // Fallback a datos dummy
+  }
+}
+
+// Función para cargar datos dummy en caso de error
+function loadDummyDataIntoForm() {
+  console.log('⚠️ Cargando datos dummy en el formulario');
   
-  // Here you would load the hardware data - for now using dummy data
-  document.getElementById('hardwareName').value = 'Dell Servidor R740';
-  document.getElementById('hardwareType').value = 'Servidor';
-  document.getElementById('hardwareBrand').value = 'Dell';
-  document.getElementById('hardwareModel').value = 'R740';
-  document.getElementById('hardwarePrice').value = '2500';
-  document.getElementById('hardwareStock').value = '5';
-  document.getElementById('hardwareStatus').value = 'available';
-  document.getElementById('hardwareWarranty').value = '24';
+  const setInputValue = (inputId, value) => {
+    const input = document.getElementById(inputId);
+    if (input) input.value = value;
+  };
   
-  document.getElementById('hardwareModal').classList.remove('hidden');
+  setInputValue('hardwareName', 'Hardware sin nombre');
+  setInputValue('hardwareType', 'General');
+  setInputValue('hardwareBrand', 'Sin marca');
+  setInputValue('hardwareModel', 'Sin modelo');
+  setInputValue('hardwarePrice', '0');
+  setInputValue('hardwareStock', '0');
+  setInputValue('hardwareStatus', 'available');
+  setInputValue('hardwareWarranty', '12');
+  setInputValue('hardwareDescription', '');
 }
 
 function closeModal() {
-  document.getElementById('hardwareModal').classList.add('hidden');
+  // Restore scroll position before closing
+  const scrollY = document.body.style.top;
+  document.body.style.position = '';
+  document.body.style.top = '';
+  document.body.style.width = '';
+  document.body.classList.remove('ios-modal-open');
+  
+  if (scrollY) {
+    window.scrollTo(0, parseInt(scrollY || '0') * -1);
+  }
+  
+  // Usar el sistema de modales global
+  if (window.modalManager) {
+    window.modalManager.closeModal('hardwareModal');
+  } else {
+    // Fallback para compatibilidad
+    const modal = document.getElementById('hardwareModal');
+    modal.classList.add('hidden');
+  }
+  
   editingHardware = null;
+  resetForm();
 }
 
-function viewHardware(id) {
-  alert(`Ver detalles del hardware ID: ${id}\n\nEsta funcionalidad se conectará al backend para mostrar información detallada.`);
+// Función para resetear el formulario
+function resetForm() {
+  const form = document.getElementById('hardwareForm');
+  if (form) {
+    form.reset();
+  }
 }
 
-function deleteHardware(id) {
-  deleteHardwareAPI(id);
+async function viewHardware(id) {
+  try {
+    console.log('🔍 Cargando detalles del hardware:', id);
+    
+    // Validar que el ID no sea nulo o indefinido
+    if (!id) {
+      console.error('❌ ID de hardware no válido:', id);
+      alert('Error: ID de hardware no válido');
+      return;
+    }
+    
+    // Verificar que el API client esté disponible
+    if (!apiClient || typeof apiClient.get_hardware_details !== 'function') {
+      console.error('❌ API client no disponible');
+      alert('Error: Conexión con el servidor no disponible');
+      return;
+    }
+    
+    const response = await apiClient.get_hardware_details(id);
+    
+    if (!response.ok) {
+      console.error('❌ Error HTTP:', response.status, response.statusText);
+      
+      if (response.status === 404) {
+        alert('Hardware no encontrado. Puede que haya sido eliminado.');
+      } else if (response.status === 401) {
+        alert('Sesión expirada. Por favor, inicia sesión nuevamente.');
+        window.location.href = '/login';
+      } else if (response.status === 403) {
+        alert('No tienes permisos para ver este hardware.');
+      } else {
+        alert(`Error del servidor: ${response.status} - ${response.statusText}`);
+      }
+      return;
+    }
+    
+    const data = await response.json();
+    console.log('📦 Respuesta completa del API:', data);
+    
+    if (data.success) {
+      console.log('📋 Detalles del hardware cargados:', data.data);
+      
+      // Verificar que los datos no estén vacíos
+      if (!data.data) {
+        console.warn('⚠️ Datos del hardware vacíos');
+        alert('No se encontraron datos para este hardware.');
+        return;
+      }
+      
+      showHardwareDetails(data.data);
+    } else {
+      console.error('❌ Error en respuesta del API:', data.errors);
+      const errorMessage = data.errors && Array.isArray(data.errors) 
+        ? data.errors.join(', ') 
+        : data.error || 'Error desconocido';
+      alert('Error al cargar los detalles del hardware: ' + errorMessage);
+    }
+  } catch (error) {
+    console.error('💥 Error al cargar detalles del hardware:', error);
+    
+    // Manejo de diferentes tipos de errores
+    if (error.name === 'TypeError' && error.message.includes('fetch')) {
+      alert('Error de conexión. Verifica tu conexión a internet.');
+    } else if (error.name === 'SyntaxError') {
+      alert('Error en la respuesta del servidor. Inténtalo de nuevo.');
+    } else {
+      alert('Error inesperado al cargar los detalles. Inténtalo de nuevo.');
+    }
+  }
+}
+
+// Variable para almacenar el hardware actual que se está visualizando
+let currentViewingHardware = null;
+
+// Función de utilidad para debuggear estructuras de datos
+function debugHardwareStructure(hardware, context = 'Unknown') {
+  console.group(`🔍 Debug Hardware Structure - ${context}`);
+  console.log('📊 Objeto completo:', hardware);
+  console.log('📋 Tipo de objeto:', typeof hardware);
+  console.log('🔑 Claves principales:', Object.keys(hardware || {}));
+  
+  if (hardware) {
+    // Verificar estructura de datos
+    console.log('📝 Nombre:', hardware.nombre || hardware.name || 'No encontrado');
+    console.log('📂 Tipo:', hardware.tipo || hardware.type || 'No encontrado');
+    console.log('🏢 Empresa:', hardware.empresa_nombre || hardware.company || 'No encontrado');
+    console.log('📍 Sede:', hardware.sede || hardware.location || 'No encontrado');
+    console.log('✅ Activa:', hardware.activa || hardware.active || 'No encontrado');
+    
+    // Verificar estructura de datos anidados
+    if (hardware.datos) {
+      console.log('📦 Datos anidados tipo:', typeof hardware.datos);
+      if (typeof hardware.datos === 'string') {
+        try {
+          const parsed = JSON.parse(hardware.datos);
+          console.log('📝 Datos parseados:', parsed);
+          console.log('🔑 Claves de datos parseados:', Object.keys(parsed || {}));
+        } catch (e) {
+          console.warn('⚠️ Error al parsear datos string:', e);
+        }
+      } else if (typeof hardware.datos === 'object') {
+        console.log('📦 Datos como objeto:', hardware.datos);
+        console.log('🔑 Claves de datos:', Object.keys(hardware.datos || {}));
+        
+        if (hardware.datos.datos) {
+          console.log('📦 Datos.datos:', hardware.datos.datos);
+          console.log('🔑 Claves de datos.datos:', Object.keys(hardware.datos.datos || {}));
+        }
+      }
+    } else {
+      console.log('❌ No hay campo "datos"');
+    }
+  }
+  
+  console.groupEnd();
+}
+
+// Función para mostrar los detalles del hardware en el modal
+function showHardwareDetails(hardware) {
+  try {
+    console.log('📋 Datos completos del hardware recibidos:', hardware);
+    
+    // Debug de la estructura de datos
+    debugHardwareStructure(hardware, 'showHardwareDetails');
+    
+    currentViewingHardware = hardware;
+    
+    // Función helper para obtener valor seguro
+    const getSafeValue = (obj, path, defaultValue = 'N/A') => {
+      try {
+        const keys = path.split('.');
+        let current = obj;
+        for (const key of keys) {
+          if (current === null || current === undefined) {
+            return defaultValue;
+          }
+          current = current[key];
+        }
+        return current !== null && current !== undefined ? current : defaultValue;
+      } catch (e) {
+        console.warn(`Error accessing path ${path}:`, e);
+        return defaultValue;
+      }
+    };
+    
+    // Función helper para obtener elemento del DOM de forma segura
+    const setElementText = (elementId, value) => {
+      try {
+        const element = document.getElementById(elementId);
+        if (element) {
+          element.textContent = value;
+        } else {
+          console.warn(`Element with ID '${elementId}' not found`);
+        }
+      } catch (e) {
+        console.error(`Error setting text for element '${elementId}':`, e);
+      }
+    };
+    
+    // Extraer datos anidados con múltiples posibilidades
+    let datos = {};
+    if (hardware.datos) {
+      if (typeof hardware.datos === 'object') {
+        // Si datos es un objeto, puede tener .datos anidado o ser los datos directamente
+        datos = hardware.datos.datos || hardware.datos;
+      } else if (typeof hardware.datos === 'string') {
+        // Si datos es un string JSON, parsearlo
+        try {
+          const parsed = JSON.parse(hardware.datos);
+          datos = parsed.datos || parsed;
+        } catch (e) {
+          console.warn('Error parsing datos string:', e);
+          datos = {};
+        }
+      }
+    }
+    
+    console.log('📊 Datos extraídos para mostrar:', datos);
+    
+    // Llenar los campos del modal con validaciones defensivas
+    setElementText('viewHardwareName', getSafeValue(hardware, 'nombre'));
+    setElementText('viewHardwareType', getSafeValue(hardware, 'tipo'));
+    setElementText('viewHardwareEmpresa', getSafeValue(hardware, 'empresa_nombre'));
+    setElementText('viewHardwareSede', getSafeValue(hardware, 'sede'));
+    
+    // Campos de datos con múltiples posibilidades
+    setElementText('viewHardwareBrand', 
+      getSafeValue(datos, 'brand') || 
+      getSafeValue(datos, 'marca') || 
+      getSafeValue(hardware, 'marca') || 
+      'N/A'
+    );
+    
+    setElementText('viewHardwareModel', 
+      getSafeValue(datos, 'model') || 
+      getSafeValue(datos, 'modelo') || 
+      getSafeValue(hardware, 'modelo') || 
+      'N/A'
+    );
+    
+    // Precio con formateo
+    const price = getSafeValue(datos, 'price') || 
+                 getSafeValue(datos, 'precio') || 
+                 getSafeValue(hardware, 'precio');
+    setElementText('viewHardwarePrice', 
+      price && price !== 'N/A' ? `$${price}` : 'N/A'
+    );
+    
+    // Stock con formateo
+    const stock = getSafeValue(datos, 'stock') || 
+                 getSafeValue(hardware, 'stock');
+    setElementText('viewHardwareStock', 
+      stock !== 'N/A' && stock !== null && stock !== undefined ? `${stock} unidades` : 'N/A'
+    );
+    
+    // Estado con múltiples posibilidades
+    let statusText = 'N/A';
+    const status = getSafeValue(datos, 'status') || 
+                  getSafeValue(datos, 'estado') || 
+                  getSafeValue(hardware, 'status') || 
+                  getSafeValue(hardware, 'estado') || 
+                  'available';
+    
+    if (status === 'available' || status === 'disponible') {
+      statusText = 'Disponible';
+    } else if (status === 'out_of_stock' || status === 'sin_stock') {
+      statusText = 'Sin Stock';
+    } else if (status === 'discontinued' || status === 'descontinuado') {
+      statusText = 'Descontinuado';
+    } else if (status !== 'N/A') {
+      statusText = status; // Mostrar el estado tal como viene si no es N/A
+    }
+    setElementText('viewHardwareStatus', statusText);
+    
+    // Garantía con múltiples posibilidades
+    const warranty = getSafeValue(datos, 'warranty') || 
+                    getSafeValue(datos, 'garantia') || 
+                    getSafeValue(hardware, 'warranty') || 
+                    getSafeValue(hardware, 'garantia');
+    setElementText('viewHardwareWarranty', 
+      warranty && warranty !== 'N/A' ? `${warranty} meses` : 'N/A'
+    );
+    
+    // Activo (con validación de tipo)
+    const activa = getSafeValue(hardware, 'activa');
+    let activaText = 'N/A';
+    if (activa === true || activa === 'true' || activa === 1 || activa === '1') {
+      activaText = 'Sí';
+    } else if (activa === false || activa === 'false' || activa === 0 || activa === '0') {
+      activaText = 'No';
+    }
+    setElementText('viewHardwareActive', activaText);
+    
+    // Fecha de creación con múltiples formatos
+    let fechaCreacion = 'N/A';
+    const fechaRaw = getSafeValue(hardware, 'fecha_creacion') || 
+                    getSafeValue(hardware, 'created_at') || 
+                    getSafeValue(hardware, 'createdAt');
+    
+    if (fechaRaw && fechaRaw !== 'N/A') {
+      try {
+        const fecha = new Date(fechaRaw);
+        if (!isNaN(fecha.getTime())) {
+          fechaCreacion = fecha.toLocaleDateString('es-ES', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          });
+        } else {
+          fechaCreacion = fechaRaw; // Usar valor original si no se puede parsear
+        }
+      } catch (e) {
+        console.warn('Error parsing date:', e);
+        fechaCreacion = fechaRaw; // Usar valor original en caso de error
+      }
+    }
+    setElementText('viewHardwareCreated', fechaCreacion);
+    
+    // Descripción con múltiples posibilidades
+    const description = getSafeValue(datos, 'description') || 
+                       getSafeValue(datos, 'descripcion') || 
+                       getSafeValue(hardware, 'descripcion') || 
+                       'Sin descripción';
+    setElementText('viewHardwareDescription', description);
+    
+    // Scroll to top first, then show modal
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
+    // Delay modal opening to allow scroll to complete
+    setTimeout(() => {
+      // Prevent body scrolling
+      const scrollPosition = window.pageYOffset;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollPosition}px`;
+      document.body.style.width = '100%';
+      document.body.classList.add('ios-modal-open');
+      
+      // Open modal using modal manager
+      if (window.modalManager) {
+        window.modalManager.openModal('viewHardwareModal');
+        // Set up modal if not already configured
+        window.modalManager.setupModal('viewHardwareModal');
+      } else {
+        // Fallback for compatibility
+        const modal = document.getElementById('viewHardwareModal');
+        modal.classList.remove('hidden');
+      }
+    }, 300);
+    
+    console.log('✅ Modal de detalles mostrado correctamente');
+    
+  } catch (error) {
+    console.error('💥 Error al mostrar detalles del hardware:', error);
+    
+    // Mostrar un modal de error o alerta
+    alert('Error al cargar los detalles del hardware. Por favor, inténtalo de nuevo.');
+    
+    // Cerrar el modal si estaba abierto
+    const modal = document.getElementById('viewHardwareModal');
+    if (modal && !modal.classList.contains('hidden')) {
+      closeViewModal();
+    }
+  }
+}
+
+// Función para cerrar el modal de vista
+function closeViewModal() {
+  // Restore scroll position before closing
+  const scrollY = document.body.style.top;
+  document.body.style.position = '';
+  document.body.style.top = '';
+  document.body.style.width = '';
+  document.body.classList.remove('ios-modal-open');
+  
+  if (scrollY) {
+    window.scrollTo(0, parseInt(scrollY || '0') * -1);
+  }
+  
+  // Usar el sistema de modales global
+  if (window.modalManager) {
+    window.modalManager.closeModal('viewHardwareModal');
+  } else {
+    // Fallback para compatibilidad
+    const modal = document.getElementById('viewHardwareModal');
+    modal.classList.add('hidden');
+  }
+  
+  currentViewingHardware = null;
 }
 
 function toggleHardwareStatus(id, activa) {
-  toggleHardwareStatusAPI(id, activa);
+  // Enhanced popup with GSAP animation
+  showConfirmToggleModal(id, activa);
 }
+
+// Variables for toggle modal
+let toggleModalData = {
+  hardwareId: null,
+  newStatus: null
+};
+
+function showConfirmToggleModal(hardwareId, newStatus) {
+  console.log('🎯 Showing toggle modal for:', hardwareId, 'newStatus:', newStatus);
+  
+  toggleModalData.hardwareId = hardwareId;
+  toggleModalData.newStatus = newStatus;
+
+  const modal = document.getElementById('toggleHardwareModal');
+  const container = document.getElementById('toggleModalContainer');
+  const icon = document.getElementById('toggleModalIcon');
+  const iconFa = document.getElementById('toggleModalIconFa');
+  const title = document.getElementById('toggleModalTitle');
+  const message = document.getElementById('toggleModalMessage');
+  const confirmText = document.getElementById('toggleConfirmText');
+  const confirmIcon = document.getElementById('toggleConfirmIcon');
+  
+  // Debug: log all elements
+  console.log('📋 Modal elements:', {
+    modal: modal ? 'Found' : 'NOT FOUND',
+    container: container ? 'Found' : 'NOT FOUND',
+    icon: icon ? 'Found' : 'NOT FOUND',
+    title: title ? 'Found' : 'NOT FOUND',
+    message: message ? 'Found' : 'NOT FOUND',
+    confirmText: confirmText ? 'Found' : 'NOT FOUND'
+  });
+
+  if (!modal || !container || !title || !message) {
+    console.error('❌ Modal elements missing!');
+    return;
+  }
+
+  // Configure content based on action
+  if (newStatus) {
+    if (icon) icon.className = 'toggle-modal-icon activate';
+    if (iconFa) iconFa.className = 'fas fa-play';
+    title.textContent = 'Activar Hardware';
+    message.textContent = '¿Estás seguro de que quieres activar este hardware?';
+    if (confirmText) confirmText.textContent = 'Activar';
+    if (confirmIcon) confirmIcon.className = 'fas fa-play';
+  } else {
+    if (icon) icon.className = 'toggle-modal-icon deactivate';
+    if (iconFa) iconFa.className = 'fas fa-power-off';
+    title.textContent = 'Desactivar Hardware';
+    message.textContent = '¿Estás seguro de que quieres desactivar este hardware?';
+    if (confirmText) confirmText.textContent = 'Desactivar';
+    if (confirmIcon) confirmIcon.className = 'fas fa-power-off';
+  }
+
+  // Show modal immediately first
+  modal.classList.remove('hidden');
+  modal.style.display = 'flex';
+  document.body.classList.add('modal-open');
+  
+  console.log('✅ Modal should now be visible');
+  console.log('📊 Modal classes:', modal.className);
+  console.log('📊 Modal display:', modal.style.display);
+
+  // Simple animation without complex GSAP for debugging
+  if (typeof gsap !== 'undefined') {
+    gsap.set(container, { scale: 0.8, opacity: 0 });
+    gsap.to(container, {
+      scale: 1,
+      opacity: 1,
+      duration: 0.3,
+      ease: "power2.out"
+    });
+  } else {
+    console.warn('⚠️ GSAP not loaded, using CSS animation');
+    container.style.transform = 'scale(1)';
+    container.style.opacity = '1';
+  }
+}
+
+// Close toggle modal with animation
+function closeToggleModal() {
+  console.log('🔄 Closing toggle modal');
+  
+  const modal = document.getElementById('toggleHardwareModal');
+  const container = document.getElementById('toggleModalContainer');
+  const buttons = document.querySelector('.toggle-modal-buttons');
+  const confirmBtn = document.getElementById('toggleConfirmBtn');
+  
+  if (!modal) {
+    console.error('❌ Modal not found when trying to close');
+    return;
+  }
+  
+  // Simple close without complex animation for debugging
+  if (typeof gsap !== 'undefined' && container) {
+    gsap.to(container, {
+      scale: 0.8,
+      opacity: 0,
+      duration: 0.2,
+      ease: "power2.in",
+      onComplete: () => {
+        resetAndHideModal();
+      }
+    });
+  } else {
+    resetAndHideModal();
+  }
+  
+  function resetAndHideModal() {
+    modal.classList.add('hidden');
+    modal.style.display = 'none';
+    document.body.classList.remove('modal-open');
+    
+    // Reset modal state completely
+    if (buttons) {
+      buttons.style.display = 'flex';
+      buttons.style.opacity = '1';
+      buttons.style.transform = 'none';
+    }
+    if (confirmBtn) {
+      confirmBtn.disabled = false;
+      confirmBtn.innerHTML = '<i class="fas fa-check" id="toggleConfirmIcon"></i> <span id="toggleConfirmText">Confirmar</span>';
+    }
+    
+    // Reset icon and text
+    const icon = document.getElementById('toggleModalIcon');
+    const iconFa = document.getElementById('toggleModalIconFa');
+    const title = document.getElementById('toggleModalTitle');
+    const message = document.getElementById('toggleModalMessage');
+    
+    if (icon) {
+      icon.style.transform = 'none';
+      icon.style.scale = '1';
+    }
+    if (title) title.textContent = 'Confirmar Acción';
+    if (message) message.textContent = '¿Estás seguro de que quieres continuar?';
+    
+    // Reset data
+    toggleModalData.hardwareId = null;
+    toggleModalData.newStatus = null;
+    
+    console.log('✅ Toggle modal closed and fully reset');
+  }
+}
+
+// Confirm toggle hardware status
+function confirmToggleHardware() {
+  if (toggleModalData.hardwareId && toggleModalData.newStatus !== null) {
+    // Show loading state
+    const confirmBtn = document.getElementById('toggleConfirmBtn');
+    const originalContent = confirmBtn.innerHTML;
+    
+    confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+    confirmBtn.disabled = true;
+    
+    // Call the API function
+    toggleHardwareStatusAPI(toggleModalData.hardwareId, toggleModalData.newStatus)
+      .then(() => {
+        // Show success feedback before closing
+        showToggleSuccess(toggleModalData.newStatus);
+      })
+      .catch((error) => {
+        // Restore button on error
+        confirmBtn.innerHTML = originalContent;
+        confirmBtn.disabled = false;
+        console.error('Error in toggle operation:', error);
+      });
+  }
+}
+
+// Show toggle success feedback
+function showToggleSuccess(activated) {
+  console.log('✅ Showing toggle success for:', activated ? 'activate' : 'deactivate');
+  
+  const container = document.getElementById('toggleModalContainer');
+  const icon = document.getElementById('toggleModalIcon');
+  const iconFa = document.getElementById('toggleModalIconFa');
+  const title = document.getElementById('toggleModalTitle');
+  const message = document.getElementById('toggleModalMessage');
+  const buttons = document.querySelector('.toggle-modal-buttons');
+  
+  if (!icon || !title || !message || !buttons) {
+    console.error('❌ Toggle success elements missing!');
+    closeToggleModal();
+    return;
+  }
+  
+  // Update content to show success
+  if (activated) {
+    icon.className = 'toggle-modal-icon activate';
+    if (iconFa) iconFa.className = 'fas fa-check-circle';
+    title.textContent = '¡Hardware Activado!';
+    message.textContent = 'El hardware se ha activado exitosamente.';
+  } else {
+    icon.className = 'toggle-modal-icon deactivate';
+    if (iconFa) iconFa.className = 'fas fa-times-circle';
+    title.textContent = '¡Hardware Desactivado!';
+    message.textContent = 'El hardware se ha desactivado exitosamente.';
+  }
+  
+  // Hide buttons temporarily
+  if (typeof gsap !== 'undefined') {
+    gsap.to(buttons, {
+      opacity: 0,
+      duration: 0.3,
+      onComplete: () => {
+        buttons.style.display = 'none';
+      }
+    });
+    
+    // Animate success state
+    gsap.to(icon, {
+      scale: 1.2,
+      duration: 0.3,
+      ease: "back.out(1.7)"
+    });
+  } else {
+    buttons.style.display = 'none';
+  }
+  
+  // Auto-close after 2 seconds
+  setTimeout(() => {
+    closeToggleModal();
+  }, 2000);
+}
+
+// Client Update Modal Functions
+function showClientUpdateModal(message = 'El cliente se ha actualizado exitosamente.') {
+  console.log('🔄 Showing client update modal:', message);
+  
+  const modal = document.getElementById('clientUpdateModal');
+  const container = document.getElementById('updateModalContainer');
+  const icon = document.getElementById('updateModalIcon');
+  const iconFa = document.getElementById('updateModalIconFa');
+  const title = document.getElementById('updateModalTitle');
+  const messageEl = document.getElementById('updateModalMessage');
+  
+  if (!modal || !container || !title || !messageEl) {
+    console.error('❌ Client update modal elements missing!');
+    return;
+  }
+  
+  // Set success styling with separate classes
+  if (icon) icon.className = 'client-update-icon';
+  if (iconFa) iconFa.className = 'fas fa-check-circle';
+  
+  // Set dynamic title based on message
+  if (message.includes('creado')) {
+    title.textContent = '¡Hardware Creado!';
+  } else if (message.includes('actualizado')) {
+    title.textContent = '¡Hardware Actualizado!';
+  } else {
+    title.textContent = '¡Operación Exitosa!';
+  }
+  
+  messageEl.textContent = message;
+  
+  // Show modal
+  modal.classList.remove('hidden');
+  modal.style.display = 'flex';
+  document.body.classList.add('modal-open');
+  
+  console.log('✅ Client update modal should now be visible');
+  
+  // Simple animation
+  if (typeof gsap !== 'undefined') {
+    gsap.set(container, { scale: 0.8, opacity: 0 });
+    gsap.to(container, {
+      scale: 1,
+      opacity: 1,
+      duration: 0.4,
+      ease: "back.out(1.7)"
+    });
+    
+    if (icon) {
+      gsap.to(icon, {
+        scale: 1.1,
+        duration: 0.6,
+        repeat: 1,
+        yoyo: true,
+        ease: "power2.inOut"
+      });
+    }
+  } else {
+    container.style.transform = 'scale(1)';
+    container.style.opacity = '1';
+  }
+  
+  // NO auto-close - wait for user interaction
+  console.log('⏰ Modal will stay open until user clicks Aceptar or clicks outside');
+}
+
+// Close update modal
+function closeUpdateModal() {
+  console.log('🔄 Closing client update modal');
+  
+  const modal = document.getElementById('clientUpdateModal');
+  const container = document.getElementById('updateModalContainer');
+  
+  if (!modal) {
+    console.error('❌ Client update modal not found when trying to close');
+    return;
+  }
+  
+  // Simple close animation
+  if (typeof gsap !== 'undefined' && container) {
+    gsap.to(container, {
+      scale: 0.8,
+      opacity: 0,
+      duration: 0.3,
+      ease: "power2.in",
+      onComplete: () => {
+        resetAndHideUpdateModal();
+      }
+    });
+  } else {
+    resetAndHideUpdateModal();
+  }
+  
+  function resetAndHideUpdateModal() {
+    modal.classList.add('hidden');
+    modal.style.display = 'none';
+    document.body.classList.remove('modal-open');
+    
+    console.log('✅ Client update modal closed');
+  }
+}
+
+// Test function for modal (debugging)
+function testToggleModal() {
+  console.log('🧪 Testing toggle modal...');
+  showConfirmToggleModal('test-id', true);
+}
+
+// Test function for client update modal
+function testUpdateModal() {
+  console.log('🧪 Testing client update modal...');
+  showClientUpdateModal('Hardware actualizado exitosamente para prueba');
+}
+
+// Make test functions available globally
+window.testToggleModal = testToggleModal;
+window.testUpdateModal = testUpdateModal;
 
 // Initialize API client
 let apiClient;
 let currentToken = null;
+
+// Check modal elements on page load
+function checkModalElements() {
+  console.log('🔍 Checking modal elements...');
+  
+  const toggleElements = {
+    toggleModal: document.getElementById('toggleHardwareModal'),
+    toggleContainer: document.getElementById('toggleModalContainer'),
+    toggleTitle: document.getElementById('toggleModalTitle'),
+    toggleMessage: document.getElementById('toggleModalMessage'),
+    toggleButtons: document.querySelector('.toggle-modal-buttons'),
+    toggleConfirmBtn: document.getElementById('toggleConfirmBtn')
+  };
+  
+  const updateElements = {
+    updateModal: document.getElementById('clientUpdateModal'),
+    updateContainer: document.getElementById('updateModalContainer'),
+    updateTitle: document.getElementById('updateModalTitle'),
+    updateMessage: document.getElementById('updateModalMessage'),
+    updateButton: document.querySelector('.client-update-button')
+  };
+  
+  console.log('🔵 Toggle Modal Elements:');
+  Object.entries(toggleElements).forEach(([name, element]) => {
+    if (element) {
+      console.log(`  ✅ ${name}: Found`);
+    } else {
+      console.error(`  ❌ ${name}: NOT FOUND`);
+    }
+  });
+  
+  console.log('🟢 Update Modal Elements:');
+  Object.entries(updateElements).forEach(([name, element]) => {
+    if (element) {
+      console.log(`  ✅ ${name}: Found`);
+    } else {
+      console.error(`  ❌ ${name}: NOT FOUND`);
+    }
+  });
+  
+  return { ...toggleElements, ...updateElements };
+}
 
 // Get token from session and initialize
 fetch('/proxy/health')
@@ -428,6 +2033,13 @@ fetch('/proxy/health')
     if (response.ok) {
       apiClient = new EndpointTestClient('/proxy');
       console.log('API Client initialized');
+      
+      // Check modal elements
+      setTimeout(checkModalElements, 1000);
+      
+      // Initialize filter listeners first
+      initializeFilterListeners();
+      
       // Load hardware data on page load
       setTimeout(() => {
         loadHardware();
@@ -439,20 +2051,82 @@ fetch('/proxy/health')
   .catch(err => console.error('Error initializing API client:', err));
 
 // Functions for CRUD operations
+let isLoadingHardware = false;
+
 async function loadHardware() {
+  if (isLoadingHardware) {
+    console.warn('⚠️ loadHardware ya en progreso, saltando llamada duplicada...');
+    return;
+  }
+  
+  isLoadingHardware = true;
   try {
-    const response = await apiClient.get_hardware_list();
+    console.log('🔄 Cargando hardware...');
+    
+    // Determinar qué endpoint usar basado en el filtro de inactivos
+    const includeInactiveFilter = document.getElementById('includeInactiveFilter');
+    const includeInactive = includeInactiveFilter ? includeInactiveFilter.value === 'all' : false;
+    
+    let response;
+    if (includeInactive) {
+      console.log('🌐 Haciendo petición a:', '/proxy/api/hardware/all-including-inactive');
+      response = await apiClient.get_hardware_list_including_inactive();
+    } else {
+      console.log('🌐 Haciendo petición a:', '/proxy/api/hardware');
+      response = await apiClient.get_hardware_list();
+    }
+    
+    console.log('📡 Respuesta recibida - Status:', response.status, 'OK:', response.ok);
+    
+    if (!response.ok) {
+      if (response.status === 401) {
+        console.error('❌ Error 401: No autorizado. Redirigiendo al login...');
+        window.location.href = '/login';
+        return;
+      }
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
     const data = await response.json();
     
+    console.log('📦 Datos COMPLETOS recibidos del servidor:');
+    console.log(JSON.stringify(data, null, 2));
+    console.log('🔍 Tipo de dato recibido:', typeof data);
+    console.log('🔍 Es array data?:', Array.isArray(data));
+    console.log('🔍 Es array data.data?:', Array.isArray(data.data));
+    console.log('🔍 Incluye inactivos?:', includeInactive);
+    
     if (data.success) {
-      console.log('Hardware loaded:', data);
+      console.log(`✅ Hardware cargado exitosamente: ${data.data.length} elementos`);
+      console.log('📋 Primer elemento de la lista (si existe):');
+      if (data.data && data.data.length > 0) {
+        console.log(JSON.stringify(data.data[0], null, 2));
+        
+        // Verificar si realmente es hardware o empresas
+        const firstItem = data.data[0];
+        if (firstItem.hasOwnProperty('nombre') && firstItem.hasOwnProperty('tipo')) {
+          console.log('✅ Confirmado: Los datos son HARDWARE');
+        } else if (firstItem.hasOwnProperty('nombre') && firstItem.hasOwnProperty('ubicacion')) {
+          console.error('❌ ERROR: Los datos son EMPRESAS, no hardware!');
+        } else {
+          console.warn('⚠️ ADVERTENCIA: Estructura de datos desconocida');
+        }
+      }
+      
+      // Renderizar hardware
       renderHardware(data.data);
       updateStats(data);
     } else {
-      console.error('Error loading hardware:', data.errors);
+      console.error('❌ Error en la respuesta del servidor:', data.errors);
+      // Mostrar mensaje de error al usuario
+      renderHardware([]);
     }
   } catch (error) {
-    console.error('Error al cargar hardware:', error);
+    console.error('💥 Error al cargar hardware:', error);
+    // Mostrar mensaje de error al usuario
+    renderHardware([]);
+  } finally {
+    isLoadingHardware = false;
   }
 }
 
@@ -462,15 +2136,16 @@ async function createHardwareAPI(hardwareData) {
     const data = await response.json();
     
     if (data.success) {
-      alert('Hardware creado exitosamente');
+      // Show client update modal instead of alert for creation
+      showClientUpdateModal('Hardware creado exitosamente');
       loadHardware();
       closeModal();
     } else {
-      alert('Error: ' + (data.errors ? data.errors.join(', ') : 'Error desconocido'));
+      showEnhancedNotification('Error: ' + (data.errors ? data.errors.join(', ') : 'Error desconocido'), 'error');
     }
   } catch (error) {
     console.error('Error al crear hardware:', error);
-    alert('Error de conexión');
+    showEnhancedNotification('Error de conexión', 'error');
   }
 }
 
@@ -480,141 +2155,395 @@ async function updateHardwareAPI(id, hardwareData) {
     const data = await response.json();
     
     if (data.success) {
-      alert('Hardware actualizado exitosamente');
+      // Show client update modal instead of alert
+      showClientUpdateModal('Hardware actualizado exitosamente');
       loadHardware();
       closeModal();
     } else {
-      alert('Error: ' + (data.errors ? data.errors.join(', ') : 'Error desconocido'));
+      showEnhancedNotification('Error: ' + (data.errors ? data.errors.join(', ') : 'Error desconocido'), 'error');
     }
   } catch (error) {
     console.error('Error al actualizar hardware:', error);
-    alert('Error de conexión');
+    showEnhancedNotification('Error de conexión', 'error');
   }
 }
 
-async function deleteHardwareAPI(id) {
-  if (!confirm('¿Estás seguro de que quieres eliminar este hardware?')) {
-    return;
-  }
-  
-  try {
-    const response = await apiClient.delete_hardware(id);
-    const data = await response.json();
-    
-    if (data.success) {
-      alert('Hardware eliminado exitosamente');
-      loadHardware();
-    } else {
-      alert('Error: ' + (data.errors ? data.errors.join(', ') : 'Error desconocido'));
-    }
-  } catch (error) {
-    console.error('Error al eliminar hardware:', error);
-    alert('Error de conexión');
-  }
-}
 
 async function toggleHardwareStatusAPI(id, activa) {
   const action = activa ? 'activar' : 'desactivar';
-  if (!confirm(`¿Estás seguro de que quieres ${action} este hardware?`)) {
-    return;
-  }
   
   try {
     const response = await apiClient.toggle_hardware_status(id, activa);
     const data = await response.json();
     
     if (data.success) {
-      alert(data.message || `Hardware ${action}do exitosamente`);
+      console.log(`✅ Hardware ${action}do exitosamente:`, data.message);
+      // Mostrar notificación mejorada
+      showEnhancedNotification(data.message || `Hardware ${action}do exitosamente`, 'success');
+      // Recargar hardware para reflejar el cambio
       loadHardware();
+      return Promise.resolve(data);
     } else {
-      alert('Error: ' + (data.errors ? data.errors.join(', ') : 'Error desconocido'));
+      console.error('❌ Error al cambiar estado:', data.errors);
+      const errorMsg = 'Error: ' + (data.errors ? data.errors.join(', ') : 'Error desconocido');
+      showEnhancedNotification(errorMsg, 'error');
+      return Promise.reject(new Error(errorMsg));
     }
   } catch (error) {
-    console.error('Error al cambiar estado del hardware:', error);
-    alert('Error de conexión');
+    console.error('💥 Error al cambiar estado del hardware:', error);
+    showEnhancedNotification('Error de conexión', 'error');
+    return Promise.reject(error);
+  }
+}
+
+// Función helper para mostrar notificaciones menos intrusivas (legacy)
+function showNotification(message, type = 'info') {
+  showEnhancedNotification(message, type);
+}
+
+// Enhanced notification system with GSAP
+function showEnhancedNotification(message, type = 'info') {
+  // Remove existing notifications
+  const existingNotifications = document.querySelectorAll('.enhanced-notification');
+  existingNotifications.forEach(notification => notification.remove());
+  
+  // Create notification element
+  const notification = document.createElement('div');
+  notification.className = `enhanced-notification fixed top-4 right-4 z-50 max-w-sm w-full`;
+  
+  let iconClass, bgClass, borderClass;
+  if (type === 'error') {
+    iconClass = 'fas fa-exclamation-circle';
+    bgClass = 'bg-red-500';
+    borderClass = 'border-red-600';
+  } else {
+    iconClass = 'fas fa-check-circle';
+    bgClass = 'bg-green-500';
+    borderClass = 'border-green-600';
+  }
+  
+  notification.innerHTML = `
+    <div class="${bgClass} ${borderClass} border-l-4 text-white p-4 rounded-lg shadow-xl backdrop-blur-sm">
+      <div class="flex items-center">
+        <div class="flex-shrink-0">
+          <i class="${iconClass} text-xl"></i>
+        </div>
+        <div class="ml-3">
+          <p class="text-sm font-medium">${message}</p>
+        </div>
+        <div class="ml-auto pl-3">
+          <button onclick="closeNotification(this)" class="text-white hover:text-gray-200 transition-colors">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  // Add to document
+  document.body.appendChild(notification);
+  
+  // GSAP animations
+  gsap.set(notification, { x: 400, opacity: 0 });
+  
+  const tl = gsap.timeline();
+  tl.to(notification, {
+    x: 0,
+    opacity: 1,
+    duration: 0.5,
+    ease: "back.out(1.7)"
+  })
+  .to(notification, {
+    scale: 1.05,
+    duration: 0.1,
+    yoyo: true,
+    repeat: 1,
+    ease: "power2.inOut"
+  }, "-=0.2");
+  
+  // Auto-remove after 4 seconds
+  setTimeout(() => {
+    closeNotification(notification.querySelector('button'));
+  }, 4000);
+}
+
+// Close notification with animation
+function closeNotification(button) {
+  const notification = button.closest('.enhanced-notification');
+  if (notification) {
+    gsap.to(notification, {
+      x: 400,
+      opacity: 0,
+      duration: 0.3,
+      ease: "back.in(1.7)",
+      onComplete: () => notification.remove()
+    });
   }
 }
 
 // Render hardware data
 function renderHardware(hardwareList) {
+  console.log('🎨 === INICIANDO RENDERIZADO DE HARDWARE ===');
+  console.log('📋 hardwareList recibida:', hardwareList);
+  console.log('🔢 Tipo de hardwareList:', typeof hardwareList);
+  console.log('🔢 Es array:', Array.isArray(hardwareList));
+  console.log('🔢 Longitud:', hardwareList ? hardwareList.length : 'N/A');
+  
   const gridContainer = document.getElementById('hardwareGrid');
   const tableBody = document.querySelector('#hardwareTable tbody');
   
-  // Clear existing content
+  console.log('🔍 Contenedores encontrados:');
+  console.log('  - gridContainer:', gridContainer ? 'SI' : 'NO');
+  console.log('  - tableBody:', tableBody ? 'SI' : 'NO');
+  
+  if (!gridContainer) {
+    console.error('❌ No se encontró el contenedor de grid de hardware');
+    return;
+  }
+  
+  if (!tableBody) {
+    console.error('❌ No se encontró el tbody de la tabla de hardware');
+    return;
+  }
+  
+  // Clear existing content more thoroughly
+  console.log('🧹 Limpiando contenido existente...');
   gridContainer.innerHTML = '';
   tableBody.innerHTML = '';
   
-  hardwareList.forEach(hardware => {
-    // Create grid card
-    const gridCard = createHardwareCard(hardware);
-    gridContainer.appendChild(gridCard);
+  // Remove any existing filter messages
+  const existingFilterMessage = document.getElementById('filterEmptyMessage');
+  if (existingFilterMessage) {
+    console.log('🧹 Removiendo mensaje de filtro existente');
+    existingFilterMessage.remove();
+  }
+  const existingFilterMessageTable = document.getElementById('filterEmptyMessageTable');
+  if (existingFilterMessageTable) {
+    console.log('🧹 Removiendo mensaje de tabla existente');
+    existingFilterMessageTable.remove();
+  }
+  
+  if (!hardwareList || hardwareList.length === 0) {
+    // Show empty state
+    const emptyMessage = document.createElement('div');
+    emptyMessage.className = 'col-span-full text-center py-8';
+    emptyMessage.innerHTML = `
+      <div class="text-center">
+        <i class="fas fa-box-open text-4xl mb-4 text-gray-400"></i>
+        <h2 class="text-2xl font-bold text-white mb-2">No hay hardware disponible para este filtro</h2>
+        <p class="text-sm text-gray-400">Prueba ajustando los filtros o haz clic en "Nuevo Hardware" para agregar uno.</p>
+      </div>
+    `;
+    gridContainer.appendChild(emptyMessage);
     
-    // Create table row
-    const tableRow = createHardwareTableRow(hardware);
-    tableBody.appendChild(tableRow);
+    const emptyRow = document.createElement('tr');
+    emptyRow.innerHTML = '<td colspan="6" class="text-center py-8"><h2 class="text-2xl font-bold text-white">No hay hardware disponible para este filtro</h2></td>';
+    tableBody.appendChild(emptyRow);
+    return;
+  }
+  
+  console.log(`🔨 Creando ${hardwareList.length} elementos de hardware...`);
+  
+  hardwareList.forEach((hardware, index) => {
+    try {
+      console.log(`📦 Procesando hardware ${index + 1}:`, hardware);
+      
+      // Verificar si ya existe un elemento con este ID para evitar duplicados
+      const existingGridItem = document.querySelector(`[data-hardware-id="${hardware._id}"]`);
+      if (existingGridItem) {
+        console.warn(`⚠️ Hardware ${hardware._id} ya existe en el DOM, saltando...`);
+        return;
+      }
+      
+      // Create grid card
+      const gridCard = createHardwareCard(hardware);
+      if (gridCard) {
+        // Añadir ID único para evitar duplicados
+        gridCard.setAttribute('data-hardware-id', hardware._id);
+        gridContainer.appendChild(gridCard);
+        console.log(`✅ Card ${index + 1} agregada al grid`);
+      } else {
+        console.error(`❌ No se pudo crear card para hardware ${index + 1}`);
+      }
+      
+      // Create table row
+      const tableRow = createHardwareTableRow(hardware);
+      if (tableRow) {
+        // Añadir ID único para evitar duplicados
+        tableRow.setAttribute('data-hardware-id', hardware._id);
+        tableBody.appendChild(tableRow);
+        console.log(`✅ Fila ${index + 1} agregada a la tabla`);
+      } else {
+        console.error(`❌ No se pudo crear fila para hardware ${index + 1}`);
+      }
+    } catch (error) {
+      console.error(`💥 Error renderizando hardware ${index + 1}:`, error, hardware);
+    }
   });
+  
+  console.log(`🎉 === RENDERIZADO COMPLETADO ===`);
+  console.log(`  - Grid tiene: ${gridContainer.children.length} elementos`);
+  console.log(`  - Tabla tiene: ${tableBody.children.length} filas`);
+  
+  // Verificar que los elementos tengan las clases correctas
+  const gridItems = document.querySelectorAll('.hardware-item');
+  const tableItems = document.querySelectorAll('.hardware-table-item');
+  console.log(`🔍 Elementos renderizados:`);
+  console.log(`  - Grid items (.hardware-item): ${gridItems.length}`);
+  console.log(`  - Table items (.hardware-table-item): ${tableItems.length}`);
+  
+  if (gridItems.length > 0) {
+    console.log('🔍 Primer elemento del grid:');
+    const firstGridItem = gridItems[0];
+    console.log('  - Clases:', firstGridItem.className);
+    console.log('  - data-name:', firstGridItem.dataset.name);
+    console.log('  - data-type:', firstGridItem.dataset.type);
+    console.log('  - data-status:', firstGridItem.dataset.status);
+    console.log('  - data-activa:', firstGridItem.dataset.activa);
+  }
+  
+  // Apply current filters after rendering
+  console.log('🕰️ Programando aplicación de filtros en 100ms...');
+  setTimeout(() => {
+    console.log('🕰️ Aplicando filtros ahora...');
+    applyCurrentFilters();
+  }, 100);
 }
 
 // Create hardware card for grid view
 function createHardwareCard(hardware) {
-  const div = document.createElement('div');
-  div.className = 'glass-card hover:shadow-lg transition-shadow duration-300 hardware-item';
-  div.setAttribute('data-type', hardware.tipo);
-  div.setAttribute('data-status', hardware.datos?.status || 'available');
-  div.setAttribute('data-name', hardware.nombre);
-  
-  div.innerHTML = `
-    <div class="p-6">
-      <div class="flex items-center justify-between mb-4">
-        <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-600 rounded-lg flex items-center justify-center">
-          <i class="fas fa-microchip text-white text-xl"></i>
+  try {
+    console.log('🏗️ Creando card para hardware:', hardware);
+    
+    const div = document.createElement('div');
+    div.className = 'glass-card hover:shadow-lg transition-shadow duration-300 hardware-item';
+    
+    // Extract nested data properly
+    const datos = hardware.datos?.datos || hardware.datos || {};
+    const status = datos.status || 'available';
+    const stock = datos.stock || 0;
+    
+    console.log('📊 Datos extraídos:', { datos, status, stock });
+    
+    // Set data attributes for filtering
+    div.setAttribute('data-type', hardware.tipo || '');
+    div.setAttribute('data-status', status);
+    div.setAttribute('data-name', (hardware.nombre || '').toLowerCase());
+    div.setAttribute('data-brand', (datos.brand || '').toLowerCase());
+    div.setAttribute('data-model', (datos.model || '').toLowerCase());
+    div.setAttribute('data-sede', (hardware.sede || '').toLowerCase());
+    div.setAttribute('data-stock', stock);
+    div.setAttribute('data-activa', hardware.activa !== false ? 'true' : 'false');
+    
+    // Determine status display and color
+    let statusClass = 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+    let statusText = 'Disponible';
+    
+    if (stock === 0 || status === 'out_of_stock') {
+      statusClass = 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
+      statusText = 'Sin Stock';
+    } else if (status === 'discontinued') {
+      statusClass = 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+      statusText = 'Descontinuado';
+    } else if (!hardware.activa) {
+      statusClass = 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
+      statusText = 'Inactivo';
+    }
+    
+    div.innerHTML = `
+      <div class="p-6">
+        <div class="flex items-center justify-between mb-4">
+          <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-600 rounded-lg flex items-center justify-center">
+            <i class="fas fa-microchip text-white text-xl"></i>
+          </div>
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusClass}">
+            ${statusText}
+          </span>
         </div>
-        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-          ${hardware.datos?.status || 'Disponible'}
-        </span>
+        
+        <h3 class="text-lg font-semibold text-black dark:text-white mb-2">${hardware.nombre || 'Sin nombre'}</h3>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">${datos.brand || 'N/A'} - ${datos.model || 'N/A'}</p>
+        
+        <div class="space-y-2 mb-4">
+          <div class="flex justify-between text-sm">
+            <span class="text-gray-500 dark:text-gray-400">Tipo:</span>
+            <span class="font-medium text-black dark:text-white">${hardware.tipo || 'N/A'}</span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-gray-500 dark:text-gray-400">Sede:</span>
+            <span class="font-medium text-black dark:text-white">${hardware.sede || 'N/A'}</span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-gray-500 dark:text-gray-400">Stock:</span>
+            <span class="font-medium text-black dark:text-white">${stock} unidades</span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-gray-500 dark:text-gray-400">Precio:</span>
+            <span class="font-medium text-black dark:text-white">$${datos.price || 0}</span>
+          </div>
+        </div>
+        
+        <div class="flex space-x-2">
+          <button class="flex-1 btn-secondary text-sm" onclick="viewHardware('${hardware._id}')">
+            <i class="fas fa-eye"></i>
+            Ver
+          </button>
+          <button class="flex-1 btn-primary text-sm" onclick="editHardware('${hardware._id}')">
+            <i class="fas fa-edit"></i>
+            Editar
+          </button>
+          <button class="${hardware.activa ? 'btn-warning' : 'btn-success'} text-sm px-3" 
+                  onclick="toggleHardwareStatus('${hardware._id}', ${!hardware.activa})" 
+                  title="${hardware.activa ? 'Desactivar' : 'Activar'}">
+            <i class="fas ${hardware.activa ? 'fa-power-off' : 'fa-play'}"></i>
+          </button>
+        </div>
       </div>
-      
-      <h3 class="text-lg font-semibold text-black dark:text-white mb-2">${hardware.nombre}</h3>
-      <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">${hardware.datos?.brand || 'N/A'} - ${hardware.datos?.model || 'N/A'}</p>
-      
-      <div class="space-y-2 mb-4">
-        <div class="flex justify-between text-sm">
-          <span class="text-gray-500 dark:text-gray-400">Tipo:</span>
-          <span class="font-medium text-black dark:text-white">${hardware.tipo}</span>
-        </div>
-        <div class="flex justify-between text-sm">
-          <span class="text-gray-500 dark:text-gray-400">Empresa:</span>
-          <span class="font-medium text-black dark:text-white">${hardware.empresa_nombre || 'N/A'}</span>
-        </div>
-        <div class="flex justify-between text-sm">
-          <span class="text-gray-500 dark:text-gray-400">Precio:</span>
-          <span class="font-medium text-black dark:text-white">$${hardware.datos?.price || 0}</span>
-        </div>
-      </div>
-      
-      <div class="flex space-x-2">
-        <button class="flex-1 btn-secondary text-sm" onclick="viewHardware('${hardware._id}')">
-          <i class="fas fa-eye"></i>
-          Ver
-        </button>
-        <button class="flex-1 btn-primary text-sm" onclick="editHardware('${hardware._id}')">
-          <i class="fas fa-edit"></i>
-          Editar
-        </button>
-        <button class="btn-danger text-sm px-3" onclick="deleteHardware('${hardware._id}')">
-          <i class="fas fa-trash"></i>
-        </button>
-      </div>
-    </div>
-  `;
-  
-  return div;
+    `;
+    
+    console.log('✅ Card creada exitosamente');
+    return div;
+    
+  } catch (error) {
+    console.error('💥 Error creando card:', error);
+    return null;
+  }
 }
 
 // Create hardware table row
 function createHardwareTableRow(hardware) {
   const tr = document.createElement('tr');
-  tr.className = 'hover:bg-gray-50 dark:hover:bg-gray-700';
+  tr.className = 'hover:bg-gray-50 dark:hover:bg-gray-700 hardware-table-item';
+  
+  // Extract nested data properly
+  const datos = hardware.datos?.datos || hardware.datos || {};
+  const status = datos.status || 'available';
+  const stock = datos.stock || 0;
+  
+  // Set data attributes for filtering
+  tr.setAttribute('data-type', hardware.tipo || '');
+  tr.setAttribute('data-status', status);
+  tr.setAttribute('data-name', (hardware.nombre || '').toLowerCase());
+  tr.setAttribute('data-brand', (datos.brand || '').toLowerCase());
+  tr.setAttribute('data-model', (datos.model || '').toLowerCase());
+  tr.setAttribute('data-sede', (hardware.sede || '').toLowerCase());
+  tr.setAttribute('data-stock', stock);
+  tr.setAttribute('data-activa', hardware.activa !== false ? 'true' : 'false');
+  
+  // Determine status display and color
+  let statusClass = 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+  let statusText = 'Disponible';
+  
+  if (stock === 0 || status === 'out_of_stock') {
+    statusClass = 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
+    statusText = 'Sin Stock';
+  } else if (status === 'discontinued') {
+    statusClass = 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+    statusText = 'Descontinuado';
+  } else if (!hardware.activa) {
+    statusClass = 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
+    statusText = 'Inactivo';
+  }
   
   tr.innerHTML = `
     <td class="px-6 py-4 whitespace-nowrap">
@@ -623,17 +2552,17 @@ function createHardwareTableRow(hardware) {
           <i class="fas fa-microchip text-white"></i>
         </div>
         <div class="ml-4">
-          <div class="text-sm font-medium text-black dark:text-white">${hardware.nombre}</div>
-          <div class="text-sm text-gray-500 dark:text-gray-400">${hardware.datos?.brand || 'N/A'} - ${hardware.datos?.model || 'N/A'}</div>
+          <div class="text-sm font-medium text-black dark:text-white">${hardware.nombre || 'Sin nombre'}</div>
+          <div class="text-sm text-gray-500 dark:text-gray-400">${datos.brand || 'N/A'} - ${datos.model || 'N/A'}</div>
         </div>
       </div>
     </td>
-    <td class="px-6 py-4 whitespace-nowrap text-sm text-black dark:text-white">${hardware.tipo}</td>
-    <td class="px-6 py-4 whitespace-nowrap text-sm text-black dark:text-white">$${hardware.datos?.price || 0}</td>
-    <td class="px-6 py-4 whitespace-nowrap text-sm text-black dark:text-white">${hardware.datos?.stock || 0}</td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm text-black dark:text-white">${hardware.tipo || 'N/A'}</td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm text-black dark:text-white">$${datos.price || 0}</td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm text-black dark:text-white">${stock}</td>
     <td class="px-6 py-4 whitespace-nowrap">
-      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-        ${hardware.datos?.status || 'Disponible'}
+      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusClass}">
+        ${statusText}
       </span>
     </td>
     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -644,8 +2573,10 @@ function createHardwareTableRow(hardware) {
         <button class="text-blue-600 hover:text-blue-700 dark:text-blue-400" onclick="editHardware('${hardware._id}')">
           <i class="fas fa-edit"></i>
         </button>
-        <button class="text-red-600 hover:text-red-700 dark:text-red-400" onclick="deleteHardware('${hardware._id}')">
-          <i class="fas fa-trash"></i>
+        <button class="${hardware.activa ? 'text-orange-600 hover:text-orange-700 dark:text-orange-400' : 'text-green-600 hover:text-green-700 dark:text-green-400'}" 
+                onclick="toggleHardwareStatus('${hardware._id}', ${!hardware.activa})" 
+                title="${hardware.activa ? 'Desactivar' : 'Activar'}">
+          <i class="fas ${hardware.activa ? 'fa-power-off' : 'fa-play'}"></i>
         </button>
       </div>
     </td>
@@ -654,11 +2585,46 @@ function createHardwareTableRow(hardware) {
   return tr;
 }
 
-// Update stats
+// Update stats with real data
 function updateStats(data) {
+  // Update total items
   if (data.count !== undefined) {
     const totalElement = document.getElementById('totalItemsCount');
     if (totalElement) totalElement.textContent = data.count;
+  }
+  
+  // Calculate and update other stats from the hardware list
+  if (data.data && Array.isArray(data.data)) {
+    const hardwareList = data.data;
+    let availableCount = 0;
+    let outOfStockCount = 0;
+    let totalValue = 0;
+    
+    hardwareList.forEach(hardware => {
+      const datos = hardware.datos?.datos || hardware.datos || {};
+      const stock = datos.stock || 0;
+      const price = datos.price || 0;
+      const status = datos.status || 'available';
+      
+      // Count availability
+      if (hardware.activa && stock > 0 && status !== 'discontinued') {
+        availableCount++;
+      } else if (stock === 0 || status === 'out_of_stock') {
+        outOfStockCount++;
+      }
+      
+      // Calculate total value
+      totalValue += price * stock;
+    });
+    
+    // Update DOM elements
+    const availableElement = document.getElementById('availableItemsCount');
+    const outOfStockElement = document.getElementById('outOfStockCount');
+    const totalValueElement = document.getElementById('totalValueCount');
+    
+    if (availableElement) availableElement.textContent = availableCount;
+    if (outOfStockElement) outOfStockElement.textContent = outOfStockCount;
+    if (totalValueElement) totalValueElement.textContent = `$${totalValue.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
   }
 }
 
@@ -682,18 +2648,102 @@ async function loadHardwareTypes() {
 // Load empresas from backend
 async function loadEmpresas() {
   try {
+    console.log('🏢 Cargando empresas desde /proxy/api/empresas...');
     const response = await apiClient.get_empresas();
     const data = await response.json();
     
     if (data.success) {
-      console.log('Empresas loaded:', data);
+      console.log('🏢 Empresas cargadas:', data.count, 'empresas');
+      console.log('🏢 Primera empresa (si existe):');
+      if (data.data && data.data.length > 0) {
+        console.log(JSON.stringify(data.data[0], null, 2));
+      }
       // Store empresas for form usage
       window.empresas = data.data;
+      // Populate empresa dropdown
+      populateEmpresaDropdown(data.data);
     } else {
-      console.error('Error loading empresas:', data.errors);
+      console.error('❌ Error loading empresas:', data.errors);
     }
   } catch (error) {
-    console.error('Error al cargar empresas:', error);
+    console.error('💥 Error al cargar empresas:', error);
+  }
+}
+
+// Populate empresa dropdown with backend data
+function populateEmpresaDropdown(empresas) {
+  const empresaSelect = document.getElementById('hardwareEmpresa');
+  
+  if (!empresaSelect) {
+    console.warn('⚠️ Elemento hardwareEmpresa no encontrado');
+    return;
+  }
+  
+  // Clear existing options (except the first "Select" option)
+  empresaSelect.innerHTML = '<option value="">Seleccionar empresa</option>';
+  
+  empresas.forEach(empresa => {
+    const option = document.createElement('option');
+    option.value = empresa._id; // Use the empresa ID
+    option.textContent = empresa.nombre;
+    option.dataset.nombre = empresa.nombre; // Store nombre for form submission
+    empresaSelect.appendChild(option);
+  });
+  
+  console.log(`✅ ${empresas.length} empresas agregadas al dropdown`);
+}
+
+// Load sedes for selected empresa
+function loadSedesByEmpresa() {
+  const empresaSelect = document.getElementById('hardwareEmpresa');
+  const sedeSelect = document.getElementById('hardwareSede');
+  
+  if (!empresaSelect || !sedeSelect) {
+    console.warn('⚠️ Elementos de empresa o sede no encontrados');
+    return;
+  }
+  
+  const selectedEmpresaId = empresaSelect.value;
+  
+  // Reset sede dropdown
+  sedeSelect.innerHTML = '<option value="">Seleccionar sede</option>';
+  sedeSelect.disabled = true;
+  
+  if (!selectedEmpresaId) {
+    console.log('🏢 No hay empresa seleccionada');
+    return;
+  }
+  
+  // Find selected empresa
+  const selectedEmpresa = window.empresas?.find(emp => emp._id === selectedEmpresaId);
+  
+  if (!selectedEmpresa) {
+    console.error('❌ Empresa seleccionada no encontrada:', selectedEmpresaId);
+    return;
+  }
+  
+  console.log('🏢 Empresa seleccionada:', selectedEmpresa);
+  
+  // Check if empresa has sedes
+  if (selectedEmpresa.sedes && Array.isArray(selectedEmpresa.sedes)) {
+    selectedEmpresa.sedes.forEach(sede => {
+      const option = document.createElement('option');
+      option.value = sede;
+      option.textContent = sede;
+      sedeSelect.appendChild(option);
+    });
+    
+    sedeSelect.disabled = false;
+    console.log(`✅ ${selectedEmpresa.sedes.length} sedes cargadas para ${selectedEmpresa.nombre}`);
+  } else {
+    // If no sedes array, create a default "Principal" option
+    const defaultOption = document.createElement('option');
+    defaultOption.value = 'Principal';
+    defaultOption.textContent = 'Principal';
+    sedeSelect.appendChild(defaultOption);
+    
+    sedeSelect.disabled = false;
+    console.log('✅ Sede por defecto "Principal" agregada');
   }
 }
 
@@ -723,21 +2773,47 @@ function populateTypeDropdowns(types) {
 document.getElementById('hardwareForm').addEventListener('submit', function(e) {
   e.preventDefault();
   
+  // Get empresa and sede values
+  const empresaSelect = document.getElementById('hardwareEmpresa');
+  const sedeSelect = document.getElementById('hardwareSede');
+  
+  // Validate empresa and sede are selected
+  if (!empresaSelect.value) {
+    alert('Por favor selecciona una empresa');
+    empresaSelect.focus();
+    return;
+  }
+  
+  if (!sedeSelect.value) {
+    alert('Por favor selecciona una sede');
+    sedeSelect.focus();
+    return;
+  }
+  
+  // Get empresa name from the selected option
+  const selectedEmpresaOption = empresaSelect.options[empresaSelect.selectedIndex];
+  const empresaNombre = selectedEmpresaOption.dataset.nombre || selectedEmpresaOption.textContent;
+  
   const formData = {
     nombre: document.getElementById('hardwareName').value,
     tipo: document.getElementById('hardwareType').value,
-    empresa_nombre: 'Mi Empresa 3', // You'll need to get this from the user session or dropdown
-    sede: 'Principal', // You'll need to get this from the user session or dropdown
+    empresa_id: empresaSelect.value, // Send empresa ID
+    empresa_nombre: empresaNombre, // Send empresa name
+    sede: sedeSelect.value, // Send selected sede
     datos: {
-      brand: document.getElementById('hardwareBrand').value,
-      model: document.getElementById('hardwareModel').value,
-      price: parseFloat(document.getElementById('hardwarePrice').value),
-      stock: parseInt(document.getElementById('hardwareStock').value),
-      status: document.getElementById('hardwareStatus').value,
-      warranty: parseInt(document.getElementById('hardwareWarranty').value),
-      description: document.getElementById('hardwareDescription').value
+      datos: { // Note the nested structure to match your backend
+        brand: document.getElementById('hardwareBrand').value,
+        model: document.getElementById('hardwareModel').value,
+        price: parseFloat(document.getElementById('hardwarePrice').value),
+        stock: parseInt(document.getElementById('hardwareStock').value),
+        status: document.getElementById('hardwareStatus').value,
+        warranty: parseInt(document.getElementById('hardwareWarranty').value),
+        description: document.getElementById('hardwareDescription').value
+      }
     }
   };
+  
+  console.log('📤 Enviando datos de hardware:', formData);
   
   if (editingHardware) {
     updateHardwareAPI(editingHardware, formData);
@@ -751,42 +2827,322 @@ function clearFilters() {
   document.getElementById('searchInput').value = '';
   document.getElementById('typeFilter').value = '';
   document.getElementById('statusFilter').value = '';
-  filterHardware();
+  document.getElementById('includeInactiveFilter').value = 'active';
+  
+  // Remove any filter empty messages
+  const filterEmptyMessage = document.getElementById('filterEmptyMessage');
+  if (filterEmptyMessage) {
+    filterEmptyMessage.remove();
+  }
+  const filterEmptyMessageTable = document.getElementById('filterEmptyMessageTable');
+  if (filterEmptyMessageTable) {
+    filterEmptyMessageTable.remove();
+  }
+  
+  // Reload hardware data with new filter
+  loadHardware();
 }
 
 function filterHardware() {
-  const search = document.getElementById('searchInput').value.toLowerCase();
-  const type = document.getElementById('typeFilter').value;
-  const status = document.getElementById('statusFilter').value;
+  console.log('🚀 === INICIANDO FILTRO DE HARDWARE ===');
   
-  const items = document.querySelectorAll('.hardware-item');
+  const searchInput = document.getElementById('searchInput');
+  const typeFilterEl = document.getElementById('typeFilter');
+  const statusFilterEl = document.getElementById('statusFilter');
   
-  items.forEach(item => {
-    const name = item.dataset.name.toLowerCase();
-    const itemType = item.dataset.type;
-    const itemStatus = item.dataset.status;
+  if (!searchInput || !typeFilterEl || !statusFilterEl) {
+    console.error('❌ Elementos de filtro no encontrados:');
+    console.error('  - searchInput:', searchInput ? 'SI' : 'NO');
+    console.error('  - typeFilter:', typeFilterEl ? 'SI' : 'NO');
+    console.error('  - statusFilter:', statusFilterEl ? 'SI' : 'NO');
+    return;
+  }
+  
+  const search = searchInput.value.toLowerCase();
+  const type = typeFilterEl.value;
+  const status = statusFilterEl.value;
+  
+  console.log('🔍 Valores de filtros:');
+  console.log('  - search:', search);
+  console.log('  - type:', type);
+  console.log('  - status:', status);
+  
+  // Filtrar ambos: elementos del grid Y elementos de la tabla
+  const gridItems = document.querySelectorAll('.hardware-item');
+  const tableItems = document.querySelectorAll('.hardware-table-item');
+  const allItems = [...gridItems, ...tableItems];
+  let visibleCount = 0;
+  
+  console.log(`🔍 Elementos encontrados:`);
+  console.log(`  - Grid items (.hardware-item): ${gridItems.length}`);
+  console.log(`  - Table items (.hardware-table-item): ${tableItems.length}`);
+  console.log(`  - Total elementos: ${allItems.length}`);
+  
+  if (allItems.length === 0) {
+    console.error('❌ NO HAY ELEMENTOS DE HARDWARE EN EL DOM!');
+    console.log('🔍 Verificando contenedor de hardware...');
+    const gridContainer = document.getElementById('hardwareGrid');
+    const tableBody = document.querySelector('#hardwareTable tbody');
+    console.log('  - gridContainer children:', gridContainer ? gridContainer.children.length : 'NO ENCONTRADO');
+    console.log('  - tableBody children:', tableBody ? tableBody.children.length : 'NO ENCONTRADO');
+    return;
+  }
+  
+  allItems.forEach((item, index) => {
+    const name = item.dataset.name || '';
+    const itemType = item.dataset.type || '';
+    const itemStatus = item.dataset.status || '';
+    const stock = parseInt(item.dataset.stock || '0');
+    const activa = item.dataset.activa === 'true';
     
-    const matchesSearch = name.includes(search);
+    // Enhanced search - matches name, type, brand, model, or sede
+    const brand = item.dataset.brand || '';
+    const model = item.dataset.model || '';
+    const sede = item.dataset.sede || '';
+    
+    const matchesSearch = !search || 
+      name.includes(search) || 
+      itemType.toLowerCase().includes(search) ||
+      brand.includes(search) ||
+      model.includes(search) ||
+      sede.includes(search);
+    
+    // Type filter
     const matchesType = !type || itemType === type;
-    const matchesStatus = !status || itemStatus === status;
     
+    // Status filter logic
+    let matchesStatus = true;
+    if (status) {
+      switch (status) {
+        case 'available':
+          matchesStatus = activa && stock > 0 && itemStatus !== 'discontinued';
+          break;
+        case 'out_of_stock':
+          matchesStatus = stock === 0 || itemStatus === 'out_of_stock';
+          break;
+        case 'discontinued':
+          matchesStatus = itemStatus === 'discontinued';
+          break;
+        case 'inactive':
+          matchesStatus = !activa;
+          break;
+      }
+    }
+    
+    // Show/hide item
     if (matchesSearch && matchesType && matchesStatus) {
       item.style.display = 'block';
+      visibleCount++;
+      console.log(`✅ Elemento ${index + 1} visible: ${name}`);
     } else {
       item.style.display = 'none';
+      console.log(`❌ Elemento ${index + 1} oculto: ${name}`);
     }
   });
+  
+  console.log(`📊 Filtrado completado: ${visibleCount} de ${allItems.length} elementos visibles`);
+  
+  // Show/hide empty message for filters
+  showFilterEmptyMessage(visibleCount);
+  
+  // Update filter status message
+  updateFilterStatus(visibleCount, gridItems.length); // Solo contar grid items para el status
 }
 
-// Add event listeners for filters
-document.getElementById('searchInput').addEventListener('input', filterHardware);
-document.getElementById('typeFilter').addEventListener('change', filterHardware);
-document.getElementById('statusFilter').addEventListener('change', filterHardware);
+// Show empty message when filters return no results
+function showFilterEmptyMessage(visibleCount) {
+  const hasFilters = document.getElementById('searchInput').value || 
+                    document.getElementById('typeFilter').value || 
+                    document.getElementById('statusFilter').value;
+  
+  // Remove existing empty message
+  const existingEmptyMessage = document.getElementById('filterEmptyMessage');
+  if (existingEmptyMessage) {
+    existingEmptyMessage.remove();
+  }
+  
+  // Show empty message if filters are applied and no results
+  if (hasFilters && visibleCount === 0) {
+    const gridContainer = document.getElementById('hardwareGrid');
+    const tableBody = document.querySelector('#hardwareTable tbody');
+    
+    // Create empty message for grid
+    const emptyMessage = document.createElement('div');
+    emptyMessage.id = 'filterEmptyMessage';
+    emptyMessage.className = 'col-span-full text-center py-8';
+    emptyMessage.innerHTML = `
+      <div class="text-center">
+        <i class="fas fa-search text-4xl mb-4 text-gray-400"></i>
+        <h2 class="text-2xl font-bold text-white mb-2">No se encontró hardware con este filtro</h2>
+        <p class="text-sm text-gray-400">Prueba ajustando los criterios de búsqueda.</p>
+        <button onclick="clearFilters()" class="mt-4 btn-secondary">
+          <i class="fas fa-filter-circle-xmark"></i>
+          Limpiar Filtros
+        </button>
+      </div>
+    `;
+    gridContainer.appendChild(emptyMessage);
+    
+    // Create empty message for table
+    const emptyRow = document.createElement('tr');
+    emptyRow.id = 'filterEmptyMessageTable';
+    emptyRow.innerHTML = `
+      <td colspan="6" class="text-center py-8">
+        <div class="text-center">
+          <i class="fas fa-search text-4xl mb-4 text-gray-400"></i>
+          <h2 class="text-2xl font-bold text-white mb-2">No se encontró hardware con este filtro</h2>
+          <p class="text-sm text-gray-400">Prueba ajustando los criterios de búsqueda.</p>
+          <button onclick="clearFilters()" class="mt-4 btn-secondary">
+            <i class="fas fa-filter-circle-xmark"></i>
+            Limpiar Filtros
+          </button>
+        </div>
+      </td>
+    `;
+    tableBody.appendChild(emptyRow);
+  }
+}
+
+// Update filter status message
+function updateFilterStatus(visibleCount, totalCount) {
+  const hasFilters = document.getElementById('searchInput').value || 
+                    document.getElementById('typeFilter').value || 
+                    document.getElementById('statusFilter').value;
+  
+  // You can add a status message here if needed
+  if (hasFilters && visibleCount !== totalCount) {
+    console.log(`Filtering: ${visibleCount} of ${totalCount} items shown`);
+  }
+}
+
+// Helper function to apply current filters (without triggering events)
+function applyCurrentFilters() {
+  console.log('🔄 Aplicando filtros actuales...');
+  filterHardware();
+}
+
+// Función de recarga manual para debugging
+function reloadHardwareManual() {
+  console.log('🔄 RECARGA MANUAL DE HARDWARE INICIADA');
+  isLoadingHardware = false; // Reset flag
+  loadHardware();
+}
+
+// Exponer función para uso en consola
+window.reloadHardwareManual = reloadHardwareManual;
+
+// Initialize filter event listeners only once
+let filtersInitialized = false;
+
+function initializeFilterListeners() {
+  if (filtersInitialized) {
+    console.log('⚠️ Event listeners ya inicializados, saltando...');
+    return;
+  }
+  
+  console.log('🎯 Inicializando event listeners de filtros...');
+  
+  const searchInput = document.getElementById('searchInput');
+  const typeFilter = document.getElementById('typeFilter');
+  const statusFilter = document.getElementById('statusFilter');
+  const includeInactiveFilter = document.getElementById('includeInactiveFilter');
+  
+  console.log('🔍 Elementos encontrados:');
+  console.log('  - searchInput:', searchInput ? 'SI' : 'NO');
+  console.log('  - typeFilter:', typeFilter ? 'SI' : 'NO');
+  console.log('  - statusFilter:', statusFilter ? 'SI' : 'NO');
+  console.log('  - includeInactiveFilter:', includeInactiveFilter ? 'SI' : 'NO');
+  
+  if (searchInput) {
+    searchInput.addEventListener('input', function() {
+      console.log('🔍 TRIGGER: searchInput changed to:', searchInput.value);
+      filterHardware();
+    });
+  } else {
+    console.error('❌ No se encontró searchInput');
+  }
+  
+  if (typeFilter) {
+    typeFilter.addEventListener('change', function() {
+      console.log('🔍 TRIGGER: typeFilter changed to:', typeFilter.value);
+      filterHardware();
+    });
+  } else {
+    console.error('❌ No se encontró typeFilter');
+  }
+  
+  if (statusFilter) {
+    statusFilter.addEventListener('change', function() {
+      console.log('🔍 TRIGGER: statusFilter changed to:', statusFilter.value);
+      filterHardware();
+    });
+  } else {
+    console.error('❌ No se encontró statusFilter');
+  }
+  
+  if (includeInactiveFilter) {
+    includeInactiveFilter.addEventListener('change', function() {
+      console.log('🔍 TRIGGER: includeInactiveFilter changed to:', includeInactiveFilter.value);
+      // When this filter changes, we need to reload the data, not just filter the UI
+      loadHardware();
+    });
+  } else {
+    console.error('❌ No se encontró includeInactiveFilter');
+  }
+  
+  filtersInitialized = true;
+  console.log('✅ Event listeners de filtros inicializados');
+}
+
+// Initialize on DOM load
+document.addEventListener('DOMContentLoaded', initializeFilterListeners);
 
 // Close modal when clicking outside
 document.getElementById('hardwareModal').addEventListener('click', function(e) {
   if (e.target === this) {
     closeModal();
+  }
+});
+
+// Close view modal when clicking outside
+document.getElementById('viewHardwareModal').addEventListener('click', function(e) {
+  if (e.target === this) {
+    closeViewModal();
+  }
+});
+
+// Close toggle modal when clicking outside
+document.getElementById('toggleHardwareModal').addEventListener('click', function(e) {
+  if (e.target === this) {
+    closeToggleModal();
+  }
+});
+
+// Close client update modal when clicking outside
+document.getElementById('clientUpdateModal').addEventListener('click', function(e) {
+  if (e.target === this) {
+    closeUpdateModal();
+  }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    // Check which modal is open and close it
+    const hardwareModal = document.getElementById('hardwareModal');
+    const viewModal = document.getElementById('viewHardwareModal');
+    const toggleModal = document.getElementById('toggleHardwareModal');
+    const updateModal = document.getElementById('clientUpdateModal');
+    
+    if (!hardwareModal.classList.contains('hidden')) {
+      closeModal();
+    } else if (!viewModal.classList.contains('hidden')) {
+      closeViewModal();
+    } else if (!toggleModal.classList.contains('hidden')) {
+      closeToggleModal();
+    } else if (!updateModal.classList.contains('hidden')) {
+      closeUpdateModal();
+    }
   }
 });
 </script>
