@@ -308,15 +308,83 @@ def admin_hardware():
 @app.route('/admin/company-types')
 @require_role(['super_admin'])
 def admin_company_types():
-    """Gestión de tipos de empresa - Solo para super_admin"""
+    """Gestión de tipos de empresa - Solo para super_admin
     
-    # Get company types dummy data from Python providers
-    company_types_data = get_company_types_data()
+    SIMPLIFIED: Always loads ALL types, frontend handles filtering by active status.
+    """
+    
+    # Check if user wants to include inactive types (for UI state only)
+    include_inactive = request.args.get('include_inactive', 'false').lower() == 'true'
+    
+    # ALWAYS get ALL company types from backend
+    # Frontend will filter by 'activo' field locally
+    try:
+        # Direct call to dashboard endpoint that brings ALL types
+        all_types_response = g.api_client.get_tipos_empresa_dashboard_all()
+        stats_response = g.api_client._request("GET", "/api/tipos_empresa/estadisticas")
+        
+        if all_types_response.ok:
+            all_types_data = all_types_response.json()
+            if all_types_data.get('success'):
+                raw_types = all_types_data.get('data', [])
+                
+                # Map backend fields to frontend expected fields
+                mapped_types = []
+                for raw_type in raw_types:
+                    mapped_type = {
+                        'id': str(raw_type.get('_id', '')),
+                        'name': raw_type.get('nombre', ''),
+                        'description': raw_type.get('descripcion', ''),
+                        'active': raw_type.get('activo', True),
+                        'companies_count': raw_type.get('empresas_count', 0),
+                        'features': raw_type.get('caracteristicas', []),
+                        'created_at': raw_type.get('fecha_creacion', ''),
+                        # Add some default styling for frontend
+                        'color': '#8b5cf6',  # Default purple
+                        'icon': 'fas fa-building'  # Default icon
+                    }
+                    mapped_types.append(mapped_type)
+                
+                # Calculate stats from all types
+                stats = {
+                    'total_types': len(mapped_types),
+                    'active_types': len([t for t in mapped_types if t.get('active', True)]),
+                    'inactive_types': len([t for t in mapped_types if not t.get('active', True)]),
+                    'total_companies': sum(t.get('companies_count', 0) for t in mapped_types),
+                    'avg_companies_per_type': 0
+                }
+                
+                if stats['total_types'] > 0:
+                    stats['avg_companies_per_type'] = round(stats['total_companies'] / stats['total_types'], 1)
+                
+                company_types_data = {
+                    'company_types': mapped_types,  # Mapped types, frontend will filter
+                    'company_types_stats': stats
+                }
+            else:
+                raise Exception("Backend response not successful")
+        else:
+            raise Exception(f"Backend error: {all_types_response.status_code}")
+            
+    except Exception as e:
+        print(f"Error getting company types data: {e}")
+        # Fallback to empty data
+        company_types_data = {
+            'company_types': [],
+            'company_types_stats': {
+                'total_types': 0,
+                'active_types': 0,
+                'inactive_types': 0,
+                'total_companies': 0,
+                'avg_companies_per_type': 0
+            }
+        }
     
     return render_template(
         'admin/company_types.html', 
         api_url=PROXY_PREFIX, 
         company_types_data=company_types_data,
+        include_inactive=include_inactive,
         active_page='company_types'
     )
 

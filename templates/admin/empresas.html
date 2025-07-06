@@ -10,7 +10,14 @@
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
       <div>
         <h1 class="text-3xl font-bold text-white">Gestión de Empresas</h1>
-        <p class="text-gray-600 text-white mt-2">{{ companies_data.total_companies }} empresas registradas en el sistema</p>
+        <p class="text-gray-600 text-white mt-2" id="companiesCount">Cargando empresas...</p>
+        {% if request.args.get('tipo_empresa_nombre') %}
+        <p class="text-sm text-green-400 mt-1">
+          <i class="fas fa-filter"></i>
+          Filtrando por tipo: <strong>{{ request.args.get('tipo_empresa_nombre') }}</strong>
+          <a href="/admin/empresas" class="ml-2 text-blue-400 hover:text-blue-300">(quitar filtro)</a>
+        </p>
+        {% endif %}
       </div>
       <div class="flex space-x-3">
         <button class="btn-secondary">
@@ -60,48 +67,14 @@
   <div class="glass-card">
     <div class="p-6 border-b border-gray-100 dark:border-gray-700">
       <h2 class="text-xl font-bold text-black dark:text-white">Lista de Empresas</h2>
-      <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Empresas registradas recientemente</p>
+      <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Empresas registradas en el sistema</p>
     </div>
     <div class="p-6">
       <div id="empresasList" class="space-y-4">
-        {% for company in companies_data.recent_companies %}
-        <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
-          <div class="flex items-center space-x-4">
-            <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-600 rounded-lg flex items-center justify-center">
-              <span class="text-white font-bold text-lg">{{ company.name[:2].upper() }}</span>
-            </div>
-            <div>
-              <h3 class="text-lg font-semibold text-black dark:text-white">{{ company.name }}</h3>
-              <p class="text-sm text-gray-500 dark:text-gray-400">{{ company.industry }} • {{ company.members_count }} miembros</p>
-              <p class="text-xs text-gray-400 dark:text-gray-500">Registrada: {{ company.created_at }}</p>
-            </div>
-          </div>
-          <div class="flex items-center space-x-4">
-            <div class="text-right">
-              <p class="text-sm font-medium text-black dark:text-white">${{ "{:,}".format(company.revenue) }}</p>
-              <p class="text-xs text-gray-500 dark:text-gray-400">Ingresos anuales</p>
-            </div>
-            <div class="text-right">
-              <p class="text-sm font-medium {% if company.growth_rate >= 0 %}text-green-600 dark:text-green-400{% else %}text-red-600 dark:text-red-400{% endif %}">
-                {% if company.growth_rate >= 0 %}+{% endif %}{{ company.growth_rate }}%
-              </p>
-              <p class="text-xs text-gray-500 dark:text-gray-400">Crecimiento</p>
-            </div>
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                   {% if company.status == 'active' %}bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200{% else %}bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200{% endif %}">
-              {% if company.status == 'active' %}Activa{% else %}Inactiva{% endif %}
-            </span>
-            <div class="flex space-x-2">
-              <button class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                <i class="fas fa-edit"></i>
-              </button>
-              <button class="p-2 text-gray-400 hover:text-red-600 dark:hover:text-red-400">
-                <i class="fas fa-trash"></i>
-              </button>
-            </div>
-          </div>
+        <div class="text-center py-8">
+          <i class="fas fa-spinner fa-spin text-3xl text-gray-400 mb-4"></i>
+          <p class="text-gray-500">Cargando empresas...</p>
         </div>
-        {% endfor %}
       </div>
     </div>
   </div>
@@ -109,23 +82,196 @@
 {% endblock %}
 
 {% block page_js %}
+<script src="{{ url_for('static', filename='js/api-client.js') }}"></script>
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const empresas = [
-      { nombre: 'Rescue Corp', ubicacion: 'Bogotá' },
-      { nombre: 'Tech Solutions', ubicacion: 'Medellín' },
-      { nombre: 'Servicios Integrales', ubicacion: 'Cali' }
-    ];
-    const container = document.getElementById('empresasList');
-    if (container) {
-      container.innerHTML = empresas.map(e => `
-        <div class="glass-card p-4 empresa-card">
-          <h3 class="text-lg font-semibold text-black">${e.nombre}</h3>
-          <p class="text-sm text-gray-500">${e.ubicacion}</p>
-        </div>
-      `).join('');
+// API Client initialization
+let apiClient;
+
+// Initialize when page loads
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('🏢 Inicializando vista de empresas...');
+  
+  // Check API health and initialize client
+  fetch('/proxy/health')
+    .then(response => {
+      if (response.ok) {
+        apiClient = new EndpointTestClient('/proxy');
+        console.log('✅ API Client inicializado');
+        loadEmpresas();
+        loadCompanyTypes();
+      } else {
+        throw new Error('API no disponible');
+      }
+    })
+    .catch(err => {
+      console.error('❌ Error inicializando API client:', err);
+      showError('Error de conexión con el servidor');
+    });
+});
+
+// Load companies from backend
+async function loadEmpresas() {
+  try {
+    console.log('🔄 Cargando empresas desde el backend...');
+    
+    // Check if we need to filter by company type
+    const urlParams = new URLSearchParams(window.location.search);
+    const tipoEmpresaId = urlParams.get('tipo_empresa_id');
+    
+    let response;
+    if (tipoEmpresaId) {
+      console.log(`🔍 Filtrando por tipo de empresa: ${tipoEmpresaId}`);
+      response = await fetch(`/proxy/api/empresas?tipo_empresa_id=${tipoEmpresaId}`);
+    } else {
+      response = await fetch('/proxy/api/empresas/');
     }
-  });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    console.log('📊 Respuesta del servidor:', data);
+    
+    if (data.success && data.data) {
+      displayEmpresas(data.data);
+      updateCompaniesCount(data.count || data.data.length);
+    } else {
+      console.error('❌ Error en la respuesta:', data);
+      showError('Error al cargar empresas');
+    }
+    
+  } catch (error) {
+    console.error('💥 Error cargando empresas:', error);
+    showError('Error al cargar empresas: ' + error.message);
+  }
+}
+
+// Display companies in the UI
+function displayEmpresas(empresas) {
+  console.log(`🎨 Renderizando ${empresas.length} empresas`);
+  
+  const container = document.getElementById('empresasList');
+  
+  if (empresas.length === 0) {
+    container.innerHTML = `
+      <div class="text-center py-8">
+        <i class="fas fa-building text-4xl text-gray-400 mb-4"></i>
+        <h3 class="text-lg font-semibold text-gray-600 mb-2">No hay empresas</h3>
+        <p class="text-gray-500">No se encontraron empresas con los criterios actuales.</p>
+      </div>
+    `;
+    return;
+  }
+  
+  container.innerHTML = empresas.map(empresa => {
+    const iniciales = empresa.nombre ? empresa.nombre.substring(0, 2).toUpperCase() : 'XX';
+    const fechaCreacion = empresa.fecha_creacion ? new Date(empresa.fecha_creacion).toLocaleDateString('es-ES') : 'N/A';
+    const estado = empresa.activa ? 'Activa' : 'Inactiva';
+    const estadoClass = empresa.activa ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
+    
+    // Get company type info
+    let tipoEmpresaInfo = '';
+    if (empresa.tipo_empresa_id && window.companyTypes) {
+      const tipo = window.companyTypes.find(t => t.id === empresa.tipo_empresa_id);
+      tipoEmpresaInfo = tipo ? `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 mr-2">${tipo.name}</span>` : '';
+    }
+    
+    return `
+      <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+        <div class="flex items-center space-x-4">
+          <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-600 rounded-lg flex items-center justify-center">
+            <span class="text-white font-bold text-lg">${iniciales}</span>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-black dark:text-white">${empresa.nombre || 'Sin nombre'}</h3>
+            <div class="flex items-center space-x-2 mt-1">
+              ${tipoEmpresaInfo}
+              <p class="text-sm text-gray-500 dark:text-gray-400">${empresa.ubicacion || 'Sin ubicación'}</p>
+            </div>
+            <p class="text-xs text-gray-400 dark:text-gray-500">Registrada: ${fechaCreacion}</p>
+          </div>
+        </div>
+        <div class="flex items-center space-x-4">
+          <div class="text-right">
+            <p class="text-sm font-medium text-black dark:text-white">${empresa.email || 'Sin email'}</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400">Contacto</p>
+          </div>
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${estadoClass}">
+            ${estado}
+          </span>
+          <div class="flex space-x-2">
+            <button class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" onclick="editEmpresa('${empresa._id}')" title="Editar empresa">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="p-2 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400" onclick="viewEmpresa('${empresa._id}')" title="Ver detalles">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// Load company types for filtering and display
+async function loadCompanyTypes() {
+  try {
+    const response = await fetch('/proxy/api/tipos_empresa/activos');
+    if (response.ok) {
+      const data = await response.json();
+      if (data.success && data.data) {
+        window.companyTypes = data.data.map(tipo => ({
+          id: tipo._id,
+          name: tipo.nombre
+        }));
+        console.log('✅ Tipos de empresa cargados:', window.companyTypes.length);
+      }
+    }
+  } catch (error) {
+    console.error('Error cargando tipos de empresa:', error);
+  }
+}
+
+// Update companies count in header
+function updateCompaniesCount(count) {
+  const countElement = document.getElementById('companiesCount');
+  if (countElement) {
+    countElement.textContent = `${count} empresas registradas en el sistema`;
+  }
+}
+
+// Show error message
+function showError(message) {
+  const container = document.getElementById('empresasList');
+  container.innerHTML = `
+    <div class="text-center py-8">
+      <i class="fas fa-exclamation-triangle text-4xl text-red-400 mb-4"></i>
+      <h3 class="text-lg font-semibold text-red-600 mb-2">Error</h3>
+      <p class="text-gray-500">${message}</p>
+      <button onclick="loadEmpresas()" class="mt-4 btn-primary">
+        <i class="fas fa-refresh"></i>
+        Reintentar
+      </button>
+    </div>
+  `;
+}
+
+// Placeholder functions for edit and view
+function editEmpresa(id) {
+  console.log('📝 Editar empresa:', id);
+  alert(`Funcionalidad de edición aún no implementada para empresa: ${id}`);
+}
+
+function viewEmpresa(id) {
+  console.log('👁️ Ver empresa:', id);
+  alert(`Funcionalidad de vista aún no implementada para empresa: ${id}`);
+}
+
+// Global functions
+window.loadEmpresas = loadEmpresas;
+window.editEmpresa = editEmpresa;
+window.viewEmpresa = viewEmpresa;
 </script>
 {% endblock %}
 

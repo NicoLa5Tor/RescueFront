@@ -73,7 +73,7 @@ body.ios-modal-open {
   justify-content: space-between;
   padding: 1.5rem;
   border-bottom: 1px solid var(--border-color);
-  background: var(--bg-secondary);
+ 
 }
 
 .modal-title {
@@ -164,8 +164,6 @@ body.ios-modal-open {
   width: 100%;
   padding: 0.75rem;
   font-size: 0.875rem;
-  color: var(--text-primary);
-  background: var(--bg-primary);
   border: 2px solid var(--border-color);
   border-radius: 0.5rem;
   transition: all 0.15s ease;
@@ -178,7 +176,7 @@ body.ios-modal-open {
   outline: none;
   border-color: var(--primary-600);
   box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
-  background: var(--bg-primary);
+ 
 }
 
 .form-textarea {
@@ -198,7 +196,7 @@ body.ios-modal-open {
   gap: 0.75rem;
   padding: 1.5rem;
   border-top: 1px solid var(--border-color);
-  background: var(--bg-secondary);
+  
 }
 
 /* Button Styles for Modal */
@@ -257,17 +255,13 @@ body.ios-modal-open {
 .dark .form-input,
 .dark .form-select,
 .dark .form-textarea {
-  background: var(--bg-primary);
   border-color: var(--border-color);
-  color: var(--text-primary);
 }
 
 .dark .form-input:focus,
 .dark .form-select:focus,
 .dark .form-textarea:focus {
-  background: var(--bg-primary);
   border-color: var(--primary-500);
-  color: var(--text-primary);
 }
 
 .dark .form-input::placeholder,
@@ -284,24 +278,21 @@ body.ios-modal-open {
 :not(.dark) .modal-header,
 :not(.dark) .modal-body,
 :not(.dark) .modal-footer {
-  background: #ffffff;
   border-color: #e5e7eb;
 }
 
 :not(.dark) .form-input,
 :not(.dark) .form-select,
 :not(.dark) .form-textarea {
-  background: #ffffff;
+ 
   border: 2px solid #d1d5db;
-  color: #111827;
+
 }
 
 :not(.dark) .form-input:focus,
 :not(.dark) .form-select:focus,
 :not(.dark) .form-textarea:focus {
-  background: #ffffff;
   border-color: var(--primary-600);
-  color: #111827;
 }
 
 :not(.dark) .form-label {

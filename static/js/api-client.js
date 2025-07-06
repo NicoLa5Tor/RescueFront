@@ -109,6 +109,11 @@ class EndpointTestClient {
         return this._request('GET', '/api/empresas');
     }
 
+    // Dashboard endpoint for all companies (active and inactive)
+    async get_empresas_dashboard() {
+        return this._request('GET', '/api/empresas/dashboard/all');
+    }
+
     async get_empresa(empresaId) {
         return this._request('GET', `/api/empresas/${empresaId}`);
     }
@@ -123,6 +128,16 @@ class EndpointTestClient {
 
     async delete_empresa(empresaId) {
         return this._request('DELETE', `/api/empresas/${empresaId}`);
+    }
+
+    // Company types endpoints
+    async get_tipos_empresa() {
+        return this._request('GET', '/api/tipos_empresa');
+    }
+
+    // Dashboard endpoint for all company types (active and inactive)
+    async get_tipos_empresa_dashboard() {
+        return this._request('GET', '/api/tipos_empresa/dashboard/all');
     }
 
     // Utility methods

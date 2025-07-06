@@ -189,6 +189,51 @@ class EndpointTestClient:
         """PATCH /api/hardware/{id}/toggle-status - Activar/desactivar hardware"""
         return self._request("PATCH", f"/api/hardware/{hardware_id}/toggle-status", data={"activa": activa})
     
+    # ------------------------------------------------------------------
+    # Company Types endpoints
+    # ------------------------------------------------------------------
+    def create_company_type(self, data: Dict[str, Any]) -> requests.Response:
+        """POST /api/tipos_empresa - Crear tipo de empresa"""
+        return self._request("POST", "/api/tipos_empresa", data=data)
+
+    def get_company_types(self, skip: int = 0, limit: int = 100) -> requests.Response:
+        """GET /api/tipos_empresa - Obtener tipos de empresa"""
+        params = {"skip": skip, "limit": limit}
+        return self._request("GET", "/api/tipos_empresa", params=params)
+
+    def get_company_type(self, type_id: str) -> requests.Response:
+        """GET /api/tipos_empresa/{id} - Obtener tipo específico"""
+        return self._request("GET", f"/api/tipos_empresa/{type_id}")
+
+    def update_company_type(self, type_id: str, data: Dict[str, Any]) -> requests.Response:
+        """PUT /api/tipos_empresa/{id} - Actualizar tipo de empresa"""
+        return self._request("PUT", f"/api/tipos_empresa/{type_id}", data=data)
+
+    def delete_company_type(self, type_id: str) -> requests.Response:
+        """DELETE /api/tipos_empresa/{id} - Eliminar tipo de empresa"""
+        return self._request("DELETE", f"/api/tipos_empresa/{type_id}")
+
+    def search_company_types(self, query: str, skip: int = 0, limit: int = 100) -> requests.Response:
+        """GET /api/tipos_empresa/search - Buscar tipos de empresa"""
+        params = {"query": query, "skip": skip, "limit": limit}
+        return self._request("GET", "/api/tipos_empresa/search", params=params)
+
+    def get_active_company_types(self):
+        """GET /api/tipos_empresa/activos - Obtener tipos activos"""
+        return self._request("GET", "/api/tipos_empresa/activos")
+    
+    def toggle_company_type_status(self, type_id: str):
+        """PATCH /api/tipos_empresa/{id}/toggle-status - Activar/desactivar tipo de empresa"""
+        return self._request("PATCH", f"/api/tipos_empresa/{type_id}/toggle-status")
+    
+    def get_empresas_dashboard_all(self):
+        """GET /api/empresas/dashboard/all - Obtener TODAS las empresas (activas e inactivas) para dashboards"""
+        return self._request("GET", "/api/empresas/dashboard/all")
+    
+    def get_tipos_empresa_dashboard_all(self):
+        """GET /api/tipos_empresa/dashboard/all - Obtener TODOS los tipos de empresa (activos e inactivos) para dashboards"""
+        return self._request("GET", "/api/tipos_empresa/dashboard/all")
+    
     # Helper methods for frontend
     def get_hardware_data_for_frontend(self) -> Dict[str, Any]:
         """Get all hardware data formatted for frontend"""
@@ -256,9 +301,9 @@ class EndpointTestClient:
                         'available_items': 0,
                         'out_of_stock': 0,
                         'total_value': 0,
-                        'avg_price': 0
-                    }
+                    'avg_price': 0
                 }
+            }
         except Exception as e:
             print(f"Error getting hardware data: {e}")
             return {
@@ -272,6 +317,214 @@ class EndpointTestClient:
                     'avg_price': 0
                 }
             }
+    
+    def get_empresas_data_for_frontend(self, include_inactive: bool = False) -> Dict[str, Any]:
+        """Get empresas data formatted for frontend
+        
+        Args:
+            include_inactive: If True, includes inactive empresas. Default False (only active empresas).
+        """
+        try:
+            # Get empresas from backend - use dashboard endpoint for complete data
+            if include_inactive:
+                # Use dashboard endpoint that returns ALL empresas (active + inactive)
+                empresas_response = self.get_empresas_dashboard_all()
+            else:
+                empresas_response = self.get_empresas()  # Get only active empresas
+            
+            if empresas_response.ok:
+                empresas_data = empresas_response.json()
+                if empresas_data.get('success'):
+                    raw_empresas = empresas_data.get('data', [])
+                    
+                    # Calculate stats
+                    stats = {
+                        'total_empresas': len(raw_empresas),
+                        'active_empresas': len([e for e in raw_empresas if e.get('activa', True)]),
+                        'inactive_empresas': len([e for e in raw_empresas if not e.get('activa', True)])
+                    }
+                    
+                    return {
+                        'empresas': raw_empresas,
+                        'empresas_stats': stats,
+                        'count': len(raw_empresas)
+                    }
+            
+            # Fallback data
+            return {
+                'empresas': [],
+                'empresas_stats': {
+                    'total_empresas': 0,
+                    'active_empresas': 0,
+                    'inactive_empresas': 0
+                },
+                'count': 0
+            }
+            
+        except Exception as e:
+            print(f"Error getting empresas data: {e}")
+            return {
+                'empresas': [],
+                'empresas_stats': {
+                    'total_empresas': 0,
+                    'active_empresas': 0,
+                    'inactive_empresas': 0
+                },
+                'count': 0
+            }
+    
+    def get_company_types_data_for_frontend(self, include_inactive: bool = False) -> Dict[str, Any]:
+        """Get company types data formatted for frontend with iOS enhancements
+        
+        OPTIMIZED: Always fetches ALL types from backend and filters in frontend to avoid double queries.
+        
+        Args:
+            include_inactive: If True, includes inactive company types. Default False (only active types).
+        """
+        try:
+            # Always use dashboard endpoint that returns ALL types (active + inactive)
+            # Then filter in frontend to avoid double database queries
+            types_response = self._request("GET", "/api/tipos_empresa/dashboard/all")
+            stats_response = self._request("GET", "/api/tipos_empresa/estadisticas")  # Get real stats
+            
+            if types_response.ok:
+                types_data = types_response.json()
+                if types_data.get('success'):
+                    all_types = types_data.get('data', [])
+                    
+                    # Filter in frontend based on include_inactive parameter
+                    if include_inactive:
+                        # Return all types (active + inactive)
+                        raw_types = all_types
+                    else:
+                        # Filter to only active types
+                        raw_types = [t for t in all_types if t.get('activo', True)]
+                    
+                    # Enrich data with iOS styling for frontend
+                    enriched_types = self._enrich_company_types_for_ios(raw_types)
+                    
+                    # Get real stats from backend if available
+                    stats = {
+                        'total_types': 0,
+                        'active_types': 0,
+                        'inactive_types': 0,
+                        'total_companies': 0,
+                        'avg_companies_per_type': 0
+                    }
+                    
+                    if stats_response.ok:
+                        stats_data = stats_response.json()
+                        if stats_data.get('success'):
+                            backend_stats = stats_data.get('data', {})
+                            stats.update({
+                                'total_types': backend_stats.get('total_types', 0),
+                                'active_types': backend_stats.get('active_types', 0),
+                                'inactive_types': backend_stats.get('inactive_types', 0),
+                                'total_companies': backend_stats.get('total_companies', 0),
+                                'avg_companies_per_type': backend_stats.get('avg_companies_per_type', 0)
+                            })
+                    
+                    # Fallback to calculated stats if backend stats not available
+                    if stats['total_types'] == 0 and enriched_types:
+                        stats['total_types'] = len(enriched_types)
+                        stats['active_types'] = len([t for t in enriched_types if t['active']])
+                        stats['inactive_types'] = stats['total_types'] - stats['active_types']
+                        stats['total_companies'] = sum(t.get('companies_count', 0) for t in enriched_types)
+                        stats['avg_companies_per_type'] = stats['total_companies'] // stats['total_types'] if stats['total_types'] > 0 else 0
+                    
+                    return {
+                        'company_types': enriched_types,
+                        'company_types_stats': stats
+                    }
+            
+            # Fallback data
+            return {
+                'company_types': [],
+                'company_types_stats': {
+                    'total_types': 0,
+                    'active_types': 0,
+                    'inactive_types': 0,
+                    'total_companies': 0,
+                    'avg_companies_per_type': 0
+                }
+            }
+            
+        except Exception as e:
+            print(f"Error getting company types data: {e}")
+            return {
+                'company_types': [],
+                'company_types_stats': {
+                    'total_types': 0,
+                    'active_types': 0,
+                    'inactive_types': 0,
+                    'total_companies': 0,
+                    'avg_companies_per_type': 0
+                }
+            }
+    
+    def _enrich_company_types_for_ios(self, raw_types: list) -> list:
+        """Enrich backend data with iOS styling and additional fields"""
+        import random
+        from datetime import datetime
+        
+        # Predefined iOS styling options
+        ios_styles = {
+            'tecnología': {'color': '#8b5cf6', 'icon': 'fas fa-laptop-code'},
+            'servicios': {'color': '#f472b6', 'icon': 'fas fa-handshake'},
+            'manufactura': {'color': '#60a5fa', 'icon': 'fas fa-industry'},
+            'retail': {'color': '#34d399', 'icon': 'fas fa-store'},
+            'salud': {'color': '#fbbf24', 'icon': 'fas fa-heart'},
+            'educación': {'color': '#ef4444', 'icon': 'fas fa-graduation-cap'},
+            'finanzas': {'color': '#06b6d4', 'icon': 'fas fa-chart-line'},
+            'corporativo': {'color': '#84cc16', 'icon': 'fas fa-building'},
+            'industrial': {'color': '#f97316', 'icon': 'fas fa-cogs'},
+            'sostenible': {'color': '#10b981', 'icon': 'fas fa-leaf'}
+        }
+        
+        # Default styles
+        default_colors = ['#8b5cf6', '#f472b6', '#60a5fa', '#34d399', '#fbbf24', '#ef4444']
+        default_icons = ['fas fa-building', 'fas fa-briefcase', 'fas fa-chart-pie']
+        
+        enriched = []
+        
+        for raw_type in raw_types:
+            # Get style based on name or use default
+            name_key = raw_type.get('nombre', '').lower()
+            style = ios_styles.get(name_key, {
+                'color': random.choice(default_colors),
+                'icon': random.choice(default_icons)
+            })
+            
+            # Format date
+            created_at = raw_type.get('fecha_creacion')
+            if isinstance(created_at, str):
+                try:
+                    created_date = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
+                    formatted_date = created_date.strftime('%Y-%m-%d')
+                except:
+                    formatted_date = created_at[:10] if len(created_at) >= 10 else created_at
+            else:
+                formatted_date = datetime.now().strftime('%Y-%m-%d')
+            
+                    # Use real features from backend
+            features = raw_type.get('caracteristicas', [])
+            
+            enriched_type = {
+                'id': str(raw_type.get('_id', '')),
+                'name': raw_type.get('nombre', ''),
+                'description': raw_type.get('descripcion', ''),
+                'color': style['color'],
+                'icon': style['icon'],
+                'created_at': formatted_date,
+                'companies_count': raw_type.get('empresas_count', 0),  # Real count from backend
+                'active': raw_type.get('activo', True),
+                'features': features
+            }
+            
+            enriched.append(enriched_type)
+        
+        return enriched
+    
 
     # ------------------------------------------------------------------
     # Public utilities

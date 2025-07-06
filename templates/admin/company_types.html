@@ -5,402 +5,1070 @@
 {% block extra_css %}
 {{ super() }}
 <link href="{{ url_for('static', filename='css/modals.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/hardware/hardware-main.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/company-types/company-types-main.css') }}" rel="stylesheet">
 {% endblock %}
 
 {% block main_content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <!-- Header -->
-  <div class="mb-8">
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-      <div>
-        <h1 class="text-3xl font-bold text-black dark:text-white">Tipos de Empresa</h1>
-        <p class="text-gray-600 dark:text-gray-400 mt-2">Administra las categorías de empresas para estadísticas</p>
-      </div>
-      <div class="flex space-x-3">
-        <button class="btn-secondary" onclick="exportTypes()">
-          <i class="fas fa-download"></i>
-          Exportar
-        </button>
-        <button class="btn-primary" onclick="openCreateModal()">
-          <i class="fas fa-plus"></i>
-          Nuevo Tipo
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Stats Cards -->
-  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-    <div class="glass-card p-6">
-      <div class="flex items-center">
-        <div class="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
-          <i class="fas fa-layer-group text-blue-600 dark:text-blue-400"></i>
-        </div>
-        <div class="ml-4">
-          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Tipos</p>
-          <p class="text-2xl font-bold text-black dark:text-white">{{ company_types_data.company_types_stats.total_types }}</p>
-        </div>
-      </div>
-    </div>
-    
-    <div class="glass-card p-6">
-      <div class="flex items-center">
-        <div class="p-2 bg-green-100 dark:bg-green-900 rounded-lg">
-          <i class="fas fa-check-circle text-green-600 dark:text-green-400"></i>
-        </div>
-        <div class="ml-4">
-          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Activos</p>
-          <p class="text-2xl font-bold text-black dark:text-white">{{ company_types_data.company_types_stats.active_types }}</p>
-        </div>
-      </div>
-    </div>
-    
-    <div class="glass-card p-6">
-      <div class="flex items-center">
-        <div class="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
-          <i class="fas fa-building text-purple-600 dark:text-purple-400"></i>
-        </div>
-        <div class="ml-4">
-          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Empresas</p>
-          <p class="text-2xl font-bold text-black dark:text-white">{{ company_types_data.company_types_stats.total_companies }}</p>
-        </div>
-      </div>
-    </div>
-    
-    <div class="glass-card p-6">
-      <div class="flex items-center">
-        <div class="p-2 bg-orange-100 dark:bg-orange-900 rounded-lg">
-          <i class="fas fa-chart-bar text-orange-600 dark:text-orange-400"></i>
-        </div>
-        <div class="ml-4">
-          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Promedio por Tipo</p>
-          <p class="text-2xl font-bold text-black dark:text-white">{{ company_types_data.company_types_stats.avg_companies_per_type }}</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Company Types Grid -->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    {% for company_type in company_types_data.company_types %}
-    <div class="glass-card hover:shadow-lg transition-all duration-300 company-type-item" data-status="{{ company_type.active }}">
-      <div class="p-6">
-        <div class="flex items-center justify-between mb-4">
-          <div class="w-12 h-12 rounded-lg flex items-center justify-center" style="background-color: {{ company_type.color }}20;">
-            <i class="{{ company_type.icon }} text-xl" style="color: {{ company_type.color }};"></i>
-          </div>
-          <div class="flex items-center space-x-2">
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                   {% if company_type.active %}bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200
-                   {% else %}bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200{% endif %}">
-              {% if company_type.active %}Activo{% else %}Inactivo{% endif %}
-            </span>
-            <div class="flex space-x-1">
-              <button class="p-1 text-gray-400 hover:text-purple-600 dark:hover:text-purple-400" onclick="editCompanyType('{{ company_type.id }}')">
-                <i class="fas fa-edit text-sm"></i>
-              </button>
-              <button class="p-1 text-gray-400 hover:text-red-600 dark:hover:text-red-400" onclick="deleteCompanyType('{{ company_type.id }}')">
-                <i class="fas fa-trash text-sm"></i>
-              </button>
+<div class="company-types-container">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Enhanced iOS Header -->
+    <div class="ios-ct-header-container">
+      <div class="ios-ct-header">
+        <div class="ios-ct-header-content">
+          <div class="ios-ct-header-text">
+            <div class="ios-ct-header-icon">
+              <i class="fas fa-layer-group"></i>
+            </div>
+            <div>
+              <h1 class="ios-ct-header-title">Tipos de Empresa</h1>
+              <p class="ios-ct-header-subtitle">
+                Administra las categorías con tecnología de vanguardia
+                {% if include_inactive %}
+                  <span class="inline-block ml-2 px-2 py-1 bg-orange-500 text-white text-xs rounded-full">
+                    Mostrando todos ({{ company_types_data.company_types|length }} tipos)
+                  </span>
+                {% else %}
+                  <span class="inline-block ml-2 px-2 py-1 bg-green-500 text-white text-xs rounded-full">
+                    Solo activos ({{ company_types_data.company_types|length }} tipos)
+                  </span>
+                {% endif %}
+              </p>
             </div>
           </div>
+          <div class="ios-ct-header-actions">
+            <button class="ios-ct-action-btn ios-ct-action-btn-secondary" onclick="exportTypes()">
+              <i class="fas fa-download"></i>
+              <span>Exportar</span>
+            </button>
+            <button class="ios-ct-action-btn {% if include_inactive %}ios-ct-action-btn-warning{% else %}ios-ct-action-btn-secondary{% endif %}" onclick="toggleIncludeInactive()">
+              <i class="fas fa-{% if include_inactive %}eye-slash{% else %}eye{% endif %}"></i>
+              <span>{% if include_inactive %}Solo Activos{% else %}Ver Todos{% endif %}</span>
+            </button>
+            <button class="ios-ct-action-btn ios-ct-action-btn-primary" onclick="openCreateModal()">
+              <i class="fas fa-plus"></i>
+              <span>Nuevo Tipo</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Enhanced iOS Stats Cards -->
+    <div class="ios-ct-stats-grid">
+      <div class="ios-ct-stat-card" data-stat="total">
+        <div class="ios-ct-stat-header">
+          <div class="ios-ct-stat-icon ios-ct-stat-icon-blue">
+            <i class="fas fa-layer-group"></i>
+          </div>
+          <div class="ios-ct-stat-content">
+            <div class="ios-ct-stat-label">Total Tipos</div>
+            <div class="ios-ct-stat-value" id="totalTypesCount">{{ company_types_data.company_types_stats.total_types }}</div>
+            <div class="ios-ct-stat-trend">Categorías disponibles</div>
+          </div>
+        </div>
+        <div class="ios-ct-stat-shimmer"></div>
+      </div>
+      
+      <div class="ios-ct-stat-card" data-stat="active">
+        <div class="ios-ct-stat-header">
+          <div class="ios-ct-stat-icon ios-ct-stat-icon-green">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <div class="ios-ct-stat-content">
+            <div class="ios-ct-stat-label">Activos</div>
+            <div class="ios-ct-stat-value" id="activeTypesCount">{{ company_types_data.company_types_stats.active_types }}</div>
+            <div class="ios-ct-stat-trend">Funcionando correctamente</div>
+          </div>
+        </div>
+        <div class="ios-ct-stat-shimmer"></div>
+      </div>
+      
+      <div class="ios-ct-stat-card" data-stat="companies">
+        <div class="ios-ct-stat-header">
+          <div class="ios-ct-stat-icon ios-ct-stat-icon-purple">
+            <i class="fas fa-building"></i>
+          </div>
+          <div class="ios-ct-stat-content">
+            <div class="ios-ct-stat-label">Total Empresas</div>
+            <div class="ios-ct-stat-value" id="totalCompaniesCount">{{ company_types_data.company_types_stats.total_companies }}</div>
+            <div class="ios-ct-stat-trend">Empresas categorizadas</div>
+          </div>
+        </div>
+        <div class="ios-ct-stat-shimmer"></div>
+      </div>
+      
+      <div class="ios-ct-stat-card" data-stat="average">
+        <div class="ios-ct-stat-header">
+          <div class="ios-ct-stat-icon ios-ct-stat-icon-orange">
+            <i class="fas fa-chart-bar"></i>
+          </div>
+          <div class="ios-ct-stat-content">
+            <div class="ios-ct-stat-label">Promedio por Tipo</div>
+            <div class="ios-ct-stat-value" id="avgCompaniesCount">{{ company_types_data.company_types_stats.avg_companies_per_type }}</div>
+            <div class="ios-ct-stat-trend">Distribución equilibrada</div>
+          </div>
+        </div>
+        <div class="ios-ct-stat-shimmer"></div>
+    </div>
+  </div>
+
+
+  <!-- Enhanced iOS Company Types Grid -->
+    <div class="ios-ct-cards-grid" id="companyTypesGrid">
+      {% for company_type in company_types_data.company_types %}
+      <div class="ios-ct-card company-type-item" data-type-id="{{ company_type.id }}" data-status="{{ company_type.active|lower }}">
+        <div class="ios-ct-card-header">
+          <div class="ios-ct-card-icon-container">
+            <div class="ios-ct-card-icon" style="background: {{ company_type.color }}; box-shadow: 0 8px 20px {{ company_type.color }}40;">
+              <i class="{{ company_type.icon }}"></i>
+            </div>
+            <div class="ios-ct-card-meta">
+              <span class="ios-ct-status-badge {% if company_type.active %}ios-ct-status-active{% else %}ios-ct-status-inactive{% endif %}">
+                {% if company_type.active %}Activo{% else %}Inactivo{% endif %}
+              </span>
+            </div>
+          </div>
+          <div class="ios-ct-card-actions">
+            <button class="ios-ct-card-btn edit" onclick="editCompanyType('{{ company_type.id }}')" title="Editar">
+              <i class="fas fa-edit"></i>
+            </button>
+          </div>
         </div>
         
-        <h3 class="text-lg font-semibold text-black dark:text-white mb-2">{{ company_type.name }}</h3>
-        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4 line-clamp-2">{{ company_type.description }}</p>
+        <h3 class="ios-ct-card-title">{{ company_type.name }}</h3>
+        <p class="ios-ct-card-description">{{ company_type.description }}</p>
         
-        <div class="space-y-3 mb-4">
-          <div class="flex justify-between text-sm">
-            <span class="text-gray-500 dark:text-gray-400">Empresas:</span>
-            <span class="font-medium text-black dark:text-white">{{ company_type.companies_count }}</span>
+        <div class="ios-ct-card-stats">
+          <div class="ios-ct-stat-item">
+            <span class="ios-ct-stat-label">Empresas</span>
+            <span class="ios-ct-stat-value">{{ company_type.companies_count }}</span>
           </div>
-          <div class="flex justify-between text-sm">
-            <span class="text-gray-500 dark:text-gray-400">Creado:</span>
-            <span class="font-medium text-black dark:text-white">{{ company_type.created_at }}</span>
+          <div class="ios-ct-stat-item">
+            <span class="ios-ct-stat-label">Creado</span>
+            <span class="ios-ct-stat-value">{{ company_type.created_at }}</span>
           </div>
         </div>
         
-        <div class="mb-4">
-          <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">Características:</p>
-          <div class="flex flex-wrap gap-1">
-            {% for feature in company_type.features[:2] %}
-            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
-              {{ feature }}
-            </span>
-            {% endfor %}
-            {% if company_type.features|length > 2 %}
-            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
-              +{{ company_type.features|length - 2 }}
-            </span>
+        <div class="ios-ct-card-features">
+          <div class="ios-ct-features-label">Características</div>
+          <div class="ios-ct-features-list">
+            {% if company_type.features and company_type.features|length > 0 %}
+              {% for feature in company_type.features[:3] %}
+              <span class="ios-ct-feature-tag">{{ feature }}</span>
+              {% endfor %}
+              {% if company_type.features|length > 3 %}
+              <span class="ios-ct-feature-tag">+{{ company_type.features|length - 3 }}</span>
+              {% endif %}
+            {% else %}
+              <span class="ios-ct-feature-tag ios-ct-feature-empty">No definidas</span>
             {% endif %}
           </div>
         </div>
         
-        <div class="flex space-x-2">
-          <button class="flex-1 btn-secondary text-sm" onclick="viewCompanyType('{{ company_type.id }}')">
+        <div class="ios-ct-card-actions-bottom">
+          <button class="ios-ct-action-btn ios-ct-action-btn-secondary" onclick="viewCompanyType('{{ company_type.id }}')">
             <i class="fas fa-eye"></i>
             Ver Detalles
           </button>
-          <button class="flex-1 btn-primary text-sm" onclick="toggleStatus('{{ company_type.id }}', {{ company_type.active|lower }})">
+          {% if company_type.companies_count > 0 %}
+          <button class="ios-ct-action-btn ios-ct-action-btn-info" onclick="viewCompaniesOfType('{{ company_type.id }}', '{{ company_type.name }}')" title="Ver empresas de este tipo">
+            <i class="fas fa-building"></i>
+            Ver Empresas ({{ company_type.companies_count }})
+          </button>
+          {% endif %}
+          <button class="ios-ct-action-btn ios-ct-action-btn-primary" onclick="toggleStatus('{{ company_type.id }}', {{ company_type.active|lower }})">
             <i class="fas fa-{% if company_type.active %}pause{% else %}play{% endif %}"></i>
             {% if company_type.active %}Desactivar{% else %}Activar{% endif %}
           </button>
         </div>
+        
+        <div class="ios-ct-card-shimmer"></div>
       </div>
+      {% endfor %}
     </div>
-    {% endfor %}
   </div>
 </div>
+</div>
 
-<!-- Create/Edit Company Type Modal -->
-<div id="companyTypeModal" class="modal-backdrop hidden">
-  <div class="modal-container max-w-2xl">
-    <div class="modal-header">
-      <h3 class="modal-title" id="modalTitle">Nuevo Tipo de Empresa</h3>
-      <button type="button" class="modal-close" onclick="closeModal()" aria-label="Cerrar modal">
-        <i class="fas fa-times"></i>
-      </button>
+<!-- Create/Edit Company Type Modal - EXACT HARDWARE STYLE -->
+<div id="companyTypeModal" class="ios-modal-backdrop hidden">
+  <div class="ios-blur-modal-container w-full max-w-2xl">
+    <!-- Modal Header -->
+    <div class="ios-blur-header">
+      <div class="flex items-center justify-between w-full">
+        <div class="flex items-center space-x-3">
+          <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+            <i class="fas fa-layer-group text-white text-xl"></i>
+          </div>
+          <div>
+            <h3 class="text-2xl font-bold text-white" id="modalTitle">Nuevo Tipo de Empresa</h3>
+            <p class="text-sm text-white/70">Complete los campos para registrar el tipo</p>
+          </div>
+        </div>
+        <button type="button" class="ios-blur-btn ios-blur-btn-secondary !p-2 !min-w-0" onclick="closeModal()" aria-label="Cerrar modal">
+          <i class="fas fa-times text-lg"></i>
+        </button>
+      </div>
     </div>
     
-    <div class="modal-body!bg-[#8b5cf6]" style="border: 3px solid #000 !important;">
+    <!-- Modal Body -->
+    <div class="ios-blur-body">
       <form id="companyTypeForm">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nombre</label>
-            <input type="text" id="typeName" required
-                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-black dark:text-white">
+        <div class="form-grid">
+          <!-- Nombre -->
+          <div class="form-group">
+            <label for="typeName" class="block text-sm font-semibold text-white/90 mb-2">
+              <i class="fas fa-tag text-purple-400 mr-2"></i>Nombre *
+            </label>
+            <input type="text" id="typeName" class="ios-blur-input" required
+                   placeholder="Ej: Tecnología">
           </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Color</label>
-            <div class="flex space-x-2">
-              <input type="color" id="typeColor" required
-                     class="w-16 h-10 border border-gray-300 dark:border-gray-600 rounded-lg">
-              <input type="text" id="typeColorHex" placeholder="#8b5cf6" required
-                     class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-black dark:text-white">
-            </div>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Icono</label>
-            <select id="typeIcon" required
-                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-black dark:text-white">
-              <option value="">Seleccionar icono</option>
-              <option value="fas fa-laptop-code">💻 Tecnología</option>
-              <option value="fas fa-handshake">🤝 Servicios</option>
-              <option value="fas fa-industry">🏭 Manufactura</option>
-              <option value="fas fa-store">🏪 Retail</option>
-              <option value="fas fa-heart">❤️ Salud</option>
-              <option value="fas fa-graduation-cap">🎓 Educación</option>
-              <option value="fas fa-chart-line">📈 Finanzas</option>
-              <option value="fas fa-building">🏢 Corporativo</option>
-              <option value="fas fa-cogs">⚙️ Industrial</option>
-              <option value="fas fa-leaf">🌱 Sostenible</option>
+          
+          <!-- Estado -->
+          <div class="form-group">
+            <label for="typeStatus" class="block text-sm font-semibold text-white/90 mb-2">
+              <i class="fas fa-toggle-on text-blue-400 mr-2"></i>Estado *
+            </label>
+            <select id="typeStatus" class="ios-blur-input" required>
+              <option value="true">🟢 Activo</option>
+              <option value="false">🔴 Inactivo</option>
             </select>
           </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Estado</label>
-            <select id="typeStatus" required
-                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-black dark:text-white">
-              <option value="true">Activo</option>
-              <option value="false">Inactivo</option>
-            </select>
+          
+          <!-- Descripción -->
+          <div class="form-group form-group-full">
+            <label for="typeDescription" class="block text-sm font-semibold text-white/90 mb-2">
+              <i class="fas fa-align-left text-cyan-400 mr-2"></i>Descripción *
+            </label>
+            <textarea id="typeDescription" class="ios-blur-input !min-h-[6rem] resize-y" rows="3" required
+                      placeholder="Describe el tipo de empresa, sus características principales..."></textarea>
           </div>
-        </div>
-        
-        <div class="mt-6">
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Descripción</label>
-          <textarea id="typeDescription" rows="3" required
-                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-black dark:text-white"></textarea>
-        </div>
-        
-        <div class="mt-6">
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Características</label>
-          <div id="featuresContainer">
-            <div class="flex space-x-2 mb-2">
-              <input type="text" placeholder="Agregar característica..." 
-                     class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-black dark:text-white"
-                     onkeypress="handleFeatureKeyPress(event)">
-              <button type="button" class="btn-secondary" onclick="addFeature()">
-                <i class="fas fa-plus"></i>
-              </button>
-            </div>
-            <div id="featuresList" class="space-y-2">
-              <!-- Features will be added here -->
+          
+          <!-- Características -->
+          <div class="form-group form-group-full">
+            <label class="block text-sm font-semibold text-white/90 mb-2">
+              <i class="fas fa-list text-orange-400 mr-2"></i>Características
+            </label>
+            <div id="featuresContainer" class="space-y-3">
+              <div class="flex space-x-2">
+                <input type="text" id="featureInput" placeholder="Agregar característica..." 
+                       class="ios-blur-input flex-1" onkeypress="handleFeatureKeyPress(event)">
+                <button type="button" class="ios-blur-btn ios-blur-btn-primary !p-2 !min-w-0" onclick="addFeature()">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+              <div id="featuresList" class="space-y-2">
+                <!-- Features will be displayed here -->
+              </div>
             </div>
           </div>
         </div>
-        
       </form>
     </div>
     
-    <div class="modal-footer">
-      <button type="button" class="modal-btn modal-btn-secondary" onclick="closeModal()">
-        <i class="fas fa-times"></i>
+    <!-- Modal Footer -->
+    <div class="ios-blur-footer">
+      <button type="button" class="ios-blur-btn ios-blur-btn-secondary" onclick="closeModal()">
+        <i class="fas fa-times mr-2"></i>
         Cancelar
       </button>
-      <button type="submit" form="companyTypeForm" class="modal-btn modal-btn-primary">
-        <i class="fas fa-save"></i>
+      <button type="submit" form="companyTypeForm" class="ios-blur-btn ios-blur-btn-primary" id="submitButton">
+        <i class="fas fa-save mr-2"></i>
         <span id="submitButtonText">Crear Tipo</span>
       </button>
     </div>
   </div>
 </div>
 
-<!-- View Details Modal -->
-<div id="detailsModal" class="modal-backdrop hidden">
-  <div class="modal-container max-w-lg">
-    <div class="modal-header">
-      <h3 class="modal-title" id="detailsTitle">Detalles del Tipo</h3>
-      <button type="button" class="modal-close" onclick="closeDetailsModal()" aria-label="Cerrar modal">
-        <i class="fas fa-times"></i>
-      </button>
+<!-- View Details Modal - EXACT HARDWARE STYLE -->
+<div id="detailsModal" class="ios-modal-backdrop hidden">
+  <div class="ios-blur-modal-container w-full max-w-2xl">
+    <!-- Modal Header -->
+    <div class="ios-blur-header">
+      <div class="flex items-center justify-between w-full">
+        <div class="flex items-center space-x-3">
+          <div class="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
+            <i class="fas fa-eye text-white text-xl"></i>
+          </div>
+          <div>
+            <h3 class="text-2xl font-bold text-white" id="detailsTitle">Detalles del Tipo</h3>
+            <p class="text-sm text-white/70">Información completa del tipo seleccionado</p>
+          </div>
+        </div>
+        <button type="button" class="ios-blur-btn ios-blur-btn-secondary !p-2 !min-w-0" onclick="closeDetailsModal()" aria-label="Cerrar modal">
+          <i class="fas fa-times text-lg"></i>
+        </button>
+      </div>
     </div>
     
-    <div class="modal-body">
+    <!-- Modal Body -->
+    <div class="ios-blur-body">
       <div id="detailsContent">
         <!-- Details will be loaded here -->
       </div>
     </div>
     
-    <div class="modal-footer">
-      <button type="button" class="modal-btn modal-btn-secondary" onclick="closeDetailsModal()">
-        <i class="fas fa-times"></i>
+    <!-- Modal Footer -->
+    <div class="ios-blur-footer">
+      <button type="button" class="ios-blur-btn ios-blur-btn-secondary" onclick="closeDetailsModal()">
+        <i class="fas fa-times mr-2"></i>
         Cerrar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Enhanced Toggle Company Type Status Modal - EXACT COPY FROM HARDWARE -->
+<div id="toggleCompanyTypeModal" class="ios-modal-backdrop hidden">
+  <div class="ios-blur-modal-container max-w-md" id="toggleModalContainer">
+    <div class="ios-blur-header text-center">
+      <div class="toggle-modal-icon mx-auto mb-4" id="toggleModalIcon">
+        <i class="fas fa-power-off text-4xl" id="toggleModalIconFa"></i>
+      </div>
+      <h3 class="text-2xl font-bold text-white mb-2" id="toggleModalTitle">Activar Tipo de Empresa</h3>
+    </div>
+    <div class="ios-blur-body text-center">
+      <p class="text-white/80 text-lg mb-6" id="toggleModalMessage">
+        ¿Estás seguro de que quieres activar este tipo de empresa?
+      </p>
+      <div class="flex gap-4 justify-center">
+        <button class="ios-blur-btn ios-blur-btn-secondary" onclick="closeToggleModal()">
+          <i class="fas fa-times mr-2"></i>
+          Cancelar
+        </button>
+        <button class="ios-blur-btn ios-blur-btn-primary" id="toggleConfirmBtn" onclick="confirmToggleCompanyType()">
+          <i class="fas fa-check mr-2" id="toggleConfirmIcon"></i>
+          <span id="toggleConfirmText">Activar</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Client Update Success Modal - EXACT COPY FROM HARDWARE -->
+<div id="clientUpdateModal" class="ios-modal-backdrop hidden">
+  <div class="ios-blur-modal-container max-w-md" id="updateModalContainer">
+    <div class="ios-blur-header text-center">
+      <div class="client-update-icon mx-auto mb-4" id="updateModalIcon">
+        <i class="fas fa-sync-alt text-4xl text-emerald-400" id="updateModalIconFa"></i>
+      </div>
+      <h3 class="text-2xl font-bold text-white mb-2" id="updateModalTitle">Tipo Actualizado</h3>
+    </div>
+    <div class="ios-blur-body text-center">
+      <p class="text-white/80 text-lg mb-6" id="updateModalMessage">
+        El tipo de empresa se ha actualizado exitosamente.
+      </p>
+      <button class="ios-blur-btn ios-blur-btn-primary mx-auto" onclick="closeUpdateModal()">
+        <i class="fas fa-check mr-2"></i>
+        Aceptar
       </button>
     </div>
   </div>
 </div>
 {% endblock %}
 
+{% block extra_js %}
+{{ super() }}
+<!-- Company Types GSAP Animations -->
+<script src="{{ url_for('static', filename='js/company-types-animations.js') }}"></script>
+{% endblock %}
+
 {% block page_js %}
+<script src="{{ url_for('static', filename='js/api-client.js') }}"></script>
+<script src="{{ url_for('static', filename='js/modal-utils.js') }}"></script>
+<script src="{{ url_for('static', filename='js/dashboard/basic-managers.js') }}"></script>
 <script>
 let editingCompanyType = null;
 let currentFeatures = [];
 
-// Modal functionality
+// SIMPLIFIED: Initialize page with direct filtering by 'activo' field
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('🚀 Initializing company types with simple filtering');
+  
+  // Get initial state from URL parameter
+  const showInactive = {{ 'true' if include_inactive else 'false' }};
+  console.log(`🔧 Show inactive: ${showInactive}`);
+  
+  // Apply initial filter - by default show only active types
+  filterTypesByActiveStatus(showInactive);
+});
+
+// Modal functionality - EXACT HARDWARE STYLE
 function openCreateModal() {
   editingCompanyType = null;
-  currentFeatures = [];
+  currentFeatures = []; // Clear features array
   document.getElementById('modalTitle').textContent = 'Nuevo Tipo de Empresa';
   document.getElementById('submitButtonText').textContent = 'Crear Tipo';
   document.getElementById('companyTypeForm').reset();
-  document.getElementById('featuresList').innerHTML = '';
+  updateFeaturesList(); // Clear features display
   
-  // Prevent body scroll
-  document.body.classList.add('modal-open');
-  document.getElementById('companyTypeModal').classList.remove('hidden');
+  // Scroll to top first, then show modal - EXACT HARDWARE STYLE
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  
+  // Delay modal opening to allow scroll to complete
+  setTimeout(() => {
+    // Prevent body scrolling - EXACT HARDWARE STYLE
+    const scrollPosition = window.pageYOffset;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollPosition}px`;
+    document.body.style.width = '100%';
+    document.body.classList.add('ios-modal-open');
+    
+    // Open modal using modal manager - EXACT HARDWARE STYLE
+    if (window.modalManager) {
+      window.modalManager.openModal('companyTypeModal');
+      window.modalManager.setupModal('companyTypeModal');
+    } else {
+      // Fallback for compatibility
+      const modal = document.getElementById('companyTypeModal');
+      modal.classList.remove('hidden');
+    }
+  }, 300);
 }
 
-function editCompanyType(id) {
+async function editCompanyType(id) {
   editingCompanyType = id;
   document.getElementById('modalTitle').textContent = 'Editar Tipo de Empresa';
   document.getElementById('submitButtonText').textContent = 'Actualizar Tipo';
   
-  // Here you would load the company type data - for now using dummy data
-  document.getElementById('typeName').value = 'Tecnología';
-  document.getElementById('typeColor').value = '#8b5cf6';
-  document.getElementById('typeColorHex').value = '#8b5cf6';
-  document.getElementById('typeIcon').value = 'fas fa-laptop-code';
-  document.getElementById('typeStatus').value = 'true';
-  document.getElementById('typeDescription').value = 'Empresas dedicadas al desarrollo de software y tecnología';
+  try {
+    // Load the actual company type data from backend
+    const response = await callAPI('GET', `/api/tipos_empresa/${id}`);
+    if (response.success && response.data) {
+      const data = response.data;
+      document.getElementById('typeName').value = data.nombre || '';
+      document.getElementById('typeStatus').value = data.activo ? 'true' : 'false';
+      document.getElementById('typeDescription').value = data.descripcion || '';
+      
+      // Load features/characteristics
+      currentFeatures = data.caracteristicas || [];
+      updateFeaturesList();
+    }
+  } catch (error) {
+    console.error('Error loading company type:', error);
+    showEnhancedNotification('Error al cargar los datos del tipo de empresa', 'error');
+    return;
+  }
   
-  // Load features
-  currentFeatures = ['Desarrollo de Software', 'Consultoría IT', 'Soporte Técnico'];
-  updateFeaturesList();
+  // Scroll to top first, then show modal - EXACT HARDWARE STYLE
+  window.scrollTo({ top: 0, behavior: 'smooth' });
   
-  // Prevent body scroll
-  document.body.classList.add('modal-open');
-  document.getElementById('companyTypeModal').classList.remove('hidden');
+  // Delay modal opening to allow scroll to complete
+  setTimeout(() => {
+    // Prevent body scrolling - EXACT HARDWARE STYLE
+    const scrollPosition = window.pageYOffset;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollPosition}px`;
+    document.body.style.width = '100%';
+    document.body.classList.add('ios-modal-open');
+    
+    // Open modal using modal manager - EXACT HARDWARE STYLE
+    if (window.modalManager) {
+      window.modalManager.openModal('companyTypeModal');
+      window.modalManager.setupModal('companyTypeModal');
+    } else {
+      // Fallback for compatibility
+      const modal = document.getElementById('companyTypeModal');
+      modal.classList.remove('hidden');
+    }
+  }, 300);
 }
 
 function closeModal() {
-  document.getElementById('companyTypeModal').classList.add('hidden');
-  // Restore body scroll
-  document.body.classList.remove('modal-open');
+  // Restore scroll position before closing - EXACT HARDWARE STYLE
+  const scrollY = document.body.style.top;
+  document.body.style.position = '';
+  document.body.style.top = '';
+  document.body.style.width = '';
+  document.body.classList.remove('ios-modal-open');
+  
+  if (scrollY) {
+    window.scrollTo(0, parseInt(scrollY || '0') * -1);
+  }
+  
+  // Use global modal system - EXACT HARDWARE STYLE
+  if (window.modalManager) {
+    window.modalManager.closeModal('companyTypeModal');
+  } else {
+    // Fallback for compatibility
+    const modal = document.getElementById('companyTypeModal');
+    modal.classList.add('hidden');
+  }
+  
   editingCompanyType = null;
-  currentFeatures = [];
 }
 
-function viewCompanyType(id) {
-  document.getElementById('detailsTitle').textContent = 'Detalles: Tecnología';
-  document.getElementById('detailsContent').innerHTML = `
-    <div class="space-y-4">
-      <div class="flex items-center space-x-3">
-        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-          <i class="fas fa-laptop-code text-purple-600 text-xl"></i>
-        </div>
-        <div>
-          <h4 class="font-semibold text-black dark:text-white">Tecnología</h4>
-          <p class="text-sm text-gray-500 dark:text-gray-400">ID: ${id}</p>
-        </div>
-      </div>
-      <div>
-        <h5 class="font-medium text-black dark:text-white mb-2">Descripción</h5>
-        <p class="text-sm text-gray-600 dark:text-gray-400">Empresas dedicadas al desarrollo de software y tecnología</p>
-      </div>
-      <div>
-        <h5 class="font-medium text-black dark:text-white mb-2">Estadísticas</h5>
-        <div class="grid grid-cols-2 gap-4 text-sm">
-          <div>
-            <span class="text-gray-500 dark:text-gray-400">Empresas:</span>
-            <span class="font-medium text-black dark:text-white ml-2">24</span>
+async function viewCompanyType(id) {
+  try {
+    const response = await callAPI('GET', `/api/tipos_empresa/${id}`);
+    if (response.success && response.data) {
+      const data = response.data;
+      document.getElementById('detailsTitle').textContent = `Detalles: ${data.nombre}`;
+      document.getElementById('detailsContent').innerHTML = `
+        <div class="space-y-4">
+          <div class="flex items-center space-x-3">
+            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+              <i class="fas fa-building text-purple-600 text-xl"></i>
+            </div>
+            <div>
+              <h4 class="font-semibold text-black dark:text-white">${data.nombre}</h4>
+              <p class="text-sm text-gray-500 dark:text-gray-400">ID: ${id}</p>
+            </div>
           </div>
           <div>
-            <span class="text-gray-500 dark:text-gray-400">Estado:</span>
-            <span class="font-medium text-green-600 ml-2">Activo</span>
+            <h5 class="font-medium text-black dark:text-white mb-2">Descripción</h5>
+            <p class="text-sm text-gray-600 dark:text-gray-400">${data.descripcion || 'Sin descripción'}</p>
+          </div>
+          <div>
+            <h5 class="font-medium text-black dark:text-white mb-2">Estado</h5>
+            <span class="font-medium ${data.activo ? 'text-green-600' : 'text-red-600'} ml-2">${data.activo ? 'Activo' : 'Inactivo'}</span>
+          </div>
+          <div>
+            <h5 class="font-medium text-black dark:text-white mb-2">Características</h5>
+            <div class="flex flex-wrap gap-2">
+              ${data.caracteristicas && data.caracteristicas.length > 0 ? 
+                data.caracteristicas.map(feature => 
+                  `<span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-xs">${feature}</span>`
+                ).join('') : 
+                '<span class="text-gray-500 text-sm">No hay características definidas</span>'
+              }
+            </div>
           </div>
         </div>
-      </div>
-      <div>
-        <h5 class="font-medium text-black dark:text-white mb-2">Características</h5>
-        <div class="flex flex-wrap gap-2">
-          <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-xs">Desarrollo de Software</span>
-          <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-xs">Consultoría IT</span>
-          <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-xs">Soporte Técnico</span>
-        </div>
-      </div>
-    </div>
-  `;
+      `;
+    }
+  } catch (error) {
+    console.error('Error loading company type details:', error);
+    showEnhancedNotification('Error al cargar los detalles del tipo de empresa', 'error');
+    return;
+  }
   
-  // Prevent body scroll
-  document.body.classList.add('modal-open');
-  document.getElementById('detailsModal').classList.remove('hidden');
+  // Scroll to top first, then show modal - EXACT HARDWARE STYLE
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  
+  // Delay modal opening to allow scroll to complete
+  setTimeout(() => {
+    // Prevent body scrolling - EXACT HARDWARE STYLE
+    const scrollPosition = window.pageYOffset;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollPosition}px`;
+    document.body.style.width = '100%';
+    document.body.classList.add('ios-modal-open');
+    
+    // Open modal using modal manager - EXACT HARDWARE STYLE
+    if (window.modalManager) {
+      window.modalManager.openModal('detailsModal');
+      window.modalManager.setupModal('detailsModal');
+    } else {
+      // Fallback for compatibility
+      const modal = document.getElementById('detailsModal');
+      modal.classList.remove('hidden');
+    }
+  }, 300);
 }
 
 function closeDetailsModal() {
-  document.getElementById('detailsModal').classList.add('hidden');
-  // Restore body scroll
-  document.body.classList.remove('modal-open');
-}
-
-function deleteCompanyType(id) {
-  if (confirm('¿Estás seguro de que quieres eliminar este tipo de empresa?\n\nEsta acción no se puede deshacer y afectará las estadísticas.')) {
-    alert(`Tipo de empresa ${id} eliminado\n\nEsta acción se procesará en el backend.`);
+  // Restore scroll position before closing - EXACT HARDWARE STYLE
+  const scrollY = document.body.style.top;
+  document.body.style.position = '';
+  document.body.style.top = '';
+  document.body.style.width = '';
+  document.body.classList.remove('ios-modal-open');
+  
+  if (scrollY) {
+    window.scrollTo(0, parseInt(scrollY || '0') * -1);
+  }
+  
+  // Use global modal system - EXACT HARDWARE STYLE
+  if (window.modalManager) {
+    window.modalManager.closeModal('detailsModal');
+  } else {
+    // Fallback for compatibility
+    const modal = document.getElementById('detailsModal');
+    modal.classList.add('hidden');
   }
 }
 
-function toggleStatus(id, currentStatus) {
+
+// ===== EXACT COPY FROM HARDWARE - ADAPTED FOR COMPANY TYPES =====
+
+// Variables para el modal de toggle - IGUAL QUE HARDWARE
+let toggleModalData = {
+  typeId: null,
+  newStatus: null
+};
+
+// Función para abrir modal de toggle - ADAPTADA DE HARDWARE
+function openToggleCompanyTypeModal(id, currentStatus, typeName) {
+  console.log('🔄 Opening toggle modal for company type:', id, 'current status:', currentStatus);
+  
   const newStatus = !currentStatus;
   const action = newStatus ? 'activar' : 'desactivar';
   
-  if (confirm(`¿Estás seguro de que quieres ${action} este tipo de empresa?`)) {
-    alert(`Tipo de empresa ${id} ${newStatus ? 'activado' : 'desactivado'} exitosamente`);
-    // Here you would make an API call to update the status
+  // Guardar datos para el modal
+  toggleModalData.typeId = id;
+  toggleModalData.newStatus = newStatus;
+  
+  // Configurar el modal
+  const modal = document.getElementById('toggleCompanyTypeModal');
+  const container = document.getElementById('toggleModalContainer');
+  const icon = document.getElementById('toggleModalIcon');
+  const iconFa = document.getElementById('toggleModalIconFa');
+  const title = document.getElementById('toggleModalTitle');
+  const message = document.getElementById('toggleModalMessage');
+  const confirmText = document.getElementById('toggleConfirmText');
+  const confirmIcon = document.getElementById('toggleConfirmIcon');
+  
+  if (!modal || !container || !title || !message) {
+    console.error('❌ Toggle modal elements missing!');
+    // Fallback to simple confirm
+    if (confirm(`¿Estás seguro de que quieres ${action} este tipo de empresa?`)) {
+      executeToggleCompanyType(id, newStatus);
+    }
+    return;
+  }
+  
+  // Configurar contenido del modal
+  if (newStatus) {
+    icon.className = 'toggle-modal-icon activate mx-auto mb-4';
+    if (iconFa) iconFa.className = 'fas fa-play-circle text-4xl';
+    title.textContent = 'Activar Tipo de Empresa';
+    message.textContent = `¿Estás seguro de que quieres activar el tipo "${typeName}"?`;
+    confirmText.textContent = 'Activar';
+    if (confirmIcon) confirmIcon.className = 'fas fa-play mr-2';
+  } else {
+    icon.className = 'toggle-modal-icon deactivate mx-auto mb-4';
+    if (iconFa) iconFa.className = 'fas fa-pause-circle text-4xl';
+    title.textContent = 'Desactivar Tipo de Empresa';
+    message.textContent = `¿Estás seguro de que quieres desactivar el tipo "${typeName}"?`;
+    confirmText.textContent = 'Desactivar';
+    if (confirmIcon) confirmIcon.className = 'fas fa-pause mr-2';
+  }
+  
+  // Mostrar modal con animación - IGUAL QUE HARDWARE
+  modal.classList.remove('hidden');
+  modal.style.display = 'flex';
+  document.body.classList.add('modal-open');
+  
+  console.log('✅ Toggle modal should now be visible');
+  
+  // Simple animation
+  if (typeof gsap !== 'undefined') {
+    gsap.set(container, { scale: 0.8, opacity: 0 });
+    gsap.to(container, {
+      scale: 1,
+      opacity: 1,
+      duration: 0.3,
+      ease: "power2.out"
+    });
+  } else {
+    container.style.transform = 'scale(1)';
+    container.style.opacity = '1';
   }
 }
 
+// Cerrar modal de toggle - EXACTO DE HARDWARE
+function closeToggleModal() {
+  console.log('🔄 Closing toggle modal');
+  
+  const modal = document.getElementById('toggleCompanyTypeModal');
+  const container = document.getElementById('toggleModalContainer');
+  const buttons = document.querySelector('.flex.gap-4'); // Cambio el selector
+  const confirmBtn = document.getElementById('toggleConfirmBtn');
+  
+  if (!modal) {
+    console.error('❌ Modal not found when trying to close');
+    return;
+  }
+  
+  // Simple close without complex animation for debugging
+  if (typeof gsap !== 'undefined' && container) {
+    gsap.to(container, {
+      scale: 0.8,
+      opacity: 0,
+      duration: 0.2,
+      ease: "power2.in",
+      onComplete: () => {
+        resetAndHideModal();
+      }
+    });
+  } else {
+    resetAndHideModal();
+  }
+  
+  function resetAndHideModal() {
+    modal.classList.add('hidden');
+    modal.style.display = 'none';
+    document.body.classList.remove('modal-open');
+    
+    // Reset modal state completely
+    if (buttons) {
+      buttons.style.display = 'flex';
+      buttons.style.opacity = '1';
+      buttons.style.transform = 'none';
+    }
+    if (confirmBtn) {
+      confirmBtn.disabled = false;
+      confirmBtn.innerHTML = '<i class="fas fa-check" id="toggleConfirmIcon"></i> <span id="toggleConfirmText">Confirmar</span>';
+    }
+    
+    // Reset icon and text
+    const icon = document.getElementById('toggleModalIcon');
+    const iconFa = document.getElementById('toggleModalIconFa');
+    const title = document.getElementById('toggleModalTitle');
+    const message = document.getElementById('toggleModalMessage');
+    
+    if (icon) {
+      icon.style.transform = 'none';
+      icon.style.scale = '1';
+    }
+    if (title) title.textContent = 'Confirmar Acción';
+    if (message) message.textContent = '¿Estás seguro de que quieres continuar?';
+    
+    // Reset data
+    toggleModalData.typeId = null;
+    toggleModalData.newStatus = null;
+    
+    console.log('✅ Toggle modal closed and fully reset');
+  }
+}
+
+// Confirmar toggle - ADAPTADO DE HARDWARE
+function confirmToggleCompanyType() {
+  if (toggleModalData.typeId && toggleModalData.newStatus !== null) {
+    // Show loading state
+    const confirmBtn = document.getElementById('toggleConfirmBtn');
+    const originalContent = confirmBtn.innerHTML;
+    
+    confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+    confirmBtn.disabled = true;
+    
+    // Call the API function
+    executeToggleCompanyType(toggleModalData.typeId, toggleModalData.newStatus)
+      .then(() => {
+        // Show success feedback before closing
+        showToggleSuccess(toggleModalData.newStatus);
+      })
+      .catch((error) => {
+        // Restore button on error
+        confirmBtn.innerHTML = originalContent;
+        confirmBtn.disabled = false;
+        console.error('Error in toggle operation:', error);
+        showEnhancedNotification(error.message, 'error');
+      });
+  }
+}
+
+// Ejecutar toggle - ADAPTADO PARA COMPANY TYPES
+async function executeToggleCompanyType(id, newStatus) {
+  await callAPI('PATCH', `/api/tipos_empresa/${id}/toggle-status`);
+  
+  // Animar cambio de estado
+  const card = document.querySelector(`[data-type-id="${id}"]`);
+  if (card && window.CompanyTypesAnimations) {
+    window.CompanyTypesAnimations.animateStatusChange(card);
+  }
+}
+
+// Show toggle success feedback - EXACTO DE HARDWARE
+function showToggleSuccess(activated) {
+  console.log('✅ Showing toggle success for:', activated ? 'activate' : 'deactivate');
+  
+  const container = document.getElementById('toggleModalContainer');
+  const icon = document.getElementById('toggleModalIcon');
+  const iconFa = document.getElementById('toggleModalIconFa');
+  const title = document.getElementById('toggleModalTitle');
+  const message = document.getElementById('toggleModalMessage');
+  const buttons = document.querySelector('.flex.gap-4');
+  
+  if (!icon || !title || !message || !buttons) {
+    console.error('❌ Toggle success elements missing!');
+    closeToggleModal();
+    return;
+  }
+  
+  // Update content to show success
+  if (activated) {
+    icon.className = 'toggle-modal-icon activate';
+    if (iconFa) iconFa.className = 'fas fa-check-circle';
+    title.textContent = '¡Tipo Activado!';
+    message.textContent = 'El tipo de empresa se ha activado exitosamente.';
+  } else {
+    icon.className = 'toggle-modal-icon deactivate';
+    if (iconFa) iconFa.className = 'fas fa-times-circle';
+    title.textContent = '¡Tipo Desactivado!';
+    message.textContent = 'El tipo de empresa se ha desactivado exitosamente.';
+  }
+  
+  // Hide buttons temporarily
+  if (typeof gsap !== 'undefined') {
+    gsap.to(buttons, {
+      opacity: 0,
+      duration: 0.3,
+      onComplete: () => {
+        buttons.style.display = 'none';
+      }
+    });
+    
+    // Animate success state
+    gsap.to(icon, {
+      scale: 1.2,
+      duration: 0.3,
+      ease: "back.out(1.7)"
+    });
+  } else {
+    buttons.style.display = 'none';
+  }
+  
+  // Auto-close after 2 seconds
+  setTimeout(() => {
+    closeToggleModal();
+    setTimeout(() => {
+      location.reload();
+    }, 500);
+  }, 2000);
+}
+
+// Función para llamar desde toggleStatus - ADAPTADA
+async function toggleStatus(id, currentStatus) {
+  // Obtener el nombre del tipo para mostrar en el modal
+  const card = document.querySelector(`[data-type-id="${id}"]`);
+  const typeName = card ? card.querySelector('.ios-ct-card-title').textContent : 'este tipo de empresa';
+  
+  openToggleCompanyTypeModal(id, currentStatus, typeName);
+}
+
+// ===== MODAL DE ACTUALIZACIÓN - EXACTO DE HARDWARE =====
+
+// Client Update Modal Functions - COPIADO EXACTO DE HARDWARE
+function showClientUpdateModal(message = 'El tipo de empresa se ha actualizado exitosamente.') {
+  console.log('🔄 Showing client update modal:', message);
+  
+  const modal = document.getElementById('clientUpdateModal');
+  const container = document.getElementById('updateModalContainer');
+  const icon = document.getElementById('updateModalIcon');
+  const iconFa = document.getElementById('updateModalIconFa');
+  const title = document.getElementById('updateModalTitle');
+  const messageEl = document.getElementById('updateModalMessage');
+  
+  if (!modal || !container || !title || !messageEl) {
+    console.error('❌ Client update modal elements missing!');
+    return;
+  }
+  
+  // Set success styling with separate classes
+  if (icon) icon.className = 'client-update-icon';
+  if (iconFa) iconFa.className = 'fas fa-check-circle';
+  
+  // Set dynamic title based on message
+  if (message.includes('creado')) {
+    title.textContent = '¡Tipo Creado!';
+  } else if (message.includes('actualizado')) {
+    title.textContent = '¡Tipo Actualizado!';
+  } else {
+    title.textContent = '¡Operación Exitosa!';
+  }
+  
+  messageEl.textContent = message;
+  
+  // Show modal
+  modal.classList.remove('hidden');
+  modal.style.display = 'flex';
+  document.body.classList.add('modal-open');
+  
+  console.log('✅ Client update modal should now be visible');
+  
+  // Simple animation
+  if (typeof gsap !== 'undefined') {
+    gsap.set(container, { scale: 0.8, opacity: 0 });
+    gsap.to(container, {
+      scale: 1,
+      opacity: 1,
+      duration: 0.4,
+      ease: "back.out(1.7)"
+    });
+    
+    if (icon) {
+      gsap.to(icon, {
+        scale: 1.1,
+        duration: 0.6,
+        repeat: 1,
+        yoyo: true,
+        ease: "power2.inOut"
+      });
+    }
+  } else {
+    container.style.transform = 'scale(1)';
+    container.style.opacity = '1';
+  }
+  
+  // NO auto-close - wait for user interaction
+  console.log('⏰ Modal will stay open until user clicks Aceptar or clicks outside');
+}
+
+// Close update modal - COPIADO EXACTO DE HARDWARE
+function closeUpdateModal() {
+  console.log('🔄 Closing client update modal');
+  
+  const modal = document.getElementById('clientUpdateModal');
+  const container = document.getElementById('updateModalContainer');
+  
+  if (!modal) {
+    console.error('❌ Client update modal not found when trying to close');
+    return;
+  }
+  
+  // Simple close animation
+  if (typeof gsap !== 'undefined' && container) {
+    gsap.to(container, {
+      scale: 0.8,
+      opacity: 0,
+      duration: 0.3,
+      ease: "power2.in",
+      onComplete: () => {
+        resetAndHideUpdateModal();
+      }
+    });
+  } else {
+    resetAndHideUpdateModal();
+  }
+  
+  function resetAndHideUpdateModal() {
+    modal.classList.add('hidden');
+    modal.style.display = 'none';
+    document.body.classList.remove('modal-open');
+    
+    console.log('✅ Update modal closed and reset');
+  }
+}
+
+// Función exportTypes simplificada - USANDO MODAL DE HARDWARE
 function exportTypes() {
-  alert('Exportando tipos de empresa...\n\nEsta funcionalidad generará un archivo CSV con todos los tipos.');
+  // Usar el mismo modal de success de hardware adaptado
+  showClientUpdateModal('Los tipos de empresa se están exportando. El archivo CSV se descargará automáticamente.');
+}
+
+// SIMPLIFIED: Toggle between showing only active or all types
+function toggleIncludeInactive() {
+  const currentlyShowingInactive = {{ 'true' if include_inactive else 'false' }};
+  const newShowInactive = !currentlyShowingInactive;
+  
+  console.log(`🔄 Toggle: Currently showing inactive: ${currentlyShowingInactive}, New: ${newShowInactive}`);
+  
+  // Update button appearance
+  const button = event.target.closest('button');
+  const buttonIcon = button.querySelector('i');
+  const buttonText = button.querySelector('span');
+  
+  if (newShowInactive) {
+    // Show all types
+    button.classList.remove('ios-ct-action-btn-secondary');
+    button.classList.add('ios-ct-action-btn-warning');
+    buttonIcon.className = 'fas fa-eye-slash';
+    buttonText.textContent = 'Solo Activos';
+  } else {
+    // Show only active
+    button.classList.remove('ios-ct-action-btn-warning');
+    button.classList.add('ios-ct-action-btn-secondary');
+    buttonIcon.className = 'fas fa-eye';
+    buttonText.textContent = 'Ver Todos';
+  }
+  
+  // Filter types by active status - SIMPLE!
+  filterTypesByActiveStatus(newShowInactive);
+  
+  // Update URL without page reload
+  const currentUrl = new URL(window.location);
+  if (newShowInactive) {
+    currentUrl.searchParams.set('include_inactive', 'true');
+  } else {
+    currentUrl.searchParams.delete('include_inactive');
+  }
+  window.history.replaceState({}, '', currentUrl.toString());
+}
+
+// SIMPLE: Filter types by checking 'activo' field - no complex logic needed!
+function filterTypesByActiveStatus(showInactive) {
+  console.log(`🎯 Simple filter: showInactive=${showInactive}`);
+  
+  const typeCards = document.querySelectorAll('.company-type-item');
+  let visibleCount = 0;
+  
+  typeCards.forEach(card => {
+    // Get the active status directly from the data attribute
+    const isActive = card.dataset.status === 'true';
+    
+    // Simple logic: show if active OR if we want to show inactive too
+    if (isActive || showInactive) {
+      card.style.display = 'block';
+      visibleCount++;
+    } else {
+      card.style.display = 'none';
+    }
+  });
+  
+  // Update header badge to show current filter
+  updateHeaderBadge(showInactive, visibleCount);
+  
+  console.log(`✨ Filter applied: ${visibleCount} types visible`);
+}
+
+// Simple header badge update
+function updateHeaderBadge(showInactive, visibleCount) {
+  const headerSubtitle = document.querySelector('.ios-ct-header-subtitle');
+  if (headerSubtitle) {
+    const badgeSpan = headerSubtitle.querySelector('span');
+    if (badgeSpan) {
+      if (showInactive) {
+        badgeSpan.className = 'inline-block ml-2 px-2 py-1 bg-orange-500 text-white text-xs rounded-full';
+        badgeSpan.textContent = `Mostrando todos (${visibleCount} tipos)`;
+      } else {
+        badgeSpan.className = 'inline-block ml-2 px-2 py-1 bg-green-500 text-white text-xs rounded-full';
+        badgeSpan.textContent = `Solo activos (${visibleCount} tipos)`;
+      }
+    }
+  }
+}
+
+// Function to view companies of a specific type
+function viewCompaniesOfType(typeId, typeName) {
+  console.log(`📋 Viendo empresas del tipo: ${typeName} (${typeId})`);
+  
+  // Navigate to empresas page with filter by type
+  const empresasUrl = new URL('/admin/empresas', window.location.origin);
+  empresasUrl.searchParams.set('tipo_empresa_id', typeId);
+  empresasUrl.searchParams.set('tipo_empresa_nombre', typeName);
+  
+  // Show loading state
+  const button = event.target.closest('button');
+  const originalContent = button.innerHTML;
+  button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Cargando...</span>';
+  button.disabled = true;
+  
+  // Navigate to empresas with filter
+  window.location.href = empresasUrl.toString();
 }
 
 // Features management
 function addFeature() {
-  const input = document.querySelector('#featuresContainer input[type="text"]');
+  const input = document.getElementById('featureInput');
   const feature = input.value.trim();
   
   if (feature && !currentFeatures.includes(feature)) {
+    if (currentFeatures.length >= 20) {
+      showEnhancedNotification('No se pueden agregar más de 20 características', 'error');
+      return;
+    }
+    if (feature.length > 100) {
+      showEnhancedNotification('La característica no puede exceder 100 caracteres', 'error');
+      return;
+    }
     currentFeatures.push(feature);
     input.value = '';
     updateFeaturesList();
+  } else if (currentFeatures.includes(feature)) {
+    showEnhancedNotification('Esta característica ya existe', 'error');
   }
 }
 
@@ -412,13 +1080,21 @@ function removeFeature(index) {
 function updateFeaturesList() {
   const container = document.getElementById('featuresList');
   container.innerHTML = currentFeatures.map((feature, index) => `
-    <div class="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded">
-      <span class="text-sm text-black dark:text-white">${feature}</span>
-      <button type="button" class="text-red-600 hover:text-red-700" onclick="removeFeature(${index})">
+    <div class="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded-lg">
+      <span class="text-sm text-gray-700 dark:text-gray-300">${feature}</span>
+      <button type="button" class="text-red-500 hover:text-red-700 ml-2" onclick="removeFeature(${index})">
         <i class="fas fa-times"></i>
       </button>
     </div>
   `).join('');
+  
+  // Add appear animation to new features
+  const newFeatures = container.querySelectorAll('div');
+  newFeatures.forEach((item, index) => {
+    if (window.CompanyTypesAnimations) {
+      window.CompanyTypesAnimations.animateFeatureTag(item);
+    }
+  });
 }
 
 function handleFeatureKeyPress(event) {
@@ -439,26 +1115,172 @@ document.getElementById('typeColorHex').addEventListener('input', function() {
   }
 });
 
-// Form submission
-document.getElementById('companyTypeForm').addEventListener('submit', function(e) {
-  e.preventDefault();
-  
-  const formData = {
-    name: document.getElementById('typeName').value,
-    description: document.getElementById('typeDescription').value,
-    color: document.getElementById('typeColorHex').value,
-    icon: document.getElementById('typeIcon').value,
-    active: document.getElementById('typeStatus').value === 'true',
-    features: currentFeatures
+// API Helper functions
+async function callAPI(method, endpoint, data = null) {
+  const options = {
+    method: method,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include'  // Incluir cookies de sesión para autenticación
   };
   
-  if (editingCompanyType) {
-    alert(`Tipo de empresa ${editingCompanyType} actualizado exitosamente\n\nDatos: ${JSON.stringify(formData, null, 2)}`);
-  } else {
-    alert(`Nuevo tipo de empresa creado exitosamente\n\nDatos: ${JSON.stringify(formData, null, 2)}`);
+  if (data) {
+    options.body = JSON.stringify(data);
   }
   
-  closeModal();
+  try {
+    console.log(`🔄 API Call: ${method} ${endpoint}`);
+    const response = await fetch(`{{ api_url }}${endpoint}`, options);
+    const result = await response.json();
+    
+    console.log(`📡 API Response: ${response.status}`, result);
+    
+    if (!response.ok) {
+      if (response.status === 401) {
+        throw new Error('No autorizado. Por favor, inicia sesión nuevamente.');
+      }
+      throw new Error(result.errors ? result.errors.join(', ') : result.message || 'Error en la operación');
+    }
+    
+    return result;
+  } catch (error) {
+    console.error('💥 Error en API:', error);
+    throw error;
+  }
+}
+
+
+// Enhanced notification system like hardware
+function showEnhancedNotification(message, type = 'info') {
+  // Remove existing notifications
+  const existingNotifications = document.querySelectorAll('.enhanced-notification');
+  existingNotifications.forEach(notification => notification.remove());
+  
+  // Create notification element
+  const notification = document.createElement('div');
+  notification.className = `enhanced-notification fixed top-4 right-4 z-50 max-w-sm w-full`;
+  
+  let iconClass, bgClass, borderClass;
+  if (type === 'error') {
+    iconClass = 'fas fa-exclamation-circle';
+    bgClass = 'bg-red-500';
+    borderClass = 'border-red-600';
+  } else {
+    iconClass = 'fas fa-check-circle';
+    bgClass = 'bg-green-500';
+    borderClass = 'border-green-600';
+  }
+  
+  notification.innerHTML = `
+    <div class="${bgClass} ${borderClass} border-l-4 text-white p-4 rounded-lg shadow-xl backdrop-blur-sm">
+      <div class="flex items-center">
+        <div class="flex-shrink-0">
+          <i class="${iconClass} text-xl"></i>
+        </div>
+        <div class="ml-3">
+          <p class="text-sm font-medium">${message}</p>
+        </div>
+        <div class="ml-auto pl-3">
+          <button onclick="closeNotification(this)" class="text-white hover:text-gray-200 transition-colors">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  // Add to document
+  document.body.appendChild(notification);
+  
+  // GSAP animations if available
+  if (typeof gsap !== 'undefined') {
+    gsap.set(notification, { x: 400, opacity: 0 });
+    
+    const tl = gsap.timeline();
+    tl.to(notification, {
+      x: 0,
+      opacity: 1,
+      duration: 0.5,
+      ease: "back.out(1.7)"
+    })
+    .to(notification, {
+      scale: 1.05,
+      duration: 0.1,
+      yoyo: true,
+      repeat: 1,
+      ease: "power2.inOut"
+    }, "-=0.2");
+  }
+  
+  // Auto-remove after 4 seconds
+  setTimeout(() => {
+    closeNotification(notification.querySelector('button'));
+  }, 4000);
+}
+
+// Close notification with animation
+function closeNotification(button) {
+  const notification = button.closest('.enhanced-notification');
+  if (notification) {
+    if (typeof gsap !== 'undefined') {
+      gsap.to(notification, {
+        x: 400,
+        opacity: 0,
+        duration: 0.3,
+        ease: "back.in(1.7)",
+        onComplete: () => notification.remove()
+      });
+    } else {
+      notification.remove();
+    }
+  }
+}
+
+// Legacy function for compatibility
+function showNotification(message, type = 'info') {
+  showEnhancedNotification(message, type);
+}
+
+// Form submission with real API calls
+document.getElementById('companyTypeForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  
+  const submitBtn = document.querySelector('#submitButtonText');
+  const originalText = submitBtn.textContent;
+  submitBtn.textContent = 'Guardando...';
+  
+  const formData = {
+    nombre: document.getElementById('typeName').value,
+    descripcion: document.getElementById('typeDescription').value,
+    caracteristicas: currentFeatures,
+    activo: document.getElementById('typeStatus').value === 'true',
+    creado_por: '{{ current_user._id if current_user else "" }}' // Get from session
+  };
+  
+  try {
+    let result;
+    if (editingCompanyType) {
+      // Update existing type
+      result = await callAPI('PUT', `/api/tipos_empresa/${editingCompanyType}`, formData);
+      showClientUpdateModal('El tipo de empresa se ha actualizado exitosamente.');
+    } else {
+      // Create new type
+      result = await callAPI('POST', '/api/tipos_empresa', formData);
+      showClientUpdateModal('El nuevo tipo de empresa se ha creado exitosamente.');
+    }
+    
+    closeModal();
+    
+    // Reload page to show changes
+    setTimeout(() => {
+      location.reload();
+    }, 1500);
+    
+  } catch (error) {
+    showEnhancedNotification(error.message, 'error');
+    submitBtn.textContent = originalText;
+  }
 });
 
 // Close modals when clicking outside
@@ -474,19 +1296,39 @@ document.getElementById('detailsModal').addEventListener('click', function(e) {
   }
 });
 
-// Close modal with Escape key
+// Event listeners para modales iOS - ADAPTADOS DE HARDWARE
+document.getElementById('toggleCompanyTypeModal').addEventListener('click', function(e) {
+  if (e.target === this) {
+    closeToggleModal();
+  }
+});
+
+document.getElementById('clientUpdateModal').addEventListener('click', function(e) {
+  if (e.target === this) {
+    closeUpdateModal();
+  }
+});
+
+// Close modal with Escape key - ADAPTADO DE HARDWARE
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') {
     // Check which modal is open and close it
     const companyTypeModal = document.getElementById('companyTypeModal');
     const detailsModal = document.getElementById('detailsModal');
+    const toggleCompanyTypeModal = document.getElementById('toggleCompanyTypeModal');
+    const clientUpdateModal = document.getElementById('clientUpdateModal');
     
     if (!companyTypeModal.classList.contains('hidden')) {
       closeModal();
     } else if (!detailsModal.classList.contains('hidden')) {
       closeDetailsModal();
+    } else if (!toggleCompanyTypeModal.classList.contains('hidden')) {
+      closeToggleModal();
+    } else if (!clientUpdateModal.classList.contains('hidden')) {
+      closeUpdateModal();
     }
   }
 });
+
 </script>
 {% endblock %}

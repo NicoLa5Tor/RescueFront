@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Filtros</title>
+    <style>
+        .company-type-item {
+            border: 1px solid #ccc;
+            margin: 10px;
+            padding: 10px;
+            display: block;
+        }
+        .hidden { display: none !important; }
+        .filter-container {
+            background: #f0f0f0;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .filter-input, .filter-select {
+            margin: 5px;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="filter-container">
+        <h3>Filtros de Test</h3>
+        <input type="text" id="searchInput" placeholder="Buscar..." class="filter-input">
+        <select id="statusFilter" class="filter-select">
+            <option value="all">Todos</option>
+            <option value="active">Solo Activos</option>
+            <option value="inactive">Solo Inactivos</option>
+        </select>
+        <select id="characteristicsFilter" class="filter-select">
+            <option value="">Todas</option>
+            <option value="with">Con Características</option>
+            <option value="without">Sin Características</option>
+        </select>
+        <button onclick="clearFilters()">Limpiar</button>
+    </div>
+
+    <div id="companyTypesGrid">
+        <div class="company-type-item" data-status="True">
+            <div class="ios-ct-card-title">Tecnología</div>
+            <span class="ios-ct-status-badge">Activo</span>
+            <span class="ios-ct-feature-tag">Desarrollo</span>
+            <span class="ios-ct-feature-tag">Software</span>
+            <div class="ios-ct-stat-value">2024-01-01</div>
+        </div>
+        
+        <div class="company-type-item" data-status="False">
+            <div class="ios-ct-card-title">Servicios</div>
+            <span class="ios-ct-status-badge">Inactivo</span>
+            <span class="ios-ct-feature-tag ios-ct-feature-empty">No definidas</span>
+            <div class="ios-ct-stat-value">2024-02-01</div>
+        </div>
+        
+        <div class="company-type-item" data-status="True">
+            <div class="ios-ct-card-title">Manufactura</div>
+            <span class="ios-ct-status-badge">Activo</span>
+            <span class="ios-ct-feature-tag">Producción</span>
+            <span class="ios-ct-feature-tag">Control de Calidad</span>
+            <span class="ios-ct-feature-tag">Logística</span>
+            <div class="ios-ct-stat-value">2024-03-01</div>
+        </div>
+    </div>
+
+    <script>
+        let allCompanyTypes = [];
+
+        function initializeFilters() {
+            console.log('🔍 Inicializando filtros...');
+            
+            const cards = document.querySelectorAll('.company-type-item');
+            console.log(`📊 Encontradas ${cards.length} tarjetas para filtrar`);
+            
+            allCompanyTypes = Array.from(cards).map(card => {
+                const titleElement = card.querySelector('.ios-ct-card-title');
+                const featureElements = card.querySelectorAll('.ios-ct-feature-tag');
+                const createdElement = card.querySelector('.ios-ct-stat-value:last-child');
+                
+                const cardData = {
+                    element: card,
+                    name: titleElement ? titleElement.textContent.toLowerCase() : '',
+                    active: card.getAttribute('data-status') === 'True',
+                    features: Array.from(featureElements).map(tag => tag.textContent.toLowerCase()),
+                    created: createdElement ? createdElement.textContent : ''
+                };
+                
+                console.log(`📋 Tarjeta: ${cardData.name}, Activo: ${cardData.active}, Características: ${cardData.features.length}`);
+                return cardData;
+            });
+            
+            setupFilterListeners();
+            console.log('✅ Filtros inicializados correctamente');
+        }
+
+        function setupFilterListeners() {
+            const searchInput = document.getElementById('searchInput');
+            const statusFilter = document.getElementById('statusFilter');
+            const characteristicsFilter = document.getElementById('characteristicsFilter');
+            
+            if (searchInput) {
+                searchInput.addEventListener('input', applyFilters);
+                console.log('🎯 Event listener añadido a searchInput');
+            }
+            if (statusFilter) {
+                statusFilter.addEventListener('change', applyFilters);
+                console.log('🎯 Event listener añadido a statusFilter');
+            }
+            if (characteristicsFilter) {
+                characteristicsFilter.addEventListener('change', applyFilters);
+                console.log('🎯 Event listener añadido a characteristicsFilter');
+            }
+        }
+
+        function applyFilters() {
+            console.log('🔍 Aplicando filtros...');
+            
+            if (allCompanyTypes.length === 0) {
+                console.warn('⚠️ No hay datos de tarjetas para filtrar');
+                return;
+            }
+            
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            const characteristicsFilter = document.getElementById('characteristicsFilter').value;
+            
+            console.log(`📋 Filtros: búsqueda='${searchTerm}', estado='${statusFilter}', características='${characteristicsFilter}'`);
+            
+            let filteredTypes = allCompanyTypes.filter(type => {
+                // Search filter
+                const matchesSearch = !searchTerm || type.name.includes(searchTerm);
+                
+                // Status filter
+                let matchesStatus = true;
+                if (statusFilter === 'active') {
+                    matchesStatus = type.active;
+                } else if (statusFilter === 'inactive') {
+                    matchesStatus = !type.active;
+                }
+                
+                // Characteristics filter
+                let matchesCharacteristics = true;
+                if (characteristicsFilter === 'with') {
+                    matchesCharacteristics = type.features.length > 0 && !type.features.includes('no definidas');
+                } else if (characteristicsFilter === 'without') {
+                    matchesCharacteristics = type.features.length === 0 || type.features.includes('no definidas');
+                }
+                
+                const matches = matchesSearch && matchesStatus && matchesCharacteristics;
+                console.log(`🔹 ${type.name}: search=${matchesSearch}, status=${matchesStatus}, chars=${matchesCharacteristics} => ${matches}`);
+                return matches;
+            });
+            
+            console.log(`📊 Tarjetas filtradas: ${filteredTypes.length} de ${allCompanyTypes.length}`);
+            
+            // Hide all cards first
+            allCompanyTypes.forEach(type => {
+                type.element.style.display = 'none';
+            });
+            
+            // Show filtered cards
+            filteredTypes.forEach((type, index) => {
+                type.element.style.display = 'block';
+                type.element.style.order = index;
+            });
+            
+            console.log(`✅ Filtros aplicados - mostrando ${filteredTypes.length} tarjetas`);
+        }
+
+        function clearFilters() {
+            console.log('🧹 Limpiando filtros...');
+            
+            document.getElementById('searchInput').value = '';
+            document.getElementById('statusFilter').value = 'all';
+            document.getElementById('characteristicsFilter').value = '';
+            
+            // Show all cards
+            allCompanyTypes.forEach(type => {
+                type.element.style.display = 'block';
+                type.element.style.order = '';
+            });
+            
+            console.log('✅ Filtros limpiados');
+        }
+
+        // Initialize when page is loaded
+        window.addEventListener('load', initializeFilters);
+    </script>
+</body>
+</html>

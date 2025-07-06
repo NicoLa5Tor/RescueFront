@@ -1,0 +1,253 @@
+/* ===== LIGHT THEME OVERRIDES FOR COMPANY TYPES ===== */
+
+/* Light theme adaptations - transparent like hardware */
+.light .company-types-container {
+  background: transparent;
+}
+
+/* Glass elements for light theme */
+.light .ios-glass-base {
+  background: rgba(255, 255, 255, 0.7) !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 
+    0 8px 25px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Header */
+.light .ios-ct-header {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.light .ios-ct-header-title {
+  background: linear-gradient(135deg, 
+    rgba(0, 0, 0, 0.8) 0%, 
+    rgba(0, 0, 0, 0.6) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.light .ios-ct-header-subtitle {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+/* Stats cards */
+.light .ios-ct-stat-card {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 
+    0 8px 25px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.light .ios-ct-stat-label {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.light .ios-ct-stat-value {
+  color: rgba(0, 0, 0, 0.9);
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+.light .ios-ct-stat-trend {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+/* Company type cards */
+.light .ios-ct-card {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 
+    0 8px 25px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.light .ios-ct-card-title {
+  color: rgba(0, 0, 0, 0.9);
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+.light .ios-ct-card-description {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.light .ios-ct-card-stats {
+  background: rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.light .ios-ct-stat-label {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.light .ios-ct-stat-value {
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.light .ios-ct-features-label {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.light .ios-ct-feature-tag {
+  background: rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.light .ios-ct-card-btn {
+  background: rgba(0, 0, 0, 0.08);
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.light .ios-ct-card-btn:hover {
+  background: rgba(0, 0, 0, 0.12);
+  color: rgba(0, 0, 0, 0.8);
+}
+
+/* Modals */
+.light .ios-ct-modal {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 
+    0 25px 60px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+}
+
+.light .ios-ct-modal-title {
+  color: rgba(0, 0, 0, 0.9);
+}
+
+.light .ios-ct-modal-close {
+  background: rgba(0, 0, 0, 0.08);
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.light .ios-ct-modal-close:hover {
+  background: rgba(0, 0, 0, 0.12);
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.light .ios-ct-form-label {
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.light .ios-ct-form-input {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  color: rgba(0, 0, 0, 0.9);
+}
+
+.light .ios-ct-form-input:focus {
+  border-color: rgba(59, 130, 246, 0.6);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.light .ios-ct-form-input::placeholder {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.light .ios-ct-features-container {
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.light .ios-ct-feature-item {
+  background: rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  color: rgba(0, 0, 0, 0.7);
+}
+
+/* Action buttons */
+.light .ios-ct-action-btn-secondary {
+  background: rgba(0, 0, 0, 0.08);
+  color: rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.light .ios-ct-action-btn-secondary:hover {
+  background: rgba(0, 0, 0, 0.12);
+  border-color: rgba(0, 0, 0, 0.2);
+}
+
+.light .ios-ct-modal-btn-secondary {
+  background: rgba(0, 0, 0, 0.08);
+  color: rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.light .ios-ct-modal-btn-secondary:hover {
+  background: rgba(0, 0, 0, 0.12);
+  border-color: rgba(0, 0, 0, 0.2);
+}
+
+/* Status badges for light theme */
+.light .ios-ct-status-active {
+  background: rgba(16, 185, 129, 0.15);
+  color: rgba(16, 185, 129, 0.9);
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.light .ios-ct-status-inactive {
+  background: rgba(239, 68, 68, 0.15);
+  color: rgba(239, 68, 68, 0.9);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+/* Shimmer effects for light theme */
+.light .ios-ct-card-shimmer {
+  background: linear-gradient(45deg, 
+    transparent 30%, 
+    rgba(255, 255, 255, 0.4) 50%, 
+    transparent 70%);
+}
+
+.light .ios-ct-stat-shimmer {
+  background: linear-gradient(45deg, 
+    transparent 30%, 
+    rgba(255, 255, 255, 0.3) 50%, 
+    transparent 70%);
+}
+
+.light .ios-ct-header::after {
+  background: linear-gradient(45deg, 
+    transparent 30%, 
+    rgba(255, 255, 255, 0.2) 50%, 
+    transparent 70%);
+}
+
+/* Hover states adjustments for light theme */
+.light .ios-ct-card:hover {
+  box-shadow: 
+    0 25px 60px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+}
+
+.light .ios-ct-stat-card:hover {
+  box-shadow: 
+    0 20px 50px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+}
+
+/* Icon shadows for light theme */
+.light .ios-ct-card-icon,
+.light .ios-ct-stat-icon {
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* Scrollbar for light theme */
+.light .company-types-container::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.light .company-types-container::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.light .company-types-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
