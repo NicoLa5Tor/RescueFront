@@ -324,100 +324,1203 @@
     transform: translateY(-2px) !important;
     box-shadow: 0 6px 16px rgba(255, 255, 255, 0.4) !important;
   }
+
+  /* ===== ENHANCED iOS DESIGN SYSTEM ===== */
+  
+  /* iOS Header Styles */
+  .ios-header-container {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .ios-header-backdrop {
+    background: linear-gradient(135deg, 
+      rgba(59, 130, 246, 0.15) 0%, 
+      rgba(147, 51, 234, 0.15) 50%,
+      rgba(236, 72, 153, 0.15) 100%) !important;
+    backdrop-filter: blur(20px) saturate(1.8) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(1.8) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 20px !important;
+    padding: 1.5rem !important;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 
+      0 15px 30px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+  }
+  
+  .dark .ios-header-backdrop {
+    background: linear-gradient(135deg, 
+      rgba(59, 130, 246, 0.08) 0%, 
+      rgba(147, 51, 234, 0.08) 50%,
+      rgba(236, 72, 153, 0.08) 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 
+      0 20px 40px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+  }
+  
+  .ios-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+  }
+  
+  .ios-header-text {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  
+  .ios-header-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, 
+      rgba(59, 130, 246, 0.8) 0%, 
+      rgba(147, 51, 234, 0.8) 100%) !important;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    color: white;
+    box-shadow: 
+      0 10px 25px rgba(59, 130, 246, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .ios-header-icon::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, 
+      transparent 30%, 
+      rgba(255, 255, 255, 0.2) 50%, 
+      transparent 70%);
+    transform: rotate(45deg);
+    animation: iconShimmer 3s ease-in-out infinite;
+  }
+  
+  .ios-header-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, 
+      rgba(255, 255, 255, 0.95) 0%, 
+      rgba(255, 255, 255, 0.8) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .dark .ios-header-title {
+    background: linear-gradient(135deg, 
+      rgba(255, 255, 255, 0.95) 0%, 
+      rgba(255, 255, 255, 0.7) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .ios-header-subtitle {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0.5rem 0 0 0;
+    font-weight: 500;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  }
+  
+  .ios-header-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+  
+  /* iOS Action Buttons */
+  .ios-action-btn {
+    background: rgba(255, 255, 255, 0.15) !important;
+    backdrop-filter: blur(12px) saturate(1.3) !important;
+    -webkit-backdrop-filter: blur(12px) saturate(1.3) !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    border-radius: 16px !important;
+    padding: 1rem 1.5rem !important;
+    font-weight: 600 !important;
+    font-size: 0.95rem !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+    transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1) !important;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-width: 120px;
+  }
+  
+  .ios-action-btn-primary {
+    background: linear-gradient(135deg, 
+      rgba(59, 130, 246, 0.7) 0%, 
+      rgba(147, 51, 234, 0.7) 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 
+      0 8px 25px rgba(59, 130, 246, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+  }
+  
+  .ios-action-btn:hover {
+    transform: translateY(-2px) scale(1.02) !important;
+    box-shadow: 
+      0 12px 35px rgba(0, 0, 0, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
+  }
+  
+  .ios-action-btn-primary:hover {
+    background: linear-gradient(135deg, 
+      rgba(59, 130, 246, 0.9) 0%, 
+      rgba(147, 51, 234, 0.9) 100%) !important;
+    box-shadow: 
+      0 15px 40px rgba(59, 130, 246, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
+  }
+  
+  /* iOS Stats Grid */
+  .ios-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .ios-stat-card {
+    background: rgba(255, 255, 255, 0.08) !important;
+    backdrop-filter: blur(20px) saturate(1.5) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(1.5) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 12px !important;
+    padding: 1rem !important;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+    cursor: pointer;
+    box-shadow: 
+      0 8px 25px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+  
+  .dark .ios-stat-card {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 
+      0 10px 30px rgba(0, 0, 0, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+  
+  .ios-stat-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 
+      0 20px 50px rgba(0, 0, 0, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+  
+  .ios-stat-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    color: white;
+    margin-bottom: 0.5rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+  }
+  
+  .ios-stat-icon-blue {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+  }
+  
+  .ios-stat-icon-green {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+  }
+  
+  .ios-stat-icon-red {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+  }
+  
+  .ios-stat-icon-purple {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
+  }
+  
+  .ios-stat-content {
+    flex: 1;
+  }
+  
+  .ios-stat-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 0.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .ios-stat-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.95);
+    margin-bottom: 0.25rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+  
+  .ios-stat-trend {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 500;
+  }
+  
+  .ios-stat-shimmer {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, 
+      transparent 30%, 
+      rgba(255, 255, 255, 0.08) 50%, 
+      transparent 70%);
+    transform: rotate(45deg);
+    animation: statShimmer 4s ease-in-out infinite;
+    pointer-events: none;
+  }
+  
+  @keyframes iconShimmer {
+    0%, 100% { transform: translateX(-100%) rotate(45deg); }
+    50% { transform: translateX(100%) rotate(45deg); }
+  }
+  
+  @keyframes statShimmer {
+    0%, 100% { transform: translateX(-100%) rotate(45deg); opacity: 0; }
+    50% { transform: translateX(100%) rotate(45deg); opacity: 1; }
+  }
+  
+  /* iOS Filters Styles */
+  .ios-filters-container {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .ios-blur-bg {
+    background: rgba(255, 255, 255, 0.08) !important;
+    backdrop-filter: blur(20px) saturate(1.5) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(1.5) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 20px !important;
+    padding: 1.5rem !important;
+    box-shadow: 
+      0 10px 30px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+  
+  .dark .ios-blur-bg {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 
+      0 10px 30px rgba(0, 0, 0, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+  
+  .ios-filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1rem;
+    align-items: end;
+  }
+  
+  .ios-filter-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .ios-filter-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.8);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .ios-filter-input {
+    background: rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 10px !important;
+    padding: 0.75rem 0.875rem !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-size: 0.85rem !important;
+    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1) !important;
+    width: 100%;
+  }
+  
+  .ios-filter-input::placeholder {
+    color: rgba(255, 255, 255, 0.5) !important;
+  }
+  
+  .ios-filter-input:focus {
+    outline: none !important;
+    background: rgba(255, 255, 255, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    box-shadow: 
+      0 0 0 3px rgba(59, 130, 246, 0.2),
+      0 8px 25px rgba(0, 0, 0, 0.1) !important;
+    transform: translateY(-1px) !important;
+  }
+  
+  .dark .ios-filter-input {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  }
+  
+  .dark .ios-filter-input:focus {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  }
+  
+  /* Override conflicting styles */
+  .ios-hardware-card.hardware-item {
+    /* Reset all conflicting styles */
+    background: rgba(255, 255, 255, 0.08) !important;
+    backdrop-filter: blur(20px) saturate(1.5) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(1.5) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+    border-radius: 18px !important;
+    padding: 1.25rem !important;
+    transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1) !important;
+    transform: none !important;
+    margin: 0 !important;
+    display: block !important;
+    position: relative !important;
+    overflow: hidden !important;
+  }
+  
+  /* iOS Hardware Cards */
+  .ios-hardware-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+  }
+  
+  /* Ensure dynamic cards display properly */
+  .ios-hardware-grid .hardware-item {
+    display: block !important;
+  }
+  
+  .ios-hardware-grid .hardware-item.hidden {
+    display: none !important;
+  }
+  
+  .ios-hardware-card {
+    background: rgba(255, 255, 255, 0.08) !important;
+    backdrop-filter: blur(20px) saturate(1.5) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(1.5) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 18px !important;
+    padding: 1.25rem !important;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+    cursor: pointer;
+    box-shadow: 
+      0 8px 25px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+  
+  .dark .ios-hardware-card,
+  .dark .ios-hardware-card.hardware-item {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 
+      0 8px 25px rgba(0, 0, 0, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  }
+  
+  .ios-hardware-card:hover,
+  .ios-hardware-card.hardware-item:hover {
+    transform: translateY(-8px) scale(1.02) !important;
+    box-shadow: 
+      0 25px 60px rgba(0, 0, 0, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+  }
+  
+  .ios-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+  }
+  
+  .ios-card-icon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, 
+      rgba(59, 130, 246, 0.8) 0%, 
+      rgba(147, 51, 234, 0.8) 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: white;
+    box-shadow: 
+      0 6px 15px rgba(59, 130, 246, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .ios-card-icon::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, 
+      transparent 30%, 
+      rgba(255, 255, 255, 0.2) 50%, 
+      transparent 70%);
+    transform: rotate(45deg);
+    animation: cardIconShimmer 3s ease-in-out infinite;
+  }
+  
+  .ios-status-badge {
+    padding: 0.375rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .ios-status-available {
+    background: rgba(16, 185, 129, 0.2);
+    color: rgba(16, 185, 129, 1);
+    border-color: rgba(16, 185, 129, 0.3);
+  }
+  
+  .ios-status-stock {
+    background: rgba(239, 68, 68, 0.2);
+    color: rgba(239, 68, 68, 1);
+    border-color: rgba(239, 68, 68, 0.3);
+  }
+  
+  .ios-status-discontinued {
+    background: rgba(107, 114, 128, 0.2);
+    color: rgba(107, 114, 128, 1);
+    border-color: rgba(107, 114, 128, 0.3);
+  }
+  
+  .ios-card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.95);
+    margin-bottom: 0.375rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+  
+  .ios-card-subtitle {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 0.75rem;
+    font-weight: 500;
+  }
+  
+  .ios-card-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .ios-info-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+  }
+  
+  .ios-info-label {
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 500;
+  }
+  
+  .ios-info-value {
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 600;
+  }
+  
+  .ios-card-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .ios-card-btn {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 10px !important;
+    padding: 0.625rem !important;
+    font-weight: 600 !important;
+    font-size: 0.8rem !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+    transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1) !important;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+  }
+  
+  .ios-card-btn:hover {
+    transform: translateY(-2px) !important;
+    background: rgba(255, 255, 255, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 
+      0 8px 20px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+  }
+  
+  .ios-card-btn-primary {
+    background: linear-gradient(135deg, 
+      rgba(59, 130, 246, 0.6) 0%, 
+      rgba(147, 51, 234, 0.6) 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 
+      0 6px 15px rgba(59, 130, 246, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+  }
+  
+  .ios-card-btn-primary:hover {
+    background: linear-gradient(135deg, 
+      rgba(59, 130, 246, 0.8) 0%, 
+      rgba(147, 51, 234, 0.8) 100%) !important;
+    box-shadow: 
+      0 10px 25px rgba(59, 130, 246, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
+  }
+  
+  .ios-card-btn-warning {
+    background: linear-gradient(135deg, 
+      rgba(245, 158, 11, 0.6) 0%, 
+      rgba(217, 119, 6, 0.6) 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 
+      0 6px 15px rgba(245, 158, 11, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+  }
+  
+  .ios-card-btn-success {
+    background: linear-gradient(135deg, 
+      rgba(16, 185, 129, 0.6) 0%, 
+      rgba(5, 150, 105, 0.6) 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 
+      0 6px 15px rgba(16, 185, 129, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+  }
+  
+  .ios-card-shimmer {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, 
+      transparent 30%, 
+      rgba(255, 255, 255, 0.06) 50%, 
+      transparent 70%);
+    transform: rotate(45deg);
+    animation: cardShimmer 5s ease-in-out infinite;
+    pointer-events: none;
+    opacity: 0;
+  }
+  
+  .ios-hardware-card:hover .ios-card-shimmer {
+    opacity: 1;
+  }
+  
+  @keyframes cardIconShimmer {
+    0%, 100% { transform: translateX(-100%) rotate(45deg); }
+    50% { transform: translateX(100%) rotate(45deg); }
+  }
+  
+  @keyframes cardShimmer {
+    0%, 100% { transform: translateX(-100%) rotate(45deg); opacity: 0; }
+    50% { transform: translateX(100%) rotate(45deg); opacity: 1; }
+  }
+  
+  /* ===== LIGHT THEME STYLES ===== */
+  
+  /* Light theme header styles */
+  :root:not(.dark) .ios-header-backdrop {
+    background: linear-gradient(135deg, 
+      rgba(255, 255, 255, 0.95) 0%, 
+      rgba(248, 250, 252, 0.9) 50%,
+      rgba(241, 245, 249, 0.95) 100%) !important;
+    backdrop-filter: blur(20px) saturate(1.8) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(1.8) !important;
+    border: 2px solid rgba(59, 130, 246, 0.2) !important;
+    box-shadow: 
+      0 20px 40px rgba(59, 130, 246, 0.12),
+      0 8px 16px rgba(147, 51, 234, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  /* Light theme header decorative elements */
+  :root:not(.dark) .ios-header-backdrop::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(from 0deg at 50% 50%, 
+      rgba(59, 130, 246, 0.03) 0deg,
+      rgba(147, 51, 234, 0.05) 90deg,
+      rgba(236, 72, 153, 0.03) 180deg,
+      rgba(59, 130, 246, 0.02) 270deg,
+      rgba(59, 130, 246, 0.03) 360deg);
+    animation: lightRotate 20s linear infinite;
+    pointer-events: none;
+  }
+  
+  :root:not(.dark) .ios-header-backdrop::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent 0px,
+      rgba(59, 130, 246, 0.02) 1px,
+      transparent 2px,
+      transparent 20px
+    );
+    pointer-events: none;
+  }
+  
+  @keyframes lightRotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  /* Light theme header content */
+  :root:not(.dark) .ios-header-content {
+    position: relative;
+    z-index: 10;
+  }
+  
+  :root:not(.dark) .ios-header-icon {
+    background: linear-gradient(135deg, 
+      rgba(59, 130, 246, 0.9) 0%, 
+      rgba(147, 51, 234, 0.9) 50%,
+      rgba(236, 72, 153, 0.9) 100%) !important;
+    border: 2px solid rgba(255, 255, 255, 0.8) !important;
+    box-shadow: 
+      0 15px 35px rgba(59, 130, 246, 0.3),
+      0 5px 15px rgba(147, 51, 234, 0.2),
+      inset 0 2px 4px rgba(255, 255, 255, 0.3) !important;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  :root:not(.dark) .ios-header-icon::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, 
+      transparent 30%, 
+      rgba(255, 255, 255, 0.4) 50%, 
+      transparent 70%);
+    transform: rotate(45deg);
+    animation: lightIconShimmer 3s ease-in-out infinite;
+  }
+  
+  @keyframes lightIconShimmer {
+    0%, 100% { transform: translateX(-100%) rotate(45deg); }
+    50% { transform: translateX(100%) rotate(45deg); }
+  }
+  
+  :root:not(.dark) .ios-header-title {
+    background: linear-gradient(135deg, 
+      rgba(59, 130, 246, 1) 0%, 
+      rgba(147, 51, 234, 0.9) 50%,
+      rgba(236, 72, 153, 1) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    position: relative;
+    font-weight: 800;
+  }
+  
+  :root:not(.dark) .ios-header-title::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, 
+      rgba(59, 130, 246, 0.6) 0%, 
+      rgba(147, 51, 234, 0.4) 50%,
+      rgba(236, 72, 153, 0.6) 100%);
+    border-radius: 2px;
+    animation: lightTitleGlow 2s ease-in-out infinite alternate;
+  }
+  
+  @keyframes lightTitleGlow {
+    0% { opacity: 0.6; transform: scaleX(0.8); }
+    100% { opacity: 1; transform: scaleX(1); }
+  }
+  
+  :root:not(.dark) .ios-header-subtitle {
+    color: rgba(59, 130, 246, 0.8);
+    text-shadow: none;
+    font-weight: 600;
+    position: relative;
+  }
+  
+  :root:not(.dark) .ios-header-subtitle::before {
+    content: '✨';
+    margin-right: 8px;
+    animation: lightSparkle 2s ease-in-out infinite;
+  }
+  
+  @keyframes lightSparkle {
+    0%, 100% { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(180deg) scale(1.1); }
+  }
+  
+  /* Light theme header corner decorations */
+  :root:not(.dark) .ios-header-container::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 60px;
+    height: 60px;
+    background: radial-gradient(circle, 
+      rgba(59, 130, 246, 0.1) 0%, 
+      rgba(147, 51, 234, 0.05) 50%, 
+      transparent 100%);
+    border-radius: 50%;
+    animation: lightFloat 3s ease-in-out infinite;
+    pointer-events: none;
+  }
+  
+  :root:not(.dark) .ios-header-container::after {
+    content: '';
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+    width: 40px;
+    height: 40px;
+    background: radial-gradient(circle, 
+      rgba(236, 72, 153, 0.08) 0%, 
+      rgba(59, 130, 246, 0.04) 50%, 
+      transparent 100%);
+    border-radius: 50%;
+    animation: lightFloat 4s ease-in-out infinite reverse;
+    pointer-events: none;
+  }
+  
+  @keyframes lightFloat {
+    0%, 100% { transform: translateY(0px) scale(1); opacity: 0.7; }
+    50% { transform: translateY(-10px) scale(1.1); opacity: 1; }
+  }
+  
+  /* Light theme header text container extra styling */
+  :root:not(.dark) .ios-header-text {
+    position: relative;
+  }
+  
+  :root:not(.dark) .ios-header-text::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    background: linear-gradient(45deg, 
+      rgba(59, 130, 246, 0.02) 0%, 
+      transparent 50%, 
+      rgba(147, 51, 234, 0.02) 100%);
+    border-radius: 20px;
+    z-index: -1;
+    animation: lightTextGlow 3s ease-in-out infinite alternate;
+  }
+  
+  @keyframes lightTextGlow {
+    0% { opacity: 0.5; transform: scale(0.98); }
+    100% { opacity: 1; transform: scale(1.02); }
+  }
+  
+  /* Light theme stats cards */
+  :root:not(.dark) .ios-stat-card {
+    background: rgba(255, 255, 255, 0.9) !important;
+    backdrop-filter: blur(20px) saturate(1.5) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(1.5) !important;
+    border: 1px solid rgba(59, 130, 246, 0.2) !important;
+    box-shadow: 
+      0 8px 25px rgba(59, 130, 246, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+  }
+  
+  :root:not(.dark) .ios-stat-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 
+      0 20px 50px rgba(59, 130, 246, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+  }
+  
+  :root:not(.dark) .ios-stat-label {
+    color: rgba(59, 130, 246, 0.8);
+  }
+  
+  :root:not(.dark) .ios-stat-value {
+    color: rgba(30, 41, 59, 0.95);
+    text-shadow: none;
+  }
+  
+  :root:not(.dark) .ios-stat-trend {
+    color: rgba(100, 116, 139, 0.8);
+  }
+  
+  /* Light theme filters */
+  :root:not(.dark) .ios-blur-bg {
+    background: rgba(255, 255, 255, 0.9) !important;
+    backdrop-filter: blur(20px) saturate(1.5) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(1.5) !important;
+    border: 1px solid rgba(59, 130, 246, 0.2) !important;
+    box-shadow: 
+      0 10px 30px rgba(59, 130, 246, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  }
+  
+  :root:not(.dark) .ios-filter-label {
+    color: rgba(59, 130, 246, 0.8);
+  }
+  
+  :root:not(.dark) .ios-filter-input {
+    background: rgba(255, 255, 255, 0.8) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(59, 130, 246, 0.3) !important;
+    color: rgba(30, 41, 59, 0.9) !important;
+  }
+  
+  :root:not(.dark) .ios-filter-input::placeholder {
+    color: rgba(100, 116, 139, 0.6) !important;
+  }
+  
+  :root:not(.dark) .ios-filter-input:focus {
+    background: rgba(255, 255, 255, 0.95) !important;
+    border: 1px solid rgba(59, 130, 246, 0.6) !important;
+    box-shadow: 
+      0 0 0 3px rgba(59, 130, 246, 0.2),
+      0 8px 25px rgba(59, 130, 246, 0.15) !important;
+  }
+  
+  /* Light theme hardware cards */
+  :root:not(.dark) .ios-hardware-card,
+  :root:not(.dark) .ios-hardware-card.hardware-item {
+    background: rgba(255, 255, 255, 0.9) !important;
+    backdrop-filter: blur(20px) saturate(1.5) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(1.5) !important;
+    border: 1px solid rgba(59, 130, 246, 0.2) !important;
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.1), 
+               inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+  }
+  
+  :root:not(.dark) .ios-hardware-card:hover,
+  :root:not(.dark) .ios-hardware-card.hardware-item:hover {
+    transform: translateY(-8px) scale(1.02) !important;
+    box-shadow: 
+      0 25px 60px rgba(59, 130, 246, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+  }
+  
+  :root:not(.dark) .ios-card-title {
+    color: rgba(30, 41, 59, 0.95);
+    text-shadow: none;
+  }
+  
+  :root:not(.dark) .ios-card-subtitle {
+    color: rgba(100, 116, 139, 0.8);
+  }
+  
+  :root:not(.dark) .ios-info-label {
+    color: rgba(100, 116, 139, 0.7);
+  }
+  
+  :root:not(.dark) .ios-info-value {
+    color: rgba(30, 41, 59, 0.9);
+  }
+  
+  /* Light theme action buttons */
+  :root:not(.dark) .ios-action-btn {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(12px) saturate(1.3) !important;
+    -webkit-backdrop-filter: blur(12px) saturate(1.3) !important;
+    border: 2px solid rgba(59, 130, 246, 0.3) !important;
+    color: rgba(59, 130, 246, 0.9) !important;
+    text-shadow: none !important;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  :root:not(.dark) .ios-action-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+      transparent 0%, 
+      rgba(59, 130, 246, 0.1) 50%, 
+      transparent 100%);
+    transition: left 0.5s ease;
+  }
+  
+  :root:not(.dark) .ios-action-btn:hover::before {
+    left: 100%;
+  }
+  
+  :root:not(.dark) .ios-action-btn:hover {
+    background: rgba(255, 255, 255, 1) !important;
+    border: 2px solid rgba(59, 130, 246, 0.6) !important;
+    color: rgba(59, 130, 246, 1) !important;
+    box-shadow: 
+      0 15px 40px rgba(59, 130, 246, 0.25),
+      0 5px 15px rgba(147, 51, 234, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 1) !important;
+    transform: translateY(-3px) scale(1.02) !important;
+  }
+  
+  :root:not(.dark) .ios-action-btn-primary {
+    background: linear-gradient(135deg, 
+      rgba(59, 130, 246, 0.9) 0%, 
+      rgba(147, 51, 234, 0.8) 50%,
+      rgba(236, 72, 153, 0.9) 100%) !important;
+    border: 2px solid rgba(255, 255, 255, 0.4) !important;
+    color: rgba(255, 255, 255, 0.95) !important;
+    box-shadow: 
+      0 10px 30px rgba(59, 130, 246, 0.3),
+      0 4px 12px rgba(147, 51, 234, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+  }
+  
+  :root:not(.dark) .ios-action-btn-primary:hover {
+    background: linear-gradient(135deg, 
+      rgba(59, 130, 246, 1) 0%, 
+      rgba(147, 51, 234, 0.9) 50%,
+      rgba(236, 72, 153, 1) 100%) !important;
+    border: 2px solid rgba(255, 255, 255, 0.6) !important;
+    color: rgba(255, 255, 255, 1) !important;
+    box-shadow: 
+      0 18px 45px rgba(59, 130, 246, 0.4),
+      0 8px 20px rgba(147, 51, 234, 0.3),
+      inset 0 2px 4px rgba(255, 255, 255, 0.5) !important;
+    transform: translateY(-4px) scale(1.05) !important;
+  }
+  
+  /* Light theme card buttons */
+  :root:not(.dark) .ios-card-btn {
+    background: rgba(255, 255, 255, 0.8) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+    border: 1px solid rgba(59, 130, 246, 0.3) !important;
+    color: rgba(59, 130, 246, 0.9) !important;
+    text-shadow: none !important;
+  }
+  
+  :root:not(.dark) .ios-card-btn:hover {
+    background: rgba(255, 255, 255, 0.95) !important;
+    border: 1px solid rgba(59, 130, 246, 0.5) !important;
+    box-shadow: 
+      0 8px 20px rgba(59, 130, 246, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .ios-header-content {
+      flex-direction: column;
+      gap: 1.5rem;
+      text-align: center;
+    }
+    
+    .ios-header-text {
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .ios-header-title {
+      font-size: 2rem;
+    }
+    
+    .ios-header-actions {
+      flex-direction: column;
+      width: 100%;
+    }
+    
+    .ios-action-btn {
+      width: 100%;
+      justify-content: center;
+    }
+    
+    .ios-stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .ios-filters-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .ios-hardware-grid {
+      grid-template-columns: 1fr;
+    }
+  }
 </style>
 {% endblock %}
 
 {% block main_content %}
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <!-- Header -->
-  <div class="mb-8">
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-      <div>
-        <h1 class="text-3xl font-bold text-white">Gestión de Hardware</h1>
-        <p class="text-gray-600 text-white mt-2">Administra el inventario de hardware disponible</p>
-      </div>
-      <div class="flex space-x-3">
-        <button class="btn-secondary" onclick="toggleView()">
-          <i class="fas fa-th-list" id="viewToggleIcon"></i>
-          <span id="viewToggleText">Vista Tabla</span>
-        </button>
-        <button class="btn-primary" onclick="openCreateModal()">
-          <i class="fas fa-plus"></i>
-          Nuevo Hardware
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Stats Cards -->
-  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-    <div class="glass-card p-6">
-      <div class="flex items-center">
-        <div class="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
-          <i class="fas fa-microchip text-blue-600 dark:text-blue-400"></i>
+  <!-- Enhanced iOS Header -->
+  <div class="ios-header-container mb-8">
+    <div class="ios-header-backdrop">
+      <div class="ios-header-content">
+        <div class="ios-header-text">
+          <div class="ios-header-icon">
+            <i class="fas fa-microchip"></i>
+          </div>
+          <div>
+            <h1 class="ios-header-title">Gestión de Hardware</h1>
+            <p class="ios-header-subtitle">Administra tu inventario con tecnología de vanguardia</p>
+          </div>
         </div>
-        <div class="ml-4">
-          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Items</p>
-          <p class="text-2xl font-bold text-black dark:text-white" id="totalItemsCount">{{ hardware_data.hardware_stats.total_items }}</p>
-        </div>
-      </div>
-    </div>
-    
-    <div class="glass-card p-6">
-      <div class="flex items-center">
-        <div class="p-2 bg-green-100 dark:bg-green-900 rounded-lg">
-          <i class="fas fa-check-circle text-green-600 dark:text-green-400"></i>
-        </div>
-        <div class="ml-4">
-          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Disponibles</p>
-          <p class="text-2xl font-bold text-black dark:text-white" id="availableItemsCount">{{ hardware_data.hardware_stats.available_items }}</p>
-        </div>
-      </div>
-    </div>
-    
-    <div class="glass-card p-6">
-      <div class="flex items-center">
-        <div class="p-2 bg-red-100 dark:bg-red-900 rounded-lg">
-          <i class="fas fa-exclamation-triangle text-red-600 dark:text-red-400"></i>
-        </div>
-        <div class="ml-4">
-          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Sin Stock</p>
-          <p class="text-2xl font-bold text-black dark:text-white" id="outOfStockCount">{{ hardware_data.hardware_stats.out_of_stock }}</p>
-        </div>
-      </div>
-    </div>
-    
-    <div class="glass-card p-6">
-      <div class="flex items-center">
-        <div class="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
-          <i class="fas fa-dollar-sign text-purple-600 dark:text-purple-400"></i>
-        </div>
-        <div class="ml-4">
-          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Valor Total</p>
-<p class="text-2xl font-bold text-black dark:text-white" id="totalValueCount">{{ hardware_data.hardware_stats.total_value | currency }}</p>
+        <div class="ios-header-actions">
+          <button class="ios-action-btn ios-action-btn-primary" onclick="openCreateModal()">
+            <i class="fas fa-plus"></i>
+            <span>Nuevo Hardware</span>
+          </button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Filters -->
-  <div class="glass-card p-6 mb-8">
-    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
-      <div>
-        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Buscar</label>
+  <!-- Enhanced iOS Stats Cards -->
+  <div class="ios-stats-grid">
+    <div class="ios-stat-card" data-stat="total">
+      <div class="ios-stat-icon ios-stat-icon-blue">
+        <i class="fas fa-microchip"></i>
+      </div>
+      <div class="ios-stat-content">
+        <div class="ios-stat-label">Total Items</div>
+        <div class="ios-stat-value" id="totalItemsCount">{{ hardware_data.hardware_stats.total_items }}</div>
+        <div class="ios-stat-trend">+2.5% vs mes anterior</div>
+      </div>
+      <div class="ios-stat-shimmer"></div>
+    </div>
+    
+    <div class="ios-stat-card" data-stat="available">
+      <div class="ios-stat-icon ios-stat-icon-green">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <div class="ios-stat-content">
+        <div class="ios-stat-label">Disponibles</div>
+        <div class="ios-stat-value" id="availableItemsCount">{{ hardware_data.hardware_stats.available_items }}</div>
+        <div class="ios-stat-trend">Inventario óptimo</div>
+      </div>
+      <div class="ios-stat-shimmer"></div>
+    </div>
+    
+    <div class="ios-stat-card" data-stat="stock">
+      <div class="ios-stat-icon ios-stat-icon-red">
+        <i class="fas fa-exclamation-triangle"></i>
+      </div>
+      <div class="ios-stat-content">
+        <div class="ios-stat-label">Sin Stock</div>
+        <div class="ios-stat-value" id="outOfStockCount">{{ hardware_data.hardware_stats.out_of_stock }}</div>
+        <div class="ios-stat-trend">Reabastecimiento needed</div>
+      </div>
+      <div class="ios-stat-shimmer"></div>
+    </div>
+    
+    <div class="ios-stat-card" data-stat="value">
+      <div class="ios-stat-icon ios-stat-icon-purple">
+        <i class="fas fa-dollar-sign"></i>
+      </div>
+      <div class="ios-stat-content">
+        <div class="ios-stat-label">Valor Total</div>
+        <div class="ios-stat-value" id="totalValueCount">{{ hardware_data.hardware_stats.total_value | currency }}</div>
+        <div class="ios-stat-trend">Activos valorados</div>
+      </div>
+      <div class="ios-stat-shimmer"></div>
+    </div>
+  </div>
+
+  <!-- iOS Style Filters -->
+  <div class="ios-filters-container ios-blur-bg mb-8">
+    <div class="ios-filters-grid">
+      <div class="ios-filter-item">
+        <label class="ios-filter-label">Buscar</label>
         <input type="text" id="searchInput" placeholder="Buscar hardware..." 
-               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-black dark:text-white">
+               class="ios-filter-input">
       </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tipo</label>
-        <select id="typeFilter" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-black dark:text-white">
+      <div class="ios-filter-item">
+        <label class="ios-filter-label">Tipo</label>
+        <select id="typeFilter" class="ios-filter-input">
           <option value="">Todos los tipos</option>
           <!-- Options will be loaded dynamically from backend -->
         </select>
       </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Estado</label>
-        <select id="statusFilter" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-black dark:text-white">
+      <div class="ios-filter-item">
+        <label class="ios-filter-label">Estado</label>
+        <select id="statusFilter" class="ios-filter-input">
           <option value="">Todos los estados</option>
           <option value="available">Disponible</option>
           <option value="out_of_stock">Sin Stock</option>
@@ -425,205 +1528,27 @@
           <option value="inactive">Inactivo</option>
         </select>
       </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Mostrar</label>
-        <select id="includeInactiveFilter" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-black dark:text-white">
+      <div class="ios-filter-item">
+        <label class="ios-filter-label">Mostrar</label>
+        <select id="includeInactiveFilter" class="ios-filter-input">
           <option value="active">Solo Activos</option>
           <option value="all">Todos (Activos + Inactivos)</option>
         </select>
       </div>
-      <div class="flex items-end">
-        <button class="btn-secondary w-full" onclick="clearFilters()">
+      <div class="ios-filter-item flex items-end">
+        <button class="ios-action-btn w-full" onclick="clearFilters()">
           <i class="fas fa-filter-circle-xmark"></i>
-          Limpiar Filtros
+          Limpiar
         </button>
       </div>
     </div>
   </div>
 
-  <!-- Hardware Grid View -->
-  <div id="hardwareGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    {% for hardware in hardware_data.hardware_list %}
-    <div class="glass-card hover:shadow-lg transition-shadow duration-300 hardware-item" 
-         data-type="{{ hardware.type }}" data-status="{{ hardware.status }}" data-name="{{ hardware.name }}">
-      <div class="p-6">
-        <div class="flex items-center justify-between mb-4">
-          <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-600 rounded-lg flex items-center justify-center">
-            <i class="fas fa-microchip text-white text-xl"></i>
-          </div>
-          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                 {% if hardware.status == 'available' %}bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200
-                 {% elif hardware.status == 'out_of_stock' %}bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200
-                 {% else %}bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200{% endif %}">
-            {% if hardware.status == 'available' %}Disponible
-            {% elif hardware.status == 'out_of_stock' %}Sin Stock
-            {% else %}Descontinuado{% endif %}
-          </span>
-        </div>
-        
-        <h3 class="text-lg font-semibold text-black dark:text-white mb-2">{{ hardware.name }}</h3>
-        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">{{ hardware.brand }} - {{ hardware.model }}</p>
-        
-        <div class="space-y-2 mb-4">
-          <div class="flex justify-between text-sm">
-            <span class="text-gray-500 dark:text-gray-400">Precio:</span>
-<span class="font-medium text-black dark:text-white">{{ hardware.price | currency }}</span>
-          </div>
-          <div class="flex justify-between text-sm">
-            <span class="text-gray-500 dark:text-gray-400">Stock:</span>
-            <span class="font-medium text-black dark:text-white">{{ hardware.stock }} unidades</span>
-          </div>
-          <div class="flex justify-between text-sm">
-            <span class="text-gray-500 dark:text-gray-400">Garantía:</span>
-            <span class="font-medium text-black dark:text-white">{{ hardware.warranty_months }} meses</span>
-          </div>
-        </div>
-        
-        <div class="flex space-x-1">
-          <button class="flex-1 btn-secondary text-xs py-1" onclick="viewHardware('{{ hardware.id }}')" title="Ver detalles">
-            <i class="fas fa-eye"></i>
-          </button>
-          <button class="flex-1 btn-primary text-xs py-1" onclick="editHardware('{{ hardware.id }}')" title="Editar">
-            <i class="fas fa-edit"></i>
-          </button>
-          <button class="flex-1 {% if hardware.activa %}btn-warning{% else %}btn-success{% endif %} text-xs py-1" 
-                  onclick="toggleHardwareStatus('{{ hardware.id }}', '{{ 'false' if hardware.activa else 'true' }}')" 
-                  title="{% if hardware.activa %}Desactivar{% else %}Activar{% endif %}">
-            <i class="fas {% if hardware.activa %}fa-power-off{% else %}fa-play{% endif %}"></i>
-          </button>
-        </div>
-      </div>
-    </div>
-    {% endfor %}
+  <!-- iOS Hardware Grid View -->
+  <div id="hardwareGrid" class="ios-hardware-grid">
+    <!-- Hardware cards will be loaded dynamically by JavaScript -->
   </div>
 
-  <!-- Hardware Table View -->
-  <div id="hardwareTable" class="hidden">
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl overflow-hidden border border-gray-200 dark:border-gray-700">
-      <!-- Table Header -->
-      <div class="bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 px-6 py-4">
-        <div class="flex items-center space-x-3">
-          <div class="w-8 h-8 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
-            <i class="fas fa-table text-white"></i>
-          </div>
-          <h3 class="text-xl font-bold text-white">Lista de Hardware</h3>
-        </div>
-      </div>
-      
-      <!-- Table Container -->
-      <div class="overflow-x-auto">
-        <table class="min-w-full">
-          <thead>
-            <tr class="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800">
-              <th class="px-6 py-4 text-left text-sm font-bold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
-                <div class="flex items-center space-x-2">
-                  <i class="fas fa-microchip text-purple-500"></i>
-                  <span>Hardware</span>
-                </div>
-              </th>
-              <th class="px-6 py-4 text-left text-sm font-bold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
-                <div class="flex items-center space-x-2">
-                  <i class="fas fa-layer-group text-blue-500"></i>
-                  <span>Tipo</span>
-                </div>
-              </th>
-              <th class="px-6 py-4 text-left text-sm font-bold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
-                <div class="flex items-center space-x-2">
-                  <i class="fas fa-dollar-sign text-green-500"></i>
-                  <span>Precio</span>
-                </div>
-              </th>
-              <th class="px-6 py-4 text-left text-sm font-bold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
-                <div class="flex items-center space-x-2">
-                  <i class="fas fa-boxes text-orange-500"></i>
-                  <span>Stock</span>
-                </div>
-              </th>
-              <th class="px-6 py-4 text-left text-sm font-bold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
-                <div class="flex items-center space-x-2">
-                  <i class="fas fa-signal text-red-500"></i>
-                  <span>Estado</span>
-                </div>
-              </th>
-              <th class="px-6 py-4 text-center text-sm font-bold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
-                <div class="flex items-center justify-center space-x-2">
-                  <i class="fas fa-cogs text-indigo-500"></i>
-                  <span>Acciones</span>
-                </div>
-              </th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
-            {% for hardware in hardware_data.hardware_list %}
-            <tr class="group hover:bg-gradient-to-r hover:from-purple-50 hover:to-blue-50 dark:hover:from-purple-900/10 dark:hover:to-blue-900/10 transition-all duration-200 hover:shadow-md">
-              <td class="px-6 py-5 whitespace-nowrap">
-                <div class="flex items-center">
-                  <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-200">
-                    <i class="fas fa-microchip text-white text-lg"></i>
-                  </div>
-                  <div class="ml-4">
-                    <div class="text-sm font-bold text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-200">{{ hardware.name }}</div>
-                    <div class="text-sm text-gray-500 dark:text-gray-400 font-medium">{{ hardware.brand }} - {{ hardware.model }}</div>
-                  </div>
-                </div>
-              </td>
-              <td class="px-6 py-5 whitespace-nowrap">
-                <span class="inline-flex items-center px-3 py-1 rounded-lg text-sm font-semibold bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                  <i class="fas fa-layer-group mr-2"></i>
-                  {{ hardware.type }}
-                </span>
-              </td>
-              <td class="px-6 py-5 whitespace-nowrap">
-                <div class="flex items-center">
-                  <i class="fas fa-dollar-sign text-green-500 mr-2"></i>
-                  <span class="text-lg font-bold text-green-600 dark:text-green-400">{{ hardware.price | currency }}</span>
-                </div>
-              </td>
-              <td class="px-6 py-5 whitespace-nowrap">
-                <div class="flex items-center">
-                  <i class="fas fa-boxes text-orange-500 mr-2"></i>
-                  <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ hardware.stock }}</span>
-                  <span class="text-xs text-gray-500 dark:text-gray-400 ml-1">unidades</span>
-                </div>
-              </td>
-              <td class="px-6 py-5 whitespace-nowrap">
-                <span class="inline-flex items-center px-3 py-2 rounded-lg text-sm font-bold shadow-sm
-                       {% if hardware.status == 'available' %}bg-gradient-to-r from-green-400 to-emerald-500 text-white
-                       {% elif hardware.status == 'out_of_stock' %}bg-gradient-to-r from-red-400 to-pink-500 text-white
-                       {% else %}bg-gradient-to-r from-gray-400 to-slate-500 text-white{% endif %}">
-                  {% if hardware.status == 'available' %}
-                    <i class="fas fa-check-circle mr-2"></i>Disponible
-                  {% elif hardware.status == 'out_of_stock' %}
-                    <i class="fas fa-exclamation-triangle mr-2"></i>Sin Stock
-                  {% else %}
-                    <i class="fas fa-times-circle mr-2"></i>Descontinuado
-                  {% endif %}
-                </span>
-              </td>
-              <td class="px-6 py-5 whitespace-nowrap">
-                <div class="flex items-center justify-center space-x-2">
-                  <button class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-purple-100 text-purple-600 hover:bg-purple-200 dark:bg-purple-900 dark:text-purple-400 dark:hover:bg-purple-800 transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5" 
-                          onclick="viewHardware('{{ hardware.id }}')" title="Ver detalles">
-                    <i class="fas fa-eye"></i>
-                  </button>
-                  <button class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-blue-100 text-blue-600 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-400 dark:hover:bg-blue-800 transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5" 
-                          onclick="editHardware('{{ hardware.id }}')" title="Editar">
-                    <i class="fas fa-edit"></i>
-                  </button>
-                  <button class="inline-flex items-center justify-center w-10 h-10 rounded-lg {% if hardware.activa %}bg-orange-100 text-orange-600 hover:bg-orange-200 dark:bg-orange-900 dark:text-orange-400 dark:hover:bg-orange-800{% else %}bg-green-100 text-green-600 hover:bg-green-200 dark:bg-green-900 dark:text-green-400 dark:hover:bg-green-800{% endif %} transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5" 
-                          onclick="toggleHardwareStatus('{{ hardware.id }}', '{{ 'false' if hardware.activa else 'true' }}')" 
-                          title="{% if hardware.activa %}Desactivar{% else %}Activar{% endif %}">
-                    <i class="fas {% if hardware.activa %}fa-power-off{% else %}fa-play{% endif %}"></i>
-                  </button>
-                </div>
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
 </div>
 
 <!-- Create/Edit Hardware Modal -->
@@ -965,7 +1890,6 @@
 <script src="{{ url_for('static', filename='js/modal-utils.js') }}"></script>
 <script src="{{ url_for('static', filename='js/dashboard/basic-managers.js') }}"></script>
 <script>
-let currentView = 'grid';
 let editingHardware = null;
 
 // Initialize modals when page loads
@@ -992,27 +1916,6 @@ function initializeModals() {
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', initializeModals);
 
-// View toggle functionality
-function toggleView() {
-  const grid = document.getElementById('hardwareGrid');
-  const table = document.getElementById('hardwareTable');
-  const icon = document.getElementById('viewToggleIcon');
-  const text = document.getElementById('viewToggleText');
-  
-  if (currentView === 'grid') {
-    grid.classList.add('hidden');
-    table.classList.remove('hidden');
-    icon.className = 'fas fa-th';
-    text.textContent = 'Vista Tarjetas';
-    currentView = 'table';
-  } else {
-    grid.classList.remove('hidden');
-    table.classList.add('hidden');
-    icon.className = 'fas fa-th-list';
-    text.textContent = 'Vista Tabla';
-    currentView = 'grid';
-  }
-}
 
 // Modal functionality with enhanced animations
 function openCreateModal() {
@@ -2290,26 +3193,18 @@ function renderHardware(hardwareList) {
   console.log('🔢 Longitud:', hardwareList ? hardwareList.length : 'N/A');
   
   const gridContainer = document.getElementById('hardwareGrid');
-  const tableBody = document.querySelector('#hardwareTable tbody');
-  
-  console.log('🔍 Contenedores encontrados:');
-  console.log('  - gridContainer:', gridContainer ? 'SI' : 'NO');
-  console.log('  - tableBody:', tableBody ? 'SI' : 'NO');
   
   if (!gridContainer) {
-    console.error('❌ No se encontró el contenedor de grid de hardware');
+    console.error('❌ No se encontró el contenedor del grid');
     return;
   }
   
-  if (!tableBody) {
-    console.error('❌ No se encontró el tbody de la tabla de hardware');
-    return;
-  }
+  // Asegurar que el grid container tenga la clase iOS correcta
+  gridContainer.className = 'ios-hardware-grid';
   
   // Clear existing content more thoroughly
   console.log('🧹 Limpiando contenido existente...');
   gridContainer.innerHTML = '';
-  tableBody.innerHTML = '';
   
   // Remove any existing filter messages
   const existingFilterMessage = document.getElementById('filterEmptyMessage');
@@ -2360,21 +3255,14 @@ function renderHardware(hardwareList) {
       if (gridCard) {
         // Añadir ID único para evitar duplicados
         gridCard.setAttribute('data-hardware-id', hardware._id);
+        
+        // Asegurar que siempre tenga las clases iOS correctas
+        gridCard.className = 'ios-hardware-card hardware-item';
+        
         gridContainer.appendChild(gridCard);
         console.log(`✅ Card ${index + 1} agregada al grid`);
       } else {
         console.error(`❌ No se pudo crear card para hardware ${index + 1}`);
-      }
-      
-      // Create table row
-      const tableRow = createHardwareTableRow(hardware);
-      if (tableRow) {
-        // Añadir ID único para evitar duplicados
-        tableRow.setAttribute('data-hardware-id', hardware._id);
-        tableBody.appendChild(tableRow);
-        console.log(`✅ Fila ${index + 1} agregada a la tabla`);
-      } else {
-        console.error(`❌ No se pudo crear fila para hardware ${index + 1}`);
       }
     } catch (error) {
       console.error(`💥 Error renderizando hardware ${index + 1}:`, error, hardware);
@@ -2383,14 +3271,11 @@ function renderHardware(hardwareList) {
   
   console.log(`🎉 === RENDERIZADO COMPLETADO ===`);
   console.log(`  - Grid tiene: ${gridContainer.children.length} elementos`);
-  console.log(`  - Tabla tiene: ${tableBody.children.length} filas`);
   
   // Verificar que los elementos tengan las clases correctas
   const gridItems = document.querySelectorAll('.hardware-item');
-  const tableItems = document.querySelectorAll('.hardware-table-item');
   console.log(`🔍 Elementos renderizados:`);
   console.log(`  - Grid items (.hardware-item): ${gridItems.length}`);
-  console.log(`  - Table items (.hardware-table-item): ${tableItems.length}`);
   
   if (gridItems.length > 0) {
     console.log('🔍 Primer elemento del grid:');
@@ -2416,7 +3301,7 @@ function createHardwareCard(hardware) {
     console.log('🏗️ Creando card para hardware:', hardware);
     
     const div = document.createElement('div');
-    div.className = 'glass-card hover:shadow-lg transition-shadow duration-300 hardware-item';
+    div.className = 'ios-hardware-card hardware-item';
     
     // Extract nested data properly
     const datos = hardware.datos?.datos || hardware.datos || {};
@@ -2435,70 +3320,76 @@ function createHardwareCard(hardware) {
     div.setAttribute('data-stock', stock);
     div.setAttribute('data-activa', hardware.activa !== false ? 'true' : 'false');
     
-    // Determine status display and color
-    let statusClass = 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+    console.log('🔍 Atributos de filtro establecidos:', {
+      'data-type': hardware.tipo || '',
+      'data-status': status,
+      'data-name': (hardware.nombre || '').toLowerCase(),
+      'data-activa': hardware.activa !== false ? 'true' : 'false'
+    });
+    
+    // Determine status display and iOS classes
+    let statusClass = 'ios-status-available';
     let statusText = 'Disponible';
     
     if (stock === 0 || status === 'out_of_stock') {
-      statusClass = 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
+      statusClass = 'ios-status-stock';
       statusText = 'Sin Stock';
     } else if (status === 'discontinued') {
-      statusClass = 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+      statusClass = 'ios-status-discontinued';
       statusText = 'Descontinuado';
     } else if (!hardware.activa) {
-      statusClass = 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
+      statusClass = 'ios-status-discontinued';
       statusText = 'Inactivo';
     }
     
     div.innerHTML = `
-      <div class="p-6">
-        <div class="flex items-center justify-between mb-4">
-          <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-600 rounded-lg flex items-center justify-center">
-            <i class="fas fa-microchip text-white text-xl"></i>
-          </div>
-          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusClass}">
-            ${statusText}
-          </span>
+      <div class="ios-card-header">
+        <div class="ios-card-icon">
+          <i class="fas fa-microchip"></i>
         </div>
-        
-        <h3 class="text-lg font-semibold text-black dark:text-white mb-2">${hardware.nombre || 'Sin nombre'}</h3>
-        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">${datos.brand || 'N/A'} - ${datos.model || 'N/A'}</p>
-        
-        <div class="space-y-2 mb-4">
-          <div class="flex justify-between text-sm">
-            <span class="text-gray-500 dark:text-gray-400">Tipo:</span>
-            <span class="font-medium text-black dark:text-white">${hardware.tipo || 'N/A'}</span>
-          </div>
-          <div class="flex justify-between text-sm">
-            <span class="text-gray-500 dark:text-gray-400">Sede:</span>
-            <span class="font-medium text-black dark:text-white">${hardware.sede || 'N/A'}</span>
-          </div>
-          <div class="flex justify-between text-sm">
-            <span class="text-gray-500 dark:text-gray-400">Stock:</span>
-            <span class="font-medium text-black dark:text-white">${stock} unidades</span>
-          </div>
-          <div class="flex justify-between text-sm">
-            <span class="text-gray-500 dark:text-gray-400">Precio:</span>
-            <span class="font-medium text-black dark:text-white">$${datos.price || 0}</span>
-          </div>
+        <span class="ios-status-badge ${statusClass}">
+          ${statusText}
+        </span>
+      </div>
+      
+      <h3 class="ios-card-title">${hardware.nombre || 'Sin nombre'}</h3>
+      <p class="ios-card-subtitle">${datos.brand || 'N/A'} • ${datos.model || 'N/A'}</p>
+      
+      <div class="ios-card-info">
+        <div class="ios-info-item">
+          <span class="ios-info-label">Precio</span>
+          <span class="ios-info-value">$${datos.price || 0}</span>
         </div>
-        
-        <div class="flex space-x-2">
-          <button class="flex-1 btn-secondary text-sm" onclick="viewHardware('${hardware._id}')">
-            <i class="fas fa-eye"></i>
-            Ver
-          </button>
-          <button class="flex-1 btn-primary text-sm" onclick="editHardware('${hardware._id}')">
-            <i class="fas fa-edit"></i>
-            Editar
-          </button>
-          <button class="${hardware.activa ? 'btn-warning' : 'btn-success'} text-sm px-3" 
-                  onclick="toggleHardwareStatus('${hardware._id}', ${!hardware.activa})" 
-                  title="${hardware.activa ? 'Desactivar' : 'Activar'}">
-            <i class="fas ${hardware.activa ? 'fa-power-off' : 'fa-play'}"></i>
-          </button>
+        <div class="ios-info-item">
+          <span class="ios-info-label">Stock</span>
+          <span class="ios-info-value">${stock}</span>
+        </div>
+        <div class="ios-info-item">
+          <span class="ios-info-label">Tipo</span>
+          <span class="ios-info-value">${hardware.tipo || 'N/A'}</span>
+        </div>
+        <div class="ios-info-item">
+          <span class="ios-info-label">Estado</span>
+          <span class="ios-info-value">${hardware.activa ? 'Activo' : 'Inactivo'}</span>
         </div>
       </div>
+      
+      <div class="ios-card-actions">
+        <button class="ios-card-btn" onclick="viewHardware('${hardware._id}')" title="Ver detalles">
+          <i class="fas fa-eye"></i>
+        </button>
+        <button class="ios-card-btn ios-card-btn-primary" onclick="editHardware('${hardware._id}')" title="Editar">
+          <i class="fas fa-edit"></i>
+        </button>
+        <button class="ios-card-btn ${hardware.activa ? 'ios-card-btn-warning' : 'ios-card-btn-success'}" 
+                onclick="toggleHardwareStatus('${hardware._id}', ${!hardware.activa})" 
+                title="${hardware.activa ? 'Desactivar' : 'Activar'}">
+          <i class="fas ${hardware.activa ? 'fa-power-off' : 'fa-play'}"></i>
+        </button>
+      </div>
+      
+      <!-- iOS Card Shimmer Effect -->
+      <div class="ios-card-shimmer"></div>
     `;
     
     console.log('✅ Card creada exitosamente');
@@ -2510,80 +3401,6 @@ function createHardwareCard(hardware) {
   }
 }
 
-// Create hardware table row
-function createHardwareTableRow(hardware) {
-  const tr = document.createElement('tr');
-  tr.className = 'hover:bg-gray-50 dark:hover:bg-gray-700 hardware-table-item';
-  
-  // Extract nested data properly
-  const datos = hardware.datos?.datos || hardware.datos || {};
-  const status = datos.status || 'available';
-  const stock = datos.stock || 0;
-  
-  // Set data attributes for filtering
-  tr.setAttribute('data-type', hardware.tipo || '');
-  tr.setAttribute('data-status', status);
-  tr.setAttribute('data-name', (hardware.nombre || '').toLowerCase());
-  tr.setAttribute('data-brand', (datos.brand || '').toLowerCase());
-  tr.setAttribute('data-model', (datos.model || '').toLowerCase());
-  tr.setAttribute('data-sede', (hardware.sede || '').toLowerCase());
-  tr.setAttribute('data-stock', stock);
-  tr.setAttribute('data-activa', hardware.activa !== false ? 'true' : 'false');
-  
-  // Determine status display and color
-  let statusClass = 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
-  let statusText = 'Disponible';
-  
-  if (stock === 0 || status === 'out_of_stock') {
-    statusClass = 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
-    statusText = 'Sin Stock';
-  } else if (status === 'discontinued') {
-    statusClass = 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
-    statusText = 'Descontinuado';
-  } else if (!hardware.activa) {
-    statusClass = 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
-    statusText = 'Inactivo';
-  }
-  
-  tr.innerHTML = `
-    <td class="px-6 py-4 whitespace-nowrap">
-      <div class="flex items-center">
-        <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-600 rounded-lg flex items-center justify-center">
-          <i class="fas fa-microchip text-white"></i>
-        </div>
-        <div class="ml-4">
-          <div class="text-sm font-medium text-black dark:text-white">${hardware.nombre || 'Sin nombre'}</div>
-          <div class="text-sm text-gray-500 dark:text-gray-400">${datos.brand || 'N/A'} - ${datos.model || 'N/A'}</div>
-        </div>
-      </div>
-    </td>
-    <td class="px-6 py-4 whitespace-nowrap text-sm text-black dark:text-white">${hardware.tipo || 'N/A'}</td>
-    <td class="px-6 py-4 whitespace-nowrap text-sm text-black dark:text-white">$${datos.price || 0}</td>
-    <td class="px-6 py-4 whitespace-nowrap text-sm text-black dark:text-white">${stock}</td>
-    <td class="px-6 py-4 whitespace-nowrap">
-      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusClass}">
-        ${statusText}
-      </span>
-    </td>
-    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-      <div class="flex space-x-2">
-        <button class="text-purple-600 hover:text-purple-700 dark:text-purple-400" onclick="viewHardware('${hardware._id}')">
-          <i class="fas fa-eye"></i>
-        </button>
-        <button class="text-blue-600 hover:text-blue-700 dark:text-blue-400" onclick="editHardware('${hardware._id}')">
-          <i class="fas fa-edit"></i>
-        </button>
-        <button class="${hardware.activa ? 'text-orange-600 hover:text-orange-700 dark:text-orange-400' : 'text-green-600 hover:text-green-700 dark:text-green-400'}" 
-                onclick="toggleHardwareStatus('${hardware._id}', ${!hardware.activa})" 
-                title="${hardware.activa ? 'Desactivar' : 'Activar'}">
-          <i class="fas ${hardware.activa ? 'fa-power-off' : 'fa-play'}"></i>
-        </button>
-      </div>
-    </td>
-  `;
-  
-  return tr;
-}
 
 // Update stats with real data
 function updateStats(data) {
@@ -2834,10 +3651,6 @@ function clearFilters() {
   if (filterEmptyMessage) {
     filterEmptyMessage.remove();
   }
-  const filterEmptyMessageTable = document.getElementById('filterEmptyMessageTable');
-  if (filterEmptyMessageTable) {
-    filterEmptyMessageTable.remove();
-  }
   
   // Reload hardware data with new filter
   loadHardware();
@@ -2867,24 +3680,20 @@ function filterHardware() {
   console.log('  - type:', type);
   console.log('  - status:', status);
   
-  // Filtrar ambos: elementos del grid Y elementos de la tabla
+  // Filtrar elementos del grid
   const gridItems = document.querySelectorAll('.hardware-item');
-  const tableItems = document.querySelectorAll('.hardware-table-item');
-  const allItems = [...gridItems, ...tableItems];
+  const allItems = [...gridItems];
   let visibleCount = 0;
   
   console.log(`🔍 Elementos encontrados:`);
   console.log(`  - Grid items (.hardware-item): ${gridItems.length}`);
-  console.log(`  - Table items (.hardware-table-item): ${tableItems.length}`);
   console.log(`  - Total elementos: ${allItems.length}`);
   
   if (allItems.length === 0) {
     console.error('❌ NO HAY ELEMENTOS DE HARDWARE EN EL DOM!');
     console.log('🔍 Verificando contenedor de hardware...');
     const gridContainer = document.getElementById('hardwareGrid');
-    const tableBody = document.querySelector('#hardwareTable tbody');
     console.log('  - gridContainer children:', gridContainer ? gridContainer.children.length : 'NO ENCONTRADO');
-    console.log('  - tableBody children:', tableBody ? tableBody.children.length : 'NO ENCONTRADO');
     return;
   }
   
@@ -2931,11 +3740,13 @@ function filterHardware() {
     
     // Show/hide item
     if (matchesSearch && matchesType && matchesStatus) {
-      item.style.display = 'block';
+      item.style.display = '';
+      item.classList.remove('hidden');
       visibleCount++;
       console.log(`✅ Elemento ${index + 1} visible: ${name}`);
     } else {
       item.style.display = 'none';
+      item.classList.add('hidden');
       console.log(`❌ Elemento ${index + 1} oculto: ${name}`);
     }
   });
@@ -2964,7 +3775,6 @@ function showFilterEmptyMessage(visibleCount) {
   // Show empty message if filters are applied and no results
   if (hasFilters && visibleCount === 0) {
     const gridContainer = document.getElementById('hardwareGrid');
-    const tableBody = document.querySelector('#hardwareTable tbody');
     
     // Create empty message for grid
     const emptyMessage = document.createElement('div');
@@ -2982,24 +3792,6 @@ function showFilterEmptyMessage(visibleCount) {
       </div>
     `;
     gridContainer.appendChild(emptyMessage);
-    
-    // Create empty message for table
-    const emptyRow = document.createElement('tr');
-    emptyRow.id = 'filterEmptyMessageTable';
-    emptyRow.innerHTML = `
-      <td colspan="6" class="text-center py-8">
-        <div class="text-center">
-          <i class="fas fa-search text-4xl mb-4 text-gray-400"></i>
-          <h2 class="text-2xl font-bold text-white mb-2">No se encontró hardware con este filtro</h2>
-          <p class="text-sm text-gray-400">Prueba ajustando los criterios de búsqueda.</p>
-          <button onclick="clearFilters()" class="mt-4 btn-secondary">
-            <i class="fas fa-filter-circle-xmark"></i>
-            Limpiar Filtros
-          </button>
-        </div>
-      </td>
-    `;
-    tableBody.appendChild(emptyRow);
   }
 }
 
