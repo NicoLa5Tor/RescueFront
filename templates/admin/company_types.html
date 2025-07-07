@@ -23,6 +23,87 @@
   transform: none !important;
   visibility: visible !important;
 }
+
+/* Estilos específicos para tipos de empresa */
+.company-type-item .ios-info-label {
+  display: flex;
+  align-items: center;
+  font-size: 0.75rem;
+}
+
+/* Hacer que ciertos elementos ocupen fila completa */
+.company-type-item .ios-info-item.full-width {
+  grid-column: 1 / -1; /* Ocupa toda la fila en el grid */
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.company-type-item .ios-card-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Dos columnas por defecto */
+  gap: 8px;
+}
+
+.company-type-item .ios-card-subtitle {
+  max-height: 3rem;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* Botón específico para ver empresas */
+.ios-card-btn-info {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.ios-card-btn-info:hover {
+  background: linear-gradient(135deg, #2563eb, #1e40af);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+}
+
+/* Tags de características mejorados para ambos temas */
+.company-type-item span[class*="bg-blue"],
+.company-type-item span[class*="bg-gray"] {
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.company-type-item span[class*="bg-blue"]:hover,
+.company-type-item span[class*="bg-gray"]:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Tema claro - colores sólidos y fuertes */
+@media (prefers-color-scheme: light) {
+  .company-type-item span[class*="bg-blue"]:hover {
+    background: #1d4ed8 !important; /* Azul más fuerte */
+    border-color: #1e3a8a !important;
+  }
+  
+  .company-type-item span[class*="bg-gray"]:hover {
+    background: #374151 !important; /* Gris más fuerte */
+    border-color: #1f2937 !important;
+  }
+}
+
+/* Tema oscuro - mantener estilos transparentes */
+@media (prefers-color-scheme: dark) {
+  .company-type-item span[class*="bg-blue"]:hover {
+    background: rgba(59, 130, 246, 0.4) !important;
+    border-color: rgba(59, 130, 246, 0.5) !important;
+  }
+  
+  .company-type-item span[class*="bg-gray"]:hover {
+    background: rgba(107, 114, 128, 0.4) !important;
+    border-color: rgba(107, 114, 128, 0.5) !important;
+  }
+}
 </style>
 {% endblock %}
 
@@ -38,15 +119,15 @@
               <i class="fas fa-layer-group"></i>
             </div>
             <div>
-              <h1 class="ios-header-title">Gestión de Tipos de Empresa</h1>
-              <p class="ios-header-subtitle">
+            <h1 class="ios-header-title text-3xl md:text-4xl font-bold text-white dark:text-white">Gestión de Tipos de Empresa</h1>
+              <p class="ios-header-subtitle text-base md:text-lg text-white/80 dark:text-gray-300">
                 Administra las categorías con tecnología de vanguardia
                 {% if include_inactive %}
-                  <span class="inline-block ml-2 px-2 py-1 bg-orange-500 text-white text-xs rounded-full">
+                  <span class="inline-block ml-2 px-2 py-1 bg-orange-500 text-white text-xs font-medium rounded-full">
                     Mostrando todos ({{ company_types_data.company_types|length }} tipos)
                   </span>
                 {% else %}
-                  <span class="inline-block ml-2 px-2 py-1 bg-green-500 text-white text-xs rounded-full">
+                  <span class="inline-block ml-2 px-2 py-1 bg-green-500 text-white text-xs font-medium rounded-full">
                     Solo activos ({{ company_types_data.company_types|length }} tipos)
                   </span>
                 {% endif %}
@@ -54,17 +135,17 @@
             </div>
           </div>
           <div class="ios-header-actions">
-            <button class="ios-action-btn ios-action-btn-secondary" onclick="exportTypes()">
+          <button class="ios-action-btn ios-action-btn-secondary" onclick="exportTypes()">
               <i class="fas fa-download"></i>
-              <span>Exportar</span>
+              <span class="text-sm font-medium">Exportar</span>
             </button>
             <button class="ios-action-btn {% if include_inactive %}ios-action-btn-warning{% else %}ios-action-btn-secondary{% endif %}" onclick="toggleIncludeInactive()">
               <i class="fas fa-{% if include_inactive %}eye-slash{% else %}eye{% endif %}"></i>
-              <span>{% if include_inactive %}Solo Activos{% else %}Ver Todos{% endif %}</span>
+              <span class="text-sm font-medium">{% if include_inactive %}Solo Activos{% else %}Ver Todos{% endif %}</span>
             </button>
             <button class="ios-action-btn ios-action-btn-primary" onclick="openCreateModal()">
               <i class="fas fa-plus"></i>
-              <span>Nuevo Tipo</span>
+              <span class="text-sm font-medium">Nuevo Tipo</span>
             </button>
           </div>
         </div>
@@ -78,9 +159,9 @@
           <i class="fas fa-layer-group"></i>
         </div>
         <div class="ios-stat-content">
-          <div class="ios-stat-label">Total Tipos</div>
-          <div class="ios-stat-value" id="totalTypesCount">{{ company_types_data.company_types_stats.total_types }}</div>
-          <div class="ios-stat-trend">Categorías disponibles</div>
+          <div class="ios-stat-label text-sm font-medium text-gray-600 dark:text-gray-400">Total Tipos</div>
+          <div class="ios-stat-value text-2xl md:text-3xl font-bold text-gray-900 dark:text-white" id="totalTypesCount">{{ company_types_data.company_types_stats.total_types }}</div>
+          <div class="ios-stat-trend text-xs text-gray-500 dark:text-gray-500">Categorías disponibles</div>
         </div>
         <div class="ios-stat-shimmer"></div>
       </div>
@@ -90,9 +171,9 @@
           <i class="fas fa-check-circle"></i>
         </div>
         <div class="ios-stat-content">
-          <div class="ios-stat-label">Activos</div>
-          <div class="ios-stat-value" id="activeTypesCount">{{ company_types_data.company_types_stats.active_types }}</div>
-          <div class="ios-stat-trend">Funcionando correctamente</div>
+          <div class="ios-stat-label text-sm font-medium text-gray-600 dark:text-gray-400">Activos</div>
+          <div class="ios-stat-value text-2xl md:text-3xl font-bold text-gray-900 dark:text-white" id="activeTypesCount">{{ company_types_data.company_types_stats.active_types }}</div>
+          <div class="ios-stat-trend text-xs text-gray-500 dark:text-gray-500">Funcionando correctamente</div>
         </div>
         <div class="ios-stat-shimmer"></div>
       </div>
@@ -102,9 +183,9 @@
           <i class="fas fa-building"></i>
         </div>
         <div class="ios-stat-content">
-          <div class="ios-stat-label">Total Empresas</div>
-          <div class="ios-stat-value" id="totalCompaniesCount">{{ company_types_data.company_types_stats.total_companies }}</div>
-          <div class="ios-stat-trend">Empresas categorizadas</div>
+          <div class="ios-stat-label text-sm font-medium text-gray-600 dark:text-gray-400">Total Empresas</div>
+          <div class="ios-stat-value text-2xl md:text-3xl font-bold text-gray-900 dark:text-white" id="totalCompaniesCount">{{ company_types_data.company_types_stats.total_companies }}</div>
+          <div class="ios-stat-trend text-xs text-gray-500 dark:text-gray-500">Empresas categorizadas</div>
         </div>
         <div class="ios-stat-shimmer"></div>
       </div>
@@ -114,16 +195,16 @@
           <i class="fas fa-chart-bar"></i>
         </div>
         <div class="ios-stat-content">
-          <div class="ios-stat-label">Promedio por Tipo</div>
-          <div class="ios-stat-value" id="avgCompaniesCount">{{ company_types_data.company_types_stats.avg_companies_per_type }}</div>
-          <div class="ios-stat-trend">Distribución equilibrada</div>
+          <div class="ios-stat-label text-sm font-medium text-gray-600 dark:text-gray-400">Promedio por Tipo</div>
+          <div class="ios-stat-value text-2xl md:text-3xl font-bold text-gray-900 dark:text-white" id="avgCompaniesCount">{{ company_types_data.company_types_stats.avg_companies_per_type }}</div>
+          <div class="ios-stat-trend text-xs text-gray-500 dark:text-gray-500">Distribución equilibrada</div>
         </div>
         <div class="ios-stat-shimmer"></div>
       </div>
     </div>
 
 
-  <!-- Enhanced iOS Company Types Grid - HARDWARE STYLE -->
+  <!-- Enhanced iOS Company Types Grid - HARDWARE STYLE CON CONTENIDO ESPECÍFICO -->
     <div class="ios-hardware-grid" id="companyTypesGrid">
       {% for company_type in company_types_data.company_types %}
       <div class="ios-hardware-card company-type-item" data-type-id="{{ company_type.id }}" data-status="{{ company_type.active|lower }}">
@@ -131,43 +212,93 @@
           <div class="ios-card-icon">
             <i class="fas fa-layer-group"></i>
           </div>
-          <span class="ios-status-badge {% if company_type.active %}ios-status-available{% else %}ios-status-discontinued{% endif %}">
-            {% if company_type.active %}Activo{% else %}Inactivo{% endif %}
+          <span class="ios-status-badge {% if company_type.active %}ios-status-available{% else %}ios-status-discontinued{% endif %} text-xs font-semibold">
+            {% if company_type.active %}✅ Activo{% else %}⚫ Inactivo{% endif %}
           </span>
         </div>
         
-        <h3 class="ios-card-title">{{ company_type.name }}</h3>
-        <p class="ios-card-subtitle">{{ company_type.description|truncate(60) }}</p>
+        <h3 class="ios-card-title text-xl font-semibold text-gray-900 dark:text-white">{{ company_type.name }}</h3>
+        <p class="ios-card-subtitle text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{{ company_type.description }}</p>
         
+        <!-- Sección específica para tipos de empresa -->
         <div class="ios-card-info">
-          <div class="ios-info-item">
-            <span class="ios-info-label">Empresas</span>
-            <span class="ios-info-value">{{ company_type.companies_count }}</span>
+          <!-- Empresas asociadas - FILA COMPLETA -->
+          <div class="ios-info-item full-width">
+            <span class="ios-info-label text-xs font-medium text-gray-600 dark:text-gray-400">
+              <i class="fas fa-building text-purple-400 mr-1"></i>
+              Empresas asociadas
+            </span>
+            <span class="ios-info-value text-sm font-bold text-gray-900 dark:text-white">{{ company_type.companies_count }}</span>
           </div>
+          
+          <!-- Características y Distribución - MISMA FILA -->
+          {% if company_type.features and company_type.features|length > 0 %}
           <div class="ios-info-item">
-            <span class="ios-info-label">Estado</span>
-            <span class="ios-info-value">{{ company_type.active and 'Activo' or 'Inactivo' }}</span>
+            <span class="ios-info-label text-xs font-medium text-gray-600 dark:text-gray-400">
+              <i class="fas fa-tags text-blue-400 mr-1"></i>
+              Características
+            </span>
+            <span class="ios-info-value text-sm font-bold text-gray-900 dark:text-white">{{ company_type.features|length }}</span>
           </div>
+          {% endif %}
+          {% if company_type.companies_count > 0 %}
           <div class="ios-info-item">
-            <span class="ios-info-label">Características</span>
-            <span class="ios-info-value">{{ company_type.features|length if company_type.features else 0 }}</span>
+            <span class="ios-info-label text-xs font-medium text-gray-600 dark:text-gray-400">
+              <i class="fas fa-chart-bar text-green-400 mr-1"></i>
+              Distribución
+            </span>
+            <span class="ios-info-value text-sm font-bold text-gray-900 dark:text-white">{{ "%.1f"|format(company_type.companies_count / company_types_data.company_types_stats.total_types) }}%</span>
           </div>
-          <div class="ios-info-item">
-            <span class="ios-info-label">Creado</span>
-            <span class="ios-info-value">{{ company_type.created_at }}</span>
+          {% endif %}
+          
+          <!-- Fecha de creación - FILA COMPLETA -->
+          <div class="ios-info-item full-width">
+            <span class="ios-info-label text-xs font-medium text-gray-600 dark:text-gray-400">
+              <i class="fas fa-calendar text-orange-400 mr-1"></i>
+              Fecha de creación
+            </span>
+            <span class="ios-info-value text-sm font-bold text-gray-900 dark:text-white">{{ company_type.created_at }}</span>
           </div>
         </div>
         
+        <!-- Características destacadas (si existen) -->
+        {% if company_type.features and company_type.features|length > 0 %}
+        <div class="mt-3 mb-3">
+          <div class="text-xs font-semibold text-blue-800 dark:text-blue-400 mb-2">
+            <i class="fas fa-list mr-1 text-blue-700 dark:text-blue-400"></i>
+            Características principales:
+          </div>
+          <div class="flex flex-wrap gap-1">
+            {% for feature in company_type.features[:3] %}
+            <span class="inline-block px-2 py-1 bg-blue-700 dark:bg-blue-500/20 text-white dark:text-blue-300 text-xs font-semibold rounded-full border border-blue-800 dark:border-blue-500/30">
+              {{ feature }}
+            </span>
+            {% endfor %}
+            {% if company_type.features|length > 3 %}
+            <span class="inline-block px-2 py-1 bg-gray-700 dark:bg-gray-500/20 text-white dark:text-gray-300 text-xs font-semibold rounded-full border border-gray-800 dark:border-gray-500/30">
+              +{{ company_type.features|length - 3 }} más
+            </span>
+            {% endif %}
+          </div>
+        </div>
+        {% endif %}
+        
+        <!-- Botones de acción específicos para tipos de empresa -->
         <div class="ios-card-actions">
-          <button class="ios-card-btn" onclick="viewCompanyType('{{ company_type.id }}')" title="Ver detalles">
+          <button class="ios-card-btn" onclick="viewCompanyType('{{ company_type.id }}')" title="Ver detalles completos">
             <i class="fas fa-eye"></i>
           </button>
-          <button class="ios-card-btn ios-card-btn-primary" onclick="editCompanyType('{{ company_type.id }}')" title="Editar">
+          {% if company_type.companies_count > 0 %}
+          <button class="ios-card-btn ios-card-btn-info" onclick="viewCompaniesOfType('{{ company_type.id }}', '{{ company_type.name }}')" title="Ver empresas de este tipo">
+            <i class="fas fa-building"></i>
+          </button>
+          {% endif %}
+          <button class="ios-card-btn ios-card-btn-primary" onclick="editCompanyType('{{ company_type.id }}')" title="Editar tipo">
             <i class="fas fa-edit"></i>
           </button>
           <button class="ios-card-btn {{ company_type.active and 'ios-card-btn-warning' or 'ios-card-btn-success' }}" 
                   onclick="toggleStatus('{{ company_type.id }}', {{ company_type.active|lower }})" 
-                  title="{{ company_type.active and 'Desactivar' or 'Activar' }}">
+                  title="{{ company_type.active and 'Desactivar tipo' or 'Activar tipo' }}">
             <i class="fas {{ company_type.active and 'fa-power-off' or 'fa-play' }}"></i>
           </button>
         </div>
@@ -192,8 +323,8 @@
             <i class="fas fa-layer-group text-white text-xl"></i>
           </div>
           <div>
-            <h3 class="text-2xl font-bold text-white" id="modalTitle">Nuevo Tipo de Empresa</h3>
-            <p class="text-sm text-white/70">Complete los campos para registrar el tipo</p>
+            <h3 class="text-2xl font-bold text-white dark:text-white" id="modalTitle">Nuevo Tipo de Empresa</h3>
+            <p class="text-sm text-white/70 dark:text-gray-300">Complete los campos para registrar el tipo</p>
           </div>
         </div>
         <button type="button" class="ios-blur-btn ios-blur-btn-secondary !p-2 !min-w-0" onclick="closeModal()" aria-label="Cerrar modal">
@@ -208,7 +339,7 @@
         <div class="form-grid">
           <!-- Nombre -->
           <div class="form-group">
-            <label for="typeName" class="block text-sm font-semibold text-white/90 mb-2">
+            <label for="typeName" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
               <i class="fas fa-tag text-purple-400 mr-2"></i>Nombre *
             </label>
             <input type="text" id="typeName" class="ios-blur-input" required
@@ -217,18 +348,18 @@
           
           <!-- Estado -->
           <div class="form-group">
-            <label for="typeStatus" class="block text-sm font-semibold text-white/90 mb-2">
+            <label for="typeStatus" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
               <i class="fas fa-toggle-on text-blue-400 mr-2"></i>Estado *
             </label>
             <select id="typeStatus" class="ios-blur-input" required>
-              <option value="true">🟢 Activo</option>
-              <option value="false">🔴 Inactivo</option>
+              <option value="true" class="text-sm">🟢 Activo</option>
+              <option value="false" class="text-sm">🔴 Inactivo</option>
             </select>
           </div>
           
           <!-- Descripción -->
           <div class="form-group form-group-full">
-            <label for="typeDescription" class="block text-sm font-semibold text-white/90 mb-2">
+            <label for="typeDescription" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
               <i class="fas fa-align-left text-cyan-400 mr-2"></i>Descripción *
             </label>
             <textarea id="typeDescription" class="ios-blur-input !min-h-[6rem] resize-y" rows="3" required
@@ -237,7 +368,7 @@
           
           <!-- Características -->
           <div class="form-group form-group-full">
-            <label class="block text-sm font-semibold text-white/90 mb-2">
+            <label class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
               <i class="fas fa-list text-orange-400 mr-2"></i>Características
             </label>
             <div id="featuresContainer" class="space-y-3">
@@ -261,11 +392,11 @@
     <div class="ios-blur-footer">
       <button type="button" class="ios-blur-btn ios-blur-btn-secondary" onclick="closeModal()">
         <i class="fas fa-times mr-2"></i>
-        Cancelar
+        <span class="text-sm font-medium">Cancelar</span>
       </button>
       <button type="submit" form="companyTypeForm" class="ios-blur-btn ios-blur-btn-primary" id="submitButton">
         <i class="fas fa-save mr-2"></i>
-        <span id="submitButtonText">Crear Tipo</span>
+        <span id="submitButtonText" class="text-sm font-medium">Crear Tipo</span>
       </button>
     </div>
   </div>
@@ -282,8 +413,8 @@
             <i class="fas fa-eye text-white text-xl"></i>
           </div>
           <div>
-            <h3 class="text-2xl font-bold text-white" id="detailsTitle">Detalles del Tipo</h3>
-            <p class="text-sm text-white/70">Información completa del tipo seleccionado</p>
+            <h3 class="text-2xl font-bold text-white dark:text-white" id="detailsTitle">Detalles del Tipo</h3>
+            <p class="text-sm text-white/70 dark:text-gray-300">Información completa del tipo seleccionado</p>
           </div>
         </div>
         <button type="button" class="ios-blur-btn ios-blur-btn-secondary !p-2 !min-w-0" onclick="closeDetailsModal()" aria-label="Cerrar modal">
@@ -303,7 +434,7 @@
     <div class="ios-blur-footer">
       <button type="button" class="ios-blur-btn ios-blur-btn-secondary" onclick="closeDetailsModal()">
         <i class="fas fa-times mr-2"></i>
-        Cerrar
+        <span class="text-sm font-medium">Cerrar</span>
       </button>
     </div>
   </div>
@@ -316,20 +447,20 @@
       <div class="toggle-modal-icon mx-auto mb-4" id="toggleModalIcon">
         <i class="fas fa-power-off text-4xl" id="toggleModalIconFa"></i>
       </div>
-      <h3 class="text-2xl font-bold text-white mb-2" id="toggleModalTitle">Activar Tipo de Empresa</h3>
+      <h3 class="text-2xl font-bold text-white dark:text-white mb-2" id="toggleModalTitle">Activar Tipo de Empresa</h3>
     </div>
     <div class="ios-blur-body text-center">
-      <p class="text-white/80 text-lg mb-6" id="toggleModalMessage">
+      <p class="text-white/80 dark:text-gray-300 text-lg mb-6" id="toggleModalMessage">
         ¿Estás seguro de que quieres activar este tipo de empresa?
       </p>
       <div class="flex gap-4 justify-center">
         <button class="ios-blur-btn ios-blur-btn-secondary" onclick="closeToggleModal()">
           <i class="fas fa-times mr-2"></i>
-          Cancelar
+          <span class="text-sm font-medium">Cancelar</span>
         </button>
         <button class="ios-blur-btn ios-blur-btn-primary" id="toggleConfirmBtn" onclick="confirmToggleCompanyType()">
           <i class="fas fa-check mr-2" id="toggleConfirmIcon"></i>
-          <span id="toggleConfirmText">Activar</span>
+          <span id="toggleConfirmText" class="text-sm font-medium">Activar</span>
         </button>
       </div>
     </div>
@@ -343,15 +474,15 @@
       <div class="client-update-icon mx-auto mb-4" id="updateModalIcon">
         <i class="fas fa-sync-alt text-4xl text-emerald-400" id="updateModalIconFa"></i>
       </div>
-      <h3 class="text-2xl font-bold text-white mb-2" id="updateModalTitle">Tipo Actualizado</h3>
+      <h3 class="text-2xl font-bold text-white dark:text-white mb-2" id="updateModalTitle">Tipo Actualizado</h3>
     </div>
     <div class="ios-blur-body text-center">
-      <p class="text-white/80 text-lg mb-6" id="updateModalMessage">
+      <p class="text-white/80 dark:text-gray-300 text-lg mb-6" id="updateModalMessage">
         El tipo de empresa se ha actualizado exitosamente.
       </p>
       <button class="ios-blur-btn ios-blur-btn-primary mx-auto" onclick="closeUpdateModal()">
         <i class="fas fa-check mr-2"></i>
-        Aceptar
+        <span class="text-sm font-medium">Aceptar</span>
       </button>
     </div>
   </div>
@@ -468,9 +599,36 @@
 let editingCompanyType = null;
 let currentFeatures = [];
 
+// Debug function to check modal elements
+function debugToggleModal() {
+  console.log('🔍 Debugging toggle modal elements:');
+  const elements = {
+    modal: document.getElementById('toggleCompanyTypeModal'),
+    container: document.getElementById('toggleModalContainer'),
+    icon: document.getElementById('toggleModalIcon'),
+    iconFa: document.getElementById('toggleModalIconFa'),
+    title: document.getElementById('toggleModalTitle'),
+    message: document.getElementById('toggleModalMessage'),
+    confirmBtn: document.getElementById('toggleConfirmBtn'),
+    confirmText: document.getElementById('toggleConfirmText'),
+    confirmIcon: document.getElementById('toggleConfirmIcon')
+  };
+  
+  Object.entries(elements).forEach(([name, element]) => {
+    console.log(`  ${name}:`, element ? '✅ Found' : '❌ NOT FOUND');
+  });
+  
+  return elements;
+}
+
 // SIMPLIFIED: Initialize page with direct filtering by 'activo' field
 document.addEventListener('DOMContentLoaded', function() {
   console.log('🚀 Initializing company types with simple filtering');
+  
+  // Debug modal elements
+  setTimeout(() => {
+    debugToggleModal();
+  }, 500);
   
   // Forzar visibilidad inmediata para evitar problemas
   const forceVisibility = () => {
@@ -486,17 +644,28 @@ document.addEventListener('DOMContentLoaded', function() {
   // Ejecutar inmediatamente
   forceVisibility();
   
-  // Get initial state from URL parameter
-  const showInactive = {{ 'true' if include_inactive else 'false' }};
-  console.log(`🔧 Show inactive: ${showInactive}`);
+  // Get initial state from URL parameter (usar variable global)
+  console.log(`🔧 Show inactive: ${currentShowingInactive}`);
   
   // Apply initial filter - by default show only active types
   setTimeout(() => {
-    filterTypesByActiveStatus(showInactive);
+    filterTypesByActiveStatus(currentShowingInactive);
+    // Sincronizar estado del botón
+    syncButtonState();
     // Forzar visibilidad nuevamente después del filtro
     forceVisibility();
   }, 100);
 });
+
+// Función de test para probar el toggle modal
+function testToggleModal() {
+  console.log('🧪 Testing toggle modal...');
+  openToggleCompanyTypeModal('test-id', true, 'Tipo de Prueba');
+}
+
+// Exponer para debug
+window.testToggleModal = testToggleModal;
+window.debugToggleModal = debugToggleModal;
 
 // Modal functionality - EXACT HARDWARE STYLE
 function openCreateModal() {
@@ -616,26 +785,26 @@ async function viewCompanyType(id) {
               <i class="fas fa-building text-purple-600 text-xl"></i>
             </div>
             <div>
-              <h4 class="font-semibold text-black dark:text-white">${data.nombre}</h4>
+              <h4 class="text-lg font-semibold text-gray-900 dark:text-white">${data.nombre}</h4>
               <p class="text-sm text-gray-500 dark:text-gray-400">ID: ${id}</p>
             </div>
           </div>
           <div>
-            <h5 class="font-medium text-black dark:text-white mb-2">Descripción</h5>
+            <h5 class="text-base font-semibold text-gray-900 dark:text-white mb-2">Descripción</h5>
             <p class="text-sm text-gray-600 dark:text-gray-400">${data.descripcion || 'Sin descripción'}</p>
           </div>
           <div>
-            <h5 class="font-medium text-black dark:text-white mb-2">Estado</h5>
-            <span class="font-medium ${data.activo ? 'text-green-600' : 'text-red-600'} ml-2">${data.activo ? 'Activo' : 'Inactivo'}</span>
+            <h5 class="text-base font-semibold text-gray-900 dark:text-white mb-2">Estado</h5>
+            <span class="text-sm font-semibold ${data.activo ? 'text-green-600' : 'text-red-600'} ml-2">${data.activo ? 'Activo' : 'Inactivo'}</span>
           </div>
           <div>
-            <h5 class="font-medium text-black dark:text-white mb-2">Características</h5>
+            <h5 class="text-base font-semibold text-gray-900 dark:text-white mb-2">Características</h5>
             <div class="flex flex-wrap gap-2">
               ${data.caracteristicas && data.caracteristicas.length > 0 ? 
                 data.caracteristicas.map(feature => 
-                  `<span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-xs">${feature}</span>`
+                  `<span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-xs font-medium">${feature}</span>`
                 ).join('') : 
-                '<span class="text-gray-500 text-sm">No hay características definidas</span>'
+                '<span class="text-gray-500 dark:text-gray-400 text-sm">No hay características definidas</span>'
               }
             </div>
           </div>
@@ -866,12 +1035,24 @@ function confirmToggleCompanyType() {
 
 // Ejecutar toggle - ADAPTADO PARA COMPANY TYPES
 async function executeToggleCompanyType(id, newStatus) {
-  await callAPI('PATCH', `/api/tipos_empresa/${id}/toggle-status`);
-  
-  // Animar cambio de estado
-  const card = document.querySelector(`[data-type-id="${id}"]`);
-  if (card && window.CompanyTypesAnimations) {
-    window.CompanyTypesAnimations.animateStatusChange(card);
+  try {
+    console.log('📞 Executing toggle for type:', id, 'to status:', newStatus);
+    
+    const response = await callAPI('PATCH', `/api/tipos_empresa/${id}/toggle-status`);
+    console.log('✅ Toggle response:', response);
+    
+    // Animar cambio de estado usando HardwareAnimations
+    const card = document.querySelector(`[data-type-id="${id}"]`);
+    if (card && window.HardwareAnimations) {
+      window.HardwareAnimations.animateStatusChange ? 
+        window.HardwareAnimations.animateStatusChange(card) :
+        console.log('🎨 Status change animation not available');
+    }
+    
+    return response;
+  } catch (error) {
+    console.error('💥 Error executing toggle:', error);
+    throw error;
   }
 }
 
@@ -936,9 +1117,14 @@ function showToggleSuccess(activated) {
 
 // Función para llamar desde toggleStatus - ADAPTADA
 async function toggleStatus(id, currentStatus) {
+  console.log('🎯 toggleStatus called with:', { id, currentStatus });
+  
   // Obtener el nombre del tipo para mostrar en el modal
   const card = document.querySelector(`[data-type-id="${id}"]`);
-  const typeName = card ? card.querySelector('.ios-ct-card-title').textContent : 'este tipo de empresa';
+  console.log('🔍 Card found:', card);
+  
+  const typeName = card ? card.querySelector('.ios-card-title').textContent : 'este tipo de empresa';
+  console.log('📋 Type name found:', typeName);
   
   openToggleCompanyTypeModal(id, currentStatus, typeName);
 }
@@ -1053,31 +1239,46 @@ function exportTypes() {
   showClientUpdateModal('Los tipos de empresa se están exportando. El archivo CSV se descargará automáticamente.');
 }
 
-// SIMPLIFIED: Toggle between showing only active or all types
-function toggleIncludeInactive() {
-  const currentlyShowingInactive = {{ 'true' if include_inactive else 'false' }};
-  const newShowInactive = !currentlyShowingInactive;
+// Variable global para trackear el estado actual
+let currentShowingInactive = {{ 'true' if include_inactive else 'false' }};
+
+// Función para sincronizar estado del botón con variable global
+function syncButtonState() {
+  const button = document.querySelector('button[onclick="toggleIncludeInactive()"]');
+  if (!button) return;
   
-  console.log(`🔄 Toggle: Currently showing inactive: ${currentlyShowingInactive}, New: ${newShowInactive}`);
-  
-  // Update button appearance - HARDWARE STYLE
-  const button = event.target.closest('button');
   const buttonIcon = button.querySelector('i');
   const buttonText = button.querySelector('span');
   
-  if (newShowInactive) {
-    // Show all types
+  if (currentShowingInactive) {
+    // Mostrando todos - botón debe decir "Solo Activos"
     button.classList.remove('ios-action-btn-secondary');
     button.classList.add('ios-action-btn-warning');
-    buttonIcon.className = 'fas fa-eye-slash';
-    buttonText.textContent = 'Solo Activos';
+    if (buttonIcon) buttonIcon.className = 'fas fa-eye-slash';
+    if (buttonText) buttonText.textContent = 'Solo Activos';
   } else {
-    // Show only active
+    // Mostrando solo activos - botón debe decir "Ver Todos"
     button.classList.remove('ios-action-btn-warning');
     button.classList.add('ios-action-btn-secondary');
-    buttonIcon.className = 'fas fa-eye';
-    buttonText.textContent = 'Ver Todos';
+    if (buttonIcon) buttonIcon.className = 'fas fa-eye';
+    if (buttonText) buttonText.textContent = 'Ver Todos';
   }
+  
+  console.log(`🔄 Button state synced. Showing inactive: ${currentShowingInactive}`);
+}
+
+// SIMPLIFIED: Toggle between showing only active or all types - ARREGLADO
+function toggleIncludeInactive() {
+  // Usar variable global que se actualiza dinámicamente
+  const newShowInactive = !currentShowingInactive;
+  
+  console.log(`🔄 Toggle: Currently showing inactive: ${currentShowingInactive}, New: ${newShowInactive}`);
+  
+  // Actualizar variable global
+  currentShowingInactive = newShowInactive;
+  
+  // Sincronizar apariencia del botón
+  syncButtonState();
   
   // Filter types by active status - SIMPLE!
   filterTypesByActiveStatus(newShowInactive);
@@ -1090,6 +1291,8 @@ function toggleIncludeInactive() {
     currentUrl.searchParams.delete('include_inactive');
   }
   window.history.replaceState({}, '', currentUrl.toString());
+  
+  console.log(`✅ Toggle completed. New state: ${currentShowingInactive}`);
 }
 
 // SIMPLE: Filter types by checking 'activo' field - no complex logic needed!
@@ -1187,7 +1390,7 @@ function updateFeaturesList() {
   const container = document.getElementById('featuresList');
   container.innerHTML = currentFeatures.map((feature, index) => `
     <div class="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded-lg">
-      <span class="text-sm text-gray-700 dark:text-gray-300">${feature}</span>
+      <span class="text-sm font-medium text-gray-700 dark:text-gray-300">${feature}</span>
       <button type="button" class="text-red-500 hover:text-red-700 ml-2" onclick="removeFeature(${index})">
         <i class="fas fa-times"></i>
       </button>

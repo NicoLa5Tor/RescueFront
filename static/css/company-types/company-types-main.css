@@ -1,5 +1,6 @@
-/* ===== COMPANY TYPES MAIN CSS ===== */
+/* ===== COMPANY TYPES MAIN CSS =====
 /* Modular CSS for Company Types with iOS Design */
+/* NOTE: Typography now handled by Tailwind CSS classes in templates for better dark mode support */
 
 /* Import all modular components in correct order */
 @import './ios-header.css';
