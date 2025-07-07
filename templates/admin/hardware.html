@@ -6,6 +6,7 @@
 {{ super() }}
 <link href="{{ url_for('static', filename='css/modals.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/hardware/hardware-main.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/hardware/hardware-modal-fix.css') }}" rel="stylesheet">
 {% endblock %}
 
 {% block extra_js %}
@@ -490,7 +491,7 @@
 </div>
 
 <!-- Enhanced Toggle Hardware Status Modal -->
-<div id="toggleHardwareModal" class="ios-modal-backdrop hidden">
+<div id="toggleHardwareModal" class="ios-modal-backdrop toggle-modal hidden">
   <div class="ios-blur-modal-container max-w-md" id="toggleModalContainer">
     <div class="ios-blur-header text-center">
       <div class="toggle-modal-icon mx-auto mb-4" id="toggleModalIcon">
@@ -542,11 +543,12 @@
 <script src="{{ url_for('static', filename='js/api-client.js') }}"></script>
 <script src="{{ url_for('static', filename='js/modal-utils.js') }}"></script>
 <script src="{{ url_for('static', filename='js/dashboard/basic-managers.js') }}"></script>
+<script src="{{ url_for('static', filename='js/hardware/hardware-validation.js') }}"></script>
 <script src="{{ url_for('static', filename='js/hardware/hardware-core.js') }}"></script>
 <script src="{{ url_for('static', filename='js/hardware/hardware-main.js') }}"></script>
+<!-- Debug script para el problema del PUT -->
+<script src="{{ url_for('static', filename='js/hardware-debug-put.js') }}"></script>
 <script>
-let editingHardware = null;
-
 // Initialize modals when page loads
 function initializeModals() {
   console.log('🚀 Initializing modals...');
@@ -571,97 +573,9 @@ function initializeModals() {
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', initializeModals);
 
-
-// Modal functionality with enhanced animations
-function openCreateModal() {
-  editingHardware = null;
-  document.getElementById('modalTitle').textContent = 'Nuevo Hardware';
-  document.getElementById('submitButtonText').textContent = 'Crear Hardware';
-  document.getElementById('hardwareForm').reset();
-  
-  // Scroll to top first, then show modal
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-  
-  // Delay modal opening to allow scroll to complete
-  setTimeout(() => {
-    // Prevent body scrolling
-    const scrollPosition = window.pageYOffset;
-    document.body.style.position = 'fixed';
-    document.body.style.top = `-${scrollPosition}px`;
-    document.body.style.width = '100%';
-    document.body.classList.add('ios-modal-open');
-    
-    // Open modal using modal manager
-    if (window.modalManager) {
-      window.modalManager.openModal('hardwareModal');
-      // Set up modal if not already configured
-      window.modalManager.setupModal('hardwareModal');
-    } else {
-      // Fallback for compatibility
-      const modal = document.getElementById('hardwareModal');
-      modal.classList.remove('hidden');
-    }
-  }, 300);
-}
-
-async function editHardware(id) {
-  try {
-    editingHardware = id;
-    document.getElementById('modalTitle').textContent = 'Editar Hardware';
-    document.getElementById('submitButtonText').textContent = 'Actualizar Hardware';
-    
-    // Intentar cargar los datos reales del hardware
-    try {
-      console.log('🔄 Cargando datos para editar hardware:', id);
-      const response = await apiClient.get_hardware_details(id);
-      
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          console.log('📋 Datos del hardware cargados para edición:', data.data);
-          loadHardwareDataIntoForm(data.data);
-        } else {
-          console.warn('⚠️ Error en respuesta del API:', data.errors);
-          loadDummyDataIntoForm(); // Fallback a datos dummy
-        }
-      } else {
-        console.warn('⚠️ Error HTTP al cargar datos:', response.status);
-        loadDummyDataIntoForm(); // Fallback a datos dummy
-      }
-    } catch (error) {
-      console.error('💥 Error al cargar datos del hardware:', error);
-      loadDummyDataIntoForm(); // Fallback a datos dummy
-    }
-    
-    // Scroll to top first, then show modal
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    
-    // Delay modal opening to allow scroll to complete
-    setTimeout(() => {
-      // Prevent body scrolling
-      const scrollPosition = window.pageYOffset;
-      document.body.style.position = 'fixed';
-      document.body.style.top = `-${scrollPosition}px`;
-      document.body.style.width = '100%';
-      document.body.classList.add('ios-modal-open');
-      
-      // Open modal using modal manager
-      if (window.modalManager) {
-        window.modalManager.openModal('hardwareModal');
-        // Set up modal if not already configured
-        window.modalManager.setupModal('hardwareModal');
-      } else {
-        // Fallback for compatibility
-        const modal = document.getElementById('hardwareModal');
-        modal.classList.remove('hidden');
-      }
-    }, 300);
-    
-  } catch (error) {
-    console.error('💥 Error al abrir modal de edición:', error);
-    alert('Error al abrir el modal de edición. Por favor, inténtalo de nuevo.');
-  }
-}
+// NOTE: Las funciones openCreateModal() y editHardware() están ahora
+// implementadas en hardware-core.js y exportadas al objeto window
+// Esto evita duplicación y conflictos de estado
 
 // Función para cargar datos reales en el formulario
 function loadHardwareDataIntoForm(hardware) {
@@ -806,30 +720,31 @@ function loadDummyDataIntoForm() {
   setInputValue('hardwareDescription', '');
 }
 
-function closeModal() {
-  // Restore scroll position before closing
-  const scrollY = document.body.style.top;
-  document.body.style.position = '';
-  document.body.style.top = '';
-  document.body.style.width = '';
-  document.body.classList.remove('ios-modal-open');
-  
-  if (scrollY) {
-    window.scrollTo(0, parseInt(scrollY || '0') * -1);
-  }
-  
-  // Usar el sistema de modales global
-  if (window.modalManager) {
-    window.modalManager.closeModal('hardwareModal');
-  } else {
-    // Fallback para compatibilidad
-    const modal = document.getElementById('hardwareModal');
-    modal.classList.add('hidden');
-  }
-  
-  editingHardware = null;
-  resetForm();
-}
+// NOTE: Función closeModal() comentada - ahora se usa la implementación en hardware-core.js
+// function closeModal() {
+//   // Restore scroll position before closing
+//   const scrollY = document.body.style.top;
+//   document.body.style.position = '';
+//   document.body.style.top = '';
+//   document.body.style.width = '';
+//   document.body.classList.remove('ios-modal-open');
+//   
+//   if (scrollY) {
+//     window.scrollTo(0, parseInt(scrollY || '0') * -1);
+//   }
+//   
+//   // Usar el sistema de modales global
+//   if (window.modalManager) {
+//     window.modalManager.closeModal('hardwareModal');
+//   } else {
+//     // Fallback para compatibilidad
+//     const modal = document.getElementById('hardwareModal');
+//     modal.classList.add('hidden');
+//   }
+//   
+//   editingHardware = null;  // Variable que ya no existe
+//   resetForm();
+// }
 
 // Función para resetear el formulario
 function resetForm() {
@@ -839,76 +754,10 @@ function resetForm() {
   }
 }
 
-async function viewHardware(id) {
-  try {
-    console.log('🔍 Cargando detalles del hardware:', id);
-    
-    // Validar que el ID no sea nulo o indefinido
-    if (!id) {
-      console.error('❌ ID de hardware no válido:', id);
-      alert('Error: ID de hardware no válido');
-      return;
-    }
-    
-    // Verificar que el API client esté disponible
-    if (!apiClient || typeof apiClient.get_hardware_details !== 'function') {
-      console.error('❌ API client no disponible');
-      alert('Error: Conexión con el servidor no disponible');
-      return;
-    }
-    
-    const response = await apiClient.get_hardware_details(id);
-    
-    if (!response.ok) {
-      console.error('❌ Error HTTP:', response.status, response.statusText);
-      
-      if (response.status === 404) {
-        alert('Hardware no encontrado. Puede que haya sido eliminado.');
-      } else if (response.status === 401) {
-        alert('Sesión expirada. Por favor, inicia sesión nuevamente.');
-        window.location.href = '/login';
-      } else if (response.status === 403) {
-        alert('No tienes permisos para ver este hardware.');
-      } else {
-        alert(`Error del servidor: ${response.status} - ${response.statusText}`);
-      }
-      return;
-    }
-    
-    const data = await response.json();
-    console.log('📦 Respuesta completa del API:', data);
-    
-    if (data.success) {
-      console.log('📋 Detalles del hardware cargados:', data.data);
-      
-      // Verificar que los datos no estén vacíos
-      if (!data.data) {
-        console.warn('⚠️ Datos del hardware vacíos');
-        alert('No se encontraron datos para este hardware.');
-        return;
-      }
-      
-      showHardwareDetails(data.data);
-    } else {
-      console.error('❌ Error en respuesta del API:', data.errors);
-      const errorMessage = data.errors && Array.isArray(data.errors) 
-        ? data.errors.join(', ') 
-        : data.error || 'Error desconocido';
-      alert('Error al cargar los detalles del hardware: ' + errorMessage);
-    }
-  } catch (error) {
-    console.error('💥 Error al cargar detalles del hardware:', error);
-    
-    // Manejo de diferentes tipos de errores
-    if (error.name === 'TypeError' && error.message.includes('fetch')) {
-      alert('Error de conexión. Verifica tu conexión a internet.');
-    } else if (error.name === 'SyntaxError') {
-      alert('Error en la respuesta del servidor. Inténtalo de nuevo.');
-    } else {
-      alert('Error inesperado al cargar los detalles. Inténtalo de nuevo.');
-    }
-  }
-}
+// NOTE: Función viewHardware() comentada - ahora se usa la implementación en hardware-core.js
+// async function viewHardware(id) {
+//   // ... implementación comentada para evitar duplicación ...
+// }
 
 // Variable para almacenar el hardware actual que se está visualizando
 let currentViewingHardware = null;
@@ -1126,29 +975,18 @@ function showHardwareDetails(hardware) {
                        'Sin descripción';
     setElementText('viewHardwareDescription', description);
     
-    // Scroll to top first, then show modal
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Open modal immediately without scrolling - using modal manager
     
-    // Delay modal opening to allow scroll to complete
-    setTimeout(() => {
-      // Prevent body scrolling
-      const scrollPosition = window.pageYOffset;
-      document.body.style.position = 'fixed';
-      document.body.style.top = `-${scrollPosition}px`;
-      document.body.style.width = '100%';
-      document.body.classList.add('ios-modal-open');
-      
-      // Open modal using modal manager
-      if (window.modalManager) {
-        window.modalManager.openModal('viewHardwareModal');
-        // Set up modal if not already configured
-        window.modalManager.setupModal('viewHardwareModal');
-      } else {
-        // Fallback for compatibility
-        const modal = document.getElementById('viewHardwareModal');
-        modal.classList.remove('hidden');
-      }
-    }, 300);
+    // Open modal using modal manager
+    if (window.modalManager) {
+      window.modalManager.openModal('viewHardwareModal');
+      // Set up modal if not already configured
+      window.modalManager.setupModal('viewHardwareModal');
+    } else {
+      // Fallback for compatibility
+      const modal = document.getElementById('viewHardwareModal');
+      modal.classList.remove('hidden');
+    }
     
     console.log('✅ Modal de detalles mostrado correctamente');
     
@@ -1168,18 +1006,7 @@ function showHardwareDetails(hardware) {
 
 // Función para cerrar el modal de vista
 function closeViewModal() {
-  // Restore scroll position before closing
-  const scrollY = document.body.style.top;
-  document.body.style.position = '';
-  document.body.style.top = '';
-  document.body.style.width = '';
-  document.body.classList.remove('ios-modal-open');
-  
-  if (scrollY) {
-    window.scrollTo(0, parseInt(scrollY || '0') * -1);
-  }
-  
-  // Usar el sistema de modales global
+  // Usar el sistema de modales global - no manipular body position
   if (window.modalManager) {
     window.modalManager.closeModal('viewHardwareModal');
   } else {
@@ -1726,6 +1553,10 @@ async function updateHardwareAPI(id, hardwareData) {
   }
 }
 
+// Make API functions globally available for hardware-core.js
+window.createHardwareAPI = createHardwareAPI;
+window.updateHardwareAPI = updateHardwareAPI;
+
 
 async function toggleHardwareStatusAPI(id, activa) {
   const action = activa ? 'activar' : 'desactivar';
@@ -2244,58 +2075,10 @@ function populateTypeDropdowns(types) {
   });
 }
 
-// Form submission handling
-document.getElementById('hardwareForm').addEventListener('submit', function(e) {
-  e.preventDefault();
-  
-  // Get empresa and sede values
-  const empresaSelect = document.getElementById('hardwareEmpresa');
-  const sedeSelect = document.getElementById('hardwareSede');
-  
-  // Validate empresa and sede are selected
-  if (!empresaSelect.value) {
-    alert('Por favor selecciona una empresa');
-    empresaSelect.focus();
-    return;
-  }
-  
-  if (!sedeSelect.value) {
-    alert('Por favor selecciona una sede');
-    sedeSelect.focus();
-    return;
-  }
-  
-  // Get empresa name from the selected option
-  const selectedEmpresaOption = empresaSelect.options[empresaSelect.selectedIndex];
-  const empresaNombre = selectedEmpresaOption.dataset.nombre || selectedEmpresaOption.textContent;
-  
-  const formData = {
-    nombre: document.getElementById('hardwareName').value,
-    tipo: document.getElementById('hardwareType').value,
-    empresa_id: empresaSelect.value, // Send empresa ID
-    empresa_nombre: empresaNombre, // Send empresa name
-    sede: sedeSelect.value, // Send selected sede
-    datos: {
-      datos: { // Note the nested structure to match your backend
-        brand: document.getElementById('hardwareBrand').value,
-        model: document.getElementById('hardwareModel').value,
-        price: parseFloat(document.getElementById('hardwarePrice').value),
-        stock: parseInt(document.getElementById('hardwareStock').value),
-        status: document.getElementById('hardwareStatus').value,
-        warranty: parseInt(document.getElementById('hardwareWarranty').value),
-        description: document.getElementById('hardwareDescription').value
-      }
-    }
-  };
-  
-  console.log('📤 Enviando datos de hardware:', formData);
-  
-  if (editingHardware) {
-    updateHardwareAPI(editingHardware, formData);
-  } else {
-    createHardwareAPI(formData);
-  }
-});
+// Form submission handling - REMOVIDO: Causaba envío duplicado
+// El manejo del formulario ahora se hace completamente en hardware-core.js
+// Este evento listener estaba causando que se enviara tanto POST como PUT
+// cuando se editaba hardware, resultando en errores de nombres duplicados
 
 // Filter functionality
 function clearFilters() {

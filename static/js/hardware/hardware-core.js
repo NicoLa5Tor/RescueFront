@@ -130,7 +130,9 @@ class HardwareCore {
    */
   async editHardware(id) {
     try {
+      console.log('🔄 INICIANDO EDICIÓN DE HARDWARE:', id);
       this.editingHardware = id;
+      console.log('🔍 this.editingHardware establecido a:', this.editingHardware);
       
       // Set modal title and button text
       this.setElementText('modalTitle', 'Editar Hardware');
@@ -139,8 +141,14 @@ class HardwareCore {
       // Load hardware data
       await this.loadHardwareDataForEdit(id);
       
+      // Verify editing state before opening modal
+      console.log('🔍 Antes de abrir modal - this.editingHardware:', this.editingHardware);
+      
       // Open modal
       this.openModalWithScroll('hardwareModal');
+      
+      // Verify editing state after opening modal
+      console.log('🔍 Después de abrir modal - this.editingHardware:', this.editingHardware);
       
     } catch (error) {
       console.error('💥 Error al abrir modal de edición:', error);
@@ -202,63 +210,145 @@ class HardwareCore {
         }
       };
 
-      // Extract nested data
+      // Extract nested data with detailed logging
+      console.log('🔍 ESTRUCTURA COMPLETA DE DATOS:', JSON.stringify(hardware, null, 2));
+      
       let datos = {};
       if (hardware.datos) {
+        console.log('📦 Campo datos encontrado, tipo:', typeof hardware.datos);
+        console.log('📦 Contenido de hardware.datos:', hardware.datos);
+        
         if (typeof hardware.datos === 'object') {
-          datos = hardware.datos.datos || hardware.datos;
+          // Check for multiple levels of nesting
+          if (hardware.datos.datos) {
+            console.log('📦 Estructura anidada: hardware.datos.datos encontrada');
+            console.log('📦 Contenido de hardware.datos.datos:', hardware.datos.datos);
+            
+            // Check for even deeper nesting: hardware.datos.datos.datos
+            if (hardware.datos.datos.datos) {
+              console.log('📦 Estructura TRIPLE anidada: hardware.datos.datos.datos encontrada');
+              console.log('📦 Contenido de hardware.datos.datos.datos:', hardware.datos.datos.datos);
+              datos = hardware.datos.datos.datos;
+            } else {
+              console.log('📦 Usando hardware.datos.datos (sin triple anidado)');
+              datos = hardware.datos.datos;
+            }
+          } else {
+            console.log('📦 Usando hardware.datos directamente');
+            datos = hardware.datos;
+          }
         } else if (typeof hardware.datos === 'string') {
           try {
+            console.log('📦 Parseando datos string:', hardware.datos);
             const parsed = JSON.parse(hardware.datos);
-            datos = parsed.datos || parsed;
+            console.log('📦 Datos parseados:', parsed);
+            
+            if (parsed.datos) {
+              console.log('📦 Estructura anidada en string: parsed.datos encontrada');
+              // Check for triple nesting in parsed data too
+              if (parsed.datos.datos) {
+                console.log('📦 Estructura TRIPLE anidada en string: parsed.datos.datos encontrada');
+                datos = parsed.datos.datos;
+              } else {
+                datos = parsed.datos;
+              }
+            } else {
+              console.log('📦 Usando parsed directamente');
+              datos = parsed;
+            }
           } catch (e) {
             console.warn('Error parsing datos string:', e);
             datos = {};
           }
         }
+      } else {
+        console.warn('⚠️ No hay campo "datos" en el hardware');
       }
 
-      console.log('📊 Datos extraídos para formulario:', datos);
+      console.log('📊 Datos extraídos FINALES para formulario:', datos);
+      console.log('📊 Hardware completo recibido:', hardware);
 
       // Fill form fields
       this.setInputValue('hardwareName', getSafeValue(hardware, 'nombre'));
       this.setInputValue('hardwareType', getSafeValue(hardware, 'tipo'));
 
-      // Set empresa and sede
+      // Set empresa and sede with better validation
       const empresaId = getSafeValue(hardware, 'empresa_id');
+      const sedeValue = getSafeValue(hardware, 'sede');
+      
+      console.log('🏢 Empresa ID del hardware:', empresaId);
+      console.log('🏢 Sede del hardware:', sedeValue);
+      
       if (empresaId) {
+        // First, set the empresa select
         this.setInputValue('hardwareEmpresa', empresaId);
-        // Trigger sede loading
-        setTimeout(() => {
-          this.loadSedesByEmpresa();
-          setTimeout(() => {
-            this.setInputValue('hardwareSede', getSafeValue(hardware, 'sede'));
-          }, 100);
-        }, 100);
+        
+        // Wait for empresas to be loaded, then trigger sede loading
+        const waitForEmpresas = () => {
+          if (window.empresas && window.empresas.length > 0) {
+            console.log('🏢 Empresas disponibles:', window.empresas.length);
+            
+            // Validate that the empresa_id exists in the empresas list
+            const selectedEmpresa = window.empresas.find(emp => emp._id === empresaId);
+            if (selectedEmpresa) {
+              console.log('✅ Empresa encontrada:', selectedEmpresa.nombre);
+              
+              // Load sedes for this empresa
+              this.loadSedesByEmpresa();
+              
+              // Set sede after sedes are loaded
+              setTimeout(() => {
+                if (sedeValue) {
+                  this.setInputValue('hardwareSede', sedeValue);
+                  console.log('✅ Sede configurada:', sedeValue);
+                } else {
+                  console.warn('⚠️ No se encontró sede para el hardware');
+                }
+              }, 200);
+            } else {
+              console.error('❌ Empresa con ID', empresaId, 'no encontrada en la lista de empresas');
+              console.error('❌ Empresas disponibles:', window.empresas.map(e => ({ id: e._id, nombre: e.nombre })));
+              // Reset empresa if not found
+              this.setInputValue('hardwareEmpresa', '');
+            }
+          } else {
+            // Wait a bit more for empresas to load
+            setTimeout(waitForEmpresas, 100);
+          }
+        };
+        
+        // Start waiting for empresas
+        waitForEmpresas();
+      } else {
+        console.warn('⚠️ No se encontró empresa_id en el hardware');
       }
 
-      this.setInputValue('hardwareBrand', 
-        getSafeValue(datos, 'brand') || 
-        getSafeValue(datos, 'marca') || 
-        getSafeValue(hardware, 'marca')
-      );
+      // Brand with logging
+      const brandValue = getSafeValue(datos, 'brand') || 
+                        getSafeValue(datos, 'marca') || 
+                        getSafeValue(hardware, 'marca');
+      console.log('🏷️ Brand value:', brandValue, '(from datos.brand:', getSafeValue(datos, 'brand'), ', datos.marca:', getSafeValue(datos, 'marca'), ', hardware.marca:', getSafeValue(hardware, 'marca'), ')');
+      this.setInputValue('hardwareBrand', brandValue);
 
-      this.setInputValue('hardwareModel', 
-        getSafeValue(datos, 'model') || 
-        getSafeValue(datos, 'modelo') || 
-        getSafeValue(hardware, 'modelo')
-      );
+      // Model with logging
+      const modelValue = getSafeValue(datos, 'model') || 
+                        getSafeValue(datos, 'modelo') || 
+                        getSafeValue(hardware, 'modelo');
+      console.log('📱 Model value:', modelValue, '(from datos.model:', getSafeValue(datos, 'model'), ', datos.modelo:', getSafeValue(datos, 'modelo'), ', hardware.modelo:', getSafeValue(hardware, 'modelo'), ')');
+      this.setInputValue('hardwareModel', modelValue);
 
-      this.setInputValue('hardwarePrice', 
-        getSafeValue(datos, 'price') || 
-        getSafeValue(datos, 'precio') || 
-        getSafeValue(hardware, 'precio')
-      );
+      // Price with logging
+      const priceValue = getSafeValue(datos, 'price') || 
+                        getSafeValue(datos, 'precio') || 
+                        getSafeValue(hardware, 'precio');
+      console.log('💰 Price value:', priceValue, '(from datos.price:', getSafeValue(datos, 'price'), ', datos.precio:', getSafeValue(datos, 'precio'), ', hardware.precio:', getSafeValue(hardware, 'precio'), ')');
+      this.setInputValue('hardwarePrice', priceValue);
 
-      this.setInputValue('hardwareStock', 
-        getSafeValue(datos, 'stock') || 
-        getSafeValue(hardware, 'stock')
-      );
+      // Stock with logging
+      const stockValue = getSafeValue(datos, 'stock') || 
+                        getSafeValue(hardware, 'stock');
+      console.log('📦 Stock value:', stockValue, '(from datos.stock:', getSafeValue(datos, 'stock'), ', hardware.stock:', getSafeValue(hardware, 'stock'), ')');
+      this.setInputValue('hardwareStock', stockValue);
 
       // Status
       const status = getSafeValue(datos, 'status') || 
@@ -595,10 +685,11 @@ class HardwareCore {
   async handleFormSubmit(e) {
     e.preventDefault();
     
-    // Validate empresa and sede
+    // Get form elements
     const empresaSelect = document.getElementById('hardwareEmpresa');
     const sedeSelect = document.getElementById('hardwareSede');
     
+    // Basic validation
     if (!empresaSelect.value) {
       this.showNotification('Por favor selecciona una empresa', 'error');
       empresaSelect.focus();
@@ -611,19 +702,79 @@ class HardwareCore {
       return;
     }
     
-    // Get empresa name
-    const selectedEmpresaOption = empresaSelect.options[empresaSelect.selectedIndex];
-    const empresaNombre = selectedEmpresaOption.dataset.nombre || selectedEmpresaOption.textContent;
+    // Use validator to get safe empresa data
+    let empresaData;
+    if (window.hardwareValidator) {
+      empresaData = window.hardwareValidator.getSafeEmpresaData(empresaSelect);
+      if (!empresaData.isValid) {
+        this.showNotification(`Error de empresa: ${empresaData.error}`, 'error');
+        console.error('❌ Error al obtener datos de empresa:', empresaData.error);
+        return;
+      }
+    } else {
+      // Fallback to manual validation
+      const selectedEmpresaOption = empresaSelect.options[empresaSelect.selectedIndex];
+      let empresaNombre = selectedEmpresaOption.dataset.nombre || selectedEmpresaOption.textContent;
+      
+      // Additional validation: if dataset.nombre is empty, try to get it from window.empresas
+      if (!empresaNombre || empresaNombre === selectedEmpresaOption.textContent) {
+        const selectedEmpresa = window.empresas?.find(emp => emp._id === empresaSelect.value);
+        if (selectedEmpresa) {
+          empresaNombre = selectedEmpresa.nombre;
+          console.log('🏢 Nombre de empresa obtenido de window.empresas:', empresaNombre);
+        }
+      }
+      
+      // Final validation of empresa name
+      if (!empresaNombre) {
+        this.showNotification('Error: No se pudo obtener el nombre de la empresa seleccionada', 'error');
+        console.error('❌ No se pudo obtener el nombre de la empresa. Empresa ID:', empresaSelect.value);
+        return;
+      }
+      
+      empresaData = {
+        empresaId: empresaSelect.value,
+        empresaNombre: empresaNombre
+      };
+    }
     
     // Build form data
-    const formData = this.buildFormData(empresaSelect.value, empresaNombre, sedeSelect.value);
+    const formData = this.buildFormData(empresaData.empresaId, empresaData.empresaNombre, sedeSelect.value);
+    
+    // Validate complete form data using validator
+    if (window.hardwareValidator) {
+      const validation = window.hardwareValidator.validateHardwareData(formData);
+      if (!validation.isValid) {
+        const errorMessage = validation.errors.join(', ');
+        this.showNotification(`Errores de validación: ${errorMessage}`, 'error');
+        console.error('❌ Errores de validación:', validation.errors);
+        return;
+      }
+      
+      // Show warnings if any
+      if (validation.warnings && validation.warnings.length > 0) {
+        console.warn('⚠️ Advertencias de validación:', validation.warnings);
+      }
+    }
     
     console.log('📤 Enviando datos de hardware:', formData);
+    console.log('🏢 Empresa ID:', empresaData.empresaId);
+    console.log('🏢 Empresa Nombre:', empresaData.empresaNombre);
+    console.log('🏢 Sede:', sedeSelect.value);
+    
+    // Debug: Check editing state
+    console.log('🔍 DEBUG: Estado de edición:');
+    console.log('  - this.editingHardware:', this.editingHardware);
+    console.log('  - window.editingHardware:', window.editingHardware);
+    console.log('  - typeof this.editingHardware:', typeof this.editingHardware);
+    console.log('  - boolean check this.editingHardware:', !!this.editingHardware);
     
     // Submit
     if (this.editingHardware) {
+      console.log('🔄 Realizando ACTUALIZACIÓN (PUT) para ID:', this.editingHardware);
       await this.updateHardwareAPI(this.editingHardware, formData);
     } else {
+      console.log('🆕 Realizando CREACIÓN (POST)');
       await this.createHardwareAPI(formData);
     }
   }
@@ -653,44 +804,26 @@ class HardwareCore {
   }
 
   /**
-   * Create hardware via API
+   * Create hardware via API - Delegates to global function
    */
   async createHardwareAPI(hardwareData) {
-    try {
-      const response = await this.apiClient.create_hardware(hardwareData);
-      const data = await response.json();
-      
-      if (data.success) {
-        this.showClientUpdateModal('Hardware creado exitosamente');
-        this.loadHardware();
-        this.closeCreateEditModal();
-      } else {
-        this.showNotification('Error: ' + this.getErrorMessage(data), 'error');
-      }
-    } catch (error) {
-      console.error('Error al crear hardware:', error);
-      this.showNotification('Error de conexión', 'error');
+    if (window.createHardwareAPI) {
+      return window.createHardwareAPI(hardwareData);
+    } else {
+      console.error('❌ createHardwareAPI global function not available');
+      this.showNotification('Error: Sistema no disponible', 'error');
     }
   }
 
   /**
-   * Update hardware via API
+   * Update hardware via API - Delegates to global function
    */
   async updateHardwareAPI(id, hardwareData) {
-    try {
-      const response = await this.apiClient.update_hardware(id, hardwareData);
-      const data = await response.json();
-      
-      if (data.success) {
-        this.showClientUpdateModal('Hardware actualizado exitosamente');
-        this.loadHardware();
-        this.closeCreateEditModal();
-      } else {
-        this.showNotification('Error: ' + this.getErrorMessage(data), 'error');
-      }
-    } catch (error) {
-      console.error('Error al actualizar hardware:', error);
-      this.showNotification('Error de conexión', 'error');
+    if (window.updateHardwareAPI) {
+      return window.updateHardwareAPI(id, hardwareData);
+    } else {
+      console.error('❌ updateHardwareAPI global function not available');
+      this.showNotification('Error: Sistema no disponible', 'error');
     }
   }
 
@@ -698,13 +831,13 @@ class HardwareCore {
    * Close create/edit modal
    */
   closeCreateEditModal() {
-    this.restoreScrollPosition();
-    
+    // Hide the modal - modalManager handles scroll restoration
     if (window.modalManager) {
       window.modalManager.closeModal('hardwareModal');
     } else {
       const modal = document.getElementById('hardwareModal');
       modal.classList.add('hidden');
+      document.body.style.overflow = ''; // Only for fallback
     }
     
     this.editingHardware = null;
@@ -715,59 +848,40 @@ class HardwareCore {
    * Close view modal
    */
   closeViewModal() {
-    this.restoreScrollPosition();
-    
+    // Hide the modal - modalManager handles scroll restoration
     if (window.modalManager) {
       window.modalManager.closeModal('viewHardwareModal');
     } else {
       const modal = document.getElementById('viewHardwareModal');
       modal.classList.add('hidden');
+      document.body.style.overflow = ''; // Only for fallback
     }
     
     this.currentViewingHardware = null;
   }
 
   /**
-   * Open modal with smooth scrolling
+   * Open modal - use modalManager for proper handling
    */
   openModalWithScroll(modalId) {
-    // Scroll to top first
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    
-    // Delay modal opening
-    setTimeout(() => {
-      // Prevent body scrolling
-      const scrollPosition = window.pageYOffset;
-      document.body.style.position = 'fixed';
-      document.body.style.top = `-${scrollPosition}px`;
-      document.body.style.width = '100%';
-      document.body.classList.add('ios-modal-open');
-      
-      // Open modal
-      if (window.modalManager) {
-        window.modalManager.openModal(modalId);
-        window.modalManager.setupModal(modalId);
-      } else {
-        const modal = document.getElementById(modalId);
+    if (window.modalManager) {
+      // Use the global modal manager - it handles scroll properly
+      window.modalManager.openModal(modalId);
+    } else {
+      // Fallback if modalManager not available
+      const modal = document.getElementById(modalId);
+      if (modal) {
         modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        
+        setTimeout(() => {
+          const firstInput = modal.querySelector('input, textarea, select');
+          if (firstInput) firstInput.focus();
+        }, 100);
       }
-    }, 300);
-  }
-
-  /**
-   * Restore scroll position
-   */
-  restoreScrollPosition() {
-    const scrollY = document.body.style.top;
-    document.body.style.position = '';
-    document.body.style.top = '';
-    document.body.style.width = '';
-    document.body.classList.remove('ios-modal-open');
-    
-    if (scrollY) {
-      window.scrollTo(0, parseInt(scrollY || '0') * -1);
     }
   }
+
 
   /**
    * Reset form
@@ -794,7 +908,9 @@ class HardwareCore {
   setInputValue(inputId, value) {
     const input = document.getElementById(inputId);
     if (input) {
-      input.value = value || '';
+      const finalValue = value || '';
+      console.log(`🔍 setInputValue: ${inputId} = "${finalValue}" (original: ${value})`);
+      input.value = finalValue;
     } else {
       console.warn(`Input with ID '${inputId}' not found`);
     }

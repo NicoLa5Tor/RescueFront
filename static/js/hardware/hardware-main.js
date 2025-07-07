@@ -408,20 +408,41 @@ class HardwareMain {
     const empresaSelect = document.getElementById('hardwareEmpresa');
     const sedeSelect = document.getElementById('hardwareSede');
     
-    if (!empresaSelect || !sedeSelect) return;
+    if (!empresaSelect || !sedeSelect) {
+      console.warn('⚠️ No se encontraron los elementos empresa o sede select');
+      return;
+    }
     
     const selectedEmpresaId = empresaSelect.value;
+    console.log('🏢 Cargando sedes para empresa ID:', selectedEmpresaId);
     
+    // Reset sede select
     sedeSelect.innerHTML = '<option value="">Seleccionar sede</option>';
     sedeSelect.disabled = true;
     
-    if (!selectedEmpresaId) return;
+    if (!selectedEmpresaId) {
+      console.log('🏢 No hay empresa seleccionada');
+      return;
+    }
     
-    const selectedEmpresa = window.empresas?.find(emp => emp._id === selectedEmpresaId);
+    // Wait for empresas to be available
+    if (!window.empresas || window.empresas.length === 0) {
+      console.warn('⚠️ Lista de empresas no disponible, esperando...');
+      setTimeout(() => this.loadSedesByEmpresa(), 100);
+      return;
+    }
     
-    if (!selectedEmpresa) return;
+    const selectedEmpresa = window.empresas.find(emp => emp._id === selectedEmpresaId);
     
-    if (selectedEmpresa.sedes && Array.isArray(selectedEmpresa.sedes)) {
+    if (!selectedEmpresa) {
+      console.error('❌ Empresa no encontrada en la lista:', selectedEmpresaId);
+      console.error('❌ Empresas disponibles:', window.empresas.map(e => ({ id: e._id, nombre: e.nombre })));
+      return;
+    }
+    
+    console.log('✅ Empresa encontrada:', selectedEmpresa.nombre, 'con sedes:', selectedEmpresa.sedes);
+    
+    if (selectedEmpresa.sedes && Array.isArray(selectedEmpresa.sedes) && selectedEmpresa.sedes.length > 0) {
       selectedEmpresa.sedes.forEach(sede => {
         const option = document.createElement('option');
         option.value = sede;
@@ -429,12 +450,15 @@ class HardwareMain {
         sedeSelect.appendChild(option);
       });
       sedeSelect.disabled = false;
+      console.log('✅ Sedes cargadas:', selectedEmpresa.sedes.length);
     } else {
+      // Create default sede if none exist
       const defaultOption = document.createElement('option');
       defaultOption.value = 'Principal';
       defaultOption.textContent = 'Principal';
       sedeSelect.appendChild(defaultOption);
       sedeSelect.disabled = false;
+      console.log('✅ Sede por defecto "Principal" añadida');
     }
   }
 
@@ -776,7 +800,12 @@ class HardwareMain {
   populateEmpresaDropdown(empresas) {
     const empresaSelect = document.getElementById('hardwareEmpresa');
     
-    if (!empresaSelect) return;
+    if (!empresaSelect) {
+      console.warn('⚠️ No se encontró el elemento hardwareEmpresa select');
+      return;
+    }
+    
+    console.log('🏢 Poblando dropdown de empresas con', empresas.length, 'empresas');
     
     empresaSelect.innerHTML = '<option value="">Seleccionar empresa</option>';
     
@@ -784,9 +813,12 @@ class HardwareMain {
       const option = document.createElement('option');
       option.value = empresa._id;
       option.textContent = empresa.nombre;
+      // Ensure the dataset.nombre is properly set
       option.dataset.nombre = empresa.nombre;
       empresaSelect.appendChild(option);
     });
+    
+    console.log('✅ Dropdown de empresas poblado exitosamente');
   }
 
   /**
@@ -868,6 +900,15 @@ window.toggleHardwareStatus = (id, activa) => {
     window.hardwareModals.showToggleModal(id, activa);
   } else {
     console.warn('Toggle modal not available');
+  }
+};
+
+// Global function for loading sedes - called from HTML onchange
+window.loadSedesByEmpresa = () => {
+  if (hardwareMain) {
+    hardwareMain.loadSedesByEmpresa();
+  } else {
+    console.warn('Hardware main not available for loadSedesByEmpresa');
   }
 };
 

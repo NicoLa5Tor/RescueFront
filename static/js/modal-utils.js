@@ -116,16 +116,10 @@ class ModalManager {
      */
     preventBodyScroll() {
         if (this.openModals.size === 0) {
-            // Solo guardar posición y aplicar estilos en el primer modal
-            this.scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
-            
-            // Aplicar estilos para prevenir scroll sin mover la página
-            document.body.style.position = 'fixed';
-            document.body.style.top = `-${this.scrollPosition}px`;
-            document.body.style.left = '0';
-            document.body.style.right = '0';
+            // Deshabilitar scroll completamente - el modal toma control total
             document.body.style.overflow = 'hidden';
             document.body.classList.add('modal-open');
+            console.log('Body scroll prevented - modal has full control');
         }
     }
     
@@ -133,16 +127,10 @@ class ModalManager {
      * Restaura el scroll del body
      */
     restoreBodyScroll() {
-        // Restaurar estilos del body
+        // Restaurar estilos del body (patrón simple como empresas)
         document.body.classList.remove('modal-open');
-        document.body.style.position = '';
-        document.body.style.top = '';
-        document.body.style.left = '';
-        document.body.style.right = '';
         document.body.style.overflow = '';
-        
-        // Restaurar posición del scroll sin animación
-        window.scrollTo(0, this.scrollPosition);
+        console.log('Body scroll restored - user can scroll again');
     }
     
     /**

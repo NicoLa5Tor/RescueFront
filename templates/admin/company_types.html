@@ -441,7 +441,7 @@
 </div>
 
 <!-- Enhanced Toggle Company Type Status Modal - EXACT COPY FROM HARDWARE -->
-<div id="toggleCompanyTypeModal" class="ios-modal-backdrop hidden">
+<div id="toggleCompanyTypeModal" class="ios-modal-backdrop toggle-modal hidden">
   <div class="ios-blur-modal-container max-w-md" id="toggleModalContainer">
     <div class="ios-blur-header text-center">
       <div class="toggle-modal-icon mx-auto mb-4" id="toggleModalIcon">
@@ -676,28 +676,19 @@ function openCreateModal() {
   document.getElementById('companyTypeForm').reset();
   updateFeaturesList(); // Clear features display
   
-  // Scroll to top first, then show modal - EXACT HARDWARE STYLE
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  // Open modal using simple pattern like empresas (no scroll movement)
+  // Prevent body scrolling only
+  document.body.style.overflow = 'hidden';
   
-  // Delay modal opening to allow scroll to complete
-  setTimeout(() => {
-    // Prevent body scrolling - EXACT HARDWARE STYLE
-    const scrollPosition = window.pageYOffset;
-    document.body.style.position = 'fixed';
-    document.body.style.top = `-${scrollPosition}px`;
-    document.body.style.width = '100%';
-    document.body.classList.add('ios-modal-open');
-    
-    // Open modal using modal manager - EXACT HARDWARE STYLE
-    if (window.modalManager) {
-      window.modalManager.openModal('companyTypeModal');
-      window.modalManager.setupModal('companyTypeModal');
-    } else {
-      // Fallback for compatibility
-      const modal = document.getElementById('companyTypeModal');
-      modal.classList.remove('hidden');
-    }
-  }, 300);
+  // Open modal using modal manager
+  if (window.modalManager) {
+    window.modalManager.openModal('companyTypeModal');
+    window.modalManager.setupModal('companyTypeModal');
+  } else {
+    // Fallback for compatibility
+    const modal = document.getElementById('companyTypeModal');
+    modal.classList.remove('hidden');
+  }
 }
 
 async function editCompanyType(id) {
@@ -724,43 +715,26 @@ async function editCompanyType(id) {
     return;
   }
   
-  // Scroll to top first, then show modal - EXACT HARDWARE STYLE
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  // Open modal using simple pattern like empresas (no scroll movement)
+  // Prevent body scrolling only
+  document.body.style.overflow = 'hidden';
   
-  // Delay modal opening to allow scroll to complete
-  setTimeout(() => {
-    // Prevent body scrolling - EXACT HARDWARE STYLE
-    const scrollPosition = window.pageYOffset;
-    document.body.style.position = 'fixed';
-    document.body.style.top = `-${scrollPosition}px`;
-    document.body.style.width = '100%';
-    document.body.classList.add('ios-modal-open');
-    
-    // Open modal using modal manager - EXACT HARDWARE STYLE
-    if (window.modalManager) {
-      window.modalManager.openModal('companyTypeModal');
-      window.modalManager.setupModal('companyTypeModal');
-    } else {
-      // Fallback for compatibility
-      const modal = document.getElementById('companyTypeModal');
-      modal.classList.remove('hidden');
-    }
-  }, 300);
+  // Open modal using modal manager
+  if (window.modalManager) {
+    window.modalManager.openModal('companyTypeModal');
+    window.modalManager.setupModal('companyTypeModal');
+  } else {
+    // Fallback for compatibility
+    const modal = document.getElementById('companyTypeModal');
+    modal.classList.remove('hidden');
+  }
 }
 
 function closeModal() {
-  // Restore scroll position before closing - EXACT HARDWARE STYLE
-  const scrollY = document.body.style.top;
-  document.body.style.position = '';
-  document.body.style.top = '';
-  document.body.style.width = '';
-  document.body.classList.remove('ios-modal-open');
+  // Restore scroll using simple pattern like empresas
+  document.body.style.overflow = '';
   
-  if (scrollY) {
-    window.scrollTo(0, parseInt(scrollY || '0') * -1);
-  }
-  
-  // Use global modal system - EXACT HARDWARE STYLE
+  // Use global modal system
   if (window.modalManager) {
     window.modalManager.closeModal('companyTypeModal');
   } else {
@@ -817,28 +791,21 @@ async function viewCompanyType(id) {
     return;
   }
   
-  // Scroll to top first, then show modal - EXACT HARDWARE STYLE
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  // Open modal immediately without scrolling
+  // Prevent body scrolling
+  //const scrollPosition = window.pageYOffset;
+  document.body.style.width = '100%';
+  document.body.classList.add('ios-modal-open');
   
-  // Delay modal opening to allow scroll to complete
-  setTimeout(() => {
-    // Prevent body scrolling - EXACT HARDWARE STYLE
-    const scrollPosition = window.pageYOffset;
-    document.body.style.position = 'fixed';
-    document.body.style.top = `-${scrollPosition}px`;
-    document.body.style.width = '100%';
-    document.body.classList.add('ios-modal-open');
-    
-    // Open modal using modal manager - EXACT HARDWARE STYLE
-    if (window.modalManager) {
-      window.modalManager.openModal('detailsModal');
-      window.modalManager.setupModal('detailsModal');
-    } else {
-      // Fallback for compatibility
-      const modal = document.getElementById('detailsModal');
-      modal.classList.remove('hidden');
-    }
-  }, 300);
+  // Open modal using modal manager
+  if (window.modalManager) {
+    window.modalManager.openModal('detailsModal');
+    window.modalManager.setupModal('detailsModal');
+  } else {
+    // Fallback for compatibility
+    const modal = document.getElementById('detailsModal');
+    modal.classList.remove('hidden');
+  }
 }
 
 function closeDetailsModal() {
@@ -1109,10 +1076,55 @@ function showToggleSuccess(activated) {
   // Auto-close after 2 seconds
   setTimeout(() => {
     closeToggleModal();
+    // Instead of reloading, just update the card status visually
     setTimeout(() => {
-      location.reload();
+      updateCardStatusVisually(toggleModalData.typeId, activated);
     }, 500);
   }, 2000);
+}
+
+// Update card status visually without page reload
+function updateCardStatusVisually(typeId, activated) {
+  const card = document.querySelector(`[data-type-id="${typeId}"]`);
+  if (!card) {
+    console.warn('Card not found for visual update');
+    return;
+  }
+  
+  // Update status badge
+  const statusBadge = card.querySelector('.ios-status-badge');
+  if (statusBadge) {
+    if (activated) {
+      statusBadge.className = 'ios-status-badge ios-status-available text-xs font-semibold';
+      statusBadge.textContent = '✅ Activo';
+    } else {
+      statusBadge.className = 'ios-status-badge ios-status-discontinued text-xs font-semibold';
+      statusBadge.textContent = '⚫ Inactivo';
+    }
+  }
+  
+  // Update toggle button
+  const toggleButton = card.querySelector('button[onclick*="toggleStatus"]');
+  if (toggleButton) {
+    if (activated) {
+      toggleButton.className = 'ios-card-btn ios-card-btn-warning';
+      toggleButton.title = 'Desactivar tipo';
+      toggleButton.innerHTML = '<i class="fas fa-power-off"></i>';
+    } else {
+      toggleButton.className = 'ios-card-btn ios-card-btn-success';
+      toggleButton.title = 'Activar tipo';
+      toggleButton.innerHTML = '<i class="fas fa-play"></i>';
+    }
+    
+    // Update onclick to reflect new status
+    const newStatus = !activated; // Next click will be the opposite
+    toggleButton.setAttribute('onclick', `toggleStatus('${typeId}', ${activated})`);
+  }
+  
+  // Update data attribute
+  card.setAttribute('data-status', activated ? 'true' : 'false');
+  
+  console.log(`✅ Card status updated visually: ${activated ? 'active' : 'inactive'}`);
 }
 
 // Función para llamar desde toggleStatus - ADAPTADA
