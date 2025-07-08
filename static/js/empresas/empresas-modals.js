@@ -15,6 +15,7 @@ class EmpresasModals {
     this.currentViewingEmpresa = null;
     this.apiClient = null;
     this.sedes = [];
+    this.roles = [];
     
     this.initializeModals();
   }
@@ -100,28 +101,42 @@ class EmpresasModals {
   }
 
   /**
-   * Create toggle status modal
+   * Create toggle status modal - SAME STRUCTURE AS HARDWARE/COMPANY TYPES
    */
   createToggleModal() {
+    // No crear el modal aquí porque ya existe en el HTML
+    // Solo verificar que existe
+    const existingModal = document.getElementById('toggleEmpresaModal');
+    if (existingModal) {
+      console.log('✅ Modal de toggle ya existe en el HTML');
+      return;
+    }
+    
+    // Si no existe, crear uno usando las clases exactas del hardware
     const modalHTML = `
-      <div id="toggleEmpresaModal" class="toggle-empresa-backdrop hidden">
-        <div class="toggle-empresa-container">
-          <div id="toggleEmpresaIcon" class="toggle-empresa-icon">
-            <i class="fas fa-power-off"></i>
+      <!-- Enhanced Toggle Empresa Status Modal - EXACTO DEL HARDWARE -->
+      <div id="toggleEmpresaModal" class="ios-modal-backdrop toggle-modal hidden">
+        <div class="ios-blur-modal-container max-w-md" id="toggleModalContainer">
+          <div class="ios-blur-header text-center">
+            <div class="toggle-modal-icon mx-auto mb-4" id="toggleModalIcon">
+              <i class="fas fa-power-off text-4xl" id="toggleModalIconFa"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-white mb-2" id="toggleModalTitle">Activar Empresa</h3>
           </div>
-          <h2 id="toggleEmpresaTitle" class="toggle-empresa-title">Cambiar Estado</h2>
-          <p id="toggleEmpresaMessage" class="toggle-empresa-message">
-            ¿Estás seguro de que quieres cambiar el estado de esta empresa?
-          </p>
-          <div class="toggle-empresa-buttons">
-            <button id="toggleEmpresaConfirm" class="toggle-empresa-btn toggle-empresa-btn-confirm">
-              <i class="fas fa-check"></i>
-              Confirmar
-            </button>
-            <button id="toggleEmpresaCancel" class="toggle-empresa-btn toggle-empresa-btn-cancel">
-              <i class="fas fa-times"></i>
-              Cancelar
-            </button>
+          <div class="ios-blur-body text-center">
+            <p class="text-white/80 text-lg mb-6" id="toggleModalMessage">
+              ¿Estás seguro de que quieres activar esta empresa?
+            </p>
+            <div class="flex gap-4 justify-center">
+              <button class="ios-blur-btn ios-blur-btn-secondary" onclick="empresasModals.closeToggleModal()">
+                <i class="fas fa-times mr-2"></i>
+                Cancelar
+              </button>
+              <button class="ios-blur-btn ios-blur-btn-primary" id="toggleConfirmBtn" onclick="empresasModals.confirmToggle()">
+                <i class="fas fa-check mr-2" id="toggleConfirmIcon"></i>
+                <span id="toggleConfirmText">Activar</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -130,155 +145,182 @@ class EmpresasModals {
   }
 
   /**
-   * Create CRUD modal (create/edit)
+   * Create CRUD modal (create/edit) - EXACT STYLE AS COMPANY TYPES
    */
   createCrudModal() {
     const modalHTML = `
-      <div id="empresaModal" class="empresa-modal-backdrop hidden">
-        <div class="empresa-modal-container">
-          <div class="empresa-modal-header">
-            <h2 id="empresaModalTitle" class="empresa-modal-title">
-              <i class="fas fa-building"></i>
-              Nueva Empresa
-            </h2>
-            <button class="empresa-modal-close" onclick="empresasModals.closeCrudModal()">
-              <i class="fas fa-times"></i>
-            </button>
+      <!-- Create/Edit Empresa Modal - EXACT COMPANY TYPES STYLE -->
+      <div id="empresaModal" class="ios-modal-backdrop hidden">
+        <div class="ios-blur-modal-container w-full max-w-2xl">
+          <!-- Modal Header -->
+          <div class="ios-blur-header">
+            <div class="flex items-center justify-between w-full">
+              <div class="flex items-center space-x-3">
+                <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <i class="fas fa-building text-white text-xl"></i>
+                </div>
+                <div>
+                  <h3 class="text-2xl font-bold text-white dark:text-white" id="empresaModalTitle">Nueva Empresa</h3>
+                  <p class="text-sm text-white/70 dark:text-gray-300">Complete los campos para registrar la empresa</p>
+                </div>
+              </div>
+              <button type="button" class="ios-blur-btn ios-blur-btn-secondary !p-2 !min-w-0" onclick="empresasModals.closeCrudModal()" aria-label="Cerrar modal">
+                <i class="fas fa-times text-lg"></i>
+              </button>
+            </div>
           </div>
           
-          <div class="empresa-modal-body">
-            <form id="empresaForm" class="empresa-form-grid">
-              <div class="empresa-form-row">
-                <div class="empresa-form-group">
-                  <label class="empresa-form-label">
-                    <i class="fas fa-building"></i>
-                    Nombre de la Empresa *
+          <!-- Modal Body -->
+          <div class="ios-blur-body">
+            <form id="empresaForm">
+              <div class="form-grid">
+                <!-- Nombre -->
+                <div class="form-group">
+                  <label for="empresaNombre" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+                    <i class="fas fa-building text-blue-400 mr-2"></i>Nombre de la Empresa *
                   </label>
-                  <input type="text" id="empresaNombre" class="empresa-form-input" placeholder="Ej: Acme Corporation" required>
+                  <input type="text" id="empresaNombre" class="ios-blur-input" required
+                         placeholder="Ej: Acme Corporation">
                 </div>
-                <div class="empresa-form-group">
-                  <label class="empresa-form-label">
-                    <i class="fas fa-user"></i>
-                    Nombre de Usuario *
+                
+                <!-- Username -->
+                <div class="form-group">
+                  <label for="empresaUsername" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+                    <i class="fas fa-user text-purple-400 mr-2"></i>Nombre de Usuario *
                   </label>
-                  <input type="text" id="empresaUsername" class="empresa-form-input" placeholder="Ej: acme_corp" required>
+                  <input type="text" id="empresaUsername" class="ios-blur-input" required
+                         placeholder="Ej: acme_corp">
                 </div>
-              </div>
-              
-              <div class="empresa-form-row">
-                <div class="empresa-form-group">
-                  <label class="empresa-form-label">
-                    <i class="fas fa-envelope"></i>
-                    Email *
+                
+                <!-- Email -->
+                <div class="form-group">
+                  <label for="empresaEmail" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+                    <i class="fas fa-envelope text-cyan-400 mr-2"></i>Email *
                   </label>
-                  <input type="email" id="empresaEmail" class="empresa-form-input" placeholder="contacto@empresa.com" required>
+                  <input type="email" id="empresaEmail" class="ios-blur-input" required
+                         placeholder="contacto@empresa.com">
                 </div>
-                <div class="empresa-form-group">
-                  <label class="empresa-form-label">
-                    <i class="fas fa-map-marker-alt"></i>
-                    Ubicación *
+                
+                <!-- Ubicación -->
+                <div class="form-group">
+                  <label for="empresaUbicacion" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+                    <i class="fas fa-map-marker-alt text-green-400 mr-2"></i>Ubicación *
                   </label>
-                  <input type="text" id="empresaUbicacion" class="empresa-form-input" placeholder="Ciudad, País" required>
+                  <input type="text" id="empresaUbicacion" class="ios-blur-input" required
+                         placeholder="Ciudad, País">
                 </div>
-              </div>
-              
-              <div class="empresa-form-group">
-                <label class="empresa-form-label">
-                  <i class="fas fa-align-left"></i>
-                  Descripción *
-                </label>
-                <textarea id="empresaDescripcion" class="empresa-form-textarea" placeholder="Descripción de la empresa..." required></textarea>
-              </div>
-              
-              <div class="empresa-form-group" id="passwordGroup">
-                <label class="empresa-form-label">
-                  <i class="fas fa-lock"></i>
-                  Contraseña *
-                </label>
-                <input type="password" id="empresaPassword" class="empresa-form-input" placeholder="Contraseña segura" required>
-              </div>
-              
-              <div class="empresa-form-group">
-                <label class="empresa-form-label">
-                  <i class="fas fa-building"></i>
-                  Sedes
-                </label>
-                <div id="empresaSedesContainer" class="empresa-sedes-container">
-                  <div id="sedesList"></div>
-                  <button type="button" class="empresa-sede-add" onclick="empresasModals.addSede()">
-                    <i class="fas fa-plus"></i>
-                    Agregar Sede
-                  </button>
+                
+                <!-- Descripción -->
+                <div class="form-group form-group-full">
+                  <label for="empresaDescripcion" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+                    <i class="fas fa-align-left text-orange-400 mr-2"></i>Descripción *
+                  </label>
+                  <textarea id="empresaDescripcion" class="ios-blur-input !min-h-[6rem] resize-y" rows="3" required
+                            placeholder="Describe la empresa, sus actividades principales..."></textarea>
+                </div>
+                
+                <!-- Contraseña -->
+                <div class="form-group" id="passwordGroup">
+                  <label for="empresaPassword" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+                    <i class="fas fa-lock text-red-400 mr-2"></i>Contraseña *
+                  </label>
+                  <input type="password" id="empresaPassword" class="ios-blur-input" required
+                         placeholder="Contraseña segura">
+                </div>
+                
+                <!-- Sedes -->
+                <div class="form-group form-group-full">
+                  <label class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+                    <i class="fas fa-building text-yellow-400 mr-2"></i>Sedes
+                  </label>
+                  <div id="sedesContainer" class="space-y-3">
+                    <div class="flex space-x-2">
+                      <button type="button" class="ios-blur-btn ios-blur-btn-primary !p-2 !min-w-0" onclick="empresasModals.addSede()">
+                        <i class="fas fa-plus"></i>
+                      </button>
+                      <span class="text-white/70 text-sm self-center">Agregar sede</span>
+                    </div>
+                    <div id="sedesList" class="space-y-2">
+                      <!-- Sedes will be displayed here -->
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Roles -->
+                <div class="form-group form-group-full">
+                  <label class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+                    <i class="fas fa-user-tag text-purple-400 mr-2"></i>Roles
+                  </label>
+                  <div id="rolesContainer" class="space-y-3">
+                    <div class="flex space-x-2">
+                      <button type="button" class="ios-blur-btn ios-blur-btn-primary !p-2 !min-w-0" onclick="empresasModals.addRol()">
+                        <i class="fas fa-plus"></i>
+                      </button>
+                      <span class="text-white/70 text-sm self-center">Agregar rol</span>
+                    </div>
+                    <div id="rolesList" class="space-y-2">
+                      <!-- Roles will be displayed here -->
+                    </div>
+                  </div>
                 </div>
               </div>
             </form>
           </div>
           
-          <div class="empresa-modal-footer">
-            <button type="button" class="empresa-btn empresa-btn-secondary" onclick="empresasModals.closeCrudModal()">
-              <i class="fas fa-times"></i>
-              Cancelar
+          <!-- Modal Footer -->
+          <div class="ios-blur-footer">
+            <button type="button" class="ios-blur-btn ios-blur-btn-secondary" onclick="empresasModals.closeCrudModal()">
+              <i class="fas fa-times mr-2"></i>
+              <span class="text-sm font-medium">Cancelar</span>
             </button>
-            <button type="submit" form="empresaForm" id="empresaSubmitBtn" class="empresa-btn empresa-btn-primary">
-              <i class="fas fa-save"></i>
-              Guardar Empresa
+            <button type="submit" form="empresaForm" class="ios-blur-btn ios-blur-btn-primary" id="empresaSubmitBtn">
+              <i class="fas fa-save mr-2"></i>
+              <span class="text-sm font-medium">Crear Empresa</span>
             </button>
           </div>
         </div>
-      </div>
     `;
     document.body.insertAdjacentHTML('beforeend', modalHTML);
   }
 
   /**
-   * Create view modal
+   * Create view modal - EXACT STYLE AS COMPANY TYPES
    */
   createViewModal() {
     const modalHTML = `
-      <div id="viewEmpresaModal" class="view-empresa-backdrop hidden">
-        <div class="view-empresa-container">
-          <div class="view-empresa-header">
-            <div id="viewEmpresaAvatar" class="view-empresa-avatar">
-              <i class="fas fa-building"></i>
-            </div>
-            <h2 id="viewEmpresaName" class="view-empresa-name">Nombre Empresa</h2>
-            <p id="viewEmpresaLocation" class="view-empresa-location">Ubicación</p>
-          </div>
-          
-          <div class="view-empresa-details">
-            <div class="view-empresa-detail">
-              <span class="view-empresa-detail-label">Email:</span>
-              <span id="viewEmpresaEmail" class="view-empresa-detail-value">N/A</span>
-            </div>
-            <div class="view-empresa-detail">
-              <span class="view-empresa-detail-label">Usuario:</span>
-              <span id="viewEmpresaUsername" class="view-empresa-detail-value">N/A</span>
-            </div>
-            <div class="view-empresa-detail">
-              <span class="view-empresa-detail-label">Estado:</span>
-              <span id="viewEmpresaEstado" class="view-empresa-detail-value">N/A</span>
-            </div>
-            <div class="view-empresa-detail">
-              <span class="view-empresa-detail-label">Creada:</span>
-              <span id="viewEmpresaCreated" class="view-empresa-detail-value">N/A</span>
-            </div>
-            <div class="view-empresa-detail">
-              <span class="view-empresa-detail-label">Descripción:</span>
-              <span id="viewEmpresaDescripcion" class="view-empresa-detail-value">N/A</span>
+      <!-- View Details Modal - EXACT COMPANY TYPES STYLE -->
+      <div id="viewEmpresaModal" class="ios-modal-backdrop hidden">
+        <div class="ios-blur-modal-container w-full max-w-2xl">
+          <!-- Modal Header -->
+          <div class="ios-blur-header">
+            <div class="flex items-center justify-between w-full">
+              <div class="flex items-center space-x-3">
+                <div class="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <i class="fas fa-eye text-white text-xl"></i>
+                </div>
+                <div>
+                  <h3 class="text-2xl font-bold text-white dark:text-white" id="viewEmpresaTitle">Detalles de la Empresa</h3>
+                  <p class="text-sm text-white/70 dark:text-gray-300">Información completa de la empresa seleccionada</p>
+                </div>
+              </div>
+              <button type="button" class="ios-blur-btn ios-blur-btn-secondary !p-2 !min-w-0" onclick="empresasModals.closeViewModal()" aria-label="Cerrar modal">
+                <i class="fas fa-times text-lg"></i>
+              </button>
             </div>
           </div>
           
-          <div class="view-empresa-sedes">
-            <div class="view-empresa-sedes-title">Sedes:</div>
-            <div id="viewEmpresaSedesList" class="view-empresa-sedes-list">
-              <!-- Sedes will be added here -->
+          <!-- Modal Body -->
+          <div class="ios-blur-body">
+            <div id="viewEmpresaContent">
+              <!-- Details will be loaded here -->
             </div>
           </div>
           
-          <div class="empresa-modal-footer">
-            <button type="button" class="empresa-btn empresa-btn-secondary" onclick="empresasModals.closeViewModal()">
-              <i class="fas fa-times"></i>
-              Cerrar
+          <!-- Modal Footer -->
+          <div class="ios-blur-footer">
+            <button type="button" class="ios-blur-btn ios-blur-btn-secondary" onclick="empresasModals.closeViewModal()">
+              <i class="fas fa-times mr-2"></i>
+              <span class="text-sm font-medium">Cerrar</span>
             </button>
           </div>
         </div>
@@ -288,23 +330,28 @@ class EmpresasModals {
   }
 
   /**
-   * Create success modal
+   * Create success modal - EXACT STYLE AS COMPANY TYPES
    */
   createSuccessModal() {
     const modalHTML = `
-      <div id="empresaSuccessModal" class="empresa-success-backdrop hidden">
-        <div class="empresa-success-container">
-          <div class="empresa-success-icon">
-            <i class="fas fa-check"></i>
+      <!-- Client Update Success Modal - EXACT COPY FROM COMPANY TYPES -->
+      <div id="clientUpdateModal" class="ios-modal-backdrop hidden">
+        <div class="ios-blur-modal-container max-w-md" id="updateModalContainer">
+          <div class="ios-blur-header text-center">
+            <div class="client-update-icon mx-auto mb-4" id="updateModalIcon">
+              <i class="fas fa-sync-alt text-4xl text-emerald-400" id="updateModalIconFa"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-white dark:text-white mb-2" id="updateModalTitle">Empresa Actualizada</h3>
           </div>
-          <h2 class="empresa-success-title">¡Operación Exitosa!</h2>
-          <p id="empresaSuccessMessage" class="empresa-success-message">
-            La operación se completó correctamente.
-          </p>
-          <button class="empresa-success-button" onclick="empresasModals.closeSuccessModal()">
-            <i class="fas fa-check"></i>
-            Entendido
-          </button>
+          <div class="ios-blur-body text-center">
+            <p class="text-white/80 dark:text-gray-300 text-lg mb-6" id="updateModalMessage">
+              La empresa se ha actualizado exitosamente.
+            </p>
+            <button class="ios-blur-btn ios-blur-btn-primary mx-auto" onclick="empresasModals.closeSuccessModal()">
+              <i class="fas fa-check mr-2"></i>
+              <span class="text-sm font-medium">Aceptar</span>
+            </button>
+          </div>
         </div>
       </div>
     `;
@@ -517,6 +564,10 @@ class EmpresasModals {
     // Load sedes
     this.sedes = empresa.sedes || ['Principal'];
     this.renderSedes();
+    
+    // Load roles
+    this.roles = empresa.roles || [];
+    this.renderRoles();
   }
 
   /**
@@ -531,6 +582,9 @@ class EmpresasModals {
     
     this.sedes = ['Principal'];
     this.renderSedes();
+    
+    this.roles = [];
+    this.renderRoles();
   }
 
   /**
@@ -565,29 +619,50 @@ class EmpresasModals {
   populateViewModal(empresa) {
     const iniciales = this.getIniciales(empresa.nombre);
     
-    document.getElementById('viewEmpresaAvatar').textContent = iniciales;
-    document.getElementById('viewEmpresaName').textContent = empresa.nombre || 'Sin nombre';
-    document.getElementById('viewEmpresaLocation').textContent = empresa.ubicacion || 'Sin ubicación';
-    document.getElementById('viewEmpresaEmail').textContent = empresa.email || 'N/A';
-    document.getElementById('viewEmpresaUsername').textContent = empresa.username || 'N/A';
-    document.getElementById('viewEmpresaEstado').textContent = empresa.activa !== false ? 'Activa' : 'Inactiva';
-    document.getElementById('viewEmpresaCreated').textContent = this.formatDate(empresa.fecha_creacion);
-    document.getElementById('viewEmpresaDescripcion').textContent = empresa.descripcion || 'Sin descripción';
-    
-    // Render sedes
-    const sedesList = document.getElementById('viewEmpresaSedesList');
-    sedesList.innerHTML = '';
-    
-    if (empresa.sedes && empresa.sedes.length > 0) {
-      empresa.sedes.forEach(sede => {
-        const tag = document.createElement('span');
-        tag.className = 'view-empresa-sede-tag';
-        tag.textContent = sede;
-        sedesList.appendChild(tag);
-      });
-    } else {
-      sedesList.innerHTML = '<span class="view-empresa-sede-tag">Sin sedes</span>';
-    }
+    const content = `
+      <div class="space-y-4">
+        <div class="flex items-center space-x-3">
+          <div class="flex-shrink-0">
+            <i class="fas fa-building fa-2x text-purple-600"></i>
+          </div>
+          <div>
+            <h4 class="text-lg font-semibold text-gray-900 dark:text-white">${empresa.nombre || 'Sin nombre'}</h4>
+            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Ubicación: ${empresa.ubicacion || 'Sin ubicación'}</p>
+          </div>
+        </div>
+        <div class="text-sm text-gray-600 dark:text-gray-300">
+          <p class="mb-1">Usuario: ${empresa.username || 'N/A'}</p>
+          <p class="mb-1">Email: ${empresa.email || 'N/A'}</p>
+          <p class="mb-1">Estado: ${empresa.activa !== false ? 'Activa' : 'Inactiva'}</p>
+          <p class="mb-1">Creada: ${this.formatDate(empresa.fecha_creacion)}</p>
+          <p>Descripción: ${empresa.descripcion || 'Sin descripción'}</p>
+        </div>
+        <div class="text-sm">
+          <h5 class="font-semibold text-gray-900 dark:text-white mb-1">Sedes</h5>
+          <div class="flex flex-wrap gap-2">
+            ${empresa.sedes && empresa.sedes.length > 0 ? 
+              empresa.sedes.map(sede => 
+                `<span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-xs font-medium">${sede}</span>`
+              ).join('') : 
+              '<span class="text-gray-500 dark:text-gray-400">Sin sedes</span>'
+            }
+          </div>
+        </div>
+        <div class="text-sm">
+          <h5 class="font-semibold text-gray-900 dark:text-white mb-1">Roles</h5>
+          <div class="flex flex-wrap gap-2">
+            ${empresa.roles && empresa.roles.length > 0 ? 
+              empresa.roles.map(rol => 
+                `<span class="px-2 py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded-full text-xs font-medium">${rol}</span>`
+              ).join('') : 
+              '<span class="text-gray-500 dark:text-gray-400">Sin roles definidos</span>'
+            }
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('viewEmpresaContent').innerHTML = content;
   }
 
   /**
@@ -621,7 +696,8 @@ class EmpresasModals {
       email: document.getElementById('empresaEmail').value.trim(),
       ubicacion: document.getElementById('empresaUbicacion').value.trim(),
       descripcion: document.getElementById('empresaDescripcion').value.trim(),
-      sedes: this.sedes.filter(sede => sede.trim() !== '')
+      sedes: this.sedes.filter(sede => sede.trim() !== ''),
+      roles: this.roles.filter(rol => rol.trim() !== '')
     };
     
     // Add password for create
@@ -726,15 +802,62 @@ class EmpresasModals {
       container.appendChild(sedeItem);
     });
   }
+  
+  /**
+   * Rol management
+   */
+  addRol() {
+    this.roles.push('');
+    this.renderRoles();
+    
+    // Focus on the new input
+    setTimeout(() => {
+      const inputs = document.querySelectorAll('.empresa-rol-input');
+      const lastInput = inputs[inputs.length - 1];
+      if (lastInput) lastInput.focus();
+    }, 100);
+  }
+
+  removeRol(index) {
+    this.roles.splice(index, 1);
+    this.renderRoles();
+  }
+
+  updateRol(index, value) {
+    this.roles[index] = value;
+  }
+
+  renderRoles() {
+    const container = document.getElementById('rolesList');
+    container.innerHTML = '';
+    
+    this.roles.forEach((rol, index) => {
+      const rolItem = document.createElement('div');
+      rolItem.className = 'empresa-rol-item';
+      rolItem.innerHTML = `
+        <input type="text" class="empresa-rol-input" value="${rol}" 
+               placeholder="Nombre del rol" 
+               onchange="empresasModals.updateRol(${index}, this.value)">
+        <button type="button" class="empresa-rol-remove" onclick="empresasModals.removeRol(${index})">
+          <i class="fas fa-trash"></i>
+        </button>
+      `;
+      container.appendChild(rolItem);
+    });
+  }
 
   /**
    * Modal management
    */
   openModal(modal) {
-    modal.classList.remove('hidden');
-    
-    // Prevent body scrolling
-    document.body.style.overflow = 'hidden';
+    // Use modalManager to handle modals consistently with other sections
+    if (window.modalManager) {
+      modalManager.openModal(modal.id);
+      modalManager.setupModal(modal.id);
+    } else {
+      // Fallback
+      modal.classList.remove('hidden');
+    }
     
     // Focus first input
     setTimeout(() => {
@@ -744,22 +867,32 @@ class EmpresasModals {
   }
 
   closeActiveModal() {
-    const modals = ['toggleEmpresaModal', 'empresaModal', 'viewEmpresaModal', 'empresaSuccessModal'];
+    const modals = ['toggleEmpresaModal', 'empresaModal', 'viewEmpresaModal', 'clientUpdateModal'];
     
     for (const modalId of modals) {
       const modal = document.getElementById(modalId);
       if (modal && !modal.classList.contains('hidden')) {
-        this.closeModalById(modalId);
+        if (window.modalManager) {
+          modalManager.closeModal(modalId);
+        } else {
+          this.closeModalById(modalId);
+        }
         break;
       }
     }
   }
 
   closeModalById(modalId) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-      modal.classList.add('hidden');
-      document.body.style.overflow = '';
+    // Use modalManager for consistent modal handling
+    if (window.modalManager) {
+      modalManager.closeModal(modalId);
+    } else {
+      // Fallback
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.classList.add('hidden');
+        document.body.style.overflow = '';
+      }
     }
     
     // Reset current data
@@ -769,6 +902,8 @@ class EmpresasModals {
       this.currentViewingEmpresa = null;
     } else if (modalId === 'toggleEmpresaModal') {
       this.currentToggleEmpresa = null;
+    } else if (modalId === 'clientUpdateModal') {
+      // No specific data to reset for success modal
     }
   }
 
@@ -786,15 +921,31 @@ class EmpresasModals {
   }
 
   closeSuccessModal() {
-    this.closeModalById('empresaSuccessModal');
+    this.closeModalById('clientUpdateModal');
   }
 
   /**
    * Show success modal
    */
   showSuccessModal(message) {
-    document.getElementById('empresaSuccessMessage').textContent = message;
-    const modal = document.getElementById('empresaSuccessModal');
+    // Set dynamic title based on message
+    const title = document.getElementById('updateModalTitle');
+    const messageEl = document.getElementById('updateModalMessage');
+    
+    if (message.includes('creada')) {
+      title.textContent = '¡Empresa Creada!';
+    } else if (message.includes('actualizada')) {
+      title.textContent = '¡Empresa Actualizada!';
+    } else if (message.includes('activada')) {
+      title.textContent = '¡Empresa Activada!';
+    } else if (message.includes('desactivada')) {
+      title.textContent = '¡Empresa Desactivada!';
+    } else {
+      title.textContent = '¡Operación Exitosa!';
+    }
+    
+    messageEl.textContent = message;
+    const modal = document.getElementById('clientUpdateModal');
     this.openModal(modal);
   }
 
@@ -809,6 +960,9 @@ class EmpresasModals {
     
     this.sedes = ['Principal'];
     this.renderSedes();
+    
+    this.roles = [];
+    this.renderRoles();
   }
 
   /**
@@ -844,8 +998,234 @@ class EmpresasModals {
     if (window.empresasMain && window.empresasMain.showEnhancedNotification) {
       window.empresasMain.showEnhancedNotification(message, type);
     } else {
-      // Fallback to alert
-      alert(message);
+      // Fallback notification with high z-index
+      this.showFallbackNotification(message, type);
+    }
+  }
+
+  /**
+   * Fallback notification with high z-index
+   */
+  showFallbackNotification(message, type = 'info') {
+    const existingNotifications = document.querySelectorAll('.fallback-notification');
+    existingNotifications.forEach(notification => notification.remove());
+    
+    const notification = document.createElement('div');
+    notification.className = 'fallback-notification fixed top-4 right-4 max-w-sm w-full';
+    notification.style.zIndex = '999999'; // Muy alto para estar siempre adelante
+    
+    let iconClass, bgClass;
+    if (type === 'error') {
+      iconClass = 'fas fa-exclamation-circle';
+      bgClass = 'bg-red-500';
+    } else {
+      iconClass = 'fas fa-check-circle';
+      bgClass = 'bg-green-500';
+    }
+    
+    notification.innerHTML = `
+      <div class="${bgClass} text-white p-4 rounded-lg shadow-xl">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <i class="${iconClass} text-xl"></i>
+          </div>
+          <div class="ml-3">
+            <p class="text-sm font-medium">${message}</p>
+          </div>
+          <div class="ml-auto pl-3">
+            <button onclick="this.closest('.fallback-notification').remove()" class="text-white hover:text-gray-200 transition-colors">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Auto-remove after 4 seconds
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.remove();
+      }
+    }, 4000);
+  }
+
+  /**
+   * TOGGLE MODAL FUNCTIONS - SAME AS HARDWARE/COMPANY TYPES
+   */
+  
+  /**
+   * Show toggle modal - SAME STYLE AS HARDWARE/COMPANY TYPES
+   */
+  showToggleModal(empresaId, currentStatus, empresaName) {
+    console.log('🔄 Opening toggle modal for empresa:', empresaId, 'current status:', currentStatus);
+    
+    const newStatus = !currentStatus;
+    const action = newStatus ? 'activar' : 'desactivar';
+    
+    // Store toggle data
+    this.currentToggleEmpresa = {
+      id: empresaId,
+      newStatus: newStatus,
+      name: empresaName
+    };
+    
+    // Get modal elements
+    const modal = document.getElementById('toggleEmpresaModal');
+    const container = document.getElementById('toggleModalContainer');
+    const icon = document.getElementById('toggleModalIcon');
+    const iconFa = document.getElementById('toggleModalIconFa');
+    const title = document.getElementById('toggleModalTitle');
+    const message = document.getElementById('toggleModalMessage');
+    const confirmText = document.getElementById('toggleConfirmText');
+    const confirmIcon = document.getElementById('toggleConfirmIcon');
+    
+    if (!modal || !container || !title || !message) {
+      console.error('❌ Toggle modal elements missing!');
+      // Fallback to simple confirm
+      if (confirm(`¿Estás seguro de que quieres ${action} esta empresa?`)) {
+        this.confirmToggle();
+      }
+      return;
+    }
+    
+    // Configure modal content
+    if (newStatus) {
+      icon.className = 'toggle-modal-icon activate mx-auto mb-4';
+      if (iconFa) iconFa.className = 'fas fa-play-circle text-4xl';
+      title.textContent = 'Activar Empresa';
+      message.textContent = `¿Estás seguro de que quieres activar la empresa "${empresaName}"?`;
+      confirmText.textContent = 'Activar';
+      if (confirmIcon) confirmIcon.className = 'fas fa-play mr-2';
+    } else {
+      icon.className = 'toggle-modal-icon deactivate mx-auto mb-4';
+      if (iconFa) iconFa.className = 'fas fa-pause-circle text-4xl';
+      title.textContent = 'Desactivar Empresa';
+      message.textContent = `¿Estás seguro de que quieres desactivar la empresa "${empresaName}"?`;
+      confirmText.textContent = 'Desactivar';
+      if (confirmIcon) confirmIcon.className = 'fas fa-pause mr-2';
+    }
+    
+    // Show modal using modalManager
+    if (window.modalManager) {
+      window.modalManager.openModal('toggleEmpresaModal');
+    } else {
+      // Fallback
+      modal.classList.remove('hidden');
+      modal.style.display = 'flex';
+      document.body.classList.add('modal-open');
+    }
+    
+    console.log('✅ Toggle modal should now be visible');
+    
+    // GSAP animation
+    if (typeof gsap !== 'undefined') {
+      gsap.set(container, { scale: 0.8, opacity: 0 });
+      gsap.to(container, {
+        scale: 1,
+        opacity: 1,
+        duration: 0.3,
+        ease: "power2.out"
+      });
+    } else {
+      container.style.transform = 'scale(1)';
+      container.style.opacity = '1';
+    }
+  }
+
+  /**
+   * Close toggle modal - SAME AS HARDWARE/COMPANY TYPES
+   */
+  closeToggleModal() {
+    console.log('🔄 Closing toggle modal');
+    
+    const modal = document.getElementById('toggleEmpresaModal');
+    const container = document.getElementById('toggleModalContainer');
+    const confirmBtn = document.getElementById('toggleConfirmBtn');
+    
+    if (!modal) {
+      console.error('❌ Modal not found when trying to close');
+      return;
+    }
+    
+    const resetAndHideToggleModal = () => {
+      // Use modalManager for consistent closing
+      if (window.modalManager) {
+        window.modalManager.closeModal('toggleEmpresaModal');
+      } else {
+        // Fallback
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+        document.body.classList.remove('modal-open');
+      }
+      
+      // Reset button state
+      if (confirmBtn) {
+        confirmBtn.disabled = false;
+        confirmBtn.innerHTML = '<i class="fas fa-check" id="toggleConfirmIcon"></i> <span id="toggleConfirmText">Confirmar</span>';
+      }
+      
+      // Reset data
+      this.currentToggleEmpresa = null;
+      
+      console.log('✅ Toggle modal closed and fully reset');
+    };
+    
+    // GSAP close animation
+    if (typeof gsap !== 'undefined' && container) {
+      gsap.to(container, {
+        scale: 0.8,
+        opacity: 0,
+        duration: 0.2,
+        ease: "power2.in",
+        onComplete: resetAndHideToggleModal
+      });
+    } else {
+      resetAndHideToggleModal();
+    }
+  }
+
+  /**
+   * Confirm toggle - SAME AS HARDWARE/COMPANY TYPES
+   */
+  async confirmToggle() {
+    if (this.currentToggleEmpresa && this.currentToggleEmpresa.newStatus !== null) {
+      // Show loading state
+      const confirmBtn = document.getElementById('toggleConfirmBtn');
+      const originalContent = confirmBtn.innerHTML;
+      
+      confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+      confirmBtn.disabled = true;
+      
+      try {
+        const { id, newStatus } = this.currentToggleEmpresa;
+        
+        console.log(`🔄 Executing toggle for empresa ${id} to ${newStatus ? 'active' : 'inactive'}`);
+        
+        const response = await this.apiClient.toggle_empresa_status(id, newStatus);
+        const data = await response.json();
+        
+        if (data.success) {
+          this.closeToggleModal();
+          this.showSuccessModal(data.message || `Empresa ${newStatus ? 'activada' : 'desactivada'} exitosamente`);
+          
+          // Reload empresas list
+          if (window.empresasMain) {
+            setTimeout(() => window.empresasMain.loadEmpresas(), 1000);
+          }
+        } else {
+          confirmBtn.innerHTML = originalContent;
+          confirmBtn.disabled = false;
+          this.showNotification('Error: ' + (data.errors?.[0] || 'Error desconocido'), 'error');
+        }
+        
+      } catch (error) {
+        console.error('💥 Error al ejecutar toggle:', error);
+        confirmBtn.innerHTML = originalContent;
+        confirmBtn.disabled = false;
+        this.showNotification('Error de conexión', 'error');
+      }
     }
   }
 }

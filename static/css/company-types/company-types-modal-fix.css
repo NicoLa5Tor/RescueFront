@@ -1,9 +1,9 @@
-/* ===== HARDWARE MODAL FIX - FORZAR VIEWPORT CORRECTO ===== */
+/* ===== COMPANY TYPES MODAL FIX - FORZAR VIEWPORT CORRECTO =====
 
-/* FUERZA POSICIONAMIENTO FIJO ABSOLUTO PARA TODOS LOS MODALES DE HARDWARE */
-#hardwareModal,
-#viewHardwareModal,
-#toggleHardwareModal,
+/* FUERZA POSICIONAMIENTO FIJO ABSOLUTO PARA TODOS LOS MODALES DE COMPANY TYPES */
+#companyTypeModal,
+#detailsModal,
+#toggleCompanyTypeModal,
 #clientUpdateModal {
   position: fixed !important;
   top: 0 !important;
@@ -25,9 +25,9 @@
 }
 
 /* APLICAR BACKDROP CUANDO NO ESTÁ HIDDEN - TODOS LOS MODALES */
-#hardwareModal:not(.hidden),
-#viewHardwareModal:not(.hidden),
-#toggleHardwareModal:not(.hidden),
+#companyTypeModal:not(.hidden),
+#detailsModal:not(.hidden),
+#toggleCompanyTypeModal:not(.hidden),
 #clientUpdateModal:not(.hidden) {
   background: rgba(0, 0, 0, 0.4) !important;
   backdrop-filter: blur(20px) saturate(1.8) brightness(0.8) !important;
@@ -39,9 +39,9 @@
 }
 
 /* ESTADO OCULTO - MUY IMPORTANTE */
-#hardwareModal.hidden,
-#viewHardwareModal.hidden,
-#toggleHardwareModal.hidden,
+#companyTypeModal.hidden,
+#detailsModal.hidden,
+#toggleCompanyTypeModal.hidden,
 #clientUpdateModal.hidden {
   display: none !important;
   visibility: hidden !important;
@@ -50,9 +50,9 @@
 }
 
 /* OVERRIDE CUALQUIER CONTENEDOR PADRE QUE PUEDA INTERFERIR */
-* #hardwareModal,
-* #viewHardwareModal,
-* #toggleHardwareModal,
+* #companyTypeModal,
+* #detailsModal,
+* #toggleCompanyTypeModal,
 * #clientUpdateModal {
   position: fixed !important;
   top: 0 !important;
@@ -82,9 +82,9 @@ body.modal-open {
 
 /* RESPONSIVE PARA MÓVILES - MANTENER TAMAÑOS ORIGINALES */
 @media (max-width: 768px) {
-  #hardwareModal:not(.hidden),
-  #viewHardwareModal:not(.hidden),
-  #toggleHardwareModal:not(.hidden),
+  #companyTypeModal:not(.hidden),
+  #detailsModal:not(.hidden),
+  #toggleCompanyTypeModal:not(.hidden),
   #clientUpdateModal:not(.hidden) {
     padding: 0.5rem !important;
     align-items: flex-start !important;
@@ -93,12 +93,12 @@ body.modal-open {
 }
 
 /* MODAL FIX COMPLETADO - READY FOR PRODUCTION */
-/* Los modales de hardware ahora flotan correctamente sobre el viewport completo */
+/* Los modales de company types ahora flotan correctamente sobre el viewport completo */
 
 /* REGLA FINAL - OVERRIDE CUALQUIER OTRA ESPECIFICIDAD */
-body #hardwareModal,
-body #viewHardwareModal,
-body #toggleHardwareModal,
+body #companyTypeModal,
+body #detailsModal,
+body #toggleCompanyTypeModal,
 body #clientUpdateModal {
   position: fixed !important;
   inset: 0 !important;

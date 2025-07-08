@@ -32,13 +32,13 @@ body.modal-open {
   /* Position, top, left, and right are set by JavaScript */
 }
 
-/* Prevent body scroll when iOS modal is open */
+/* Prevent body scroll when iOS modal is open - WITHOUT POSITION FIXED */
 body.ios-modal-open {
   overflow: hidden !important;
-  position: fixed !important;
+  /* NO position: fixed - esto causa el scroll jump */
   width: 100% !important;
   height: 100vh !important;
-  /* Position, top, left, and right are set by JavaScript */
+  /* NO aplicar position, top, left, right para evitar salto de scroll */
 }
 
 /* Modal Container */

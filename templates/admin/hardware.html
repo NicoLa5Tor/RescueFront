@@ -205,8 +205,8 @@
 
 </div>
 
-<!-- Create/Edit Hardware Modal -->
-<div id="hardwareModal" class="ios-modal-backdrop hidden ">
+<!-- Create/Edit Hardware Modal - iOS STYLE LIKE EMPRESAS -->
+<div id="hardwareModal" class="ios-modal-backdrop hidden">
   <div class="ios-blur-modal-container w-full max-w-4xl">
     <!-- Modal Header -->
     <div class="ios-blur-header">
@@ -361,7 +361,7 @@
   </div>
 </div>
 
-<!-- View Hardware Details Modal -->
+<!-- View Hardware Details Modal - iOS STYLE LIKE EMPRESAS -->
 <div id="viewHardwareModal" class="ios-modal-backdrop hidden">
   <div class="ios-blur-modal-container w-full max-w-4xl">
     <!-- Modal Header -->
@@ -490,7 +490,7 @@
   </div>
 </div>
 
-<!-- Enhanced Toggle Hardware Status Modal -->
+<!-- Enhanced Toggle Hardware Status Modal - iOS STYLE LIKE EMPRESAS -->
 <div id="toggleHardwareModal" class="ios-modal-backdrop toggle-modal hidden">
   <div class="ios-blur-modal-container max-w-md" id="toggleModalContainer">
     <div class="ios-blur-header text-center">
@@ -517,7 +517,7 @@
   </div>
 </div>
 
-<!-- Client Update Success Modal -->
+<!-- Client Update Success Modal - iOS STYLE LIKE EMPRESAS -->
 <div id="clientUpdateModal" class="ios-modal-backdrop hidden">
   <div class="ios-blur-modal-container max-w-md" id="updateModalContainer">
     <div class="ios-blur-header text-center">
@@ -555,7 +555,7 @@ function initializeModals() {
   
   if (window.modalManager) {
     // Setup all modals in the page
-    const modalIds = ['hardwareModal', 'viewHardwareModal'];
+    const modalIds = ['hardwareModal', 'viewHardwareModal', 'toggleHardwareModal', 'clientUpdateModal'];
     modalIds.forEach(modalId => {
       window.modalManager.setupModal(modalId);
       console.log(`✅ Modal ${modalId} configured`);
@@ -720,31 +720,20 @@ function loadDummyDataIntoForm() {
   setInputValue('hardwareDescription', '');
 }
 
-// NOTE: Función closeModal() comentada - ahora se usa la implementación en hardware-core.js
-// function closeModal() {
-//   // Restore scroll position before closing
-//   const scrollY = document.body.style.top;
-//   document.body.style.position = '';
-//   document.body.style.top = '';
-//   document.body.style.width = '';
-//   document.body.classList.remove('ios-modal-open');
-//   
-//   if (scrollY) {
-//     window.scrollTo(0, parseInt(scrollY || '0') * -1);
-//   }
-//   
-//   // Usar el sistema de modales global
-//   if (window.modalManager) {
-//     window.modalManager.closeModal('hardwareModal');
-//   } else {
-//     // Fallback para compatibilidad
-//     const modal = document.getElementById('hardwareModal');
-//     modal.classList.add('hidden');
-//   }
-//   
-//   editingHardware = null;  // Variable que ya no existe
-//   resetForm();
-// }
+// Función closeModal actualizada para usar modalManager como empresas
+function closeModal() {
+  // Usar el sistema de modales global (igual que empresas)
+  if (window.modalManager) {
+    window.modalManager.closeModal('hardwareModal');
+  } else {
+    // Fallback para compatibilidad
+    const modal = document.getElementById('hardwareModal');
+    modal.classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+  
+  resetForm();
+}
 
 // Función para resetear el formulario
 function resetForm() {
@@ -1004,15 +993,16 @@ function showHardwareDetails(hardware) {
   }
 }
 
-// Función para cerrar el modal de vista
+// Función para cerrar el modal de vista - IGUAL QUE EMPRESAS
 function closeViewModal() {
-  // Usar el sistema de modales global - no manipular body position
+  // Usar el sistema de modales global (igual que empresas)
   if (window.modalManager) {
     window.modalManager.closeModal('viewHardwareModal');
   } else {
     // Fallback para compatibilidad
     const modal = document.getElementById('viewHardwareModal');
     modal.classList.add('hidden');
+    document.body.style.overflow = '';
   }
   
   currentViewingHardware = null;
@@ -1076,10 +1066,15 @@ function showConfirmToggleModal(hardwareId, newStatus) {
     if (confirmIcon) confirmIcon.className = 'fas fa-power-off';
   }
 
-  // Show modal immediately first
-  modal.classList.remove('hidden');
-  modal.style.display = 'flex';
-  document.body.classList.add('modal-open');
+  // Show modal using modalManager (consistent with other modals)
+  if (window.modalManager) {
+    window.modalManager.openModal('toggleHardwareModal');
+  } else {
+    // Fallback
+    modal.classList.remove('hidden');
+    modal.style.display = 'flex';
+    document.body.classList.add('modal-open');
+  }
   
   console.log('✅ Modal should now be visible');
   console.log('📊 Modal classes:', modal.className);
@@ -1131,9 +1126,15 @@ function closeToggleModal() {
   }
   
   function resetAndHideModal() {
-    modal.classList.add('hidden');
-    modal.style.display = 'none';
-    document.body.classList.remove('modal-open');
+    // Use modalManager for consistent closing
+    if (window.modalManager) {
+      window.modalManager.closeModal('toggleHardwareModal');
+    } else {
+      // Fallback
+      modal.classList.add('hidden');
+      modal.style.display = 'none';
+      document.body.classList.remove('modal-open');
+    }
     
     // Reset modal state completely
     if (buttons) {
@@ -1279,10 +1280,15 @@ function showClientUpdateModal(message = 'El cliente se ha actualizado exitosame
   
   messageEl.textContent = message;
   
-  // Show modal
-  modal.classList.remove('hidden');
-  modal.style.display = 'flex';
-  document.body.classList.add('modal-open');
+  // Show modal using modalManager (consistent with other modals)
+  if (window.modalManager) {
+    window.modalManager.openModal('clientUpdateModal');
+  } else {
+    // Fallback
+    modal.classList.remove('hidden');
+    modal.style.display = 'flex';
+    document.body.classList.add('modal-open');
+  }
   
   console.log('✅ Client update modal should now be visible');
   
@@ -1342,9 +1348,15 @@ function closeUpdateModal() {
   }
   
   function resetAndHideUpdateModal() {
-    modal.classList.add('hidden');
-    modal.style.display = 'none';
-    document.body.classList.remove('modal-open');
+    // Use modalManager for consistent closing
+    if (window.modalManager) {
+      window.modalManager.closeModal('clientUpdateModal');
+    } else {
+      // Fallback
+      modal.classList.add('hidden');
+      modal.style.display = 'none';
+      document.body.classList.remove('modal-open');
+    }
     
     console.log('✅ Client update modal closed');
   }
@@ -1598,7 +1610,8 @@ function showEnhancedNotification(message, type = 'info') {
   
   // Create notification element
   const notification = document.createElement('div');
-  notification.className = `enhanced-notification fixed top-4 right-4 z-50 max-w-sm w-full`;
+  notification.className = `enhanced-notification fixed top-4 right-4 max-w-sm w-full`;
+  notification.style.zIndex = '999999'; // Muy alto para estar siempre adelante
   
   let iconClass, bgClass, borderClass;
   if (type === 'error') {

@@ -130,7 +130,40 @@ class EndpointTestClient {
         return this._request('DELETE', `/api/empresas/${empresaId}`);
     }
 
-    // Company types endpoints
+    async toggle_empresa_status(empresaId, activa) {
+        return this._request('PATCH', `/api/empresas/${empresaId}/toggle-status`, { data: { activa } });
+    }
+
+    // Multi-tenant (Usuarios por Empresa) endpoints
+async get_usuarios_by_empresa(empresaId) {
+    return this._request('GET', `/empresas/${empresaId}/usuarios`);
+}
+
+async get_usuarios_including_inactive(empresaId) {
+    return this._request('GET', `/empresas/${empresaId}/usuarios/including-inactive`);
+}
+
+async get_usuario(empresaId, usuarioId) {
+    return this._request('GET', `/empresas/${empresaId}/usuarios/${usuarioId}`);
+}
+
+async create_usuario(empresaId, data) {
+    return this._request('POST', `/empresas/${empresaId}/usuarios`, { data });
+}
+
+async update_usuario(empresaId, usuarioId, data) {
+    return this._request('PUT', `/empresas/${empresaId}/usuarios/${usuarioId}`, { data });
+}
+
+async delete_usuario(empresaId, usuarioId) {
+    return this._request('DELETE', `/empresas/${empresaId}/usuarios/${usuarioId}`);
+}
+
+async toggle_usuario_status(empresaId, usuarioId, activa) {
+    return this._request('PATCH', `/empresas/${empresaId}/usuarios/${usuarioId}/toggle-status`, { data: { activa } });
+}
+
+// Company types endpoints
     async get_tipos_empresa() {
         return this._request('GET', '/api/tipos_empresa');
     }

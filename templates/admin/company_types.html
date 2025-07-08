@@ -7,6 +7,7 @@
 <link href="{{ url_for('static', filename='css/modals.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/hardware/hardware-main.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/company-types/company-types-main.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/company-types/company-types-modal-fix.css') }}" rel="stylesheet">
 <style>
 /* Asegurar visibilidad por defecto - OVERRIDE para tipos de empresa */
 .ios-header-container,
@@ -491,6 +492,8 @@
 
 {% block extra_js %}
 {{ super() }}
+<!-- Modal Manager for consistent modal behavior -->
+<script src="{{ url_for('static', filename='js/modal-utils.js') }}"></script>
 <!-- Hardware GSAP Animations - SAME AS HARDWARE -->
 <script src="{{ url_for('static', filename='js/hardware-animations.js') }}"></script>
 <!-- Performance optimizer específico para tipos de empresa -->
@@ -676,11 +679,7 @@ function openCreateModal() {
   document.getElementById('companyTypeForm').reset();
   updateFeaturesList(); // Clear features display
   
-  // Open modal using simple pattern like empresas (no scroll movement)
-  // Prevent body scrolling only
-  document.body.style.overflow = 'hidden';
-  
-  // Open modal using modal manager
+  // Open modal using modal manager (handles scroll prevention)
   if (window.modalManager) {
     window.modalManager.openModal('companyTypeModal');
     window.modalManager.setupModal('companyTypeModal');
@@ -715,11 +714,7 @@ async function editCompanyType(id) {
     return;
   }
   
-  // Open modal using simple pattern like empresas (no scroll movement)
-  // Prevent body scrolling only
-  document.body.style.overflow = 'hidden';
-  
-  // Open modal using modal manager
+  // Open modal using modal manager (handles scroll prevention)
   if (window.modalManager) {
     window.modalManager.openModal('companyTypeModal');
     window.modalManager.setupModal('companyTypeModal');
@@ -731,10 +726,7 @@ async function editCompanyType(id) {
 }
 
 function closeModal() {
-  // Restore scroll using simple pattern like empresas
-  document.body.style.overflow = '';
-  
-  // Use global modal system
+  // Use modalManager (handles scroll restoration)
   if (window.modalManager) {
     window.modalManager.closeModal('companyTypeModal');
   } else {
@@ -791,11 +783,7 @@ async function viewCompanyType(id) {
     return;
   }
   
-  // Open modal immediately without scrolling
-  // Prevent body scrolling
-  //const scrollPosition = window.pageYOffset;
-  document.body.style.width = '100%';
-  document.body.classList.add('ios-modal-open');
+  // Open modal immediately without scrolling - use modalManager
   
   // Open modal using modal manager
   if (window.modalManager) {
@@ -809,24 +797,14 @@ async function viewCompanyType(id) {
 }
 
 function closeDetailsModal() {
-  // Restore scroll position before closing - EXACT HARDWARE STYLE
-  const scrollY = document.body.style.top;
-  document.body.style.position = '';
-  document.body.style.top = '';
-  document.body.style.width = '';
-  document.body.classList.remove('ios-modal-open');
-  
-  if (scrollY) {
-    window.scrollTo(0, parseInt(scrollY || '0') * -1);
-  }
-  
-  // Use global modal system - EXACT HARDWARE STYLE
+  // Use modalManager for consistent closing - no scroll restoration needed
   if (window.modalManager) {
     window.modalManager.closeModal('detailsModal');
   } else {
     // Fallback for compatibility
     const modal = document.getElementById('detailsModal');
     modal.classList.add('hidden');
+    document.body.style.overflow = '';
   }
 }
 
@@ -886,10 +864,15 @@ function openToggleCompanyTypeModal(id, currentStatus, typeName) {
     if (confirmIcon) confirmIcon.className = 'fas fa-pause mr-2';
   }
   
-  // Mostrar modal con animación - IGUAL QUE HARDWARE
-  modal.classList.remove('hidden');
-  modal.style.display = 'flex';
-  document.body.classList.add('modal-open');
+  // Show modal using modalManager (consistent with other modals)
+  if (window.modalManager) {
+    window.modalManager.openModal('toggleCompanyTypeModal');
+  } else {
+    // Fallback
+    modal.classList.remove('hidden');
+    modal.style.display = 'flex';
+    document.body.classList.add('modal-open');
+  }
   
   console.log('✅ Toggle modal should now be visible');
   
@@ -938,9 +921,15 @@ function closeToggleModal() {
   }
   
   function resetAndHideModal() {
-    modal.classList.add('hidden');
-    modal.style.display = 'none';
-    document.body.classList.remove('modal-open');
+    // Use modalManager for consistent closing
+    if (window.modalManager) {
+      window.modalManager.closeModal('toggleCompanyTypeModal');
+    } else {
+      // Fallback
+      modal.classList.add('hidden');
+      modal.style.display = 'none';
+      document.body.classList.remove('modal-open');
+    }
     
     // Reset modal state completely
     if (buttons) {
@@ -1174,10 +1163,15 @@ function showClientUpdateModal(message = 'El tipo de empresa se ha actualizado e
   
   messageEl.textContent = message;
   
-  // Show modal
-  modal.classList.remove('hidden');
-  modal.style.display = 'flex';
-  document.body.classList.add('modal-open');
+  // Show modal using modalManager (consistent with other modals)
+  if (window.modalManager) {
+    window.modalManager.openModal('clientUpdateModal');
+  } else {
+    // Fallback
+    modal.classList.remove('hidden');
+    modal.style.display = 'flex';
+    document.body.classList.add('modal-open');
+  }
   
   console.log('✅ Client update modal should now be visible');
   
@@ -1237,9 +1231,15 @@ function closeUpdateModal() {
   }
   
   function resetAndHideUpdateModal() {
-    modal.classList.add('hidden');
-    modal.style.display = 'none';
-    document.body.classList.remove('modal-open');
+    // Use modalManager for consistent closing
+    if (window.modalManager) {
+      window.modalManager.closeModal('clientUpdateModal');
+    } else {
+      // Fallback
+      modal.classList.add('hidden');
+      modal.style.display = 'none';
+      document.body.classList.remove('modal-open');
+    }
     
     console.log('✅ Update modal closed and reset');
   }
@@ -1480,7 +1480,8 @@ function showEnhancedNotification(message, type = 'info') {
   
   // Create notification element
   const notification = document.createElement('div');
-  notification.className = `enhanced-notification fixed top-4 right-4 z-50 max-w-sm w-full`;
+  notification.className = `enhanced-notification fixed top-4 right-4 max-w-sm w-full`;
+  notification.style.zIndex = '999999'; // Muy alto para estar siempre adelante
   
   let iconClass, bgClass, borderClass;
   if (type === 'error') {

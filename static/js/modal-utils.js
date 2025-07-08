@@ -116,10 +116,10 @@ class ModalManager {
      */
     preventBodyScroll() {
         if (this.openModals.size === 0) {
-            // Deshabilitar scroll completamente - el modal toma control total
+            // Solo aplicar overflow hidden - sin position fixed para evitar scroll jump
             document.body.style.overflow = 'hidden';
             document.body.classList.add('modal-open');
-            console.log('Body scroll prevented - modal has full control');
+            console.log('Body scroll disabled - modal appears in current view without scroll jump');
         }
     }
     
@@ -127,10 +127,10 @@ class ModalManager {
      * Restaura el scroll del body
      */
     restoreBodyScroll() {
-        // Restaurar estilos del body (patrón simple como empresas)
-        document.body.classList.remove('modal-open');
+        // Restaurar overflow y remover clases de modal
         document.body.style.overflow = '';
-        console.log('Body scroll restored - user can scroll again');
+        document.body.classList.remove('modal-open');
+        console.log('Body scroll enabled - user stays in same position');
     }
     
     /**

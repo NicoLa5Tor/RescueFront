@@ -12,7 +12,7 @@ load_dotenv()
 
 # ========== CONFIGURACIÓN DE BACKEND ==========
 BACKEND_HOST = os.getenv('BACKEND_HOST', 'localhost')
-BACKEND_PORT = os.getenv('BACKEND_PORT', '5002')
+BACKEND_PORT = os.getenv('BACKEND_PORT', '5003')
 BACKEND_PROTOCOL = os.getenv('BACKEND_PROTOCOL', 'http')
 BACKEND_API_URL = f"{BACKEND_PROTOCOL}://{BACKEND_HOST}:{BACKEND_PORT}"
 

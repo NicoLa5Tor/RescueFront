@@ -16,9 +16,9 @@ class EmpresasMain {
     this.tiposEmpresa = [];
     this.currentFilters = {
       search: '',
-      tipo: '',
-      status: 'all',
-      activa: 'all'
+      location: '',
+      status: '',
+      activa: 'active'
     };
     this.currentView = 'dashboard'; // 'dashboard' shows all, 'forms' shows only active
     this.apiClient = null;
@@ -118,8 +118,8 @@ class EmpresasMain {
    * Setup event listeners
    */
   setupEventListeners() {
-    // Search input
-    const searchInput = document.getElementById('empresasSearchInput');
+    // Search input - UPDATED FOR NEW FILTER
+    const searchInput = document.getElementById('searchInput');
     if (searchInput) {
       searchInput.addEventListener('input', (e) => {
         this.currentFilters.search = e.target.value.toLowerCase();
@@ -127,17 +127,17 @@ class EmpresasMain {
       });
     }
 
-    // Type filter
-    const typeFilter = document.getElementById('empresasTipoFilter');
-    if (typeFilter) {
-      typeFilter.addEventListener('change', (e) => {
-        this.currentFilters.tipo = e.target.value;
+    // Location filter - NEW
+    const locationFilter = document.getElementById('locationFilter');
+    if (locationFilter) {
+      locationFilter.addEventListener('change', (e) => {
+        this.currentFilters.location = e.target.value;
         this.applyFilters();
       });
     }
 
-    // Status filter
-    const statusFilter = document.getElementById('empresasStatusFilter');
+    // Status filter - UPDATED
+    const statusFilter = document.getElementById('statusFilter');
     if (statusFilter) {
       statusFilter.addEventListener('change', (e) => {
         this.currentFilters.status = e.target.value;
@@ -145,11 +145,12 @@ class EmpresasMain {
       });
     }
 
-    // Include inactive filter
+    // Include inactive filter - SAME
     const includeInactiveFilter = document.getElementById('includeInactiveFilter');
     if (includeInactiveFilter) {
       includeInactiveFilter.addEventListener('change', (e) => {
         this.currentFilters.activa = e.target.value;
+        this.updateStatusFilterState();
         this.applyFilters();
       });
     }
@@ -185,10 +186,19 @@ class EmpresasMain {
    * Load initial data
    */
   async loadInitialData() {
+    // Set initial filter states before loading data
+    this.updateStatusFilterState();
+    
+    // Apply initial filters (even with empty data)
+    this.applyFilters();
+    
     await Promise.all([
       this.loadEmpresas(),
       this.loadTiposEmpresa()
     ]);
+    
+    // Populate location filter after loading empresas
+    this.populateLocationFilter();
   }
 
   /**
@@ -230,12 +240,11 @@ class EmpresasMain {
 
       if (data.success && Array.isArray(data.data)) {
         this.empresasAll = data.data;
-        this.empresas = data.data; // Start with all, filtering happens in UI
         
-        console.log(`✅ ${this.empresas.length} empresas cargadas`);
+        console.log(`✅ ${data.data.length} empresas cargadas desde backend`);
         
-        this.updateStats();
-        this.renderEmpresas();
+        // Aplicar filtros inmediatamente después de cargar
+        this.applyFilters();
         this.hideLoadingState();
         
       } else {
@@ -291,49 +300,32 @@ class EmpresasMain {
   }
 
   /**
-   * Apply filters to empresas list
+   * Populate location filter - NEW FOR HARDWARE-STYLE FILTERS
    */
-  applyFilters() {
-    const filtered = this.empresasAll.filter(empresa => {
-      // Search filter
-      if (this.currentFilters.search) {
-        const searchText = this.currentFilters.search;
-        const matchesSearch = 
-          (empresa.nombre || '').toLowerCase().includes(searchText) ||
-          (empresa.ubicacion || '').toLowerCase().includes(searchText) ||
-          (empresa.email || '').toLowerCase().includes(searchText) ||
-          (empresa.descripcion || '').toLowerCase().includes(searchText);
-        
-        if (!matchesSearch) return false;
-      }
+  populateLocationFilter() {
+    const dropdown = document.getElementById('locationFilter');
+    if (!dropdown || !this.empresasAll) return;
 
-      // Type filter
-      if (this.currentFilters.tipo) {
-        if (empresa.tipo_empresa_id !== this.currentFilters.tipo) {
-          return false;
-        }
-      }
+    // Get unique locations
+    const locations = [...new Set(
+      this.empresasAll
+        .map(empresa => empresa.ubicacion)
+        .filter(Boolean)
+        .sort()
+    )];
 
-      // Active status filter
-      if (this.currentFilters.activa !== 'all') {
-        const isActive = empresa.activa !== false;
-        if (this.currentFilters.activa === 'active' && !isActive) {
-          return false;
-        }
-        if (this.currentFilters.activa === 'inactive' && isActive) {
-          return false;
-        }
-      }
-
-      return true;
+    dropdown.innerHTML = '<option value="">Todas las ubicaciones</option>';
+    
+    locations.forEach(location => {
+      const option = document.createElement('option');
+      option.value = location;
+      option.textContent = location;
+      dropdown.appendChild(option);
     });
 
-    this.empresas = filtered;
-    this.renderEmpresas();
-    this.updateStats();
-    
-    console.log(`🔍 Filtros aplicados: ${filtered.length} de ${this.empresasAll.length} empresas`);
+    console.log(`✅ ${locations.length} ubicaciones cargadas en filtro`);
   }
+
 
   /**
    * Update statistics
@@ -552,7 +544,7 @@ class EmpresasMain {
           <i class="fas fa-edit"></i>
         </button>
         <button class="ios-card-btn ${empresa.activa !== false ? 'ios-card-btn-warning' : 'ios-card-btn-success'}" 
-                onclick="empresasMain.toggleEmpresaStatus('${empresa._id}', ${empresa.activa === false})" 
+                onclick="empresasMain.toggleEmpresaStatus('${empresa._id}', ${empresa.activa !== false}, '${empresa.nombre}')" 
                 title="${empresa.activa !== false ? 'Desactivar empresa' : 'Activar empresa'}">
           <i class="fas ${empresa.activa !== false ? 'fa-power-off' : 'fa-play'}"></i>
         </button>
@@ -608,7 +600,7 @@ class EmpresasMain {
             <button class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" onclick="empresasMain.editEmpresa('${empresa._id}')" title="Editar empresa">
               <i class="fas fa-edit"></i>
             </button>
-            <button class="p-2 text-gray-400 hover:text-${empresa.activa !== false ? 'orange' : 'green'}-600" onclick="empresasMain.toggleEmpresaStatus('${empresa._id}', ${empresa.activa === false})" title="${empresa.activa !== false ? 'Desactivar' : 'Activar'}">
+            <button class="p-2 text-gray-400 hover:text-${empresa.activa !== false ? 'orange' : 'green'}-600" onclick="empresasMain.toggleEmpresaStatus('${empresa._id}', ${empresa.activa !== false}, '${empresa.nombre}')" title="${empresa.activa !== false ? 'Desactivar' : 'Activar'}">
               <i class="fas fa-power-off"></i>
             </button>
           </div>
@@ -712,27 +704,109 @@ class EmpresasMain {
   }
 
   /**
+   * Apply filters to empresas list - SAME AS HARDWARE
+   */
+  applyFilters() {
+    if (!this.empresasAll || this.empresasAll.length === 0) {
+      console.log('📋 No hay empresas para filtrar');
+      this.empresas = [];
+      this.renderEmpresas();
+      this.updateStats();
+      return;
+    }
+
+    let filteredEmpresas = [...this.empresasAll];
+
+    // Search filter
+    if (this.currentFilters.search) {
+      const searchTerm = this.currentFilters.search.toLowerCase();
+      filteredEmpresas = filteredEmpresas.filter(empresa => 
+        (empresa.nombre || '').toLowerCase().includes(searchTerm) ||
+        (empresa.email || '').toLowerCase().includes(searchTerm) ||
+        (empresa.ubicacion || '').toLowerCase().includes(searchTerm) ||
+        (empresa.descripcion || '').toLowerCase().includes(searchTerm)
+      );
+    }
+
+    // Location filter
+    if (this.currentFilters.location) {
+      filteredEmpresas = filteredEmpresas.filter(empresa => 
+        (empresa.ubicacion || '').toLowerCase().includes(this.currentFilters.location.toLowerCase())
+      );
+    }
+
+    // JERARQUÍA DE FILTROS: includeInactiveFilter (activa) tiene prioridad
+    // Primer nivel: filtro principal (activa/todas)
+    if (this.currentFilters.activa === 'active') {
+      // Solo mostrar activas
+      filteredEmpresas = filteredEmpresas.filter(empresa => empresa.activa !== false);
+    } else {
+      // Mostrar todas - aplicar filtro de status secundario si existe
+      if (this.currentFilters.status) {
+        filteredEmpresas = filteredEmpresas.filter(empresa => {
+          if (this.currentFilters.status === 'active') {
+            return empresa.activa !== false;
+          } else if (this.currentFilters.status === 'inactive') {
+            return empresa.activa === false;
+          }
+          return true;
+        });
+      }
+    }
+
+    this.empresas = filteredEmpresas;
+    this.renderEmpresas();
+    this.updateStats();
+
+    console.log(`🔍 Filtros aplicados: ${filteredEmpresas.length}/${this.empresasAll.length} empresas`);
+    console.log(`🎯 Filtro activo: activa='${this.currentFilters.activa}', status='${this.currentFilters.status}'`);
+  }
+
+  /**
+   * Update status filter state based on includeInactive filter
+   */
+  updateStatusFilterState() {
+    const statusFilter = document.getElementById('statusFilter');
+    if (!statusFilter) return;
+    
+    if (this.currentFilters.activa === 'active') {
+      // Si está en "Solo Activas", deshabilitar y resetear el filtro de estado
+      statusFilter.disabled = true;
+      statusFilter.value = '';
+      this.currentFilters.status = '';
+      statusFilter.style.opacity = '0.5';
+      statusFilter.style.cursor = 'not-allowed';
+    } else {
+      // Si está en "Todas", habilitar el filtro de estado
+      statusFilter.disabled = false;
+      statusFilter.style.opacity = '1';
+      statusFilter.style.cursor = 'pointer';
+    }
+  }
+
+  /**
    * Clear all filters
    */
   clearFilters() {
     this.currentFilters = {
       search: '',
-      tipo: '',
-      status: 'all',
-      activa: 'all'
+      location: '',
+      status: '',
+      activa: 'active'
     };
 
     // Reset form elements
-    const searchInput = document.getElementById('empresasSearchInput');
-    const typeFilter = document.getElementById('empresasTipoFilter');
-    const statusFilter = document.getElementById('empresasStatusFilter');
+    const searchInput = document.getElementById('searchInput');
+    const locationFilter = document.getElementById('locationFilter');
+    const statusFilter = document.getElementById('statusFilter');
     const includeInactiveFilter = document.getElementById('includeInactiveFilter');
 
     if (searchInput) searchInput.value = '';
-    if (typeFilter) typeFilter.value = '';
-    if (statusFilter) statusFilter.value = 'all';
-    if (includeInactiveFilter) includeInactiveFilter.value = 'all';
+    if (locationFilter) locationFilter.value = '';
+    if (statusFilter) statusFilter.value = '';
+    if (includeInactiveFilter) includeInactiveFilter.value = 'active';
 
+    this.updateStatusFilterState();
     this.applyFilters();
   }
 
@@ -803,9 +877,9 @@ class EmpresasMain {
   /**
    * Toggle empresa status
    */
-  toggleEmpresaStatus(id, activa) {
+  toggleEmpresaStatus(id, currentStatus, empresaName) {
     if (window.empresasModals) {
-      window.empresasModals.showToggleModal(id, activa);
+      window.empresasModals.showToggleModal(id, currentStatus, empresaName);
     } else {
       console.warn('⚠️ Empresas modals module not available');
       this.showEnhancedNotification('Función de cambio de estado no disponible', 'error');
@@ -922,7 +996,8 @@ class EmpresasMain {
     existingNotifications.forEach(notification => notification.remove());
     
     const notification = document.createElement('div');
-    notification.className = `enhanced-notification fixed top-4 right-4 z-50 max-w-sm w-full`;
+    notification.className = `enhanced-notification fixed top-4 right-4 max-w-sm w-full`;
+    notification.style.zIndex = '999999'; // Muy alto para estar siempre adelante
     
     let iconClass, bgClass, borderClass;
     if (type === 'error') {
@@ -968,7 +1043,8 @@ class EmpresasMain {
    */
   showFallbackError() {
     const errorDiv = document.createElement('div');
-    errorDiv.className = 'fixed top-4 right-4 bg-red-500 text-white p-4 rounded-lg shadow-xl z-50';
+    errorDiv.className = 'fixed top-4 right-4 bg-red-500 text-white p-4 rounded-lg shadow-xl';
+    errorDiv.style.zIndex = '999999'; // Muy alto para estar siempre adelante
     errorDiv.innerHTML = `
       <div class="flex items-center">
         <i class="fas fa-exclamation-triangle mr-3"></i>
@@ -988,11 +1064,30 @@ const empresasMain = new EmpresasMain();
 window.empresasMain = empresasMain;
 
 // Backward compatibility functions
-window.toggleEmpresaStatus = (id, activa) => {
+window.toggleEmpresaStatus = (id, currentStatus, empresaName) => {
   if (window.empresasModals && window.empresasModals.showToggleModal) {
-    window.empresasModals.showToggleModal(id, activa);
+    window.empresasModals.showToggleModal(id, currentStatus, empresaName);
   } else {
     console.warn('Toggle modal not available');
+  }
+};
+
+// Global filter functions - SAME AS HARDWARE
+window.clearEmpresasFilters = () => {
+  if (window.empresasMain) {
+    window.empresasMain.clearFilters();
+  }
+};
+
+window.exportEmpresas = () => {
+  if (window.empresasMain) {
+    window.empresasMain.exportEmpresas();
+  }
+};
+
+window.openCreateEmpresaModal = () => {
+  if (window.empresasMain) {
+    window.empresasMain.openCreateModal();
   }
 };
 

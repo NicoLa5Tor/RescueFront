@@ -4,18 +4,24 @@
  * Este archivo importa todos los módulos CSS específicos para el hardware
  * para mantener una arquitectura modular y organizated.
  * 
+ * ===== LIMPIEZA DE CSS COMPLETADA =====
+ * - Removido: hardware-ios-design.css (duplicaba contenido de otros archivos)
+ * - Comentado: estilos no utilizados en hardware-base.css
+ * - Mantenido: solo archivos específicos y necesarios
+ * 
  * Orden de importación:
  * 1. Base styles (elementos básicos)
- * 2. iOS Design System (headers, stats, filters)
+ * 2. Sistema de diseño iOS modular (headers, stats, filters, buttons)
  * 3. Hardware Cards (tarjetas específicas de hardware)
- * 4. Modals (modales de toggle y update)
- * 5. Performance optimizations (optimizaciones y responsive)
+ * 4. Tema claro
+ * 5. Modales específicos
+ * 6. Optimizaciones de rendimiento
  */
 
-/* 1. Estilos base */
+/* 1. Estilos base (solo elementos necesarios) */
 @import url('./forms.css');
 
-/* 2. Sistema de diseño iOS */
+/* 2. Sistema de diseño iOS - MODULAR (evita duplicación) */
 @import url('./ios-header.css');
 @import url('./ios-buttons.css');
 @import url('./ios-stats.css');
@@ -30,6 +36,12 @@
 
 /* 5. Optimizaciones de rendimiento */
 @import url('./performance.css');
+
+/* ===== ARCHIVOS REMOVIDOS/COMENTADOS ===== */
+/* - hardware-ios-design.css: Removido por duplicación */
+/* - hardware-base.css: Comentados estilos no utilizados */
+/* - hardware-cards.css: Comentados estilos duplicados, ios-cards.css es suficiente */
+/* - forms.css: Comentados estilos no utilizados */
 
 /* ===== HARDWARE SPECIFIC OVERRIDES ===== */
 

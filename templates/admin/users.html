@@ -2,192 +2,582 @@
 
 {% block title %}Usuarios - Sistema Multi-Tenant{% endblock %}
 
+{% block extra_css %}
+{{ super() }}
+<!-- USE EXACT SAME STYLES AS EMPRESAS - HARDWARE STYLES -->
+<link href="{{ url_for('static', filename='css/modals.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/hardware/hardware-main.css') }}" rel="stylesheet">
+<!-- IMPORTAR ESTILOS DE MODALES DEL HARDWARE -->
+<link href="{{ url_for('static', filename='css/hardware/hardware-modals.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/hardware/modals.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/usuarios/usuarios-cards.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/usuarios/usuarios-modals.css') }}" rel="stylesheet">
+<style>
+/* Asegurar visibilidad por defecto - OVERRIDE para usuarios */
+.ios-header-container,
+.ios-stats-grid .ios-stat-card,
+.ios-hardware-grid .ios-hardware-card {
+  opacity: 1 !important;
+  transform: none !important;
+  visibility: visible !important;
+}
+
+/* Asegurar que las tarjetas de usuarios sean visibles desde el inicio */
+.usuario-item {
+  opacity: 1 !important;
+  transform: none !important;
+  visibility: visible !important;
+}
+
+/* Estilos específicos para usuarios */
+.usuario-item .ios-info-label {
+  display: flex;
+  align-items: center;
+  font-size: 0.75rem;
+}
+
+/* Hacer que ciertos elementos ocupen fila completa */
+.usuario-item .ios-info-item.full-width {
+  grid-column: 1 / -1;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.usuario-item .ios-card-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+/* Botones específicos para usuarios */
+.ios-card-btn-info {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.ios-card-btn-info:hover {
+  background: linear-gradient(135deg, #2563eb, #1e40af);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+}
+
+/* Utilizar estilos del hardware para header */
+.usuarios-container .ios-header-container {
+  opacity: 1;
+  transform: none;
+  visibility: visible;
+}
+
+/* Modal visibility fixes */
+.ios-modal-backdrop {
+  z-index: 9999;
+}
+
+.ios-blur-modal-container {
+  max-width: 600px;
+  width: 90%;
+}
+
+/* Ensure content is visible immediately */
+.usuarios-container * {
+  visibility: visible;
+  opacity: 1;
+}
+</style>
+{% endblock %}
+
 {% block main_content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <!-- Header -->
-  <div class="mb-8">
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-      <div>
-        <h1 class="text-3xl font-bold text-white">Gestión de Usuarios</h1>
-        <p class="text-gray-600 text-white mt-2">Administra los usuarios de las empresas</p>
-      </div>
-      <div class="flex space-x-3">
-        <button class="btn-secondary">
-          <i class="fas fa-filter"></i>
-          Filtrar
-        </button>
-        <button id="createUserBtn" class="btn-primary">
-          <i class="fas fa-user-plus"></i>
-          Nuevo Usuario
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Empresa Selector -->
-  <div class="glass-card p-6 mb-8">
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-      <div>
-        <h3 class="text-lg font-semibold text-black dark:text-white">Seleccionar Empresa</h3>
-        <p class="text-gray-500 dark:text-gray-400 text-sm">Elige una empresa para gestionar sus usuarios</p>
-      </div>
-      <div class="sm:w-80">
-        <select id="empresaSelector" class="w-full px-4 py-3 bg-white dark:bg-gray-700 text-black dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-          <option value="">Cargando empresas...</option>
-        </select>
-      </div>
-    </div>
-  </div>
-
-  <!-- Selected Empresa Info -->
-  <div id="selectedEmpresaInfo" class="hidden glass-card p-6 mb-8">
-    <div class="flex items-center space-x-4">
-      <div class="w-16 h-16 bg-gradient-to-r from-purple-500 to-blue-600 rounded-xl flex items-center justify-center">
-        <span class="text-white font-bold text-xl" id="empresaInitials">E</span>
-      </div>
-      <div class="flex-1">
-        <h3 class="text-xl font-semibold text-black dark:text-white" id="selectedEmpresaName">Empresa</h3>
-        <p class="text-gray-600 dark:text-gray-400" id="selectedEmpresaLocation">Ubicación</p>
-        <div class="flex items-center space-x-4 mt-2">
-          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" id="selectedEmpresaStatus">
-            Estado
-          </span>
-          <span class="text-sm text-gray-500 dark:text-gray-400">
-            <i class="fas fa-users mr-1"></i>
-            <span id="selectedEmpresaUserCount">0</span> usuarios
-          </span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Users Stats -->
-  <div id="usersStats" class="hidden grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-    <div class="glass-card p-6">
-      <div class="flex items-center">
-        <div class="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
-          <i class="fas fa-users text-blue-600 dark:text-blue-400"></i>
-        </div>
-        <div class="ml-4">
-          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total</p>
-          <p class="text-2xl font-bold text-black dark:text-white" id="totalUsersCount">0</p>
-        </div>
-      </div>
-    </div>
-    
-    <div class="glass-card p-6">
-      <div class="flex items-center">
-        <div class="p-2 bg-green-100 dark:bg-green-900 rounded-lg">
-          <i class="fas fa-user-check text-green-600 dark:text-green-400"></i>
-        </div>
-        <div class="ml-4">
-          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Activos</p>
-          <p class="text-2xl font-bold text-black dark:text-white" id="activeUsersCount">0</p>
-        </div>
-      </div>
-    </div>
-    
-    <div class="glass-card p-6">
-      <div class="flex items-center">
-        <div class="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
-          <i class="fas fa-user-tag text-purple-600 dark:text-purple-400"></i>
-        </div>
-        <div class="ml-4">
-          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Roles Únicos</p>
-          <p class="text-2xl font-bold text-black dark:text-white" id="uniqueRolesCount">0</p>
-        </div>
-      </div>
-    </div>
-    
-    <div class="glass-card p-6">
-      <div class="flex items-center">
-        <div class="p-2 bg-orange-100 dark:bg-orange-900 rounded-lg">
-          <i class="fas fa-calendar text-orange-600 dark:text-orange-400"></i>
-        </div>
-        <div class="ml-4">
-          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Este Mes</p>
-          <p class="text-2xl font-bold text-black dark:text-white" id="newUsersCount">0</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Users Grid -->
-  <div id="usersContainer" class="hidden">
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="usersGrid">
-      <!-- Los usuarios se cargarán aquí dinámicamente -->
-    </div>
-  </div>
-
-  <!-- Users Table (Alternative View) -->
-  <div id="usersTableContainer" class="hidden">
-    <div class="glass-card overflow-hidden">
-      <div class="p-6 border-b border-gray-100 dark:border-gray-700">
-        <div class="flex items-center justify-between">
-          <h3 class="text-lg font-semibold text-black dark:text-white">Lista de Usuarios</h3>
-          <div class="flex space-x-2">
-            <button id="gridViewBtn" class="p-2 text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors" title="Vista de tarjetas">
-              <i class="fas fa-th-large"></i>
-            </button>
-            <button id="tableViewBtn" class="p-2 text-purple-600 dark:text-purple-400" title="Vista de tabla">
-              <i class="fas fa-table"></i>
-            </button>
+<div class="ios-page-container usuarios-container">
+  <div class="ios-content-wrapper">
+    <!-- Enhanced iOS Header - SAME AS EMPRESAS -->
+    <div class="ios-header-container">
+      <div class="ios-header-content">
+        <div class="ios-header-text">
+          <h1 class="ios-header-title">Gestión de Usuarios</h1>
+          <p class="ios-header-subtitle">Administra usuarios con tecnología de vanguardia</p>
+          <div class="ios-header-stats">
+            <span class="ios-stat-item" id="totalUsuariosDisplay">0 usuarios registrados</span>
           </div>
         </div>
-      </div>
-      <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-          <thead class="bg-gray-50 dark:bg-gray-700">
-            <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Usuario</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Cédula</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Rol</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Empresa</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Fecha</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Acciones</th>
-            </tr>
-          </thead>
-          <tbody id="usersTableBody" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-            <!-- Los usuarios se cargarán aquí -->
-          </tbody>
-        </table>
+        <div class="ios-header-actions">
+          <button class="ios-action-btn ios-action-btn-secondary" onclick="exportUsuarios()">
+            <i class="fas fa-download"></i>
+            <span class="text-sm font-medium">Exportar</span>
+          </button>
+          <button class="ios-action-btn ios-action-btn-primary" onclick="openCreateUsuarioModal()">
+            <i class="fas fa-user-plus"></i>
+            <span class="text-sm font-medium">Nuevo Usuario</span>
+          </button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Empty State -->
-  <div id="emptyState" class="text-center py-12">
-    <div class="mx-auto h-24 w-24 text-gray-400 mb-4">
-      <i class="fas fa-users text-6xl"></i>
+    <!-- iOS Style Empresa Selector -->
+    <div class="ios-filters-container ios-blur-bg mb-8">
+      <div class="ios-filters-grid">
+        <div class="ios-filter-item col-span-full">
+          <label class="ios-filter-label">Seleccionar Empresa</label>
+          <select id="empresaSelector" class="ios-filter-input">
+            <option value="">Cargando empresas...</option>
+          </select>
+        </div>
+      </div>
     </div>
-    <h3 class="text-lg font-medium text-black dark:text-white mb-2">Selecciona una empresa</h3>
-    <p class="text-gray-500 dark:text-gray-400 mb-6">Elige una empresa para ver y gestionar sus usuarios</p>
-  </div>
 
-  <!-- No Users State -->
-  <div id="noUsersState" class="hidden text-center py-12">
-    <div class="mx-auto h-24 w-24 text-gray-400 mb-4">
-      <i class="fas fa-user-slash text-6xl"></i>
+    <!-- Enhanced iOS Stats Cards - SAME AS EMPRESAS -->
+    <div class="ios-stats-grid" id="usuariosStatsGrid" style="display: none;">
+      <div class="ios-stat-card" data-stat="total">
+        <div class="ios-stat-icon ios-stat-icon-blue">
+          <i class="fas fa-users"></i>
+        </div>
+        <div class="ios-stat-content">
+          <div class="ios-stat-label text-sm font-medium text-gray-600 dark:text-gray-400">Total Usuarios</div>
+          <div class="ios-stat-value text-2xl md:text-3xl font-bold text-gray-900 dark:text-white" id="totalUsersCount">0</div>
+          <div class="ios-stat-trend text-xs text-gray-500 dark:text-gray-500">Usuarios registrados</div>
+        </div>
+        <div class="ios-stat-shimmer"></div>
+      </div>
+      
+      <div class="ios-stat-card" data-stat="active">
+        <div class="ios-stat-icon ios-stat-icon-green">
+          <i class="fas fa-user-check"></i>
+        </div>
+        <div class="ios-stat-content">
+          <div class="ios-stat-label text-sm font-medium text-gray-600 dark:text-gray-400">Activos</div>
+          <div class="ios-stat-value text-2xl md:text-3xl font-bold text-gray-900 dark:text-white" id="activeUsersCount">0</div>
+          <div class="ios-stat-trend text-xs text-gray-500 dark:text-gray-500">Usuarios activos</div>
+        </div>
+        <div class="ios-stat-shimmer"></div>
+      </div>
+      
+      <div class="ios-stat-card" data-stat="roles">
+        <div class="ios-stat-icon ios-stat-icon-purple">
+          <i class="fas fa-user-tag"></i>
+        </div>
+        <div class="ios-stat-content">
+          <div class="ios-stat-label text-sm font-medium text-gray-600 dark:text-gray-400">Roles</div>
+          <div class="ios-stat-value text-2xl md:text-3xl font-bold text-gray-900 dark:text-white" id="uniqueRolesCount">0</div>
+          <div class="ios-stat-trend text-xs text-gray-500 dark:text-gray-500">Roles diferentes</div>
+        </div>
+        <div class="ios-stat-shimmer"></div>
+      </div>
+      
+      <div class="ios-stat-card" data-stat="recent">
+        <div class="ios-stat-icon ios-stat-icon-orange">
+          <i class="fas fa-calendar-plus"></i>
+        </div>
+        <div class="ios-stat-content">
+          <div class="ios-stat-label text-sm font-medium text-gray-600 dark:text-gray-400">Este Mes</div>
+          <div class="ios-stat-value text-2xl md:text-3xl font-bold text-gray-900 dark:text-white" id="newUsersCount">0</div>
+          <div class="ios-stat-trend text-xs text-gray-500 dark:text-gray-500">Nuevos usuarios</div>
+        </div>
+        <div class="ios-stat-shimmer"></div>
+      </div>
     </div>
-    <h3 class="text-lg font-medium text-black dark:text-white mb-2">No hay usuarios</h3>
-    <p class="text-gray-500 dark:text-gray-400 mb-6">Esta empresa aún no tiene usuarios registrados</p>
-    <button class="btn-primary" onclick="createUser()">
-      <i class="fas fa-user-plus"></i>
-      Crear Primer Usuario
-    </button>
-  </div>
 
-  <!-- Loading State -->
-  <div id="loadingState" class="hidden text-center py-12">
-    <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
-    <p class="text-gray-500 dark:text-gray-400 mt-4">Cargando usuarios...</p>
+    <!-- Enhanced iOS Usuarios Grid - SAME STYLE AS EMPRESAS -->
+    <div class="ios-hardware-grid" id="usuariosGrid">
+      <!-- Los usuarios se cargarán aquí dinámicamente -->
+      <div class="text-center py-8 col-span-full">
+        <i class="fas fa-users text-3xl text-gray-400 mb-4"></i>
+        <p class="text-gray-500">Selecciona una empresa para ver sus usuarios</p>
+      </div>
+    </div>
+
   </div>
 </div>
+
+  
+  <!-- Enhanced View Usuario Modal - EXACT COPY FROM EMPRESAS WITH USUARIO FIELDS -->
+  <div id="viewUserModal" class="ios-modal-backdrop hidden">
+    <div class="ios-blur-modal-container max-w-lg">
+      <div class="ios-blur-header text-center">
+        <div class="view-usuario-avatar mx-auto mb-4">
+          <i class="fas fa-user text-4xl"></i>
+        </div>
+        <h3 class="text-2xl font-bold text-white mb-2" id="viewUserModalTitle">Detalles del Usuario</h3>
+      </div>
+      <div class="ios-blur-body">
+        <div class="grid gap-4">
+          <div class="bg-white/5 backdrop-filter backdrop-blur-lg border border-white/10 rounded-xl p-4">
+            <div class="grid gap-3">
+              <div class="flex justify-between items-center">
+                <span class="text-white/70 font-medium">Nombre:</span>
+                <span class="text-white font-semibold" id="viewUsername">-</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-white/70 font-medium">Email:</span>
+                <span class="text-white font-semibold" id="viewUserEmail">-</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-white/70 font-medium">Cédula:</span>
+                <span class="text-white font-semibold" id="viewUserCedula">-</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-white/70 font-medium">Teléfono:</span>
+                <span class="text-white font-semibold" id="viewUserTelefono">-</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-white/70 font-medium">Sede:</span>
+                <span class="text-white font-semibold" id="viewUserSede">-</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-white/70 font-medium">Tipo Turno:</span>
+                <span class="text-white font-semibold" id="viewUserTipoTurno">-</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-white/70 font-medium">Rol:</span>
+                <span class="text-white font-semibold" id="viewUserRol">-</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-white/70 font-medium">Estado:</span>
+                <span class="text-white font-semibold" id="viewUserStatus">-</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Especialidades Section -->
+          <div class="bg-white/5 backdrop-filter backdrop-blur-lg border border-white/10 rounded-xl p-4">
+            <h4 class="text-white font-semibold mb-3">Especialidades</h4>
+            <div id="viewUserEspecialidades" class="flex flex-wrap gap-2">
+              <!-- Especialidades will be displayed here -->
+            </div>
+          </div>
+        </div>
+        
+        <div class="flex gap-4 justify-center mt-6">
+          <button class="ios-blur-btn ios-blur-btn-secondary" onclick="usuariosModals.closeViewModal()">
+            <i class="fas fa-times mr-2"></i>
+            Cerrar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Enhanced Edit Usuario Modal - EXACT COPY FROM EMPRESAS STRUCTURE -->
+  <div id="editUserModal" class="usuario-modal-backdrop hidden">
+    <div class="usuario-modal-container">
+      <div class="usuario-modal-header">
+        <h3 class="usuario-modal-title">
+          <i class="fas fa-user-edit"></i>
+          Editar Usuario
+        </h3>
+        <button class="usuario-modal-close" onclick="usuariosModals.closeEditModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="usuario-modal-body">
+        <form id="editUserForm">
+          <div class="usuario-form-grid">
+            <div class="usuario-form-row">
+              <div class="usuario-form-group">
+                <label class="usuario-form-label" for="editUsername">
+                  <i class="fas fa-user"></i>
+                  Nombre Completo
+                </label>
+                <input id="editUsername" class="usuario-form-input" type="text" placeholder="Nombre completo" required>
+              </div>
+              
+              <div class="usuario-form-group">
+                <label class="usuario-form-label" for="editUserEmail">
+                  <i class="fas fa-envelope"></i>
+                  Email
+                </label>
+                <input id="editUserEmail" class="usuario-form-input" type="email" placeholder="Email" required>
+              </div>
+            </div>
+            
+            <div class="usuario-form-row">
+              <div class="usuario-form-group">
+                <label class="usuario-form-label" for="editUserCedula">
+                  <i class="fas fa-id-card"></i>
+                  Cédula
+                </label>
+                <input id="editUserCedula" class="usuario-form-input" type="text" placeholder="Cédula" required>
+              </div>
+              
+              <div class="usuario-form-group">
+                <label class="usuario-form-label" for="editUserTelefono">
+                  <i class="fas fa-phone"></i>
+                  Teléfono
+                </label>
+                <input id="editUserTelefono" class="usuario-form-input" type="tel" placeholder="Teléfono">
+              </div>
+            </div>
+            
+            <div class="usuario-form-row">
+              <div class="usuario-form-group">
+                <label class="usuario-form-label" for="editUserSede">
+                  <i class="fas fa-building"></i>
+                  Sede
+                </label>
+                <select id="editUserSede" class="usuario-form-select" required>
+                  <option value="">Seleccionar sede...</option>
+                  <!-- Las sedes se cargarán dinámicamente -->
+                </select>
+              </div>
+              
+              <div class="usuario-form-group">
+                <label class="usuario-form-label" for="editUserTipoTurno">
+                  <i class="fas fa-clock"></i>
+                  Tipo de Turno
+                </label>
+                <select id="editUserTipoTurno" class="usuario-form-select" required>
+                  <option value="medio_dia">Medio día</option>
+                  <option value="dia_completo">Día completo</option>
+                  <option value="nocturno">Nocturno</option>
+                  <option value="24_horas">24 horas</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="usuario-form-group">
+              <label class="usuario-form-label" for="editUserRol">
+                <i class="fas fa-user-tag"></i>
+                Rol
+              </label>
+              <select id="editUserRol" class="usuario-form-select" required>
+                <option value="">Seleccionar rol...</option>
+                <!-- Los roles se cargarán dinámicamente desde la empresa -->
+              </select>
+            </div>
+            
+            <!-- Especialidades Section -->
+            <div class="usuario-form-group">
+              <label class="usuario-form-label">
+                <i class="fas fa-user-md"></i>
+                Especialidades
+              </label>
+              <div class="usuario-especialidades-container">
+                <div id="editEspecialidadesList" class="space-y-2 mb-3">
+                  <!-- Especialidades will be displayed here -->
+                </div>
+                <button type="button" class="usuario-especialidad-add" onclick="usuariosModals.addEspecialidad('edit')">
+                  <i class="fas fa-plus"></i>
+                  Agregar especialidad
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="usuario-modal-footer">
+        <button class="usuario-btn usuario-btn-secondary" onclick="usuariosModals.closeEditModal()">
+          <i class="fas fa-times"></i>
+          Cancelar
+        </button>
+        <button class="usuario-btn usuario-btn-primary" onclick="usuariosModals.confirmEdit()">
+          <i class="fas fa-save"></i>
+          Guardar Cambios
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Activate/Deactivate User Modal -->
+  <div id="toggleUserModal" class="ios-modal-backdrop hidden">
+    <div class="ios-blur-modal-container max-w-md mx-auto">
+      <div class="ios-blur-header text-center">
+        <div class="toggle-modal-icon mx-auto mb-4">
+          <i class="fas fa-power-off text-4xl"></i>
+        </div>
+        <h3 class="text-2xl font-bold text-white mb-2" id="toggleUserModalTitle">Activar Usuario</h3>
+      </div>
+      <div class="ios-blur-body text-center">
+        <p class="text-white/80 text-lg mb-6" id="toggleUserModalMessage">
+          ¿Estás seguro de que quieres cambiar el estado de este usuario?
+        </p>
+        <div class="flex gap-4 justify-center">
+          <button class="ios-blur-btn ios-blur-btn-secondary" onclick="usuariosModals.closeToggleModal()">
+            <i class="fas fa-times mr-2"></i>
+            Cancelar
+          </button>
+          <button class="ios-blur-btn ios-blur-btn-primary" id="toggleUserConfirmBtn" onclick="usuariosModals.confirmToggle()">
+            <i class="fas fa-check mr-2"></i>
+            Confirmar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create User Modal -->
+  <div id="createUserModal" class="ios-modal-backdrop hidden">
+    <div class="ios-blur-modal-container w-full max-w-4xl mx-auto">
+      <div class="ios-blur-header text-center">
+        <h3 class="text-2xl font-bold text-white mb-2" id="createUserModalTitle">Crear Usuario</h3>
+      </div>
+      <div class="ios-blur-body text-center">
+        <form id="createUserForm">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-white/80 mb-2 text-lg" for="createUsername">Nombre</label>
+              <input id="createUsername" class="w-full p-3 mb-4 bg-gray-700 rounded text-white" type="text" placeholder="Nombre" required>
+            </div>
+            
+            <div>
+              <label class="block text-white/80 mb-2 text-lg" for="createUserEmail">Email</label>
+              <input id="createUserEmail" class="w-full p-3 mb-4 bg-gray-700 rounded text-white" type="email" placeholder="Email">
+            </div>
+            
+            <div>
+              <label class="block text-white/80 mb-2 text-lg" for="createUserCedula">Cédula</label>
+              <input id="createUserCedula" class="w-full p-3 mb-4 bg-gray-700 rounded text-white" type="text" placeholder="Cédula" required>
+            </div>
+            
+          
+            <div>
+              <label class="block text-white/80 mb-2 text-lg" for="createUserSede">Sede</label>
+              <select id="createUserSede" class="w-full p-3 mb-4 bg-gray-700 rounded text-white">
+                <option value="">Seleccionar sede...</option>
+                <!-- Las sedes se cargarán dinámicamente -->
+              </select>
+            </div>
+            
+            
+            <div>
+              <label class="block text-white/80 mb-2 text-lg" for="createUserTelefono">Teléfono</label>
+              <input id="createUserTelefono" class="w-full p-3 mb-4 bg-gray-700 rounded text-white" type="tel" placeholder="Teléfono">
+            </div>
+            
+            <div>
+              <label class="block text-white/80 mb-2 text-lg" for="createUserTipoTurno">Tipo de Turno</label>
+              <select id="createUserTipoTurno" class="w-full p-3 mb-4 bg-gray-700 rounded text-white">
+                <option value="medio_dia">Medio día</option>
+                <option value="dia_completo">Día completo</option>
+                <option value="nocturno">Nocturno</option>
+                <option value="24_horas">24 horas</option>
+              </select>
+            </div>
+            
+            <div>
+              <label class="block text-white/80 mb-2 text-lg" for="createUserRol">Rol</label>
+              <select id="createUserRol" class="w-full p-3 mb-4 bg-gray-700 rounded text-white">
+                <option value="">Seleccionar rol...</option>
+                <!-- Los roles se cargarán dinámicamente desde la empresa -->
+              </select>
+            </div>
+          </div>
+          
+          <!-- Especialidades Section -->
+          <div class="mt-6">
+            <label class="block text-white/80 mb-2 text-lg">Especialidades</label>
+            <div id="createEspecialidadesContainer" class="space-y-3 mb-4">
+              <div class="flex space-x-2">
+                <button type="button" class="ios-blur-btn ios-blur-btn-primary !p-2 !min-w-0" onclick="usuariosModals.addEspecialidad('create')">
+                  <i class="fas fa-plus"></i>
+                </button>
+                <span class="text-white/70 text-sm self-center">Agregar especialidad</span>
+              </div>
+              <div id="createEspecialidadesList" class="space-y-2">
+                <!-- Especialidades will be displayed here -->
+              </div>
+            </div>
+          </div>
+        </form>
+        <div class="flex gap-4 justify-center">
+          <button class="ios-blur-btn ios-blur-btn-secondary" onclick="usuariosModals.closeCreateModal()">
+            <i class="fas fa-times mr-2"></i>
+            Cancelar
+          </button>
+          <button class="ios-blur-btn ios-blur-btn-primary" onclick="usuariosModals.confirmCreate()">
+            <i class="fas fa-check mr-2"></i>
+            Crear
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Update User Modal -->
+  <div id="userUpdateModal" class="ios-modal-backdrop hidden">
+    <div class="ios-blur-modal-container max-w-md mx-auto">
+      <div class="ios-blur-header text-center">
+        <div class="client-update-icon mx-auto mb-4">
+          <i class="fas fa-sync-alt text-4xl text-emerald-400"></i>
+        </div>
+        <h3 class="text-2xl font-bold text-white mb-2" id="userUpdateModalTitle">Usuario Actualizado</h3>
+      </div>
+      <div class="ios-blur-body text-center">
+        <p class="text-white/80 text-lg mb-6" id="userUpdateModalMessage">
+          El usuario se ha actualizado exitosamente.
+        </p>
+        <button class="ios-blur-btn ios-blur-btn-primary mx-auto" onclick="usuariosModals.closeUpdateModal()">
+          <i class="fas fa-check mr-2"></i>
+          Aceptar
+        </button>
+      </div>
+    </div>
+  </div>
+
 {% endblock %}
 
 {% block extra_js %}
 {{ super() }}
-<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+<!-- Modal Utils - SAME AS EMPRESAS -->
+<script src="{{ url_for('static', filename='js/api-client.js') }}"></script>
+<script src="{{ url_for('static', filename='js/modal-utils.js') }}"></script>
+<!-- Hardware GSAP Animations - SAME AS EMPRESAS -->
+<script src="{{ url_for('static', filename='js/hardware-animations.js') }}"></script>
+<!-- Users Main JavaScript -->
+<script src="{{ url_for('static', filename='js/usuarios-main.js') }}"></script>
+<!-- Users Modals JavaScript -->
+<script src="{{ url_for('static', filename='js/usuarios/usuarios-modals.js') }}"></script>
+<script>
+  // Performance optimizer específico para usuarios - SAME AS EMPRESAS
+  function applyCardOptimizations(card) {
+    // Usar las animaciones GSAP globales ya disponibles
+    if (window.HardwareAnimations) {
+      console.log('🔧 Optimizaciones GSAP aplicadas a tarjeta individual');
+      return;
+    }
+    
+    // Fallback para compatibilidad si GSAP no está disponible
+    const shimmer = card.querySelector('.ios-card-shimmer');
+    if (shimmer && !window.GSAPUtils?.prefersReducedMotion()) {
+      shimmer.style.opacity = '0';
+      shimmer.style.transform = 'rotate(45deg) translateX(-100%)';
+      console.log('🔧 Fallback aplicado a tarjeta individual');
+    }
+  }
+  
+  // Función para aplicar optimizaciones a tarjetas ya existentes
+  function applyOptimizationsToExistingCards() {
+    const existingCards = document.querySelectorAll('.ios-hardware-card');
+    existingCards.forEach(card => {
+      applyCardOptimizations(card);
+    });
+    console.log(`🔧 Optimizaciones aplicadas a ${existingCards.length} tarjetas existentes`);
+  }
+
+  // Global functions for backward compatibility
+  function openCreateUsuarioModal() {
+    if (window.usuariosMain && window.usuariosMain.currentEmpresa) {
+      if (window.usuariosModals) {
+        window.usuariosModals.openCreateModal();
+      } else {
+        alert('Sistema de modales no disponible');
+      }
+    } else {
+      alert('Selecciona una empresa primero');
+    }
+  }
+
+  function exportUsuarios() {
+    if (window.usuariosMain && window.usuariosMain.currentEmpresa) {
+      alert('Funcionalidad de exportación en desarrollo');
+    } else {
+      alert('Selecciona una empresa primero');
+    }
+  }
+
+  
+  // Aplicar optimizaciones a tarjetas existentes cuando sea necesario
+  applyOptimizationsToExistingCards();
+  
+  console.log('📻 Usuarios main module loaded');
+</script>
 {% endblock %}
 
 {%- block page_js -%}{% endblock %}

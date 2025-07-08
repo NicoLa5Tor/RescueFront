@@ -1,6 +1,7 @@
 /* ===== HARDWARE BASE STYLES ===== */
 
-/* Form Input Readonly */
+/* ===== COMENTADO - NO SE USA ESTA CLASE EN HARDWARE ===== */
+/*
 .form-input-readonly {
   padding: 0.75rem;
   border: 1px solid #d1d5db;
@@ -16,6 +17,7 @@
   border-color: #4b5563;
   color: #e5e7eb;
 }
+*/
 
 /* Hardware Modal Elements */
 #hardwareModal {
@@ -26,10 +28,12 @@
   box-sizing: border-box !important;
 }
 
-/* Force visibility for debugging */
+/* ===== COMENTADO - ESTILOS DE DEBUG NO NECESARIOS EN PRODUCCIÓN ===== */
+/*
 .debug-visible {
   color: white !important;
   border: 5px solid yellow !important;
   padding: 20px !important;
   z-index: 99999 !important;
 }
+*/
