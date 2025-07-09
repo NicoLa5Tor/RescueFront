@@ -120,7 +120,7 @@
         </div>
         <div class="ios-stat-content">
           <div class="ios-stat-label text-sm font-medium text-gray-600 dark:text-gray-400">Total Empresas</div>
-          <div class="ios-stat-value text-2xl md:text-3xl font-bold text-gray-900 dark:text-white" id="totalEmpresasCount">0</div>
+          <div class="ios-stat-value text-2xl md:text-3xl font-bold text-gray-900 dark:text-white" id="totalEmpresasCount">{{ initial_total_companies | default(0) }}</div>
           <div class="ios-stat-trend text-xs text-gray-500 dark:text-gray-500">Empresas registradas</div>
         </div>
         <div class="ios-stat-shimmer"></div>
@@ -132,7 +132,7 @@
         </div>
         <div class="ios-stat-content">
           <div class="ios-stat-label text-sm font-medium text-gray-600 dark:text-gray-400">Activas</div>
-          <div class="ios-stat-value text-2xl md:text-3xl font-bold text-gray-900 dark:text-white" id="activeEmpresasCount">0</div>
+          <div class="ios-stat-value text-2xl md:text-3xl font-bold text-gray-900 dark:text-white" id="activeEmpresasCount">{{ initial_active_companies | default(0) }}</div>
           <div class="ios-stat-trend text-xs text-gray-500 dark:text-gray-500">Funcionando correctamente</div>
         </div>
         <div class="ios-stat-shimmer"></div>

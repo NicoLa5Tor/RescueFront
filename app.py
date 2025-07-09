@@ -240,12 +240,19 @@ def admin_empresas():
     
     # Get companies dummy data from Python providers
     companies_data = get_companies_stats()
-    
+
+    # Pre-calculate some basic stats for immediate rendering
+    recent_companies = companies_data.get('recent_companies', [])
+    total_companies = companies_data.get('total_companies', len(recent_companies))
+    active_companies = sum(1 for c in recent_companies if c.get('status') == 'active')
+
     return render_template(
-        'admin/empresas.html', 
-        api_url=PROXY_PREFIX, 
+        'admin/empresas.html',
+        api_url=PROXY_PREFIX,
         companies_data=companies_data,
-        active_page='empresas'
+        active_page='empresas',
+        initial_total_companies=total_companies,
+        initial_active_companies=active_companies,
     )
 
 @app.route('/admin/empresas/')
