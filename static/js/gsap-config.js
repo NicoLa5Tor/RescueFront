@@ -341,11 +341,21 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log('🎬 GSAP configuración global lista');
   
   // Configurar refresh de ScrollTrigger en resize
-  window.addEventListener('resize', gsap.utils.debounce(() => {
-    if (typeof ScrollTrigger !== 'undefined') {
-      ScrollTrigger.refresh();
-    }
-  }, 250));
+  const debounceResize = (() => {
+    let timeout;
+    return (func, wait) => {
+      clearTimeout(timeout);
+      timeout = setTimeout(func, wait);
+    };
+  })();
+  
+  window.addEventListener('resize', () => {
+    debounceResize(() => {
+      if (typeof ScrollTrigger !== 'undefined') {
+        ScrollTrigger.refresh();
+      }
+    }, 250);
+  });
   
   // Aplicar clase para CSS que depende de GSAP
   document.documentElement.classList.add('gsap-ready');

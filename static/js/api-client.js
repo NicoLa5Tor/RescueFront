@@ -167,7 +167,7 @@ async toggle_usuario_status(empresaId, usuarioId, activo) {
     return this._request('PATCH', `/empresas/${empresaId}/usuarios/${usuarioId}/toggle-status`, { data: { activo } });
 }
 
-// Company types endpoints
+    // Company types endpoints
     async get_tipos_empresa() {
         return this._request('GET', '/api/tipos_empresa');
     }
@@ -180,6 +180,35 @@ async toggle_usuario_status(empresaId, usuarioId, activo) {
     // Dashboard endpoint for all company types (active and inactive)
     async get_tipos_empresa_dashboard() {
         return this._request('GET', '/api/tipos_empresa/dashboard/all');
+    }
+
+    // Super Admin Dashboard endpoints
+    async get_super_admin_dashboard_stats() {
+        return this._request('GET', '/api/dashboard/stats');
+    }
+
+    async get_super_admin_recent_companies() {
+        return this._request('GET', '/api/dashboard/recent-companies');
+    }
+
+    async get_super_admin_recent_users() {
+        return this._request('GET', '/api/dashboard/recent-users');
+    }
+
+    async get_super_admin_activity_chart() {
+        return this._request('GET', '/api/dashboard/activity-chart');
+    }
+
+    async get_super_admin_distribution_chart() {
+        return this._request('GET', '/api/dashboard/distribution-chart');
+    }
+
+    async get_super_admin_hardware_stats() {
+        return this._request('GET', '/api/dashboard/hardware-stats');
+    }
+
+    async get_super_admin_performance_metrics() {
+        return this._request('GET', '/api/dashboard/system-performance');
     }
 
     // Utility methods

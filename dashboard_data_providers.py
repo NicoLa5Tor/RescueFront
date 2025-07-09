@@ -8,6 +8,75 @@ with real API calls to your backend later.
 import random
 from datetime import datetime, timedelta
 from typing import List, Dict, Any
+from python_api_client import EndpointTestClient
+from flask import session
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+class RealDashboardDataProvider:
+    """Provides dashboard data from real API endpoints"""
+    
+    def __init__(self, api_base_url: str, token: str = None):
+        self.api_base_url = api_base_url
+        self.client = EndpointTestClient(api_base_url, token)
+        self.dummy_provider = DashboardDataProvider()  # Fallback to dummy data
+    
+    def get_dashboard_data(self) -> Dict[str, Any]:
+        """Get complete dashboard data from real API endpoints"""
+        try:
+            # Get all data from real endpoints
+            stats_response = self.client.get_dashboard_stats()
+            companies_response = self.client.get_dashboard_recent_companies()
+            users_response = self.client.get_dashboard_recent_users()
+            activity_response = self.client.get_dashboard_activity_chart()
+            distribution_response = self.client.get_dashboard_distribution_chart()
+            
+            # Check if all responses are successful
+            if (stats_response.ok and companies_response.ok and users_response.ok and 
+                activity_response.ok and distribution_response.ok):
+                
+                return {
+                    'summary_stats': stats_response.json()['data'],
+                    'recent_companies': companies_response.json()['data'],
+                    'recent_users': users_response.json()['data'],
+                    'activity_chart': activity_response.json()['data'],
+                    'distribution_chart': distribution_response.json()['data']
+                }
+            else:
+                logger.warning("Some API endpoints failed, falling back to dummy data")
+                return self.dummy_provider.get_dashboard_data()
+                
+        except Exception as e:
+            logger.error(f"Error fetching real dashboard data: {e}")
+            return self.dummy_provider.get_dashboard_data()
+    
+    def get_hardware_stats(self) -> Dict[str, Any]:
+        """Get hardware statistics from real API"""
+        try:
+            response = self.client.get_dashboard_hardware_stats()
+            if response.ok:
+                return response.json()['data']
+            else:
+                logger.warning("Hardware stats API failed, falling back to dummy data")
+                return HardwareProvider.get_hardware_stats()
+        except Exception as e:
+            logger.error(f"Error fetching hardware stats: {e}")
+            return HardwareProvider.get_hardware_stats()
+    
+    def get_system_performance(self) -> Dict[str, Any]:
+        """Get system performance metrics from real API"""
+        try:
+            response = self.client.get_dashboard_system_performance()
+            if response.ok:
+                return response.json()['data']
+            else:
+                logger.warning("System performance API failed, falling back to dummy data")
+                return StatisticsProvider.get_detailed_stats()
+        except Exception as e:
+            logger.error(f"Error fetching system performance: {e}")
+            return StatisticsProvider.get_detailed_stats()
 
 
 class DashboardStatsProvider:
@@ -427,21 +496,81 @@ class CompanyTypesProvider:
 # Easy-to-use functions for templates
 def get_dashboard_stats():
     """Quick function to get dashboard stats for templates"""
+    # Try to get real data if we have a session token
+    try:
+        if 'token' in session:
+            from config import BACKEND_API_URL
+            real_provider = RealDashboardDataProvider(BACKEND_API_URL, session['token'])
+            return real_provider.get_dashboard_data()
+    except Exception as e:
+        logger.warning(f"Could not get real dashboard data: {e}")
+    
+    # Fallback to dummy data
     provider = DashboardDataProvider()
     return provider.get_dashboard_data()
 
 def get_companies_stats():
     """Quick function to get companies stats for templates"""
+    # Try to get real data if we have a session token
+    try:
+        if 'token' in session:
+            from config import BACKEND_API_URL
+            real_provider = RealDashboardDataProvider(BACKEND_API_URL, session['token'])
+            companies_response = real_provider.client.get_dashboard_recent_companies()
+            if companies_response.ok:
+                return {
+                    'recent_companies': companies_response.json()['data'],
+                    'total_companies': len(companies_response.json()['data'])
+                }
+    except Exception as e:
+        logger.warning(f"Could not get real companies data: {e}")
+    
+    # Fallback to dummy data
     provider = DashboardDataProvider()
     return provider.get_companies_data()
 
 def get_detailed_statistics():
     """Quick function to get detailed statistics for templates"""
+    # Try to get real data if we have a session token
+    try:
+        if 'token' in session:
+            from config import BACKEND_API_URL
+            real_provider = RealDashboardDataProvider(BACKEND_API_URL, session['token'])
+            performance_data = real_provider.get_system_performance()
+            if performance_data:
+                return {
+                    'detailed_stats': performance_data,
+                    'geographic_distribution': StatisticsProvider.get_geographic_distribution(),
+                    'chart_data': {
+                        'activity': real_provider.client.get_dashboard_activity_chart().json()['data'] if real_provider.client.get_dashboard_activity_chart().ok else ChartDataProvider.get_activity_chart_data(),
+                        'distribution': real_provider.client.get_dashboard_distribution_chart().json()['data'] if real_provider.client.get_dashboard_distribution_chart().ok else ChartDataProvider.get_distribution_chart_data(),
+                        'performance': ChartDataProvider.get_performance_trend_data()
+                    }
+                }
+    except Exception as e:
+        logger.warning(f"Could not get real statistics data: {e}")
+    
+    # Fallback to dummy data
     provider = DashboardDataProvider()
     return provider.get_statistics_data()
 
 def get_hardware_data():
     """Quick function to get hardware data for templates"""
+    # Try to get real data if we have a session token
+    try:
+        if 'token' in session:
+            from config import BACKEND_API_URL
+            real_provider = RealDashboardDataProvider(BACKEND_API_URL, session['token'])
+            hardware_stats = real_provider.get_hardware_stats()
+            if hardware_stats:
+                return {
+                    'hardware_list': [],  # Could be expanded to get actual hardware list
+                    'hardware_stats': hardware_stats
+                }
+    except Exception as e:
+        logger.warning(f"Could not get real hardware data: {e}")
+    
+    # Fallback to dummy data
     return {
         'hardware_list': HardwareProvider.get_hardware_list(),
         'hardware_stats': HardwareProvider.get_hardware_stats()

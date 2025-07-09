@@ -190,6 +190,44 @@ class EndpointTestClient:
         return self._request("PATCH", f"/api/hardware/{hardware_id}/toggle-status", data={"activa": activa})
     
     # ------------------------------------------------------------------
+    # Super Admin Dashboard endpoints
+    # ------------------------------------------------------------------
+    def get_dashboard_stats(self) -> requests.Response:
+        """GET /api/dashboard/stats - Estadísticas generales del sistema"""
+        return self._request("GET", "/api/dashboard/stats")
+    
+    def get_dashboard_recent_companies(self, limit: int = 5) -> requests.Response:
+        """GET /api/dashboard/recent-companies - Empresas recientes"""
+        params = {"limit": limit} if limit != 5 else None
+        return self._request("GET", "/api/dashboard/recent-companies", params=params)
+    
+    def get_dashboard_recent_users(self, limit: int = 5) -> requests.Response:
+        """GET /api/dashboard/recent-users - Usuarios recientes"""
+        params = {"limit": limit} if limit != 5 else None
+        return self._request("GET", "/api/dashboard/recent-users", params=params)
+    
+    def get_dashboard_activity_chart(self, period: str = "30d", limit: int = 8) -> requests.Response:
+        """GET /api/dashboard/activity-chart - Datos para gráfico de actividad"""
+        params = {}
+        if period != "30d":
+            params["period"] = period
+        if limit != 8:
+            params["limit"] = limit
+        return self._request("GET", "/api/dashboard/activity-chart", params=params if params else None)
+    
+    def get_dashboard_distribution_chart(self) -> requests.Response:
+        """GET /api/dashboard/distribution-chart - Datos para gráfico de distribución"""
+        return self._request("GET", "/api/dashboard/distribution-chart")
+    
+    def get_dashboard_hardware_stats(self) -> requests.Response:
+        """GET /api/dashboard/hardware-stats - Estadísticas de hardware"""
+        return self._request("GET", "/api/dashboard/hardware-stats")
+    
+    def get_dashboard_system_performance(self) -> requests.Response:
+        """GET /api/dashboard/system-performance - Rendimiento del sistema"""
+        return self._request("GET", "/api/dashboard/system-performance")
+
+    # ------------------------------------------------------------------
     # Company Types endpoints
     # ------------------------------------------------------------------
     def create_company_type(self, data: Dict[str, Any]) -> requests.Response:

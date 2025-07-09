@@ -78,7 +78,7 @@ def require_role(allowed_roles):
                 if user_role == 'empresa':
                     return redirect(url_for('empresa_dashboard'))
                 elif user_role == 'super_admin':
-                    return redirect(url_for('admin_dashboard'))
+                    return redirect(url_for('super_admin_dashboard'))
                 else:
                     # Unknown role, redirect to login
                     return redirect(url_for('login'))
@@ -103,7 +103,7 @@ def validate_backend_connection():
 @app.before_request
 def attach_api_client():
     # Validar conectividad con backend para rutas protegidas (solo admin routes)
-    protected_routes = ['admin_dashboard', 'admin_users', 'admin_empresas', 'admin_stats', 'admin_hardware']
+    protected_routes = ['admin_dashboard', 'super_admin_dashboard', 'admin_users', 'admin_empresas', 'admin_stats', 'admin_hardware']
     if request.endpoint in protected_routes:
         if not validate_backend_connection():
             print("❌ Backend no disponible, limpiando sesión")
@@ -150,7 +150,7 @@ def login():
             if user_role == 'empresa':
                 return redirect(url_for('empresa_dashboard'))
             else:
-                return redirect(url_for('admin_dashboard'))
+                return redirect(url_for('super_admin_dashboard'))
         error = res.json().get('message', 'Credenciales inválidas')
         return render_template('login.html', api_url=PROXY_PREFIX, error=error)
     
@@ -222,6 +222,50 @@ def admin_dashboard():
     
     return render_template(
         'admin/dashboard.html',
+        api_url=PROXY_PREFIX,
+        dashboard_data=dashboard_data,
+        active_page='dashboard'
+    )
+
+@app.route('/admin/super-dashboard')
+@require_role(['super_admin'])
+def super_admin_dashboard():
+    """Super Admin Dashboard - Exclusivo para super_admin"""
+    # Get real dashboard data using the new provider
+    try:
+        from dashboard_data_providers import RealDashboardDataProvider
+        from config import BACKEND_API_URL
+        
+        # Use real data provider with session token
+        real_provider = RealDashboardDataProvider(BACKEND_API_URL, session.get('token'))
+        dashboard_data = real_provider.get_dashboard_data()
+        
+        # Add hardware stats if not already present
+        if 'total_hardware' not in dashboard_data.get('summary_stats', {}):
+            hardware_stats = real_provider.get_hardware_stats()
+            dashboard_data['summary_stats']['total_hardware'] = hardware_stats.get('total_items', 0)
+            dashboard_data['summary_stats']['available_hardware'] = hardware_stats.get('available_items', 0)
+        
+        print(f"✅ Loaded real dashboard data successfully")
+        
+    except Exception as e:
+        print(f"❌ Error loading real dashboard data: {e}")
+        # Fallback to dummy data
+        dashboard_data = get_dashboard_stats()
+        
+        # Add hardware stats to the data
+        try:
+            from dashboard_data_providers import HardwareProvider
+            hardware_stats = HardwareProvider.get_hardware_stats()
+            dashboard_data['summary_stats']['total_hardware'] = hardware_stats.get('total_items', 0)
+            dashboard_data['summary_stats']['available_hardware'] = hardware_stats.get('available_items', 0)
+        except Exception as e:
+            print(f"Error loading hardware stats: {e}")
+            dashboard_data['summary_stats']['total_hardware'] = 0
+            dashboard_data['summary_stats']['available_hardware'] = 0
+    
+    return render_template(
+        'admin/super_admin_dashboard.html',
         api_url=PROXY_PREFIX,
         dashboard_data=dashboard_data,
         active_page='dashboard'
