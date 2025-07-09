@@ -144,34 +144,53 @@ class EndpointTestClient:
         return self._request("GET", f"/empresas/{empresa_id}/usuarios/including-inactive")
 
     def get_usuarios_data_for_frontend(self, empresa_id: str) -> Dict[str, Any]:
-        """Get usuarios data formatted for frontend with simple stats"""
+        """Get usuarios data formatted for frontend with statistics from backend."""
         try:
+            # Prefer endpoint that includes inactive users and returns stats
             response = self.get_usuarios_including_inactive(empresa_id)
+
+            # Fallback to standard endpoint if the first fails
+            if not response.ok:
+                response = self.get_usuarios_by_empresa(empresa_id)
+
             if response.ok:
                 data = response.json()
                 if data.get('success'):
                     usuarios = data.get('data', [])
+                    backend_stats = data.get('stats') or {}
+
+                    # Use stats from backend when available, otherwise compute them
+                    total = backend_stats.get('total', len(usuarios))
+                    active = backend_stats.get(
+                        'activos', len([u for u in usuarios if u.get('activo', True)])
+                    )
+                    inactive = backend_stats.get(
+                        'inactivos', len([u for u in usuarios if not u.get('activo', True)])
+                    )
+
                     stats = {
-                        'total_users': len(usuarios),
-                        'active_users': len([u for u in usuarios if u.get('activo', True)]),
-                        'inactive_users': len([u for u in usuarios if not u.get('activo', True)])
+                        'total_users': total,
+                        'active_users': active,
+                        'inactive_users': inactive,
                     }
+
                     return {
                         'usuarios': usuarios,
                         'usuarios_stats': stats,
-                        'count': len(usuarios)
+                        'count': len(usuarios),
                     }
         except Exception as e:
             print(f"Error getting usuarios data: {e}")
 
+        # Fallback empty structure if everything fails
         return {
             'usuarios': [],
             'usuarios_stats': {
                 'total_users': 0,
                 'active_users': 0,
-                'inactive_users': 0
+                'inactive_users': 0,
             },
-            'count': 0
+            'count': 0,
         }
 
     # ------------------------------------------------------------------
