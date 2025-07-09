@@ -15,7 +15,6 @@ import os
 from dotenv import load_dotenv
 from dashboard_data_providers import (
     get_dashboard_stats,
-    get_companies_stats,
     get_detailed_statistics,
     get_company_types_data,
 )
@@ -238,13 +237,25 @@ def admin_users():
 def admin_empresas():
     """Gestión de empresas - Solo para super_admin"""
     
-    # Get companies dummy data from Python providers
-    companies_data = get_companies_stats()
+    # Get companies data from backend to render real stats immediately
+    try:
+        companies_data = g.api_client.get_empresas_data_for_frontend(include_inactive=True)
+    except Exception as e:
+        print(f"Error getting empresas data: {e}")
+        companies_data = {
+            'empresas': [],
+            'empresas_stats': {
+                'total_empresas': 0,
+                'active_empresas': 0,
+                'inactive_empresas': 0
+            },
+            'count': 0
+        }
 
-    # Pre-calculate some basic stats for immediate rendering
-    recent_companies = companies_data.get('recent_companies', [])
-    total_companies = companies_data.get('total_companies', len(recent_companies))
-    active_companies = sum(1 for c in recent_companies if c.get('status') == 'active')
+    stats = companies_data.get('empresas_stats', {})
+    empresas_list = companies_data.get('empresas', [])
+    total_companies = stats.get('total_empresas', len(empresas_list))
+    active_companies = stats.get('active_empresas', len([e for e in empresas_list if e.get('activa')]))
 
     return render_template(
         'admin/empresas.html',
