@@ -254,7 +254,7 @@ class UsuariosMain {
         this.renderUsuarios();
         
         // Actualizar estadísticas inmediatamente con todos los datos (igual que hardware)
-        this.updateStats(data);
+        this.updateUserStats(data);
         
         // DESPUÉS aplicar filtros automáticos
         this.applyFilters();
@@ -326,7 +326,7 @@ class UsuariosMain {
       statsDiv.style.display = 'grid';
       console.log('📊 Stats mostrados - display:', statsDiv.style.display);
       // Re-render stats when made visible
-      this.updateStats();
+      this.updateUserStats();
     } else {
       console.error('❌ No se encontró el elemento usuariosStatsGrid');
     }
@@ -350,8 +350,8 @@ class UsuariosMain {
   /**
    * Update stats
    */
-  updateStats(data = null) {
-    console.log('📊 DEBUG: Iniciando updateStats()');
+  updateUserStats(data = null) {
+    console.log('📊 DEBUG: Iniciando updateUserStats()');
     console.log('  - data recibida:', data);
     console.log('  - this.usuariosAll:', this.usuariosAll);
     console.log('  - this.usuariosAll.length:', this.usuariosAll ? this.usuariosAll.length : 'null');
@@ -785,7 +785,7 @@ class UsuariosMain {
       console.log('📋 No hay usuarios para filtrar');
       this.usuarios = [];
       this.renderUsuarios();
-      this.updateStats();
+      this.updateUserStats();
       return;
     }
 
@@ -828,7 +828,7 @@ class UsuariosMain {
     console.log('🔍 Usuarios finales:', filteredUsuarios.map(u => u.nombre));
     
     this.renderUsuarios();
-    this.updateStats();
+    this.updateUserStats();
     this.updateHeaderBadge();
     
     console.log(`🔍 Filtros aplicados: ${filteredUsuarios.length}/${this.usuariosAll.length} usuarios`);
