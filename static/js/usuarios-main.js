@@ -325,6 +325,8 @@ class UsuariosMain {
     if (statsDiv) {
       statsDiv.style.display = 'grid';
       console.log('📊 Stats mostrados - display:', statsDiv.style.display);
+      // Re-render stats when made visible
+      this.updateStats();
     } else {
       console.error('❌ No se encontró el elemento usuariosStatsGrid');
     }
