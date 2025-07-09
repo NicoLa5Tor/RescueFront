@@ -230,7 +230,47 @@ def admin_dashboard():
 @require_role(['super_admin', 'empresa'])
 def admin_users():
     """Gestión de usuarios - Para super_admin y empresa"""
-    return render_template('admin/users.html', api_url=PROXY_PREFIX, active_page='users')
+
+    user_role = session.get('user', {}).get('role')
+    empresa_id = session.get('user', {}).get('id') if user_role == 'empresa' else None
+    empresa_username = session.get('user', {}).get('username') if user_role == 'empresa' else None
+
+    usuarios_data = None
+    initial_total_users = 0
+    initial_active_users = 0
+
+    if user_role == 'empresa' and empresa_id:
+        try:
+            usuarios_data = g.api_client.get_usuarios_data_for_frontend(empresa_id)
+        except Exception as e:
+            print(f"Error getting usuarios data: {e}")
+            usuarios_data = {
+                'usuarios': [],
+                'usuarios_stats': {
+                    'total_users': 0,
+                    'active_users': 0,
+                    'inactive_users': 0
+                },
+                'count': 0
+            }
+
+        stats = usuarios_data.get('usuarios_stats', {})
+        usuarios_list = usuarios_data.get('usuarios', [])
+        initial_total_users = stats.get('total_users', len(usuarios_list))
+        initial_active_users = stats.get('active_users', len([u for u in usuarios_list if u.get('activo')]))
+
+    return render_template(
+        'admin/users.html',
+        api_url=PROXY_PREFIX,
+        active_page='users',
+        user_role=user_role,
+        empresa_view=user_role == 'empresa',
+        empresa_id=empresa_id,
+        empresa_username=empresa_username,
+        usuarios_data=usuarios_data,
+        initial_total_users=initial_total_users,
+        initial_active_users=initial_active_users
+    )
 
 @app.route('/admin/empresas')
 @require_role(['super_admin'])
@@ -436,15 +476,37 @@ def empresa_usuarios():
     # Get empresa info from session
     empresa_id = session.get('user', {}).get('id')
     empresa_username = session.get('user', {}).get('username')
-    
+
+    try:
+        usuarios_data = g.api_client.get_usuarios_data_for_frontend(empresa_id)
+    except Exception as e:
+        print(f"Error getting usuarios data: {e}")
+        usuarios_data = {
+            'usuarios': [],
+            'usuarios_stats': {
+                'total_users': 0,
+                'active_users': 0,
+                'inactive_users': 0
+            },
+            'count': 0
+        }
+
+    stats = usuarios_data.get('usuarios_stats', {})
+    usuarios_list = usuarios_data.get('usuarios', [])
+    initial_total_users = stats.get('total_users', len(usuarios_list))
+    initial_active_users = stats.get('active_users', len([u for u in usuarios_list if u.get('activo')]))
+
     return render_template(
-        'admin/users.html', 
-        api_url=PROXY_PREFIX, 
+        'admin/users.html',
+        api_url=PROXY_PREFIX,
         active_page='users',
         user_role='empresa',
         empresa_view=True,
         empresa_id=empresa_id,
-        empresa_username=empresa_username
+        empresa_username=empresa_username,
+        usuarios_data=usuarios_data,
+        initial_total_users=initial_total_users,
+        initial_active_users=initial_active_users
     )
 
 # Hardware no disponible para empresas

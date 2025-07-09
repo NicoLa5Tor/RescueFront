@@ -139,6 +139,41 @@ class EndpointTestClient:
     def delete_usuario_by_empresa(self, empresa_id: str, usuario_id: str) -> requests.Response:
         return self._request("DELETE", f"/empresas/{empresa_id}/usuarios/{usuario_id}")
 
+    def get_usuarios_including_inactive(self, empresa_id: str) -> requests.Response:
+        """GET /empresas/{empresa_id}/usuarios/including-inactive"""
+        return self._request("GET", f"/empresas/{empresa_id}/usuarios/including-inactive")
+
+    def get_usuarios_data_for_frontend(self, empresa_id: str) -> Dict[str, Any]:
+        """Get usuarios data formatted for frontend with simple stats"""
+        try:
+            response = self.get_usuarios_including_inactive(empresa_id)
+            if response.ok:
+                data = response.json()
+                if data.get('success'):
+                    usuarios = data.get('data', [])
+                    stats = {
+                        'total_users': len(usuarios),
+                        'active_users': len([u for u in usuarios if u.get('activo', True)]),
+                        'inactive_users': len([u for u in usuarios if not u.get('activo', True)])
+                    }
+                    return {
+                        'usuarios': usuarios,
+                        'usuarios_stats': stats,
+                        'count': len(usuarios)
+                    }
+        except Exception as e:
+            print(f"Error getting usuarios data: {e}")
+
+        return {
+            'usuarios': [],
+            'usuarios_stats': {
+                'total_users': 0,
+                'active_users': 0,
+                'inactive_users': 0
+            },
+            'count': 0
+        }
+
     # ------------------------------------------------------------------
     # Hardware endpoints
     # ------------------------------------------------------------------
