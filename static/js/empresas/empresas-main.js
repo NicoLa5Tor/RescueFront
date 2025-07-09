@@ -251,7 +251,7 @@ class EmpresasMain {
         this.renderEmpresas();
         
         // Actualizar estadísticas inmediatamente con todos los datos (igual que hardware)
-        this.updateStats(data);
+        this.updateEmpresaStats(data);
         
         // DESPUÉS aplicar filtros automáticos
         this.applyFilters();
@@ -340,8 +340,8 @@ class EmpresasMain {
   /**
    * Update statistics
    */
-  updateStats(data = null) {
-    console.log('📊 DEBUG updateStats() en empresas:');
+  updateEmpresaStats(data = null) {
+    console.log('📊 DEBUG updateEmpresaStats() en empresas:');
     console.log('  - data recibida:', data);
     
     // Usar datos del backend si están disponibles
@@ -380,10 +380,10 @@ class EmpresasMain {
       
       // Actualizar directamente los elementos del DOM
       const elementos = {
-        'totalEmpresasCount': totalCount,
-        'activeEmpresasCount': activasCount,
-        'locationsCount': ubicaciones.size,
-        'recentEmpresasCount': esteMesCount
+        'empresasTotalCount': totalCount,
+        'empresasActiveCount': activasCount,
+        'empresasLocationsCount': ubicaciones.size,
+        'empresasRecentCount': esteMesCount
       };
       
       console.log('🎨 Actualizando elementos del DOM:', elementos);
@@ -450,10 +450,10 @@ class EmpresasMain {
     // Imprimir TODOS los elementos disponibles en el DOM
     console.log('🔍 Buscando elementos de estadísticas en el DOM:');
     const todosLosElementos = [
-      'totalEmpresasCount',
-      'activeEmpresasCount', 
-      'locationsCount',
-      'recentEmpresasCount'
+      'empresasTotalCount',
+      'empresasActiveCount',
+      'empresasLocationsCount',
+      'empresasRecentCount'
     ];
     
     todosLosElementos.forEach(id => {
@@ -472,10 +472,10 @@ class EmpresasMain {
     }) : [];
 
     const elements = {
-      'totalEmpresasCount': stats.total,
-      'activeEmpresasCount': stats.active,
-      'locationsCount': locations.size,
-      'recentEmpresasCount': recentEmpresas.length
+      'empresasTotalCount': stats.total,
+      'empresasActiveCount': stats.active,
+      'empresasLocationsCount': locations.size,
+      'empresasRecentCount': recentEmpresas.length
     };
     
     console.log('🎨 Elementos a actualizar:', elements);
@@ -860,7 +860,7 @@ class EmpresasMain {
       console.log('📋 No hay empresas para filtrar');
       this.empresas = [];
       this.renderEmpresas();
-      this.updateStats();
+      this.updateEmpresaStats();
       return;
     }
 
@@ -917,7 +917,7 @@ class EmpresasMain {
     console.log('🔍 Empresas finales:', filteredEmpresas.map(e => e.nombre));
     
     this.renderEmpresas();
-    this.updateStats();
+    this.updateEmpresaStats();
 
     console.log(`🔍 Filtros aplicados: ${filteredEmpresas.length}/${this.empresasAll.length} empresas`);
     console.log('🔍 Filtros actuales:', this.currentFilters);
