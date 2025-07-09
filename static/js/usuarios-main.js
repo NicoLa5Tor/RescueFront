@@ -379,11 +379,11 @@ class UsuariosMain {
       console.log('📊 Actualizando elementos DOM con estadísticas del backend:', stats);
 
       const elements = {
-        'totalUsersCount': stats.total,
-        'activeUsersCount': stats.active,
+        'usersTotalCount': stats.total,
+        'usersActiveCount': stats.active,
         'inactiveUsersCount': stats.inactive,
-        'uniqueRolesCount': stats.roles,
-        'newUsersCount': stats.newThisMonth
+        'usersRolesCount': stats.roles,
+        'usersNewCount': stats.newThisMonth
       };
 
       Object.entries(elements).forEach(([elementId, value]) => {
@@ -429,11 +429,11 @@ class UsuariosMain {
       };
       
       const elements = {
-        'totalUsersCount': stats.total,
-        'activeUsersCount': stats.active,
+        'usersTotalCount': stats.total,
+        'usersActiveCount': stats.active,
         'inactiveUsersCount': stats.inactive,
-        'uniqueRolesCount': stats.roles,
-        'newUsersCount': stats.newThisMonth
+        'usersRolesCount': stats.roles,
+        'usersNewCount': stats.newThisMonth
       };
 
       console.log('📊 Actualizando elementos DOM:', elements);
