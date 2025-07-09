@@ -252,15 +252,8 @@ class UsuariosMain {
         
         // Renderizar usuarios (igual que hardware)
         this.renderUsuarios();
-        
-        // Actualizar estadísticas inmediatamente con todos los datos (igual que hardware)
-        this.updateStats(data);
-        
-        // DESPUÉS aplicar filtros automáticos
-        this.applyFilters();
-        this.hideLoadingState();
-        
-        // SIEMPRE mostrar filtros cuando hay usuarios disponibles (incluye inactivos)
+
+        // Mostrar u ocultar filtros antes de actualizar estadísticas
         console.log('📊 Verificando si mostrar filtros - usuariosAll.length:', this.usuariosAll.length);
         if (this.usuariosAll && this.usuariosAll.length > 0) {
           console.log('📊 Mostrando filtros porque hay usuarios disponibles');
@@ -269,6 +262,13 @@ class UsuariosMain {
           console.log('📊 Ocultando filtros porque no hay usuarios');
           this.hideFilters();
         }
+
+        // Actualizar estadísticas inmediatamente con todos los datos (igual que hardware)
+        this.updateStats(data);
+
+        // DESPUÉS aplicar filtros automáticos
+        this.applyFilters();
+        this.hideLoadingState();
       } else {
         this.showError('Formato de respuesta inesperado');
       }
@@ -325,9 +325,24 @@ class UsuariosMain {
     if (statsDiv) {
       statsDiv.style.display = 'grid';
       console.log('📊 Stats mostrados - display:', statsDiv.style.display);
+      // Ensure cards are visible in case animations didn't run
+      this.ensureStatsVisibility();
     } else {
       console.error('❌ No se encontró el elemento usuariosStatsGrid');
     }
+  }
+
+  /**
+   * Force visibility of stat cards (useful if GSAP animations fail)
+   */
+  ensureStatsVisibility() {
+    const cards = document.querySelectorAll('#usuariosStatsGrid .ios-stat-card');
+    cards.forEach(card => {
+      card.style.opacity = '1';
+      card.style.transform = 'none';
+      card.style.visibility = 'visible';
+    });
+    console.log(`👁️ Stats visibility ensured for ${cards.length} cards`);
   }
   
   /**
