@@ -252,8 +252,20 @@ class UsuariosMain {
         
         // Renderizar usuarios (igual que hardware)
         this.renderUsuarios();
+<<<<<<< HEAD
 
         // Mostrar u ocultar filtros antes de actualizar estadísticas
+=======
+        
+        // Actualizar estadísticas inmediatamente con todos los datos (igual que hardware)
+        this.updateUserStats(data);
+        
+        // DESPUÉS aplicar filtros automáticos
+        this.applyFilters();
+        this.hideLoadingState();
+        
+        // SIEMPRE mostrar filtros cuando hay usuarios disponibles (incluye inactivos)
+>>>>>>> codex/fix-user-stats-card-rendering
         console.log('📊 Verificando si mostrar filtros - usuariosAll.length:', this.usuariosAll.length);
         if (this.usuariosAll && this.usuariosAll.length > 0) {
           console.log('📊 Mostrando filtros porque hay usuarios disponibles');
@@ -325,8 +337,13 @@ class UsuariosMain {
     if (statsDiv) {
       statsDiv.style.display = 'grid';
       console.log('📊 Stats mostrados - display:', statsDiv.style.display);
+<<<<<<< HEAD
       // Ensure cards are visible in case animations didn't run
       this.ensureStatsVisibility();
+=======
+      // Re-render stats when made visible
+      this.updateUserStats();
+>>>>>>> codex/fix-user-stats-card-rendering
     } else {
       console.error('❌ No se encontró el elemento usuariosStatsGrid');
     }
@@ -363,8 +380,8 @@ class UsuariosMain {
   /**
    * Update stats
    */
-  updateStats(data = null) {
-    console.log('📊 DEBUG: Iniciando updateStats()');
+  updateUserStats(data = null) {
+    console.log('📊 DEBUG: Iniciando updateUserStats()');
     console.log('  - data recibida:', data);
     console.log('  - this.usuariosAll:', this.usuariosAll);
     console.log('  - this.usuariosAll.length:', this.usuariosAll ? this.usuariosAll.length : 'null');
@@ -392,11 +409,11 @@ class UsuariosMain {
       console.log('📊 Actualizando elementos DOM con estadísticas del backend:', stats);
 
       const elements = {
-        'totalUsersCount': stats.total,
-        'activeUsersCount': stats.active,
+        'usersTotalCount': stats.total,
+        'usersActiveCount': stats.active,
         'inactiveUsersCount': stats.inactive,
-        'uniqueRolesCount': stats.roles,
-        'newUsersCount': stats.newThisMonth
+        'usersRolesCount': stats.roles,
+        'usersNewCount': stats.newThisMonth
       };
 
       Object.entries(elements).forEach(([elementId, value]) => {
@@ -442,11 +459,11 @@ class UsuariosMain {
       };
       
       const elements = {
-        'totalUsersCount': stats.total,
-        'activeUsersCount': stats.active,
+        'usersTotalCount': stats.total,
+        'usersActiveCount': stats.active,
         'inactiveUsersCount': stats.inactive,
-        'uniqueRolesCount': stats.roles,
-        'newUsersCount': stats.newThisMonth
+        'usersRolesCount': stats.roles,
+        'usersNewCount': stats.newThisMonth
       };
 
       console.log('📊 Actualizando elementos DOM:', elements);
@@ -798,7 +815,7 @@ class UsuariosMain {
       console.log('📋 No hay usuarios para filtrar');
       this.usuarios = [];
       this.renderUsuarios();
-      this.updateStats();
+      this.updateUserStats();
       return;
     }
 
@@ -841,7 +858,7 @@ class UsuariosMain {
     console.log('🔍 Usuarios finales:', filteredUsuarios.map(u => u.nombre));
     
     this.renderUsuarios();
-    this.updateStats();
+    this.updateUserStats();
     this.updateHeaderBadge();
     
     console.log(`🔍 Filtros aplicados: ${filteredUsuarios.length}/${this.usuariosAll.length} usuarios`);
