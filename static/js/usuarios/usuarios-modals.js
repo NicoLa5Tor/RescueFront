@@ -394,25 +394,41 @@ editForm.addEventListener('submit', (e) => {
         rol: document.getElementById('editUserRol').value
       };
 
-      // Validate form con mensajes más específicos
+      // Validar formulario y construir mensajes en español
       const validationErrors = [];
-      
+
       if (!formData.nombre || formData.nombre.length < 2) {
         validationErrors.push('El nombre es obligatorio y debe tener al menos 2 caracteres');
       }
-      
+
+      if (!formData.email) {
+        validationErrors.push('El correo es obligatorio');
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+        validationErrors.push('El formato del correo no es válido');
+      }
+
       if (!formData.cedula) {
         validationErrors.push('La cédula es obligatoria');
       } else if (!/^\d{6,15}$/.test(formData.cedula)) {
         validationErrors.push('La cédula debe contener solo números y tener entre 6 y 15 dígitos');
       }
-      
-      if (formData.telefono && !/^\d{7,15}$/.test(formData.telefono)) {
+
+      if (!formData.telefono) {
+        validationErrors.push('El teléfono es obligatorio');
+      } else if (!/^\d{7,15}$/.test(formData.telefono)) {
         validationErrors.push('El teléfono debe contener solo números y tener entre 7 y 15 dígitos');
       }
-      
-      if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-        validationErrors.push('El formato del email no es válido');
+
+      if (!formData.sede) {
+        validationErrors.push('Debe seleccionar una sede');
+      }
+
+      if (!formData.tipo_turno) {
+        validationErrors.push('Debe seleccionar un tipo de turno');
+      }
+
+      if (!formData.rol) {
+        validationErrors.push('Debe seleccionar un rol');
       }
       
       if (validationErrors.length > 0) {
@@ -826,25 +842,41 @@ editForm.addEventListener('submit', (e) => {
         rol: document.getElementById('createUserRol').value
       };
 
-      // Validate form con mensajes más específicos
+      // Validar formulario y construir mensajes en español
       const validationErrors = [];
-      
+
       if (!formData.nombre || formData.nombre.length < 2) {
         validationErrors.push('El nombre es obligatorio y debe tener al menos 2 caracteres');
       }
-      
+
+      if (!formData.email) {
+        validationErrors.push('El correo es obligatorio');
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+        validationErrors.push('El formato del correo no es válido');
+      }
+
       if (!formData.cedula) {
         validationErrors.push('La cédula es obligatoria');
       } else if (!/^\d{6,15}$/.test(formData.cedula)) {
         validationErrors.push('La cédula debe contener solo números y tener entre 6 y 15 dígitos');
       }
-      
-      if (formData.telefono && !/^\d{7,15}$/.test(formData.telefono)) {
+
+      if (!formData.telefono) {
+        validationErrors.push('El teléfono es obligatorio');
+      } else if (!/^\d{7,15}$/.test(formData.telefono)) {
         validationErrors.push('El teléfono debe contener solo números y tener entre 7 y 15 dígitos');
       }
-      
-      if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-        validationErrors.push('El formato del email no es válido');
+
+      if (!formData.sede) {
+        validationErrors.push('Debe seleccionar una sede');
+      }
+
+      if (!formData.tipo_turno) {
+        validationErrors.push('Debe seleccionar un tipo de turno');
+      }
+
+      if (!formData.rol) {
+        validationErrors.push('Debe seleccionar un rol');
       }
       
       if (validationErrors.length > 0) {
