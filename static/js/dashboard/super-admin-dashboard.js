@@ -274,15 +274,43 @@ class SuperAdminDashboard {
         // Log available fields for debugging
         console.log('Available fields:', Object.keys(stats));
         
-        // Update summary statistics - use the actual field names from the API
-        const totalEmpresas = stats.total_empresas || stats.total_companies || 0;
-        const activeEmpresas = stats.active_empresas || stats.active_companies || 0;
-        const totalUsers = stats.total_users || stats.total_usuarios || 0;
-        const activeUsers = stats.active_users || stats.usuarios_activos || 0;
-        const totalHardware = stats.total_hardware || 0;
-        const availableHardware = stats.available_hardware || 0;
-        const performance = stats.performance || 0;
-        const avgPerformance = stats.avg_performance || 0;
+        // Update summary statistics - support different naming conventions
+        const totalEmpresas =
+            stats.total_empresas ||
+            stats.totalEmpresas ||
+            stats.total_companies ||
+            0;
+        const activeEmpresas =
+            stats.active_empresas ||
+            stats.activeEmpresas ||
+            stats.active_companies ||
+            0;
+        const totalUsers =
+            stats.total_users ||
+            stats.totalUsers ||
+            stats.total_usuarios ||
+            0;
+        const activeUsers =
+            stats.active_users ||
+            stats.activeUsers ||
+            stats.usuarios_activos ||
+            0;
+        const totalHardware =
+            stats.total_hardware ||
+            stats.totalHardware ||
+            0;
+        const availableHardware =
+            stats.available_hardware ||
+            stats.availableHardware ||
+            0;
+        const performance =
+            stats.performance ||
+            stats.performanceValue ||
+            0;
+        const avgPerformance =
+            stats.avg_performance ||
+            stats.avgPerformance ||
+            0;
         
         console.log('Processing values:', {
             totalEmpresas,
