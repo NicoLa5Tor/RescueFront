@@ -34,6 +34,9 @@ class EmpresasModals {
       // Setup event listeners
       this.setupEventListeners();
       
+      // Load tipos de empresa
+      this.loadTiposEmpresa();
+      
       console.log('🏢 Modales de empresas inicializados correctamente');
       
     } catch (error) {
@@ -208,6 +211,17 @@ class EmpresasModals {
                   </label>
                   <input type="text" id="empresaUbicacion" class="ios-blur-input" required
                          placeholder="Ciudad, País">
+                </div>
+                
+                <!-- Tipo de Empresa -->
+                <div class="form-group">
+                  <label for="empresaTipo" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+                    <i class="fas fa-tags text-pink-400 mr-2"></i>Tipo de Empresa *
+                  </label>
+                  <select id="empresaTipo" class="ios-blur-input" required>
+                    <option value="">Seleccionar tipo...</option>
+                    <!-- Options will be loaded dynamically from backend -->
+                  </select>
                 </div>
                 
                 <!-- Descripción -->
@@ -493,6 +507,9 @@ class EmpresasModals {
       document.getElementById('passwordGroup').style.display = 'block';
       document.getElementById('empresaPassword').required = true;
       
+      // Reload tipos de empresa to ensure they're up to date
+      this.loadTiposEmpresa();
+      
       // Open modal
       const modal = document.getElementById('empresaModal');
       this.openModal(modal);
@@ -518,7 +535,10 @@ class EmpresasModals {
       document.getElementById('passwordGroup').style.display = 'none';
       document.getElementById('empresaPassword').required = false;
       
-      // Load empresa data
+      // Reload tipos de empresa to ensure they're up to date
+      await this.loadTiposEmpresa();
+      
+      // Load empresa data AFTER tipos are loaded
       await this.loadEmpresaDataForEdit(empresaId);
       
       // Open modal
@@ -536,17 +556,29 @@ class EmpresasModals {
    */
   async loadEmpresaDataForEdit(empresaId) {
     try {
+      console.log('🔄 Cargando datos de empresa para edición:', empresaId);
       const response = await this.apiClient.get_empresa(empresaId);
+      
+      console.log('📡 Respuesta del backend:', {
+        status: response.status,
+        statusText: response.statusText,
+        ok: response.ok
+      });
+      
       const data = await response.json();
+      console.log('📦 Datos recibidos del backend:', data);
       
       if (data.success && data.data) {
+        console.log('✅ Datos de empresa válidos, populando formulario...');
         this.populateFormWithEmpresaData(data.data);
       } else {
+        console.error('❌ Respuesta del backend no válida:', data);
         throw new Error(data.errors?.[0] || 'Error al cargar datos');
       }
       
     } catch (error) {
       console.error('💥 Error al cargar datos de empresa:', error);
+      this.showNotification('Error al cargar los datos de la empresa desde el servidor', 'error');
       this.loadDummyDataIntoForm();
     }
   }
@@ -555,11 +587,63 @@ class EmpresasModals {
    * Populate form with empresa data
    */
   populateFormWithEmpresaData(empresa) {
+    console.log('📝 Populando formulario con datos de empresa:', empresa);
+    
     document.getElementById('empresaNombre').value = empresa.nombre || '';
     document.getElementById('empresaUsername').value = empresa.username || '';
     document.getElementById('empresaEmail').value = empresa.email || '';
     document.getElementById('empresaUbicacion').value = empresa.ubicacion || '';
     document.getElementById('empresaDescripcion').value = empresa.descripcion || '';
+    
+    // Load tipo de empresa with better handling
+    const tipoSelect = document.getElementById('empresaTipo');
+    if (tipoSelect) {
+      // Check what tipo values are available in the empresa object
+      // Backend returns 'tipo_empresa_id' as the ObjectId string
+      const empresaTipoId = empresa.tipo_empresa_id || empresa.tipo || empresa.tipo_empresa || empresa.tipo_id;
+      console.log('🏷️ Tipo de empresa ID encontrado:', empresaTipoId);
+      console.log('🔍 Opciones disponibles en select:', Array.from(tipoSelect.options).map(opt => ({ value: opt.value, text: opt.text })));
+      
+      if (empresaTipoId) {
+        // First try to set the value directly (this should match the option value which is the tipo ID)
+        tipoSelect.value = empresaTipoId;
+        
+        // Check if the option exists
+        const optionExists = Array.from(tipoSelect.options).some(option => option.value === empresaTipoId);
+        console.log('✅ Opción existe en select:', optionExists);
+        
+        if (!optionExists) {
+          // If no option exists, this means we need to reload tipos de empresa
+          console.log('⚠️ El tipo de empresa no existe en las opciones disponibles. Recargando tipos...');
+          this.loadTiposEmpresa().then(() => {
+            // After reloading, try to set the value again
+            setTimeout(() => {
+              const optionExistsAfterReload = Array.from(tipoSelect.options).some(option => option.value === empresaTipoId);
+              if (optionExistsAfterReload) {
+                tipoSelect.value = empresaTipoId;
+                console.log('✅ Tipo de empresa seleccionado después de recargar:', empresaTipoId);
+              } else {
+                console.log('⚠️ El tipo de empresa sigue sin existir después de recargar. Puede estar inactivo.');
+                // Create a placeholder option to show the current value
+                const newOption = document.createElement('option');
+                newOption.value = empresaTipoId;
+                newOption.text = `Tipo no disponible (${empresaTipoId})`;
+                newOption.style.color = '#999';
+                tipoSelect.add(newOption);
+                tipoSelect.value = empresaTipoId;
+                console.log('➕ Opción placeholder creada:', empresaTipoId);
+              }
+            }, 500);
+          });
+        } else {
+          console.log('✅ Tipo de empresa seleccionado:', empresaTipoId);
+        }
+      } else {
+        console.log('⚠️ No se encontró tipo de empresa en los datos');
+      }
+    } else {
+      console.error('❌ Select de tipo de empresa no encontrado');
+    }
     
     // Load sedes
     this.sedes = empresa.sedes || ['Principal'];
@@ -583,7 +667,7 @@ class EmpresasModals {
     this.sedes = ['Principal'];
     this.renderSedes();
     
-    this.roles = [];
+    this.roles = ['Empleado'];
     this.renderRoles();
   }
 
@@ -619,6 +703,18 @@ class EmpresasModals {
   populateViewModal(empresa) {
     const iniciales = this.getIniciales(empresa.nombre);
     
+    // Find the tipo name from the tipo_empresa_id
+    let tipoNombre = 'N/A';
+    if (empresa.tipo_empresa_id && window.empresasMain && window.empresasMain.tiposEmpresa) {
+      const tipoEncontrado = window.empresasMain.tiposEmpresa.find(tipo => tipo._id === empresa.tipo_empresa_id);
+      if (tipoEncontrado) {
+        tipoNombre = tipoEncontrado.nombre;
+      }
+    } else if (empresa.tipo || empresa.tipo_empresa) {
+      // Fallback to direct tipo field if available
+      tipoNombre = empresa.tipo || empresa.tipo_empresa;
+    }
+    
     const content = `
       <div class="space-y-4">
         <div class="flex items-center space-x-3">
@@ -633,6 +729,7 @@ class EmpresasModals {
         <div class="text-sm text-gray-600 dark:text-gray-300">
           <p class="mb-1">Usuario: ${empresa.username || 'N/A'}</p>
           <p class="mb-1">Email: ${empresa.email || 'N/A'}</p>
+          <p class="mb-1">Tipo: ${tipoNombre}</p>
           <p class="mb-1">Estado: ${empresa.activa !== false ? 'Activa' : 'Inactiva'}</p>
           <p class="mb-1">Creada: ${this.formatDate(empresa.fecha_creacion)}</p>
           <p>Descripción: ${empresa.descripcion || 'Sin descripción'}</p>
@@ -674,6 +771,45 @@ class EmpresasModals {
     try {
       const formData = this.buildFormData();
       
+      // Validate that at least one sede and one role are provided
+      if (!formData.sedes || formData.sedes.length === 0) {
+        this.showNotification('Error: Debe agregar al menos una sede para la empresa', 'error');
+        return;
+      }
+      
+      if (!formData.roles || formData.roles.length === 0) {
+        this.showNotification('Error: Debe agregar al menos un rol para la empresa', 'error');
+        return;
+      }
+      
+      // Validate that sedes are not empty
+      const sedesVacias = formData.sedes.filter(sede => !sede || sede.trim() === '');
+      if (sedesVacias.length > 0) {
+        this.showNotification('Error: Las sedes no pueden estar vacías', 'error');
+        return;
+      }
+      
+      // Validate that roles are not empty
+      const rolesVacios = formData.roles.filter(rol => !rol || rol.trim() === '');
+      if (rolesVacios.length > 0) {
+        this.showNotification('Error: Los roles no pueden estar vacíos', 'error');
+        return;
+      }
+      
+      // Validate for duplicate sedes
+      const sedesUnicas = [...new Set(formData.sedes.map(sede => sede.trim().toLowerCase()))];
+      if (sedesUnicas.length !== formData.sedes.length) {
+        this.showNotification('Error: No puede haber sedes duplicadas', 'error');
+        return;
+      }
+      
+      // Validate for duplicate roles
+      const rolesUnicos = [...new Set(formData.roles.map(rol => rol.trim().toLowerCase()))];
+      if (rolesUnicos.length !== formData.roles.length) {
+        this.showNotification('Error: No puede haber roles duplicados', 'error');
+        return;
+      }
+      
       if (this.currentEditingEmpresa) {
         await this.updateEmpresa(this.currentEditingEmpresa, formData);
       } else {
@@ -696,6 +832,7 @@ class EmpresasModals {
       email: document.getElementById('empresaEmail').value.trim(),
       ubicacion: document.getElementById('empresaUbicacion').value.trim(),
       descripcion: document.getElementById('empresaDescripcion').value.trim(),
+      tipo_empresa_id: document.getElementById('empresaTipo').value.trim(), // Correcting this field
       sedes: this.sedes.filter(sede => sede.trim() !== ''),
       roles: this.roles.filter(rol => rol.trim() !== '')
     };
@@ -961,7 +1098,7 @@ class EmpresasModals {
     this.sedes = ['Principal'];
     this.renderSedes();
     
-    this.roles = [];
+    this.roles = ['Empleado'];
     this.renderRoles();
   }
 
@@ -1139,16 +1276,16 @@ class EmpresasModals {
    */
   closeToggleModal() {
     console.log('🔄 Closing toggle modal');
-    
+  
     const modal = document.getElementById('toggleEmpresaModal');
     const container = document.getElementById('toggleModalContainer');
     const confirmBtn = document.getElementById('toggleConfirmBtn');
-    
+  
     if (!modal) {
       console.error('❌ Modal not found when trying to close');
       return;
     }
-    
+  
     const resetAndHideToggleModal = () => {
       // Use modalManager for consistent closing
       if (window.modalManager) {
@@ -1159,19 +1296,19 @@ class EmpresasModals {
         modal.style.display = 'none';
         document.body.classList.remove('modal-open');
       }
-      
+  
       // Reset button state
       if (confirmBtn) {
         confirmBtn.disabled = false;
         confirmBtn.innerHTML = '<i class="fas fa-check" id="toggleConfirmIcon"></i> <span id="toggleConfirmText">Confirmar</span>';
       }
-      
+  
       // Reset data
       this.currentToggleEmpresa = null;
-      
+  
       console.log('✅ Toggle modal closed and fully reset');
     };
-    
+  
     // GSAP close animation
     if (typeof gsap !== 'undefined' && container) {
       gsap.to(container, {
@@ -1185,7 +1322,7 @@ class EmpresasModals {
       resetAndHideToggleModal();
     }
   }
-
+  
   /**
    * Confirm toggle - SAME AS HARDWARE/COMPANY TYPES
    */
@@ -1194,22 +1331,22 @@ class EmpresasModals {
       // Show loading state
       const confirmBtn = document.getElementById('toggleConfirmBtn');
       const originalContent = confirmBtn.innerHTML;
-      
+  
       confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
       confirmBtn.disabled = true;
-      
+  
       try {
         const { id, newStatus } = this.currentToggleEmpresa;
-        
+  
         console.log(`🔄 Executing toggle for empresa ${id} to ${newStatus ? 'active' : 'inactive'}`);
-        
+  
         const response = await this.apiClient.toggle_empresa_status(id, newStatus);
         const data = await response.json();
-        
+  
         if (data.success) {
           this.closeToggleModal();
           this.showSuccessModal(data.message || `Empresa ${newStatus ? 'activada' : 'desactivada'} exitosamente`);
-          
+  
           // Reload empresas list
           if (window.empresasMain) {
             setTimeout(() => window.empresasMain.loadEmpresas(), 1000);
@@ -1219,13 +1356,100 @@ class EmpresasModals {
           confirmBtn.disabled = false;
           this.showNotification('Error: ' + (data.errors?.[0] || 'Error desconocido'), 'error');
         }
-        
+  
       } catch (error) {
         console.error('💥 Error al ejecutar toggle:', error);
         confirmBtn.innerHTML = originalContent;
         confirmBtn.disabled = false;
         this.showNotification('Error de conexión', 'error');
       }
+    }
+  }
+
+  /**
+   * Load tipos de empresa
+   */
+  async loadTiposEmpresa() {
+    try {
+      console.log('🔄 Cargando tipos de empresa...');
+      const response = await this.apiClient.get_tipos_empresa_activos();
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      console.log('📊 Respuesta tipos de empresa:', data);
+
+      if (data.success && data.data && Array.isArray(data.data)) {
+        const tipoSelect = document.getElementById('empresaTipo');
+        if (!tipoSelect) {
+          console.error('❌ Select de tipos de empresa no encontrado');
+          return;
+        }
+        
+        // Save current selection if any
+        const currentValue = tipoSelect.value;
+        
+        // Clear the select and add placeholder
+        tipoSelect.innerHTML = '<option value="">Seleccionar tipo...</option>';
+        
+        // Store tipos globally for reference in other functions
+        if (!window.empresasMain) {
+          window.empresasMain = {};
+        }
+        window.empresasMain.tiposEmpresa = data.data;
+        
+        // Populate select with ID as value and nombre as display text
+        data.data.forEach(tipo => {
+          const option = document.createElement('option');
+          option.value = tipo._id;  // Use ID as value for backend
+          option.text = tipo.nombre;  // Show name to user
+          tipoSelect.add(option);
+        });
+        
+        // Restore selection if it was valid
+        if (currentValue) {
+          const foundTipo = data.data.find(t => t._id === currentValue);
+          if (foundTipo) {
+            tipoSelect.value = currentValue;
+          }
+        }
+        
+        console.log(`✅ ${data.data.length} tipos de empresa cargados`);
+        console.log('📋 Tipos cargados:', data.data.map(t => `${t.nombre} (${t._id})`));
+      } else {
+        throw new Error(data.message || data.error || 'Respuesta inválida del servidor o datos vacíos');
+      }
+    } catch (error) {
+      console.error('💥 Error al cargar tipos de empresa:', error);
+      
+      // Provide fallback options with fake IDs
+      const tipoSelect = document.getElementById('empresaTipo');
+      if (tipoSelect) {
+        tipoSelect.innerHTML = `
+          <option value="">Seleccionar tipo...</option>
+          <option value="fallback-corp">Corporación</option>
+          <option value="fallback-pyme">PYME</option>
+          <option value="fallback-startup">Startup</option>
+          <option value="fallback-ong">ONG</option>
+          <option value="fallback-gov">Gubernamental</option>
+        `;
+        
+        // Store fallback data globally
+        if (!window.empresasMain) {
+          window.empresasMain = {};
+        }
+        window.empresasMain.tiposEmpresa = [
+          { _id: 'fallback-corp', nombre: 'Corporación' },
+          { _id: 'fallback-pyme', nombre: 'PYME' },
+          { _id: 'fallback-startup', nombre: 'Startup' },
+          { _id: 'fallback-ong', nombre: 'ONG' },
+          { _id: 'fallback-gov', nombre: 'Gubernamental' }
+        ];
+      }
+      
+      this.showNotification('Error al cargar tipos de empresa. Se han cargado opciones predeterminadas.', 'warning');
     }
   }
 }

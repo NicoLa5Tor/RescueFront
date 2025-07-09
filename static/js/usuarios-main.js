@@ -107,8 +107,18 @@ class UsuariosMain {
    * Load initial data
    */
   async loadInitialData() {
-    await this.loadEmpresas();
-    // Load usuarios after empresa is selected
+    // Si es usuario tipo empresa, cargar usuarios directamente
+    if (window.userRole === 'empresa' && window.empresaId) {
+      this.currentEmpresa = { 
+        _id: window.empresaId, 
+        nombre: window.empresaNombre || 'Mi Empresa' 
+      };
+      await this.loadUsuarios();
+      this.showFilters();
+    } else {
+      // Para super_admin, cargar lista de empresas
+      await this.loadEmpresas();
+    }
   }
 
   /**
@@ -168,7 +178,14 @@ class UsuariosMain {
 
     this.currentEmpresa = empresa;
     this.updateEmpresaInfo(empresa);
-    await this.loadUsuarios();
+    // Cargar usuarios solo si el rol no es empresa
+    if (window.userRole !== 'empresa') {
+      await this.loadUsuarios();
+    } else {
+      // Usar ID de empresa del usuario logueado
+      this.currentEmpresa = { _id: window.empresaId, nombre: window.empresaNombre };
+      await this.loadUsuarios();
+    }
     this.updateHeaderBadge();
   }
 
@@ -215,7 +232,8 @@ class UsuariosMain {
       if (this.currentFilters.activa === 'all') {
         response = await this.apiClient.get_usuarios_including_inactive(this.currentEmpresa._id);
       } else {
-        response = await this.apiClient.get_usuarios_by_empresa(this.currentEmpresa._id);
+        // Siempre cargar todos los usuarios (incluyendo inactivos) para mostrar filtros
+        response = await this.apiClient.get_usuarios_including_inactive(this.currentEmpresa._id);
       }
 
       if (!response.ok) {
@@ -227,11 +245,30 @@ class UsuariosMain {
 
       if (data.success && Array.isArray(data.data)) {
         this.usuariosAll = data.data;
-        this.usuarios = data.data;
-        console.log(`✅ ${this.usuarios.length} usuarios cargados`);
-        this.updateStats();
+        // Store backend statistics if available
+        this.backendStats = data.stats || null;
+        console.log(`✅ ${this.usuariosAll.length} usuarios cargados desde backend`);
+        console.log('📊 Backend stats received:', this.backendStats);
+        
+        // Renderizar usuarios (igual que hardware)
         this.renderUsuarios();
+        
+        // Actualizar estadísticas inmediatamente con todos los datos (igual que hardware)
+        this.updateStats(data);
+        
+        // DESPUÉS aplicar filtros automáticos
+        this.applyFilters();
         this.hideLoadingState();
+        
+        // SIEMPRE mostrar filtros cuando hay usuarios disponibles (incluye inactivos)
+        console.log('📊 Verificando si mostrar filtros - usuariosAll.length:', this.usuariosAll.length);
+        if (this.usuariosAll && this.usuariosAll.length > 0) {
+          console.log('📊 Mostrando filtros porque hay usuarios disponibles');
+          this.showFilters();
+        } else {
+          console.log('📊 Ocultando filtros porque no hay usuarios');
+          this.hideFilters();
+        }
       } else {
         this.showError('Formato de respuesta inesperado');
       }
@@ -259,34 +296,159 @@ class UsuariosMain {
     
     this.renderUsuarios();
     this.updateHeaderBadge();
+    // Mostrar filtros si hay usuarios disponibles
+    if (this.usuarios && this.usuarios.length > 0) {
+      this.showFilters();
+    }
+  }
+  
+  /**
+   * Show filters section
+   */
+  showFilters() {
+    console.log('📊 Ejecutando showFilters()');
+    const filtersDiv = document.getElementById('usuariosFilters');
+    const statsDiv = document.getElementById('usuariosStatsGrid');
+    
+    console.log('📊 Elementos encontrados:', {
+      filtersDiv: !!filtersDiv,
+      statsDiv: !!statsDiv
+    });
+    
+    if (filtersDiv) {
+      filtersDiv.style.display = 'block';
+      console.log('📊 Filtros mostrados - display:', filtersDiv.style.display);
+    } else {
+      console.error('❌ No se encontró el elemento usuariosFilters');
+    }
+    
+    if (statsDiv) {
+      statsDiv.style.display = 'grid';
+      console.log('📊 Stats mostrados - display:', statsDiv.style.display);
+    } else {
+      console.error('❌ No se encontró el elemento usuariosStatsGrid');
+    }
+  }
+  
+  /**
+   * Hide filters section
+   */
+  hideFilters() {
+    const filtersDiv = document.getElementById('usuariosFilters');
+    const statsDiv = document.getElementById('usuariosStatsGrid');
+    
+    if (filtersDiv) {
+      filtersDiv.style.display = 'none';
+    }
+    if (statsDiv) {
+      statsDiv.style.display = 'none';
+    }
   }
 
   /**
    * Update stats
    */
-  updateStats() {
-    const stats = {
-      total: this.usuariosAll.length,
-      active: this.usuariosAll.filter(u => u.activa !== false).length,
-      inactive: this.usuariosAll.filter(u => u.activa === false).length,
-      roles: new Set(this.usuariosAll.map(u => u.rol).filter(Boolean)).size
-    };
+  updateStats(data = null) {
+    console.log('📊 DEBUG: Iniciando updateStats()');
+    console.log('  - data recibida:', data);
+    console.log('  - this.usuariosAll:', this.usuariosAll);
+    console.log('  - this.usuariosAll.length:', this.usuariosAll ? this.usuariosAll.length : 'null');
+    
+    // Si recibimos data del backend (como hardware), usarla para el total
+    const totalCount = data && data.count !== undefined ? data.count : (this.usuariosAll ? this.usuariosAll.length : 0);
+    
+    if (!this.usuariosAll || this.usuariosAll.length === 0) {
+      console.warn('⚠️ No hay usuarios para calcular estadísticas');
+      return;
+    }
+    
+    // Use backend stats if available
+    if (this.backendStats) {
+      console.log('🗄️ Utilizando estadísticas del backend:', this.backendStats);
 
-    // Update stats elements if they exist
-    const elements = {
-      'totalUsersCount': stats.total,
-      'activeUsersCount': stats.active,
-      'uniqueRolesCount': stats.roles
-    };
+      const stats = {
+        total: this.backendStats.total,
+        active: this.backendStats.activos,
+        inactive: this.backendStats.inactivos,
+        roles: new Set(this.usuariosAll.map(u => u.rol).filter(Boolean)).size,
+        newThisMonth: this.backendStats.newThisMonth || 0
+      };
 
-    Object.entries(elements).forEach(([elementId, value]) => {
-      const element = document.getElementById(elementId);
-      if (element) {
-        element.textContent = value;
-      }
-    });
+      console.log('📊 Actualizando elementos DOM con estadísticas del backend:', stats);
 
-    console.log('📊 Estadísticas actualizadas:', stats);
+      const elements = {
+        'totalUsersCount': stats.total,
+        'activeUsersCount': stats.active,
+        'inactiveUsersCount': stats.inactive,
+        'uniqueRolesCount': stats.roles,
+        'newUsersCount': stats.newThisMonth
+      };
+
+      Object.entries(elements).forEach(([elementId, value]) => {
+        const element = document.getElementById(elementId);
+        console.log(`  - ${elementId}:`, { found: !!element, value: value });
+        if (element) {
+          element.textContent = value;
+          console.log(`    ✓ Actualizado ${elementId} = ${value}`);
+        } else {
+          console.warn(`    ⚠️ Elemento ${elementId} no encontrado`);
+        }
+      });
+
+    } else {
+      console.warn('⚠️ Estadísticas del backend no disponibles, utilizando cálculos locales.');
+      
+      const now = new Date();
+      const currentMonth = now.getMonth();
+      const currentYear = now.getFullYear();
+      
+      // Calculate users created this month
+      let newUsersThisMonth = 0;
+      this.usuariosAll.forEach(u => {
+        if (!u.fecha_creacion) return;
+        try {
+          const userDate = new Date(u.fecha_creacion);
+          const userMonth = userDate.getMonth();
+          const userYear = userDate.getFullYear();
+          if (userMonth === currentMonth && userYear === currentYear) {
+            newUsersThisMonth++;
+          }
+        } catch (e) {
+          console.warn('Fecha de creación inválida para usuario:', u._id, u.fecha_creacion);
+        }
+      });
+      
+      const stats = {
+        total: this.usuariosAll.length,
+        active: this.usuariosAll.filter(u => u.activo === true || u.activo === 1 || u.activo === 'true').length,
+        inactive: this.usuariosAll.filter(u => u.activo === false || u.activo === 0 || u.activo === 'false').length,
+        roles: new Set(this.usuariosAll.map(u => u.rol).filter(Boolean)).size,
+        newThisMonth: newUsersThisMonth
+      };
+      
+      const elements = {
+        'totalUsersCount': stats.total,
+        'activeUsersCount': stats.active,
+        'inactiveUsersCount': stats.inactive,
+        'uniqueRolesCount': stats.roles,
+        'newUsersCount': stats.newThisMonth
+      };
+
+      console.log('📊 Actualizando elementos DOM:', elements);
+      
+      Object.entries(elements).forEach(([elementId, value]) => {
+        const element = document.getElementById(elementId);
+        console.log(`  - ${elementId}:`, { found: !!element, value: value });
+        if (element) {
+          element.textContent = value;
+          console.log(`    ✓ Actualizado ${elementId} = ${value}`);
+        } else {
+          console.warn(`    ⚠️ Elemento ${elementId} no encontrado`);
+        }
+      });
+
+      console.log('📊 Estadísticas actualizadas:', stats);
+    }
   }
 
   /**
@@ -330,13 +492,15 @@ class UsuariosMain {
     const card = document.createElement('div');
     card.className = 'ios-hardware-card usuario-item';
     card.dataset.usuarioId = usuario._id;
-    card.dataset.status = usuario.activa !== false ? 'true' : 'false';
+    // Verificar correctamente el estado del usuario (campo 'activo' desde backend)
+    const isActive = usuario.activo === true || usuario.activo === 1 || usuario.activo === 'true';
+    card.dataset.status = isActive ? 'true' : 'false';
     card.dataset.nombre = usuario.nombre || '';
     card.dataset.email = usuario.email || '';
 
     const iniciales = this.getIniciales(usuario.nombre);
-    const statusClass = usuario.activa !== false ? 'ios-status-available' : 'ios-status-discontinued';
-    const statusText = usuario.activa !== false ? '✅ Activo' : '⚫ Inactivo';
+    const statusClass = isActive ? 'ios-status-available' : 'ios-status-discontinued';
+    const statusText = isActive ? '✅ Activo' : '⚫ Inactivo';
     const fechaCreacion = this.formatDate(usuario.fecha_creacion);
 
     card.innerHTML = `
@@ -419,15 +583,12 @@ class UsuariosMain {
         <button class="ios-card-btn ios-card-btn-primary" onclick="usuariosMain.editUsuario('${usuario._id}')" title="Editar usuario">
           <i class="fas fa-edit"></i>
         </button>
-        <button class="ios-card-btn ${usuario.activa !== false ? 'ios-card-btn-warning' : 'ios-card-btn-success'}" 
+        <button class="ios-card-btn ${isActive ? 'ios-card-btn-warning' : 'ios-card-btn-success'}" 
                 onclick="usuariosMain.toggleUsuarioStatus('${usuario._id}')" 
-                title="${usuario.activa !== false ? 'Desactivar usuario' : 'Activar usuario'}">
-          <i class="fas ${usuario.activa !== false ? 'fa-power-off' : 'fa-play'}"></i>
+                title="${isActive ? 'Desactivar usuario' : 'Activar usuario'}">
+          <i class="fas ${isActive ? 'fa-power-off' : 'fa-play'}"></i>
         </button>
       </div>
-      
-      <!-- iOS Card Shimmer Effect -->
-      <div class="ios-card-shimmer"></div>
     `;
 
     return card;
@@ -439,6 +600,11 @@ class UsuariosMain {
   showEmptyState(container) {
     const hasFilters = this.currentFilters.search || 
                        this.currentFilters.status !== '';
+    
+    // Si hay usuarios disponibles pero no se muestran por filtros, mostrar filtros
+    if (this.usuariosAll && this.usuariosAll.length > 0) {
+      this.showFilters();
+    }
 
     const emptyDiv = document.createElement('div');
     emptyDiv.className = 'text-center py-12 col-span-full';
@@ -518,6 +684,14 @@ class UsuariosMain {
    * Toggle usuario status
    */
   async toggleUsuarioStatus(usuarioId) {
+    // Para usuarios tipo empresa, usar su ID si no hay empresa actual
+    if (!this.currentEmpresa && window.userRole === 'empresa' && window.empresaId) {
+      this.currentEmpresa = {
+        _id: window.empresaId,
+        nombre: window.empresaNombre || 'Mi Empresa'
+      };
+    }
+    
     if (!this.currentEmpresa || !usuarioId) {
       console.warn('⚠️ No hay empresa seleccionada o ID de usuario inválido');
       return;
@@ -530,7 +704,8 @@ class UsuariosMain {
       return;
     }
 
-    const currentStatus = usuario.activo !== false;
+    // Verificar correctamente el estado del usuario (campo 'activo' desde backend)
+    const currentStatus = usuario.activo === true || usuario.activo === 1 || usuario.activo === 'true';
     const userName = usuario.nombre || 'Usuario';
     
     // Use modal to confirm toggle
@@ -600,14 +775,42 @@ class UsuariosMain {
    * Apply filters to usuarios list
    */
   applyFilters() {
+    console.log('🔍 DEBUG: Iniciando applyFilters()');
+    console.log('  - this.usuariosAll:', this.usuariosAll);
+    console.log('  - this.usuariosAll.length:', this.usuariosAll ? this.usuariosAll.length : 'null');
+    
     if (!this.usuariosAll || this.usuariosAll.length === 0) {
       console.log('📋 No hay usuarios para filtrar');
+      this.usuarios = [];
+      this.renderUsuarios();
+      this.updateStats();
       return;
     }
 
     let filteredUsuarios = [...this.usuariosAll];
 
-    // Search filter
+    // 1. FILTRO PRINCIPAL: Include inactive filter (jerarquía más alta)
+    if (this.currentFilters.activa === 'active') {
+      filteredUsuarios = filteredUsuarios.filter(usuario => {
+        return usuario.activo === true || usuario.activo === 1 || usuario.activo === 'true';
+      });
+    }
+    // Si es 'all', se incluyen todos (activos e inactivos)
+
+    // 2. FILTRO SECUNDARIO: Status filter específico
+    if (this.currentFilters.status) {
+      filteredUsuarios = filteredUsuarios.filter(usuario => {
+        const isActive = usuario.activo === true || usuario.activo === 1 || usuario.activo === 'true';
+        if (this.currentFilters.status === 'active') {
+          return isActive;
+        } else if (this.currentFilters.status === 'inactive') {
+          return !isActive;
+        }
+        return true;
+      });
+    }
+
+    // 3. FILTRO DE BÚSQUEDA: Search filter (última prioridad)
     if (this.currentFilters.search) {
       const searchTerm = this.currentFilters.search.toLowerCase();
       filteredUsuarios = filteredUsuarios.filter(usuario => 
@@ -618,29 +821,16 @@ class UsuariosMain {
       );
     }
 
-    // Status filter
-    if (this.currentFilters.status) {
-      filteredUsuarios = filteredUsuarios.filter(usuario => {
-        if (this.currentFilters.status === 'active') {
-          return usuario.activa !== false;
-        } else if (this.currentFilters.status === 'inactive') {
-          return usuario.activa === false;
-        }
-        return true;
-      });
-    }
-
-    // Include inactive filter
-    if (this.currentFilters.activa === 'active') {
-      filteredUsuarios = filteredUsuarios.filter(usuario => usuario.activa !== false);
-    }
-
     this.usuarios = filteredUsuarios;
+    console.log(`🔍 RESULTADO FINAL: ${filteredUsuarios.length} usuarios filtrados de ${this.usuariosAll.length} totales`);
+    console.log('🔍 Usuarios finales:', filteredUsuarios.map(u => u.nombre));
+    
     this.renderUsuarios();
     this.updateStats();
     this.updateHeaderBadge();
-
+    
     console.log(`🔍 Filtros aplicados: ${filteredUsuarios.length}/${this.usuariosAll.length} usuarios`);
+    console.log('🔍 Filtros actuales:', this.currentFilters);
   }
 
   /**
@@ -762,8 +952,10 @@ window.clearUsuariosFilters = () => {
 };
 
 window.exportUsuarios = () => {
-  if (window.usuariosMain && window.usuariosMain.currentEmpresa) {
-    console.log('📄 Exportar usuarios de:', window.usuariosMain.currentEmpresa.nombre);
+  // Si es usuario tipo empresa, ya tiene empresa seleccionada automáticamente
+  if (window.userRole === 'empresa' || (window.usuariosMain && window.usuariosMain.currentEmpresa)) {
+    const empresaNombre = window.usuariosMain?.currentEmpresa?.nombre || window.empresaNombre || 'Mi Empresa';
+    console.log('📄 Exportar usuarios de:', empresaNombre);
     alert('Funcionalidad de exportación en desarrollo');
   } else {
     alert('Selecciona una empresa primero');

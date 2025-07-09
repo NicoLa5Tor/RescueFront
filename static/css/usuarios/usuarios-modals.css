@@ -1,4 +1,4 @@
-/* ===== COPIED STYLE FROM EMPRESAS FOR USUARIOS ===== */
+/* ===== USING SAME HIGH Z-INDEX AS EMPRESAS AND HARDWARE MODALS ===== */
 
 .usuario-modal-backdrop {
   position: fixed !important;
@@ -8,11 +8,12 @@
   bottom: 0;
   background: rgba(0, 0, 0, 0.8) !important;
   backdrop-filter: blur(10px);
-  z-index: 9998 !important;
+  z-index: 9999 !important;
   display: flex !important;
-  align-items: center !important;
+  align-items: flex-start !important;
   justify-content: center !important;
   padding: 2rem !important;
+  overflow-y: auto;
 }
 
 .usuario-modal-backdrop.hidden {
@@ -29,7 +30,7 @@
   width: 100%;
   max-height: 90vh !important;
   position: relative;
-  z-index: 9999 !important;
+  z-index: 10000 !important;
   margin: 2rem auto !important;
   overflow: hidden;
 }

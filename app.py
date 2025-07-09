@@ -388,24 +388,83 @@ def admin_company_types():
         active_page='company_types'
     )
 
-# ========== RUTAS DE EMPRESA (FUTURO) ==========
+# ========== RUTAS DE EMPRESA (REUTILIZANDO VISTAS ADMIN) ==========
 @app.route('/empresa')
 @require_role(['empresa'])
 def empresa_dashboard():
-    """Dashboard de empresa - Solo para empresas"""
-    return render_template('empresa/dashboard.html', api_url=PROXY_PREFIX)
+    """Dashboard de empresa - Reutiliza vista admin/stats.html"""
+    # Get detailed statistics dummy data from Python providers
+    statistics_data = get_detailed_statistics()
+    
+    # Get empresa info from session
+    empresa_id = session.get('user', {}).get('id')
+    empresa_username = session.get('user', {}).get('username')
+    
+    return render_template(
+        'admin/stats.html', 
+        api_url=PROXY_PREFIX, 
+        statistics_data=statistics_data,
+        active_page='stats',
+        user_role='empresa',
+        empresa_view=True,
+        empresa_id=empresa_id,
+        empresa_username=empresa_username
+    )
 
+@app.route('/empresa/usuarios')
+@require_role(['empresa'])
+def empresa_usuarios():
+    """Gestión de usuarios - Reutiliza vista admin/users.html"""
+    # Get empresa info from session
+    empresa_id = session.get('user', {}).get('id')
+    empresa_username = session.get('user', {}).get('username')
+    
+    return render_template(
+        'admin/users.html', 
+        api_url=PROXY_PREFIX, 
+        active_page='users',
+        user_role='empresa',
+        empresa_view=True,
+        empresa_id=empresa_id,
+        empresa_username=empresa_username
+    )
+
+# Hardware no disponible para empresas
+
+@app.route('/empresa/stats')
+@require_role(['empresa'])
+def empresa_stats():
+    """Estadísticas de empresa - Reutiliza vista admin/stats.html"""
+    # Get detailed statistics dummy data from Python providers
+    statistics_data = get_detailed_statistics()
+    
+    # Get empresa info from session
+    empresa_id = session.get('user', {}).get('id')
+    empresa_username = session.get('user', {}).get('username')
+    
+    return render_template(
+        'admin/stats.html', 
+        api_url=PROXY_PREFIX, 
+        statistics_data=statistics_data,
+        active_page='stats',
+        user_role='empresa',
+        empresa_view=True,
+        empresa_id=empresa_id,
+        empresa_username=empresa_username
+    )
+
+# Rutas alias para mantener compatibilidad
 @app.route('/empresa/empleados')
 @require_role(['empresa'])
 def empresa_empleados():
-    """Gestión de empleados - Solo para empresas"""
-    return render_template('empresa/empleados.html', api_url=PROXY_PREFIX)
+    """Alias para usuarios - Redirige a empresa_usuarios"""
+    return redirect(url_for('empresa_usuarios'))
 
 @app.route('/empresa/perfil')
 @require_role(['empresa'])
 def empresa_perfil():
-    """Perfil de empresa - Solo para empresas"""
-    return render_template('empresa/perfil.html', api_url=PROXY_PREFIX)
+    """Perfil de empresa - Redirige a stats por ahora"""
+    return redirect(url_for('empresa_stats'))
 
 # ========== CONTEXTO GLOBAL ==========
 @app.context_processor

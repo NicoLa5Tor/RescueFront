@@ -21,6 +21,10 @@ class EndpointTestClient {
 
     async _request(method, endpoint, options = {}) {
         const url = `${this.baseUrl}${endpoint}`;
+        
+        // DEBUG: Log the request being made
+        console.log(`🌐 API Request: ${method} ${url}`);
+        
         const config = {
             method,
             headers: this._headers(),
@@ -159,13 +163,18 @@ async delete_usuario(empresaId, usuarioId) {
     return this._request('DELETE', `/empresas/${empresaId}/usuarios/${usuarioId}`);
 }
 
-async toggle_usuario_status(empresaId, usuarioId, activa) {
-    return this._request('PATCH', `/empresas/${empresaId}/usuarios/${usuarioId}/toggle-status`, { data: { activa } });
+async toggle_usuario_status(empresaId, usuarioId, activo) {
+    return this._request('PATCH', `/empresas/${empresaId}/usuarios/${usuarioId}/toggle-status`, { data: { activo } });
 }
 
 // Company types endpoints
     async get_tipos_empresa() {
         return this._request('GET', '/api/tipos_empresa');
+    }
+
+    // Get active company types for dropdowns/selects
+    async get_tipos_empresa_activos() {
+        return this._request('GET', '/api/tipos_empresa/activos');
     }
 
     // Dashboard endpoint for all company types (active and inactive)

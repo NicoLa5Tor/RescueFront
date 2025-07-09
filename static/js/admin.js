@@ -133,6 +133,15 @@ class AdminDashboard {
     }
 }
 
+// Global logout function for both admin and empresa roles
+function logout() {
+    // Show confirmation before logout
+    if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+        // Redirect to logout route
+        window.location.href = '/logout';
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const dashboard = new AdminDashboard();
     dashboard.initAnimations();

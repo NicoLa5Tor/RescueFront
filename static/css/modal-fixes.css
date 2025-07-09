@@ -121,38 +121,9 @@ body.ios-modal-open {
   left: 0 !important;
 }
 
-/* ===== CORRECCIÓN DE ELEMENTOS QUE INTERFIEREN ===== */
 
-/* Asegurar que elementos del layout no interfieran */
-.navbar,
-.sidebar,
-.main-content {
-  /* No crear contextos de apilamiento problemáticos */
-  z-index: auto !important;
-  isolation: auto !important;
-}
 
-/* Excepción para navbar y sidebar que necesitan z-index específico */
-.navbar {
-  z-index: var(--z-fixed, 1030) !important;
-}
 
-.sidebar {
-  z-index: var(--z-modal, 9996) !important;
-}
-
-/* Pero cuando hay modal abierto, reducir z-index */
-body.modal-open .navbar,
-body.ios-modal-open .navbar {
-  z-index: 1000 !important;
-}
-
-body.modal-open .sidebar,
-body.ios-modal-open .sidebar {
-  z-index: 1000 !important;
-}
-
-/* ===== CORRECCIONES RESPONSIVAS ===== */
 
 /* Mobile */
 @media (max-width: 640px) {

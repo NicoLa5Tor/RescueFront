@@ -186,25 +186,29 @@ class EmpresasMain {
    * Load initial data
    */
   async loadInitialData() {
+    console.log('📍 DEBUG: Iniciando loadInitialData()');
+    
     // Set initial filter states before loading data
     this.updateStatusFilterState();
     
-    // Apply initial filters (even with empty data)
-    this.applyFilters();
+    // PRIMERO: Cargar datos del backend
+    await this.loadEmpresas();
     
-    await Promise.all([
-      this.loadEmpresas(),
-      this.loadTiposEmpresa()
-    ]);
+    // SEGUNDO: Cargar tipos de empresa en paralelo
+    await this.loadTiposEmpresa();
     
-    // Populate location filter after loading empresas
+    // TERCERO: Populate location filter after loading empresas
     this.populateLocationFilter();
+    
+    console.log('📍 DEBUG: loadInitialData() terminado');
   }
 
   /**
    * Load empresas from backend
    */
   async loadEmpresas() {
+    console.log('📍 DEBUG: Iniciando loadEmpresas()');
+    
     if (this.isLoading) {
       console.log('⏳ Ya hay una carga en progreso...');
       return;
@@ -212,7 +216,7 @@ class EmpresasMain {
 
     try {
       this.isLoading = true;
-      console.log('🔄 Cargando empresas...');
+      console.log('🔄 Cargando empresas desde backend...');
       
       this.showLoadingState();
 
@@ -243,7 +247,13 @@ class EmpresasMain {
         
         console.log(`✅ ${data.data.length} empresas cargadas desde backend`);
         
-        // Aplicar filtros inmediatamente después de cargar
+        // Renderizar empresas (igual que hardware)
+        this.renderEmpresas();
+        
+        // Actualizar estadísticas inmediatamente con todos los datos (igual que hardware)
+        this.updateStats(data);
+        
+        // DESPUÉS aplicar filtros automáticos
         this.applyFilters();
         this.hideLoadingState();
         
@@ -330,13 +340,82 @@ class EmpresasMain {
   /**
    * Update statistics
    */
-  updateStats() {
+  updateStats(data = null) {
+    console.log('📊 DEBUG updateStats() en empresas:');
+    console.log('  - data recibida:', data);
+    
+    // Usar datos del backend si están disponibles
+    if (data && data.success && data.data && Array.isArray(data.data)) {
+      const empresas = data.data;
+      const totalCount = data.count || empresas.length;
+      
+      // Calcular activas/inactivas directamente desde el JSON
+      const activasCount = empresas.filter(e => e.activa === true).length;
+      const inactivasCount = empresas.filter(e => e.activa === false).length;
+      
+      // Calcular ubicaciones únicas
+      const ubicaciones = new Set(empresas.map(e => e.ubicacion).filter(Boolean));
+      
+      // Calcular empresas creadas este mes
+      const now = new Date();
+      const thisMonth = now.getMonth();
+      const thisYear = now.getFullYear();
+      const esteMesCount = empresas.filter(e => {
+        if (!e.fecha_creacion) return false;
+        try {
+          const fechaCreacion = new Date(e.fecha_creacion);
+          return fechaCreacion.getMonth() === thisMonth && fechaCreacion.getFullYear() === thisYear;
+        } catch (err) {
+          return false;
+        }
+      }).length;
+      
+      console.log('📊 Estadísticas calculadas desde backend:', {
+        total: totalCount,
+        activas: activasCount,
+        inactivas: inactivasCount,
+        ubicaciones: ubicaciones.size,
+        esteMes: esteMesCount
+      });
+      
+      // Actualizar directamente los elementos del DOM
+      const elementos = {
+        'totalEmpresasCount': totalCount,
+        'activeEmpresasCount': activasCount,
+        'locationsCount': ubicaciones.size,
+        'recentEmpresasCount': esteMesCount
+      };
+      
+      console.log('🎨 Actualizando elementos del DOM:', elementos);
+      
+      Object.entries(elementos).forEach(([elementId, value]) => {
+        const element = document.getElementById(elementId);
+        console.log(`  - Buscando elemento ${elementId}:`, element ? 'ENCONTRADO' : 'NO ENCONTRADO');
+        if (element) {
+          element.textContent = value;
+          console.log(`    ✓ Actualizado ${elementId} = ${value}`);
+        } else {
+          console.warn(`    ⚠️ Elemento ${elementId} no encontrado en el DOM`);
+        }
+      });
+      
+      return; // Salir temprano si usamos datos del backend
+    }
+    
+    // Fallback: usar this.empresasAll si no hay data del backend
+    console.log('⚠️ Usando fallback con this.empresasAll');
+    console.log('  - this.empresasAll:', this.empresasAll);
+    console.log('  - this.empresasAll.length:', this.empresasAll ? this.empresasAll.length : 'null');
+    console.log('  - this.empresas.length:', this.empresas ? this.empresas.length : 'null');
+    
     const stats = {
-      total: this.empresasAll.length,
-      active: this.empresasAll.filter(e => e.activa !== false).length,
-      inactive: this.empresasAll.filter(e => e.activa === false).length,
-      filtered: this.empresas.length
+      total: this.empresasAll ? this.empresasAll.length : 0,
+      active: this.empresasAll ? this.empresasAll.filter(e => e.activa === true).length : 0,
+      inactive: this.empresasAll ? this.empresasAll.filter(e => e.activa === false).length : 0,
+      filtered: this.empresas ? this.empresas.length : 0
     };
+    
+    console.log('📊 Estadísticas calculadas:', stats);
 
     // Update count in header
     const countElement = document.getElementById('empresasCount');
@@ -345,6 +424,7 @@ class EmpresasMain {
     }
 
     // Update stats cards if they exist
+    console.log('📊 Llamando updateStatsCards con:', stats);
     this.updateStatsCards(stats);
 
     console.log('📊 Estadísticas actualizadas:', stats);
@@ -364,15 +444,32 @@ class EmpresasMain {
    * Update stats cards
    */
   updateStatsCards(stats) {
+    console.log('🎨 DEBUG updateStatsCards() en empresas:');
+    console.log('  - stats recibidas:', stats);
+    
+    // Imprimir TODOS los elementos disponibles en el DOM
+    console.log('🔍 Buscando elementos de estadísticas en el DOM:');
+    const todosLosElementos = [
+      'totalEmpresasCount',
+      'activeEmpresasCount', 
+      'locationsCount',
+      'recentEmpresasCount'
+    ];
+    
+    todosLosElementos.forEach(id => {
+      const elem = document.getElementById(id);
+      console.log(`  - ${id}:`, elem ? `ENCONTRADO (texto actual: "${elem.textContent}")` : 'NO ENCONTRADO');
+    });
+    
     // Calculate additional stats
-    const locations = new Set(this.empresasAll.map(e => e.ubicacion).filter(Boolean));
+    const locations = new Set(this.empresasAll ? this.empresasAll.map(e => e.ubicacion).filter(Boolean) : []);
     const thisMonth = new Date();
     thisMonth.setDate(1); // First day of current month
-    const recentEmpresas = this.empresasAll.filter(e => {
+    const recentEmpresas = this.empresasAll ? this.empresasAll.filter(e => {
       if (!e.fecha_creacion) return false;
       const createdDate = new Date(e.fecha_creacion);
       return createdDate >= thisMonth;
-    });
+    }) : [];
 
     const elements = {
       'totalEmpresasCount': stats.total,
@@ -380,13 +477,60 @@ class EmpresasMain {
       'locationsCount': locations.size,
       'recentEmpresasCount': recentEmpresas.length
     };
+    
+    console.log('🎨 Elementos a actualizar:', elements);
 
     Object.entries(elements).forEach(([elementId, value]) => {
       const element = document.getElementById(elementId);
+      console.log(`🔍 Procesando elemento ${elementId}:`);
+      console.log(`  - Elemento:`, element);
+      console.log(`  - Valor a asignar:`, value);
+      console.log(`  - Texto actual:`, element ? element.textContent : 'N/A');
+      
       if (element) {
+        const valorAnterior = element.textContent;
         element.textContent = value;
+        
+        // Forzar actualización visual
+        element.style.display = 'none';
+        element.offsetHeight; // Trigger reflow
+        element.style.display = '';
+        
+        // Verificar que realmente se actualizó
+        const valorDespues = element.textContent;
+        console.log(`    ✓ ACTUALIZADO ${elementId}: "${valorAnterior}" -> "${value}"`);
+        console.log(`    ✓ VERIFICADO ${elementId}: contenido actual = "${valorDespues}"`);
+        
+        // Agregar clase para destacar el cambio
+        element.classList.add('stat-updated');
+        setTimeout(() => element.classList.remove('stat-updated'), 1000);
+      } else {
+        console.error(`    ❌ ERROR: Elemento ${elementId} NO ENCONTRADO en el DOM`);
       }
     });
+    
+    // Verificar que se actualizaron los elementos
+    console.log('🔍 Verificando elementos actualizados:');
+    Object.keys(elements).forEach(elementId => {
+      const element = document.getElementById(elementId);
+      if (element) {
+        console.log(`  - ${elementId}: "${element.textContent}"`);
+        console.log(`    - Visible: ${element.offsetWidth > 0 && element.offsetHeight > 0}`);
+        console.log(`    - CSS Display: ${getComputedStyle(element).display}`);
+        console.log(`    - CSS Visibility: ${getComputedStyle(element).visibility}`);
+        console.log(`    - CSS Opacity: ${getComputedStyle(element).opacity}`);
+      }
+    });
+    
+    // Forzar repintado de toda la sección de estadísticas
+    const statsGrid = document.getElementById('empresasStatsGrid');
+    if (statsGrid) {
+      console.log('🔄 Forzando repintado de statsGrid...');
+      statsGrid.style.display = 'none';
+      statsGrid.offsetHeight; // Trigger reflow
+      statsGrid.style.display = 'grid';
+      console.log('🔄 Repintado forzado completado');
+    }
 
     // Update header badge
     this.updateHeaderBadge(stats.total);
@@ -704,9 +848,14 @@ class EmpresasMain {
   }
 
   /**
-   * Apply filters to empresas list - SAME AS HARDWARE
+   * Apply filters to empresas list
    */
   applyFilters() {
+    console.log('🔍 DEBUG: Iniciando applyFilters() en empresas');
+    console.log('  - this.empresasAll:', this.empresasAll);
+    console.log('  - this.empresasAll.length:', this.empresasAll ? this.empresasAll.length : 'null');
+    console.log('  - this.currentFilters:', this.currentFilters);
+    
     if (!this.empresasAll || this.empresasAll.length === 0) {
       console.log('📋 No hay empresas para filtrar');
       this.empresas = [];
@@ -717,7 +866,42 @@ class EmpresasMain {
 
     let filteredEmpresas = [...this.empresasAll];
 
-    // Search filter
+    // 1. FILTRO PRINCIPAL: Include inactive filter (jerarquía más alta)
+    if (this.currentFilters.activa === 'active') {
+      filteredEmpresas = filteredEmpresas.filter(empresa => {
+        // Usar 'activo' si existe, sino usar 'activa' como fallback
+        const isActive = empresa.hasOwnProperty('activo') 
+          ? (empresa.activo === true || empresa.activo === 1 || empresa.activo === 'true')
+          : (empresa.activa !== false);
+        return isActive;
+      });
+    }
+    // Si es 'all', se incluyen todas (activas e inactivas)
+
+    // 2. FILTRO SECUNDARIO: Status filter específico
+    if (this.currentFilters.status) {
+      filteredEmpresas = filteredEmpresas.filter(empresa => {
+        const isActive = empresa.hasOwnProperty('activo') 
+          ? (empresa.activo === true || empresa.activo === 1 || empresa.activo === 'true')
+          : (empresa.activa !== false);
+        
+        if (this.currentFilters.status === 'active') {
+          return isActive;
+        } else if (this.currentFilters.status === 'inactive') {
+          return !isActive;
+        }
+        return true;
+      });
+    }
+
+    // 3. FILTRO DE UBICACIÓN
+    if (this.currentFilters.location) {
+      filteredEmpresas = filteredEmpresas.filter(empresa => 
+        (empresa.ubicacion || '').toLowerCase().includes(this.currentFilters.location.toLowerCase())
+      );
+    }
+
+    // 4. FILTRO DE BÚSQUEDA: Search filter (última prioridad)
     if (this.currentFilters.search) {
       const searchTerm = this.currentFilters.search.toLowerCase();
       filteredEmpresas = filteredEmpresas.filter(empresa => 
@@ -728,38 +912,15 @@ class EmpresasMain {
       );
     }
 
-    // Location filter
-    if (this.currentFilters.location) {
-      filteredEmpresas = filteredEmpresas.filter(empresa => 
-        (empresa.ubicacion || '').toLowerCase().includes(this.currentFilters.location.toLowerCase())
-      );
-    }
-
-    // JERARQUÍA DE FILTROS: includeInactiveFilter (activa) tiene prioridad
-    // Primer nivel: filtro principal (activa/todas)
-    if (this.currentFilters.activa === 'active') {
-      // Solo mostrar activas
-      filteredEmpresas = filteredEmpresas.filter(empresa => empresa.activa !== false);
-    } else {
-      // Mostrar todas - aplicar filtro de status secundario si existe
-      if (this.currentFilters.status) {
-        filteredEmpresas = filteredEmpresas.filter(empresa => {
-          if (this.currentFilters.status === 'active') {
-            return empresa.activa !== false;
-          } else if (this.currentFilters.status === 'inactive') {
-            return empresa.activa === false;
-          }
-          return true;
-        });
-      }
-    }
-
     this.empresas = filteredEmpresas;
+    console.log(`🔍 RESULTADO FINAL: ${filteredEmpresas.length} empresas filtradas de ${this.empresasAll.length} totales`);
+    console.log('🔍 Empresas finales:', filteredEmpresas.map(e => e.nombre));
+    
     this.renderEmpresas();
     this.updateStats();
 
     console.log(`🔍 Filtros aplicados: ${filteredEmpresas.length}/${this.empresasAll.length} empresas`);
-    console.log(`🎯 Filtro activo: activa='${this.currentFilters.activa}', status='${this.currentFilters.status}'`);
+    console.log('🔍 Filtros actuales:', this.currentFilters);
   }
 
   /**
@@ -905,14 +1066,21 @@ class EmpresasMain {
    */
   generateCSV() {
     const headers = ['Nombre', 'Email', 'Ubicación', 'Estado', 'Fecha Creación', 'Sedes'];
-    const rows = this.empresasAll.map(empresa => [
-      empresa.nombre || '',
-      empresa.email || '',
-      empresa.ubicacion || '',
-      empresa.activa !== false ? 'Activa' : 'Inactiva',
-      this.formatDate(empresa.fecha_creacion),
-      empresa.sedes ? empresa.sedes.join('; ') : 'Principal'
-    ]);
+    const rows = this.empresasAll.map(empresa => {
+      // Determinar estado usando ambos campos posibles
+      const isActive = empresa.hasOwnProperty('activo') 
+        ? (empresa.activo === true || empresa.activo === 1 || empresa.activo === 'true')
+        : (empresa.activa !== false);
+      
+      return [
+        empresa.nombre || '',
+        empresa.email || '',
+        empresa.ubicacion || '',
+        isActive ? 'Activa' : 'Inactiva',
+        this.formatDate(empresa.fecha_creacion),
+        empresa.sedes ? empresa.sedes.join('; ') : 'Principal'
+      ];
+    });
 
     const csvContent = [headers, ...rows]
       .map(row => row.map(field => `"${field}"`).join(','))

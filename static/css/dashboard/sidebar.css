@@ -6,7 +6,7 @@
   left: 0;
   bottom: 0;
   width: var(--sidebar-width-mobile);
-  z-index: var(--z-modal);
+  z-index: 1;
   background: var(--glass-bg);
   backdrop-filter: var(--glass-backdrop);
   -webkit-backdrop-filter: var(--glass-backdrop);
@@ -39,7 +39,7 @@
   .sidebar {
       position: static;
       transform: translateX(0);
-      z-index: auto;
+      z-index: 1;
       box-shadow: var(--shadow-card);
       /* Show sidebar by default on desktop */
       display: block;
@@ -631,7 +631,7 @@
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.5);
-  z-index: calc(var(--z-modal) - 1);
+  z-index: 1;
   opacity: 0;
   visibility: hidden;
   transition: all var(--transition-normal);
