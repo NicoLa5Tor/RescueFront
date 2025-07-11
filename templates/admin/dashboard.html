@@ -146,15 +146,6 @@
         </div>
       </nav>
       
-      <!-- Company Selector (Solo para super_admin) -->
-      {% if user_role != 'empresa' %}
-      <div class="sidebar__company-selector admin-only">
-        <label class="sidebar__company-label">Empresa Actual</label>
-        <select id="sidebarEmpresaSelector" class="sidebar__company-select">
-          <option value="">Todas las empresas</option>
-        </select>
-      </div>
-      {% endif %}
       
       <!-- Logout -->
       <div class="sidebar__logout">

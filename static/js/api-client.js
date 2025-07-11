@@ -193,6 +193,15 @@ async toggle_usuario_status(empresaId, usuarioId, activo) {
     return this._request('PATCH', `/empresas/${empresaId}/usuarios/${usuarioId}/toggle-status`, { data: { activo } });
 }
 
+// Endpoints para cargar todos los usuarios de todas las empresas
+async get_all_usuarios() {
+    return this._request('GET', '/api/usuarios');
+}
+
+async get_all_usuarios_including_inactive() {
+    return this._request('GET', '/api/usuarios/including-inactive');
+}
+
     // Company types endpoints
     async get_tipos_empresa() {
         return this._request('GET', '/api/tipos_empresa');
