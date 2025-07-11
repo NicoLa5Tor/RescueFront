@@ -109,8 +109,8 @@ def attach_api_client():
             session.clear()
             return redirect(url_for('login', error='backend_unavailable'))
     
-    token = session.get('token')
-    g.api_client = EndpointTestClient(BACKEND_API_URL, token)
+    # Forward authentication cookies to the backend
+    g.api_client = EndpointTestClient(BACKEND_API_URL, cookies=request.cookies)
 
 # ========== RUTAS PÚBLICAS ==========
 @app.route('/')
@@ -139,7 +139,7 @@ def login():
         res = client.login(usuario, password)
         if res.ok:
             data = res.json()
-            session['token'] = data.get('token')
+            session['token'] = 'jwt_cookie_auth'
             session['user'] = data.get('user')
             # NO hacer la sesión permanente - será temporal por defecto
             session.permanent = False
@@ -265,9 +265,9 @@ def super_admin_dashboard():
     try:
         from dashboard_data_providers import RealDashboardDataProvider
         from config import BACKEND_API_URL
-        
-        # Use real data provider with session token
-        real_provider = RealDashboardDataProvider(BACKEND_API_URL, session.get('token'))
+
+        # Use real data provider with authentication cookies
+        real_provider = RealDashboardDataProvider(BACKEND_API_URL, request.cookies)
         dashboard_data = real_provider.get_dashboard_data()
         
         # Add hardware stats if not already present
