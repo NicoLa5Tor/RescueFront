@@ -69,6 +69,18 @@ class UsuariosMain {
       });
     }
 
+    // Empresa selector
+    const empresaSelector = document.getElementById('empresaSelector');
+    if (empresaSelector) {
+      empresaSelector.addEventListener('change', (e) => {
+        const empresaId = e.target.value;
+        if (empresaId) {
+          this.selectEmpresa(empresaId);
+        } else {
+          this.clearUsuarios();
+        }
+      });
+    }
 
     // Status filter
     const statusFilter = document.getElementById('statusFilter');
@@ -95,9 +107,18 @@ class UsuariosMain {
    * Load initial data
    */
   async loadInitialData() {
-    // Cargar todos los usuarios directamente sin necesidad de seleccionar empresa
-    await this.loadUsuarios();
-    this.showFilters();
+    // Si es usuario tipo empresa, cargar usuarios directamente
+    if (window.userRole === 'empresa' && window.empresaId) {
+      this.currentEmpresa = { 
+        _id: window.empresaId, 
+        nombre: window.empresaNombre || 'Mi Empresa' 
+      };
+      await this.loadUsuarios();
+      this.showFilters();
+    } else {
+      // Para super_admin, cargar lista de empresas
+      await this.loadEmpresas();
+    }
   }
 
   /**
@@ -190,6 +211,11 @@ class UsuariosMain {
    * Load usuarios from backend
    */
   async loadUsuarios() {
+    if (!this.currentEmpresa) {
+      console.log('⚠️ No hay empresa seleccionada');
+      return;
+    }
+
     if (this.isLoading) {
       console.log('⏳ Ya hay una carga en progreso...');
       return;
@@ -197,17 +223,17 @@ class UsuariosMain {
 
     try {
       this.isLoading = true;
-      console.log('🔄 Cargando todos los usuarios...');
+      console.log(`🔄 Cargando usuarios para empresa: ${this.currentEmpresa.nombre}`);
 
       this.showLoadingState();
 
-      // Cargar todos los usuarios de todas las empresas
+      // Determine which endpoint to use based on filter
       let response;
       if (this.currentFilters.activa === 'all') {
-        response = await this.apiClient.get_all_usuarios_including_inactive();
+        response = await this.apiClient.get_usuarios_including_inactive(this.currentEmpresa._id);
       } else {
-        // Cargar todos los usuarios activos
-        response = await this.apiClient.get_all_usuarios();
+        // Siempre cargar todos los usuarios (incluyendo inactivos) para mostrar filtros
+        response = await this.apiClient.get_usuarios_including_inactive(this.currentEmpresa._id);
       }
 
       if (!response.ok) {
