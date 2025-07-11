@@ -139,17 +139,25 @@ def login():
         res = client.login(usuario, password)
         if res.ok:
             data = res.json()
+            user_data = data.get('user') or data.get('data') or {}
             session['token'] = 'jwt_cookie_auth'
-            session['user'] = data.get('user')
+            session['user'] = user_data
             # NO hacer la sesión permanente - será temporal por defecto
             session.permanent = False
-            
+
             # Redirect based on user role
-            user_role = data.get('user', {}).get('role')
-            if user_role == 'empresa':
-                return redirect(url_for('empresa_dashboard'))
-            else:
-                return redirect(url_for('super_admin_dashboard'))
+            user_role = user_data.get('role')
+            redirect_target = (
+                url_for('empresa_dashboard')
+                if user_role == 'empresa'
+                else url_for('super_admin_dashboard')
+            )
+
+            # Forward backend cookies to the user's browser
+            response = redirect(redirect_target)
+            for cookie_name, cookie_value in res.cookies.items():
+                response.set_cookie(cookie_name, cookie_value)
+            return response
         error = res.json().get('message', 'Credenciales inválidas')
         return render_template('login.html', api_url=PROXY_PREFIX, error=error)
     
@@ -167,7 +175,7 @@ def sync_session():
     try:
         # Leer datos del JWT desde el cuerpo de la petición
         data = request.get_json() or {}
-        user_data = data.get('user')
+        user_data = data.get('user') or data.get('data')
         
         if user_data:
             # Simular un token para la sesión (no es el JWT real, solo para compatibilidad)

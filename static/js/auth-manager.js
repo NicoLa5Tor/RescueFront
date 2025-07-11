@@ -76,14 +76,15 @@ class AuthManager {
             
             const result = await response.json();
             console.log('📝 Datos de respuesta:', result);
-            
+
             if (response.ok && result.success) {
                 console.log('✅ Login exitoso - cookie establecida automáticamente por el browser');
-                
+
+                const userInfo = result.user || result.data;
                 // Sincronizar sesión con Flask
-                const syncSuccess = await this.syncSession(result.user);
+                const syncSuccess = await this.syncSession(userInfo);
                 if (syncSuccess) {
-                    return { success: true, user: result.user };
+                    return { success: true, user: userInfo };
                 } else {
                     return { success: false, errors: ['Error sincronizando sesión'] };
                 }

@@ -64,7 +64,15 @@ class EndpointTestClient:
     # Authentication and health endpoints
     # ------------------------------------------------------------------
     def login(self, usuario: str, password: str) -> requests.Response:
-        return self._request("POST", "/auth/login", data={"usuario": usuario, "password": password})
+        response = self._request(
+            "POST",
+            "/auth/login",
+            data={"usuario": usuario, "password": password},
+        )
+        # Store cookies returned by the backend
+        if response.cookies:
+            self.cookies.update(response.cookies.get_dict())
+        return response
 
     def health(self) -> requests.Response:
         return self._request("GET", "/health")
