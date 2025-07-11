@@ -1,4 +1,13 @@
-nohup: no se tendrá en cuenta la entrada
+🔧 CONFIGURACIÓN ACTUAL:
+==================================================
+🏗️  Backend URL: http://localhost:5002
+🌐 Frontend URL: http://localhost:5050
+🔗 Proxy Prefix: /proxy
+🐛 Debug Mode: True
+📝 Log Level: INFO
+🔐 Secret Key: ***2024
+⏰ Session Lifetime: 3600s
+==================================================
 🚀 Iniciando Rescue Frontend...
 📡 Backend API: http://localhost:5002
 🌐 Frontend URL: http://localhost:5050
@@ -13,56 +22,193 @@ nohup: no se tendrá en cuenta la entrada
 [33mPress CTRL+C to quit[0m
  * Restarting with stat
  * Debugger is active!
- * Debugger PIN: 127-618-775
-127.0.0.1 - - [05/Jul/2025 15:54:46] "[31m[1mGET /proxy/health HTTP/1.1[0m" 401 -
-127.0.0.1 - - [05/Jul/2025 15:54:54] "[31m[1mPOST /proxy/auth/login HTTP/1.1[0m" 401 -
+ * Debugger PIN: 580-755-795
+127.0.0.1 - - [10/Jul/2025 16:43:03] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:03] "GET /static/css/animations.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:03] "GET /static/css/main.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:03] "GET /static/css/gsap_css/hero.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:03] "GET /static/css/gsap_css/tunnel.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:03] "GET /static/css/gsap_css/clamp.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:03] "GET /static/css/gsap_css/contact.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:03] "GET /static/js/gsap-config.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:03] "GET /static/js/gsap_main.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:03] "GET /static/js/api-client.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:03] "GET /static/js/modal-debug.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:03] "GET /static/js/auth-manager.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:03] "GET /static/js/gsap_js/clamp.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:03] "GET /static/js/gsap_js/tunnel.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:03] "GET /static/js/gsap_js/hero.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:03] "GET /static/js/gsap_js/contact.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:03] "GET /static/css/modal-fixes.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:03] "GET /static/assets/img/espacio2.png HTTP/1.1" 200 -
+Some API endpoints failed, falling back to dummy data
+127.0.0.1 - - [10/Jul/2025 16:43:08] "GET /admin HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:08] "GET /static/css/main.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:08] "GET /static/css/dashboard/main-layout.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:08] "GET /static/css/animations.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:08] "GET /static/css/dashboard/variables.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:08] "GET /static/css/dashboard/base.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:08] "GET /static/css/dashboard/navbar.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:08] "GET /static/css/dashboard/animations.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:08] "GET /static/css/dashboard/cards.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:08] "GET /static/js/gsap-config.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:08] "GET /static/js/gsap_main.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:08] "GET /static/css/dashboard/sidebar.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:08] "GET /static/js/api-client.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:08] "GET /static/js/auth-manager.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:08] "GET /static/js/dashboard/sidebar-manager.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:08] "GET /static/js/modal-debug.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:08] "GET /static/js/dashboard/basic-managers.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:08] "GET /static/js/dashboard/dashboard.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:08] "GET /static/js/dashboard/dashboard-core.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:08] "GET /static/js/admin.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:08] "GET /static/css/modal-fixes.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:13] "GET /admin/hardware HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:13] "GET /static/css/main.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:13] "GET /static/css/dashboard/main-layout.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:13] "GET /static/css/animations.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:13] "GET /static/css/dashboard/variables.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:13] "GET /static/css/dashboard/base.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:13] "GET /static/css/dashboard/animations.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:13] "GET /static/css/dashboard/navbar.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:13] "GET /static/css/dashboard/cards.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:13] "GET /static/css/dashboard/sidebar.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:13] "GET /static/css/modals.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:13] "GET /static/css/hardware/hardware-main.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:13] "GET /static/js/gsap-config.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:13] "GET /static/js/gsap_main.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:13] "GET /static/css/hardware/hardware-modal-fix.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:13] "GET /static/js/api-client.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:13] "GET /static/js/modal-debug.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:13] "GET /static/js/auth-manager.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:13] "GET /static/js/dashboard/basic-managers.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:13] "GET /static/js/dashboard/dashboard-core.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:13] "GET /static/js/dashboard/dashboard.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:13] "GET /static/js/dashboard/sidebar-manager.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:13] "GET /static/js/admin.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:13] "GET /static/js/modal-utils.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:13] "GET /static/js/hardware/hardware-validation.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:13] "GET /static/js/hardware/hardware-core.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:13] "GET /static/js/hardware/hardware-main.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:13] "GET /static/js/hardware-animations.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:13] "GET /static/js/hardware-debug-put.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:13] "GET /static/css/modal-fixes.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:13] "GET /static/css/hardware/forms.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:13] "GET /static/css/hardware/ios-header.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:13] "GET /static/css/hardware/ios-buttons.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:13] "GET /static/css/hardware/ios-stats.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:13] "GET /static/css/hardware/ios-filters.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:13] "GET /static/css/hardware/ios-cards.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:13] "GET /static/css/hardware/modals.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:13] "GET /static/css/hardware/light-theme.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:13] "GET /static/css/hardware/performance.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:13] "GET /static/js/api-client.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:13] "GET /static/js/dashboard/basic-managers.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:13] "GET /proxy/health HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:14] "GET /proxy/health HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:14] "[31m[1mGET /proxy/api/hardware-types HTTP/1.1[0m" 401 -
+127.0.0.1 - - [10/Jul/2025 16:43:14] "GET /proxy/api/empresas HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:14] "[31m[1mGET /proxy/api/hardware HTTP/1.1[0m" 401 -
+127.0.0.1 - - [10/Jul/2025 16:43:14] "GET /login HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:14] "GET /static/css/main.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:14] "GET /static/css/animations.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:14] "GET /static/css/login.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:14] "GET /static/js/gsap-config.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:14] "GET /static/js/gsap_main.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:14] "GET /static/js/modal-debug.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:14] "GET /static/js/auth-manager.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:14] "GET /static/js/login-handler.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:14] "GET /static/js/login_visuals.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:14] "GET /static/js/api-client.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:14] "GET /static/js/dashboard/basic-managers.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:14] "GET /static/css/modal-fixes.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:14] "GET /static/js/api-client.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:14] "GET /static/js/auth-manager.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:17] "POST /proxy/auth/login HTTP/1.1" 200 -
+Some API endpoints failed, falling back to dummy data
+Hardware stats API failed, falling back to dummy data
+127.0.0.1 - - [10/Jul/2025 16:43:18] "GET /admin/super-dashboard HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:18] "GET /static/css/main.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:18] "GET /static/css/animations.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:18] "GET /static/css/dashboard/variables.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:18] "GET /static/css/dashboard/main-layout.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:18] "GET /static/css/dashboard/base.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:18] "GET /static/css/dashboard/animations.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:18] "GET /static/css/dashboard/navbar.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:18] "GET /static/css/dashboard/cards.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:18] "GET /static/css/dashboard/sidebar.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:18] "GET /static/js/gsap-config.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:18] "GET /static/js/gsap_main.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:18] "GET /static/js/api-client.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:18] "GET /static/js/modal-debug.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:18] "GET /static/js/auth-manager.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:18] "GET /static/js/dashboard/sidebar-manager.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:18] "GET /static/js/dashboard/basic-managers.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:18] "GET /static/js/dashboard/dashboard.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:18] "GET /static/js/dashboard/dashboard-core.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:18] "GET /static/js/admin.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:18] "GET /static/js/dashboard/super-admin-dashboard.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:18] "GET /static/css/modal-fixes.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:18] "GET /static/js/dashboard/super-admin-dashboard-enhanced.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:19] "GET /static/js/api-client.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:20] "GET /login HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:20] "GET /static/css/main.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:20] "GET /static/css/animations.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:20] "GET /static/css/login.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:20] "GET /static/js/gsap_main.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:20] "GET /static/js/auth-manager.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:20] "GET /static/js/api-client.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:20] "GET /static/js/gsap-config.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:20] "GET /static/js/modal-debug.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:20] "GET /static/js/login-handler.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:20] "GET /static/js/login_visuals.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:20] "GET /static/js/dashboard/basic-managers.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:20] "GET /static/css/modal-fixes.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:20] "GET /static/js/api-client.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:20] "GET /static/js/auth-manager.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:47] "POST /proxy/auth/login HTTP/1.1" 200 -
+Some API endpoints failed, falling back to dummy data
+Hardware stats API failed, falling back to dummy data
+127.0.0.1 - - [10/Jul/2025 16:43:49] "GET /admin/super-dashboard HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:49] "GET /static/css/main.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:49] "GET /static/css/animations.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:49] "GET /static/css/dashboard/main-layout.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:49] "GET /static/css/dashboard/variables.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:49] "GET /static/css/dashboard/base.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:49] "GET /static/css/dashboard/navbar.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:49] "GET /static/css/dashboard/sidebar.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:49] "GET /static/js/gsap-config.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:49] "GET /static/css/dashboard/cards.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:49] "GET /static/css/dashboard/animations.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:49] "GET /static/js/gsap_main.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:49] "GET /static/js/api-client.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:49] "GET /static/js/auth-manager.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:49] "GET /static/js/modal-debug.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:49] "GET /static/js/dashboard/sidebar-manager.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:49] "GET /static/js/dashboard/basic-managers.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:49] "GET /static/js/dashboard/dashboard-core.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:49] "GET /static/js/dashboard/dashboard.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:49] "GET /static/js/admin.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:49] "GET /static/js/dashboard/super-admin-dashboard-enhanced.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:49] "GET /static/js/dashboard/super-admin-dashboard.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:49] "GET /static/css/modal-fixes.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:49] "GET /static/js/api-client.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:51] "GET /login HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:51] "GET /static/css/animations.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:51] "GET /static/css/main.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:51] "GET /static/css/login.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:51] "GET /static/js/gsap_main.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:51] "GET /static/js/gsap-config.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:51] "GET /static/js/auth-manager.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:51] "GET /static/js/api-client.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:51] "GET /static/js/modal-debug.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:51] "GET /static/js/login-handler.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:51] "GET /static/js/login_visuals.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:51] "GET /static/js/dashboard/basic-managers.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:51] "GET /static/css/modal-fixes.css HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:51] "GET /static/js/api-client.js HTTP/1.1" 200 -
+127.0.0.1 - - [10/Jul/2025 16:43:51] "GET /static/js/auth-manager.js HTTP/1.1" 200 -
  * Detected change in '/home/nicolas/Escritorio/ECOES/FrontEnd/app.py', reloading
-🚀 Iniciando Rescue Frontend...
-📡 Backend API: http://localhost:5002
-🌐 Frontend URL: http://localhost:5050
-🔐 Autenticación: manejada por Flask y proxy interno
-==================================================
- * Restarting with stat
- * Debugger is active!
- * Debugger PIN: 127-618-775
- * Detected change in '/home/nicolas/Escritorio/ECOES/FrontEnd/app.py', reloading
-🚀 Iniciando Rescue Frontend...
-📡 Backend API: http://localhost:5002
-🌐 Frontend URL: http://localhost:5050
-🔐 Autenticación: manejada por Flask y proxy interno
-==================================================
- * Restarting with stat
- * Debugger is active!
- * Debugger PIN: 127-618-775
- * Detected change in '/home/nicolas/Escritorio/ECOES/FrontEnd/app.py', reloading
-🚀 Iniciando Rescue Frontend...
-📡 Backend API: http://localhost:5002
-🌐 Frontend URL: http://localhost:5050
-🔐 Autenticación: manejada por Flask y proxy interno
-==================================================
- * Restarting with stat
- * Debugger is active!
- * Debugger PIN: 127-618-775
- * Detected change in '/home/nicolas/Escritorio/ECOES/FrontEnd/app.py', reloading
-🔧 CONFIGURACIÓN ACTUAL:
-==================================================
-🏗️  Backend URL: http://localhost:5002
-🌐 Frontend URL: http://localhost:5050
-🔗 Proxy Prefix: /proxy
-🐛 Debug Mode: True
-📝 Log Level: INFO
-🔐 Secret Key: ***tion
-⏰ Session Lifetime: 3600s
-==================================================
-🚀 Iniciando Rescue Frontend...
-📡 Backend API: http://localhost:5002
-🌐 Frontend URL: http://localhost:5050
-🔐 Autenticación: manejada por Flask y proxy interno
-==================================================
- * Restarting with stat
- * Debugger is active!
- * Debugger PIN: 127-618-775
- * Detected change in '/home/nicolas/Escritorio/ECOES/FrontEnd/test_toggle.py', reloading
 🔧 CONFIGURACIÓN ACTUAL:
 ==================================================
 🏗️  Backend URL: http://localhost:5002
@@ -78,44 +224,45 @@ nohup: no se tendrá en cuenta la entrada
 🌐 Frontend URL: http://localhost:5050
 🔐 Autenticación: manejada por Flask y proxy interno
 ==================================================
+🔍 User role: super_admin, Required roles: ['super_admin'], Route: admin_dashboard
+✅ Access granted for super_admin to admin_dashboard
+🔍 User role: super_admin, Required roles: ['super_admin', 'empresa'], Route: admin_hardware
+✅ Access granted for super_admin to admin_hardware
+🔄 PROXY: GET /health - Token presente: True
+📡 PROXY: Respuesta del backend - Status: 200, Content-Length: 94
+🔄 PROXY: GET /health - Token presente: True
+📡 PROXY: Respuesta del backend - Status: 200, Content-Length: 94
+🔄 PROXY: GET /api/hardware-types - Token presente: True
+🔄 PROXY: GET /api/empresas - Token presente: True
+🔄 PROXY: GET /api/hardware - Token presente: True
+📡 PROXY: Respuesta del backend - Status: 401, Content-Length: 33
+📋 PROXY: Contenido de /api/hardware-types:
+  - Success: N/A
+  - Count: N/A
+  - Data length: 0
+📡 PROXY: Respuesta del backend - Status: 200, Content-Length: 4428
+📋 PROXY: Contenido de /api/empresas:
+  - Success: True
+  - Count: 7
+  - Data length: 7
+  - Primer elemento: ['_id', 'activa', 'creado_por', 'descripcion', 'email', 'fecha_actualizacion', 'fecha_creacion', 'last_login', 'nombre', 'roles', 'sedes', 'tipo_empresa_id', 'ubicacion', 'username']
+📡 PROXY: Respuesta del backend - Status: 401, Content-Length: 33
+📋 PROXY: Contenido de /api/hardware:
+  - Success: N/A
+  - Count: N/A
+  - Data length: 0
+🔄 PROXY: POST /auth/login - Token presente: True
+📦 PROXY: Datos enviados - {'usuario': 'admin01', 'password': 'nico2004'}
+📡 PROXY: Respuesta del backend - Status: 200, Content-Length: 345
+🔍 User role: super_admin, Required roles: ['super_admin'], Route: super_admin_dashboard
+✅ Access granted for super_admin to super_admin_dashboard
+✅ Loaded real dashboard data successfully
+🔄 PROXY: POST /auth/login - Token presente: True
+📦 PROXY: Datos enviados - {'usuario': 'admin01', 'password': 'nico2004'}
+📡 PROXY: Respuesta del backend - Status: 200, Content-Length: 345
+🔍 User role: super_admin, Required roles: ['super_admin'], Route: super_admin_dashboard
+✅ Access granted for super_admin to super_admin_dashboard
+✅ Loaded real dashboard data successfully
  * Restarting with stat
  * Debugger is active!
- * Debugger PIN: 127-618-775
- * Detected change in '/home/nicolas/Escritorio/ECOES/FrontEnd/test_toggle.py', reloading
-🔧 CONFIGURACIÓN ACTUAL:
-==================================================
-🏗️  Backend URL: http://localhost:5002
-🌐 Frontend URL: http://localhost:5050
-🔗 Proxy Prefix: /proxy
-🐛 Debug Mode: True
-📝 Log Level: INFO
-🔐 Secret Key: ***2024
-⏰ Session Lifetime: 3600s
-==================================================
-🚀 Iniciando Rescue Frontend...
-📡 Backend API: http://localhost:5002
-🌐 Frontend URL: http://localhost:5050
-🔐 Autenticación: manejada por Flask y proxy interno
-==================================================
- * Restarting with stat
- * Debugger is active!
- * Debugger PIN: 127-618-775
- * Detected change in '/home/nicolas/Escritorio/ECOES/FrontEnd/app.py', reloading
-🔧 CONFIGURACIÓN ACTUAL:
-==================================================
-🏗️  Backend URL: http://localhost:5002
-🌐 Frontend URL: http://localhost:5050
-🔗 Proxy Prefix: /proxy
-🐛 Debug Mode: True
-📝 Log Level: INFO
-🔐 Secret Key: ***2024
-⏰ Session Lifetime: 3600s
-==================================================
-🚀 Iniciando Rescue Frontend...
-📡 Backend API: http://localhost:5002
-🌐 Frontend URL: http://localhost:5050
-🔐 Autenticación: manejada por Flask y proxy interno
-==================================================
- * Restarting with stat
- * Debugger is active!
- * Debugger PIN: 127-618-775
+ * Debugger PIN: 580-755-795

@@ -2,8 +2,9 @@
  * JavaScript API Client for Frontend
  * Mirrors the Python client but for browser usage
  */
+if (typeof window.EndpointTestClient === 'undefined') {
 class EndpointTestClient {
-    constructor(baseUrl = '/proxy', token = null) {
+    constructor(baseUrl = 'http://localhost:5002', token = null) {
         this.baseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
         this.token = token;
     }
@@ -13,9 +14,7 @@ class EndpointTestClient {
         const headers = {
             'Content-Type': 'application/json',
         };
-        if (this.token) {
-            headers['Authorization'] = `Bearer ${this.token}`;
-        }
+        // No necesitamos agregar Authorization header ya que las cookies se envían automáticamente
         return headers;
     }
 
@@ -28,6 +27,7 @@ class EndpointTestClient {
         const config = {
             method,
             headers: this._headers(),
+            credentials: 'include',  // Incluir cookies en solicitudes cross-origin
             ...options
         };
 
@@ -43,6 +43,10 @@ class EndpointTestClient {
         return this._request('POST', '/auth/login', {
             data: { usuario, password }
         });
+    }
+
+    async logout() {
+        return this._request('POST', '/auth/logout');
     }
 
     async health() {
@@ -167,7 +171,7 @@ async toggle_usuario_status(empresaId, usuarioId, activo) {
     return this._request('PATCH', `/empresas/${empresaId}/usuarios/${usuarioId}/toggle-status`, { data: { activo } });
 }
 
-// Company types endpoints
+    // Company types endpoints
     async get_tipos_empresa() {
         return this._request('GET', '/api/tipos_empresa');
     }
@@ -182,9 +186,40 @@ async toggle_usuario_status(empresaId, usuarioId, activo) {
         return this._request('GET', '/api/tipos_empresa/dashboard/all');
     }
 
+    // Super Admin Dashboard endpoints
+    async get_super_admin_dashboard_stats() {
+        return this._request('GET', '/api/dashboard/stats');
+    }
+
+    async get_super_admin_recent_companies() {
+        return this._request('GET', '/api/dashboard/recent-companies');
+    }
+
+    async get_super_admin_recent_users() {
+        return this._request('GET', '/api/dashboard/recent-users');
+    }
+
+    async get_super_admin_activity_chart() {
+        return this._request('GET', '/api/dashboard/activity-chart');
+    }
+
+    async get_super_admin_distribution_chart() {
+        return this._request('GET', '/api/dashboard/distribution-chart');
+    }
+
+    async get_super_admin_hardware_stats() {
+        return this._request('GET', '/api/dashboard/hardware-stats');
+    }
+
+    async get_super_admin_performance_metrics() {
+        return this._request('GET', '/api/dashboard/system-performance');
+    }
+
     // Utility methods
     set_token(token) {
-        this.token = token;
+        // Ya no necesitamos establecer tokens manualmente
+        // Las cookies se manejan automáticamente
+        console.log('Note: Tokens are now handled via secure cookies');
     }
 
     async pretty_response(response) {
@@ -199,3 +234,4 @@ async toggle_usuario_status(empresaId, usuarioId, activo) {
 
 // Make it available globally
 window.EndpointTestClient = EndpointTestClient;
+}

@@ -770,7 +770,43 @@ class EmpresasModals {
     
     try {
       const formData = this.buildFormData();
-      
+
+      // Validar campos obligatorios
+      if (!formData.nombre) {
+        this.showNotification('El nombre de la empresa es obligatorio', 'error');
+        return;
+      }
+
+      if (!formData.username) {
+        this.showNotification('El usuario de la empresa es obligatorio', 'error');
+        return;
+      }
+
+      if (!formData.email) {
+        this.showNotification('El correo de la empresa es obligatorio', 'error');
+        return;
+      }
+
+      if (!formData.ubicacion) {
+        this.showNotification('La ubicación de la empresa es obligatoria', 'error');
+        return;
+      }
+
+      if (!formData.descripcion) {
+        this.showNotification('La descripción de la empresa es obligatoria', 'error');
+        return;
+      }
+
+      if (!formData.tipo_empresa_id) {
+        this.showNotification('Debe seleccionar un tipo de empresa', 'error');
+        return;
+      }
+
+      if (!this.currentEditingEmpresa && !formData.password) {
+        this.showNotification('La contraseña es obligatoria', 'error');
+        return;
+      }
+
       // Validate that at least one sede and one role are provided
       if (!formData.sedes || formData.sedes.length === 0) {
         this.showNotification('Error: Debe agregar al menos una sede para la empresa', 'error');

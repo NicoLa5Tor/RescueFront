@@ -537,6 +537,7 @@ class HardwareCore {
       this.setElementText('viewHardwareType', getSafeValue(hardware, 'tipo'));
       this.setElementText('viewHardwareEmpresa', getSafeValue(hardware, 'empresa_nombre'));
       this.setElementText('viewHardwareSede', getSafeValue(hardware, 'sede'));
+      this.setElementText('viewHardwareTopic', getSafeValue(hardware, 'topic', 'No generado'));
 
       // Data fields with multiple possibilities
       this.setElementText('viewHardwareBrand', 
