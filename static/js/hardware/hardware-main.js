@@ -31,6 +31,7 @@ class HardwareMain {
     }
   }
 
+
   /**
    * Initialize all hardware modules
    */
@@ -244,32 +245,8 @@ class HardwareMain {
   initializeFilters() {
     console.log('🔍 Inicializando sistema de filtros...');
     
-    // Initialize filter event listeners
-    const filterElements = {
-      searchInput: document.getElementById('searchInput'),
-      typeFilter: document.getElementById('typeFilter'),
-      statusFilter: document.getElementById('statusFilter'),
-      includeInactiveFilter: document.getElementById('includeInactiveFilter')
-    };
-    
-    // Add event listeners
-    if (filterElements.searchInput) {
-      filterElements.searchInput.addEventListener('input', () => this.filterHardware());
-    }
-    
-    if (filterElements.typeFilter) {
-      filterElements.typeFilter.addEventListener('change', () => this.filterHardware());
-    }
-    
-    if (filterElements.statusFilter) {
-      filterElements.statusFilter.addEventListener('change', () => this.filterHardware());
-    }
-    
-    if (filterElements.includeInactiveFilter) {
-      filterElements.includeInactiveFilter.addEventListener('change', () => this.loadHardware());
-    }
-    
-    // Make filter functions available globally
+    // NO configurar event listeners - ya están en hardware.html
+    // Solo hacer las funciones disponibles globalmente
     window.clearFilters = () => this.clearFilters();
     window.filterHardware = () => this.filterHardware();
     
@@ -493,9 +470,6 @@ class HardwareMain {
         console.error(`Error renderizando hardware ${index + 1}:`, error);
       }
     });
-    
-    // Apply filters after rendering
-    setTimeout(() => this.filterHardware(), 100);
   }
 
   /**
@@ -512,6 +486,14 @@ class HardwareMain {
       </div>
     `;
     container.appendChild(emptyMessage);
+  }
+
+  /**
+   * Helper function to escape quotes in URLs
+   */
+  escapeQuotes(str) {
+    if (!str) return '';
+    return str.replace(/'/g, '&#39;').replace(/"/g, '&quot;');
   }
 
   /**
@@ -534,6 +516,14 @@ class HardwareMain {
     div.setAttribute('data-sede', (hardware.sede || '').toLowerCase());
     div.setAttribute('data-stock', stock);
     div.setAttribute('data-activa', hardware.activa !== false ? 'true' : 'false');
+    
+    // Debug: Check if hardware has location URLs
+    if (hardware.direccion_url && hardware.direccion_url.trim() !== '') {
+      console.log('🗺️ Hardware con Google Maps:', hardware.nombre, 'URL:', hardware.direccion_url);
+    }
+    if (hardware.direccion_open_maps && hardware.direccion_open_maps.trim() !== '') {
+      console.log('🗺️ Hardware con OpenStreetMap:', hardware.nombre, 'URL:', hardware.direccion_open_maps);
+    }
     
     // Determine status display
     let statusClass = 'ios-status-available';
@@ -594,10 +584,16 @@ class HardwareMain {
                 title="${hardware.activa ? 'Desactivar' : 'Activar'}">
           <i class="fas ${hardware.activa ? 'fa-power-off' : 'fa-play'}"></i>
         </button>
+        ${hardware.direccion_url && hardware.direccion_url.trim() !== '' ? 
+          `<button class="ios-card-btn" onclick="openLocationModalFromCard('${hardware._id}', '${this.escapeQuotes(hardware.direccion_url)}')" title="Ver ubicación">
+            <i class="fas fa-map-location-dot"></i>
+          </button>` : ''
+        }
       </div>
       
       <div class="ios-card-shimmer"></div>
     `;
+    
     
     // Apply card optimizations
     if (window.applyCardOptimizations) {
@@ -763,7 +759,14 @@ class HardwareMain {
       filterEmptyMessage.remove();
     }
     
-    this.loadHardware();
+    // NO recargar hardware - solo mostrar todos los elementos existentes
+    const allItems = document.querySelectorAll('.hardware-item');
+    allItems.forEach(item => {
+      item.style.display = '';
+      item.classList.remove('hidden');
+    });
+    
+    console.log('🧹 Filtros limpiados sin recargar hardware');
   }
 
   /**

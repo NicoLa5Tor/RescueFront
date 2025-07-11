@@ -306,16 +306,9 @@ def proxy_api(endpoint):
 @app.route('/admin')
 @require_role(['super_admin'])
 def admin_dashboard():
-    """Dashboard principal - Solo para super_admin"""
-    # Get dummy data from Python providers
-    dashboard_data = get_dashboard_stats()
-    
-    return render_template(
-        'admin/dashboard.html',
-        api_url=PROXY_PREFIX,
-        dashboard_data=dashboard_data,
-        active_page='dashboard'
-    )
+    """Dashboard principal - Redirigir automáticamente al super-dashboard para admin"""
+    # Redirigir automáticamente al super-dashboard
+    return redirect(url_for('super_admin_dashboard'))
 
 @app.route('/admin/super-dashboard')
 @require_role(['super_admin'])

@@ -7,6 +7,9 @@
 <link href="{{ url_for('static', filename='css/modals.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/hardware/hardware-main.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/hardware/hardware-modal-fix.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/hardware/location-modal.css') }}" rel="stylesheet">
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
 {% endblock %}
 
 {% block extra_js %}
@@ -510,15 +513,15 @@
     </div>
     
     <!-- Modal Footer -->
-    <div class="ios-blur-footer">
-      <button type="button" class="ios-blur-btn ios-blur-btn-secondary" onclick="closeViewModal()">
-        <i class="fas fa-times mr-2"></i>
-        Cerrar
-      </button>
+      <div class="ios-blur-footer">
+        <button type="button" class="ios-blur-btn ios-blur-btn-secondary" onclick="closeViewModal()">
+          <i class="fas fa-times mr-2"></i>
+          Cerrar
+        </button>
+      </div>
     </div>
   </div>
 </div>
-
 <!-- Enhanced Toggle Hardware Status Modal - iOS STYLE LIKE EMPRESAS -->
 <div id="toggleHardwareModal" class="ios-modal-backdrop toggle-modal hidden">
   <div class="ios-blur-modal-container max-w-md" id="toggleModalContainer">
@@ -546,6 +549,52 @@
   </div>
 </div>
 
+<!-- Location Modal - iOS STYLE LIKE EMPRESAS -->
+<div id="locationModal" class="ios-modal-backdrop hidden">
+  <div class="ios-blur-modal-container w-full max-w-6xl h-[90vh]">
+    <!-- Modal Header -->
+    <div class="ios-blur-header">
+      <div class="flex items-center justify-between w-full">
+        <div class="flex items-center space-x-3">
+          <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+            <i class="fas fa-map-location-dot text-white text-xl"></i>
+          </div>
+          <div>
+            <h3 class="text-2xl font-bold text-white">Ubicación del Hardware</h3>
+            <p class="text-sm text-white/70" id="locationModalSubtitle">Visualizando ubicación en mapa</p>
+          </div>
+        </div>
+        <button type="button" class="ios-blur-btn ios-blur-btn-secondary !p-2 !min-w-0" onclick="closeLocationModal()" aria-label="Cerrar modal">
+          <i class="fas fa-times text-lg"></i>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="ios-blur-body !p-0 flex-1">
+      <div class="w-full h-full min-h-[600px] rounded-xl overflow-hidden shadow-2xl">
+        <div 
+          id="locationMap" 
+          class="w-full h-full border-0 rounded-xl"
+          style="min-height: 600px;"
+        ></div>
+      </div>
+    </div>
+    
+    <!-- Modal Footer -->
+    <div class="ios-blur-footer">
+      <button type="button" class="ios-blur-btn ios-blur-btn-secondary" onclick="closeLocationModal()">
+        <i class="fas fa-times mr-2"></i>
+        Cerrar
+      </button>
+      <button type="button" class="ios-blur-btn ios-blur-btn-primary" onclick="openInNewTab()" id="openInNewTabBtn">
+        <i class="fas fa-external-link-alt mr-2"></i>
+        Abrir en nueva pestaña
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- Client Update Success Modal - iOS STYLE LIKE EMPRESAS -->
 <div id="clientUpdateModal" class="ios-modal-backdrop hidden">
   <div class="ios-blur-modal-container max-w-md" id="updateModalContainer">
@@ -569,6 +618,8 @@
 {% endblock %}
 
 {% block page_js %}
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script src="{{ url_for('static', filename='js/api-client.js') }}"></script>
 <script src="{{ url_for('static', filename='js/modal-utils.js') }}"></script>
 <script src="{{ url_for('static', filename='js/dashboard/basic-managers.js') }}"></script>
@@ -584,7 +635,7 @@ function initializeModals() {
   
   if (window.modalManager) {
     // Setup all modals in the page
-    const modalIds = ['hardwareModal', 'viewHardwareModal', 'toggleHardwareModal', 'clientUpdateModal'];
+    const modalIds = ['hardwareModal', 'viewHardwareModal', 'toggleHardwareModal', 'clientUpdateModal', 'locationModal'];
     modalIds.forEach(modalId => {
       window.modalManager.setupModal(modalId);
       console.log(`✅ Modal ${modalId} configured`);
@@ -598,6 +649,260 @@ function initializeModals() {
     console.log('✅ ThemeManager available, theme should be persistent');
   }
 }
+
+// Global variables for Leaflet map
+let currentMap = null;
+let currentMarker = null;
+window.currentLocationUrl = null;
+
+// Function to extract coordinates from different URL formats
+function extractCoordinates(url) {
+  console.log('🔍 Extracting coordinates from URL:', url);
+  
+  // OpenStreetMap format: https://www.openstreetmap.org/#map=15/40.7128/-74.0060
+  let match = url.match(/#map=(\d+)\/([-\d\.]+)\/([-\d\.]+)/);
+  if (match) {
+    const result = {
+      lat: parseFloat(match[2]),
+      lng: parseFloat(match[3]),
+      zoom: parseInt(match[1])
+    };
+    console.log('✅ OpenStreetMap format matched:', result);
+    return result;
+  }
+  
+  // Google Maps format: https://www.google.com/maps/@40.7128,-74.0060,15z
+  match = url.match(/@([-\d\.]+),([-\d\.]+),(\d+)z/);
+  if (match) {
+    const result = {
+      lat: parseFloat(match[1]),
+      lng: parseFloat(match[2]),
+      zoom: parseInt(match[3])
+    };
+    console.log('✅ Google Maps @ format matched:', result);
+    return result;
+  }
+  
+  // Google Maps query format: https://www.google.com/maps/search/40.7128,-74.0060
+  match = url.match(/search\/([-\d\.]+),([-\d\.]+)/);
+  if (match) {
+    const result = {
+      lat: parseFloat(match[1]),
+      lng: parseFloat(match[2]),
+      zoom: 15
+    };
+    console.log('✅ Google Maps search format matched:', result);
+    return result;
+  }
+  
+  // Fallback: try to find any lat,lng pattern
+  match = url.match(/([-\d\.]+),([-\d\.]+)/);
+  if (match) {
+    const lat = parseFloat(match[1]);
+    const lng = parseFloat(match[2]);
+    // Validate lat/lng ranges
+    if (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+      const result = {
+        lat: lat,
+        lng: lng,
+        zoom: 15
+      };
+      console.log('✅ Fallback lat,lng pattern matched:', result);
+      return result;
+    }
+  }
+  
+  console.log('❌ No coordinates found in URL');
+  return null;
+}
+
+// Function to initialize Leaflet map
+function initializeLeafletMap(lat, lng, zoom = 15, hardwareName = 'Hardware') {
+  console.log('📍 Initializing Leaflet map with params:', { lat, lng, zoom, hardwareName });
+  
+  const mapContainer = document.getElementById('locationMap');
+  if (!mapContainer) {
+    console.error('❌ Map container not found!');
+    return;
+  }
+  
+  console.log('✅ Map container found:', mapContainer);
+  
+  // Clear any existing map
+  if (currentMap) {
+    console.log('🧹 Removing existing map');
+    currentMap.remove();
+    currentMap = null;
+  }
+  
+  try {
+    // Create new map
+    console.log('🌐 Creating new Leaflet map...');
+    currentMap = L.map('locationMap').setView([lat, lng], zoom);
+    
+    // Add OpenStreetMap tiles
+    console.log('🗺️ Adding OpenStreetMap tiles...');
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(currentMap);
+    
+    // Add marker
+    console.log('📍 Adding marker...');
+    currentMarker = L.marker([lat, lng]).addTo(currentMap)
+      .bindPopup(`<b>${hardwareName}</b><br>Ubicación del hardware`)
+      .openPopup();
+    
+    console.log('✅ Leaflet map successfully initialized!');
+    
+    // Force map resize after a short delay
+    setTimeout(() => {
+      if (currentMap) {
+        currentMap.invalidateSize();
+        console.log('🔄 Map size invalidated');
+      }
+    }, 200);
+    
+  } catch (error) {
+    console.error('💥 Error initializing Leaflet map:', error);
+  }
+}
+
+// Function to open location modal
+function openLocationModal() {
+  if (!window.currentLocationUrl) {
+    console.error('No location URL available');
+    return;
+  }
+  
+  const modal = document.getElementById('locationModal');
+  const subtitle = document.getElementById('locationModalSubtitle');
+  
+  if (modal) {
+    // Extract coordinates from URL
+    const coords = extractCoordinates(window.currentLocationUrl);
+    
+    if (coords) {
+      // Update subtitle with current hardware name
+      const currentHardwareName = document.getElementById('viewHardwareName')?.textContent || 'Hardware';
+      subtitle.textContent = `Ubicación de ${currentHardwareName}`;
+      
+      // Show modal
+      modal.classList.remove('hidden');
+      
+      // Add fade-in animation
+      setTimeout(() => {
+        modal.classList.add('modal-show');
+        // Initialize map after modal is visible
+        initializeLeafletMap(coords.lat, coords.lng, coords.zoom, currentHardwareName);
+      }, 100);
+      
+      console.log('📍 Location modal opened with coordinates:', coords);
+    } else {
+      console.error('Could not extract coordinates from URL:', window.currentLocationUrl);
+      // Fallback: open in new tab
+      window.open(window.currentLocationUrl, '_blank', 'noopener,noreferrer');
+    }
+  }
+}
+
+// Function to close location modal
+function closeLocationModal() {
+  const modal = document.getElementById('locationModal');
+  
+  if (modal) {
+    // Add fade-out animation
+    modal.classList.remove('modal-show');
+    
+    // Hide modal and cleanup map after animation
+    setTimeout(() => {
+      modal.classList.add('hidden');
+      
+      // Cleanup map
+      if (currentMap) {
+        currentMap.remove();
+        currentMap = null;
+        currentMarker = null;
+      }
+    }, 300);
+    
+    console.log('📍 Location modal closed');
+  }
+}
+
+// Function to open location in new tab
+function openInNewTab() {
+  if (window.currentLocationUrl) {
+    window.open(window.currentLocationUrl, '_blank', 'noopener,noreferrer');
+    console.log('📍 Location opened in new tab:', window.currentLocationUrl);
+  }
+}
+
+// Function to open location modal directly from card
+function openLocationModalFromCard(hardwareId, locationUrl) {
+  if (!locationUrl || locationUrl.trim() === '') {
+    console.error('No location URL provided');
+    return;
+  }
+  
+  // Decode HTML entities
+  const decodedUrl = locationUrl.replace(/\\&quot;/g, '"').replace(/\\&#39;/g, "'");
+  
+  console.log('📍 Opening location modal from card:', hardwareId, decodedUrl);
+  
+  // Store the URL globally
+  window.currentLocationUrl = decodedUrl;
+  
+  // Get hardware name for subtitle
+  const hardwareCard = document.querySelector(`[data-hardware-id="${hardwareId}"]`);
+  let hardwareName = 'Hardware';
+  if (hardwareCard) {
+    const titleElement = hardwareCard.querySelector('.ios-card-title');
+    if (titleElement) {
+      hardwareName = titleElement.textContent || 'Hardware';
+    }
+  }
+  
+  // Extract coordinates from URL
+  let coords = extractCoordinates(decodedUrl);
+  
+  // If no coordinates found, show error and don't open modal
+  if (!coords) {
+    console.error('❌ No se pudieron extraer coordenadas de la URL:', decodedUrl);
+    alert('Error: No se pudo determinar la ubicación del hardware.');
+    return;
+  }
+  
+  // Always open modal with Leaflet map
+  const modal = document.getElementById('locationModal');
+  const subtitle = document.getElementById('locationModalSubtitle');
+  
+  if (modal) {
+    // Update subtitle
+    if (subtitle) {
+      subtitle.textContent = coords ? `Ubicación de ${hardwareName}` : `${hardwareName} - Ubicación no disponible`;
+    }
+    
+    console.log('🗺️ Opening modal...');
+    
+    // Show modal
+    modal.classList.remove('hidden');
+    
+    // Add fade-in animation and initialize map
+    setTimeout(() => {
+      modal.classList.add('modal-show');
+      console.log('🗺️ Initializing Leaflet map with coords:', coords);
+      // Initialize Leaflet map after modal is visible
+      initializeLeafletMap(coords.lat, coords.lng, coords.zoom, hardwareName);
+    }, 100);
+    
+    console.log('📍 Location modal opened with Leaflet map:', coords);
+  } else {
+    console.error('❌ Modal not found!');
+  }
+}
+
+// Make function globally available
+window.openLocationModalFromCard = openLocationModalFromCard;
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', initializeModals);
@@ -1466,12 +1771,8 @@ fetch('/proxy/health')
       // Initialize filter listeners first
       initializeFilterListeners();
       
-      // Load hardware data on page load
-      setTimeout(() => {
-        loadHardware();
-        loadHardwareTypes();
-        loadEmpresas();
-      }, 1000);
+      // NO cargar datos aquí - ya lo hace hardware-main.js
+      console.log('✅ API Client listo, hardware-main.js se encargará de cargar datos');
     }
   })
   .catch(err => console.error('Error initializing API client:', err));
@@ -2135,8 +2436,17 @@ function clearFilters() {
     filterEmptyMessage.remove();
   }
   
-  // Reload hardware data with new filter
-  loadHardware();
+  // Use hardware-main.js function instead of reloading
+  if (window.hardwareMain) {
+    window.hardwareMain.clearFilters();
+  } else {
+    // Fallback: just show all items without reloading
+    const allItems = document.querySelectorAll('.hardware-item');
+    allItems.forEach(item => {
+      item.style.display = '';
+      item.classList.remove('hidden');
+    });
+  }
 }
 
 function filterHardware() {
@@ -2358,8 +2668,13 @@ function initializeFilterListeners() {
   if (includeInactiveFilter) {
     includeInactiveFilter.addEventListener('change', function() {
       console.log('🔍 TRIGGER: includeInactiveFilter changed to:', includeInactiveFilter.value);
-      // When this filter changes, we need to reload the data, not just filter the UI
-      loadHardware();
+      // Use hardware-main.js function instead of direct loadHardware
+      if (window.hardwareMain) {
+        window.hardwareMain.loadHardware();
+      } else {
+        console.warn('⚠️ hardwareMain no disponible, usando loadHardware directo');
+        loadHardware();
+      }
     });
   } else {
     console.error('❌ No se encontró includeInactiveFilter');

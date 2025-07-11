@@ -43,7 +43,8 @@ class HardwareCore {
       'hardwareModal',
       'viewHardwareModal',
       'toggleHardwareModal',
-      'clientUpdateModal'
+      'clientUpdateModal',
+      'locationModal'
     ];
 
     modals.forEach(modalId => {
@@ -75,7 +76,8 @@ class HardwareCore {
       'hardwareModal',
       'viewHardwareModal', 
       'toggleHardwareModal',
-      'clientUpdateModal'
+      'clientUpdateModal',
+      'locationModal'
     ];
 
     for (const modalId of modals) {
@@ -103,6 +105,9 @@ class HardwareCore {
         break;
       case 'clientUpdateModal':
         this.closeUpdateModal();
+        break;
+      case 'locationModal':
+        this.closeLocationModal();
         break;
     }
   }
@@ -624,6 +629,7 @@ class HardwareCore {
     }
   }
 
+
   /**
    * Format status for display
    */
@@ -996,6 +1002,12 @@ class HardwareCore {
       window.hardwareModals.closeUpdateModal();
     }
   }
+
+  closeLocationModal() {
+    if (window.closeLocationModal) {
+      window.closeLocationModal();
+    }
+  }
 }
 
 // Initialize hardware core
@@ -1007,6 +1019,9 @@ window.editHardware = (id) => hardwareCore.editHardware(id);
 window.viewHardware = (id) => hardwareCore.viewHardware(id);
 window.closeModal = () => hardwareCore.closeCreateEditModal();
 window.closeViewModal = () => hardwareCore.closeViewModal();
+
+// Export location modal functions
+// Note: openLocationModal and closeLocationModal are defined in hardware.html
 
 // Export core instance
 window.hardwareCore = hardwareCore;
