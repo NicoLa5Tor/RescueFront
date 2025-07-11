@@ -78,9 +78,6 @@
     <script>
         window.API_BASE_URL = '{{ api_url if api_url else "http://localhost:5000" }}';
         window.CURRENT_USER = '{% if current_user %}{{ current_user | tojson | safe }}{% else %}null{% endif %}';
-        {% if session.get('token') %}
-        window.INIT_TOKEN = "{{ session.get('token') }}";
-        {% endif %}
     </script>
     
     <!-- GSAP Configuration (Global) -->

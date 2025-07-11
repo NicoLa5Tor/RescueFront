@@ -9,18 +9,18 @@ import random
 from datetime import datetime, timedelta
 from typing import List, Dict, Any
 from python_api_client import EndpointTestClient
-from flask import session
+from flask import session, request
 import logging
 
 logger = logging.getLogger(__name__)
 
 
 class RealDashboardDataProvider:
-    """Provides dashboard data from real API endpoints"""
-    
-    def __init__(self, api_base_url: str, token: str = None):
+    """Provides dashboard data from real API endpoints."""
+
+    def __init__(self, api_base_url: str, cookies: Dict[str, str] = None):
         self.api_base_url = api_base_url
-        self.client = EndpointTestClient(api_base_url, token)
+        self.client = EndpointTestClient(api_base_url, cookies=cookies)
         self.dummy_provider = DashboardDataProvider()  # Fallback to dummy data
     
     def get_dashboard_data(self) -> Dict[str, Any]:
@@ -500,7 +500,7 @@ def get_dashboard_stats():
     try:
         if 'token' in session:
             from config import BACKEND_API_URL
-            real_provider = RealDashboardDataProvider(BACKEND_API_URL, session['token'])
+            real_provider = RealDashboardDataProvider(BACKEND_API_URL, request.cookies)
             return real_provider.get_dashboard_data()
     except Exception as e:
         logger.warning(f"Could not get real dashboard data: {e}")
@@ -515,7 +515,7 @@ def get_companies_stats():
     try:
         if 'token' in session:
             from config import BACKEND_API_URL
-            real_provider = RealDashboardDataProvider(BACKEND_API_URL, session['token'])
+            real_provider = RealDashboardDataProvider(BACKEND_API_URL, request.cookies)
             companies_response = real_provider.client.get_dashboard_recent_companies()
             if companies_response.ok:
                 return {
@@ -535,7 +535,7 @@ def get_detailed_statistics():
     try:
         if 'token' in session:
             from config import BACKEND_API_URL
-            real_provider = RealDashboardDataProvider(BACKEND_API_URL, session['token'])
+            real_provider = RealDashboardDataProvider(BACKEND_API_URL, request.cookies)
             performance_data = real_provider.get_system_performance()
             if performance_data:
                 return {
@@ -560,7 +560,7 @@ def get_hardware_data():
     try:
         if 'token' in session:
             from config import BACKEND_API_URL
-            real_provider = RealDashboardDataProvider(BACKEND_API_URL, session['token'])
+            real_provider = RealDashboardDataProvider(BACKEND_API_URL, request.cookies)
             hardware_stats = real_provider.get_hardware_stats()
             if hardware_stats:
                 return {
