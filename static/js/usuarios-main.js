@@ -252,20 +252,9 @@ class UsuariosMain {
         
         // Renderizar usuarios (igual que hardware)
         this.renderUsuarios();
-<<<<<<< HEAD
-
-        // Mostrar u ocultar filtros antes de actualizar estadísticas
-=======
         
         // Actualizar estadísticas inmediatamente con todos los datos (igual que hardware)
         this.updateUserStats(data);
-        
-        // DESPUÉS aplicar filtros automáticos
-        this.applyFilters();
-        this.hideLoadingState();
-        
-        // SIEMPRE mostrar filtros cuando hay usuarios disponibles (incluye inactivos)
->>>>>>> codex/fix-user-stats-card-rendering
         console.log('📊 Verificando si mostrar filtros - usuariosAll.length:', this.usuariosAll.length);
         if (this.usuariosAll && this.usuariosAll.length > 0) {
           console.log('📊 Mostrando filtros porque hay usuarios disponibles');
@@ -337,13 +326,10 @@ class UsuariosMain {
     if (statsDiv) {
       statsDiv.style.display = 'grid';
       console.log('📊 Stats mostrados - display:', statsDiv.style.display);
-<<<<<<< HEAD
       // Ensure cards are visible in case animations didn't run
       this.ensureStatsVisibility();
-=======
       // Re-render stats when made visible
       this.updateUserStats();
->>>>>>> codex/fix-user-stats-card-rendering
     } else {
       console.error('❌ No se encontró el elemento usuariosStatsGrid');
     }
