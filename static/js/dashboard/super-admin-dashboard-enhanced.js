@@ -8,33 +8,7 @@ class SuperAdminDashboardEnhanced extends SuperAdminDashboard {
 
     // 2. MEJORA: Mejor método de obtención de token
     getSessionToken() {
-        // Priorizar window.sessionToken
-        if (window.sessionToken && window.sessionToken !== 'None' && window.sessionToken !== 'null') {
-            return window.sessionToken;
-        }
-        
-        // Luego sessionStorage
-        const sessionToken = sessionStorage.getItem('token');
-        if (sessionToken && sessionToken !== 'null') {
-            return sessionToken;
-        }
-        
-        // Luego localStorage
-        const localToken = localStorage.getItem('token');
-        if (localToken && localToken !== 'null') {
-            return localToken;
-        }
-        
-        // Finalmente cookies
-        const cookies = document.cookie.split(';');
-        for (let cookie of cookies) {
-            const [name, value] = cookie.trim().split('=');
-            if ((name === 'token' || name === 'session_token') && value && value !== 'null') {
-                return value;
-            }
-        }
-        
-        console.warn('No session token found. Dashboard will use fallback data.');
+        // Tokens are no longer used. Authentication relies on cookies.
         return null;
     }
 

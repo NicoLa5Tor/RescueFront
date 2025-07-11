@@ -21,8 +21,8 @@ from dashboard_data_providers import (
 
 # Importar configuración centralizada
 from config import (
-    BACKEND_API_URL, 
-    PROXY_PREFIX, 
+    BACKEND_API_URL,
+    PROXY_PREFIX,
     SECRET_KEY, 
     SESSION_LIFETIME,
     DEBUG_MODE,
@@ -56,7 +56,7 @@ def require_role(allowed_roles):
         @wraps(f)
         def decorated_function(*args, **kwargs):
             # Check if user is logged in
-            if 'token' not in session or 'user' not in session:
+            if 'user' not in session:
                 print(f"❌ No session found for route {request.endpoint}")
                 return redirect(url_for('login'))
             
@@ -109,14 +109,14 @@ def attach_api_client():
             session.clear()
             return redirect(url_for('login', error='backend_unavailable'))
     
-    token = session.get('token')
-    g.api_client = EndpointTestClient(BACKEND_API_URL, token)
+    cookies = session.get('backend_cookies')
+    g.api_client = EndpointTestClient(BACKEND_API_URL, cookies=cookies)
 
 # ========== RUTAS PÚBLICAS ==========
 @app.route('/')
 def index():
     """Página principal - Landing page"""
-    return render_template('index.html', api_url=PROXY_PREFIX)
+    return render_template('index.html', api_url=BACKEND_API_URL)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -124,7 +124,7 @@ def login():
     # Verificar si el backend está disponible
     if not validate_backend_connection():
         error = 'El servidor no está disponible. Intenta más tarde.'
-        return render_template('login.html', api_url=PROXY_PREFIX, error=error)
+        return render_template('login.html', api_url=BACKEND_API_URL, error=error)
     
     # Obtener mensaje de error desde URL params
     error_param = request.args.get('error')
@@ -139,7 +139,7 @@ def login():
         res = client.login(usuario, password)
         if res.ok:
             data = res.json()
-            session['token'] = data.get('token')
+            session['backend_cookies'] = client.get_cookies()
             session['user'] = data.get('user')
             # NO hacer la sesión permanente - será temporal por defecto
             session.permanent = False
@@ -151,9 +151,9 @@ def login():
             else:
                 return redirect(url_for('super_admin_dashboard'))
         error = res.json().get('message', 'Credenciales inválidas')
-        return render_template('login.html', api_url=PROXY_PREFIX, error=error)
-    
-    return render_template('login.html', api_url=PROXY_PREFIX, error=initial_error)
+        return render_template('login.html', api_url=BACKEND_API_URL, error=error)
+
+    return render_template('login.html', api_url=BACKEND_API_URL, error=initial_error)
 
 @app.route('/logout')
 def logout():
@@ -170,8 +170,6 @@ def sync_session():
         user_data = data.get('user')
         
         if user_data:
-            # Simular un token para la sesión (no es el JWT real, solo para compatibilidad)
-            session['token'] = 'jwt_cookie_auth'
             session['user'] = user_data
             session.permanent = False
             
@@ -195,10 +193,10 @@ def sync_session():
 # Proxy de todas las peticiones hacia el backend
 @app.route(f'{PROXY_PREFIX}/<path:endpoint>', methods=['GET', 'POST', 'PUT', 'DELETE', 'PATCH'])
 def proxy_api(endpoint):
-    if 'token' not in session:
+    if 'user' not in session:
         return jsonify({'error': 'No autenticado'}), 401
 
-    print(f"🔄 PROXY: {request.method} /{endpoint} - Token presente: {bool(session.get('token'))}")
+    print(f"🔄 PROXY: {request.method} /{endpoint} - Cookies presentes: {bool(session.get('backend_cookies'))}")
     
     # Debug especial para toggle-status
     if 'toggle-status' in endpoint:
@@ -206,7 +204,8 @@ def proxy_api(endpoint):
         print(f"  - Endpoint completo: /{endpoint}")
         print(f"  - Método: {request.method}")
         print(f"  - Headers: {dict(request.headers)}")
-        print(f"  - Token en sesión: {session.get('token')[:20] if session.get('token') else 'NO TOKEN'}...")
+        cookies_info = session.get('backend_cookies')
+        print(f"  - Backend cookies present: {bool(cookies_info)}")
     
     data = None
     if request.method in ['POST', 'PUT', 'PATCH']:
@@ -252,7 +251,7 @@ def admin_dashboard():
     
     return render_template(
         'admin/dashboard.html',
-        api_url=PROXY_PREFIX,
+        api_url=BACKEND_API_URL,
         dashboard_data=dashboard_data,
         active_page='dashboard'
     )
@@ -266,8 +265,8 @@ def super_admin_dashboard():
         from dashboard_data_providers import RealDashboardDataProvider
         from config import BACKEND_API_URL
         
-        # Use real data provider with session token
-        real_provider = RealDashboardDataProvider(BACKEND_API_URL, session.get('token'))
+        # Use real data provider with backend session cookies
+        real_provider = RealDashboardDataProvider(BACKEND_API_URL, session.get('backend_cookies'))
         dashboard_data = real_provider.get_dashboard_data()
         
         # Add hardware stats if not already present
@@ -296,7 +295,7 @@ def super_admin_dashboard():
     
     return render_template(
         'admin/super_admin_dashboard.html',
-        api_url=PROXY_PREFIX,
+        api_url=BACKEND_API_URL,
         dashboard_data=dashboard_data,
         active_page='dashboard'
     )
@@ -336,7 +335,7 @@ def admin_users():
 
     return render_template(
         'admin/users.html',
-        api_url=PROXY_PREFIX,
+        api_url=BACKEND_API_URL,
         active_page='users',
         user_role=user_role,
         empresa_view=user_role == 'empresa',
@@ -374,7 +373,7 @@ def admin_empresas():
 
     return render_template(
         'admin/empresas.html',
-        api_url=PROXY_PREFIX,
+        api_url=BACKEND_API_URL,
         companies_data=companies_data,
         active_page='empresas',
         initial_total_companies=total_companies,
@@ -402,8 +401,8 @@ def admin_stats():
     statistics_data = get_detailed_statistics()
     
     return render_template(
-        'admin/stats.html', 
-        api_url=PROXY_PREFIX, 
+        'admin/stats.html',
+        api_url=BACKEND_API_URL,
         statistics_data=statistics_data,
         active_page='stats'
     )
@@ -432,8 +431,8 @@ def admin_hardware():
         }
     
     return render_template(
-        'admin/hardware.html', 
-        api_url=PROXY_PREFIX, 
+        'admin/hardware.html',
+        api_url=BACKEND_API_URL,
         hardware_data=hardware_data,
         active_page='hardware'
     )
@@ -514,8 +513,8 @@ def admin_company_types():
         }
     
     return render_template(
-        'admin/company_types.html', 
-        api_url=PROXY_PREFIX, 
+        'admin/company_types.html',
+        api_url=BACKEND_API_URL,
         company_types_data=company_types_data,
         include_inactive=include_inactive,
         active_page='company_types'
@@ -534,8 +533,8 @@ def empresa_dashboard():
     empresa_username = session.get('user', {}).get('username')
     
     return render_template(
-        'admin/stats.html', 
-        api_url=PROXY_PREFIX, 
+        'admin/stats.html',
+        api_url=BACKEND_API_URL,
         statistics_data=statistics_data,
         active_page='stats',
         user_role='empresa',
@@ -573,7 +572,7 @@ def empresa_usuarios():
 
     return render_template(
         'admin/users.html',
-        api_url=PROXY_PREFIX,
+        api_url=BACKEND_API_URL,
         active_page='users',
         user_role='empresa',
         empresa_view=True,
@@ -598,8 +597,8 @@ def empresa_stats():
     empresa_username = session.get('user', {}).get('username')
     
     return render_template(
-        'admin/stats.html', 
-        api_url=PROXY_PREFIX, 
+        'admin/stats.html',
+        api_url=BACKEND_API_URL,
         statistics_data=statistics_data,
         active_page='stats',
         user_role='empresa',
@@ -626,7 +625,7 @@ def empresa_perfil():
 def inject_config():
     """Inyectar configuración en todas las plantillas"""
     return dict(
-        api_url=PROXY_PREFIX,
+        api_url=BACKEND_API_URL,
         app_name="Rescue Dashboard",
         version="1.0.0",
         current_user=session.get('user')
@@ -654,21 +653,21 @@ def not_found(error):
     """Página no encontrada"""
     if request.is_json:
         return jsonify({'error': 'Recurso no encontrado'}), 404
-    return render_template('errors/404.html', api_url=PROXY_PREFIX), 404
+    return render_template('errors/404.html', api_url=BACKEND_API_URL), 404
 
 @app.errorhandler(500)
 def internal_error(error):
     """Error interno del servidor"""
     if request.is_json:
         return jsonify({'error': 'Error interno del servidor'}), 500
-    return render_template('errors/500.html', api_url=PROXY_PREFIX), 500
+    return render_template('errors/500.html', api_url=BACKEND_API_URL), 500
 
 @app.errorhandler(403)
 def forbidden(error):
     """Acceso denegado"""
     if request.is_json:
         return jsonify({'error': 'Acceso denegado'}), 403
-    return render_template('errors/403.html', api_url=PROXY_PREFIX), 403
+    return render_template('errors/403.html', api_url=BACKEND_API_URL), 403
 
 # ========== CONFIGURACIÓN DE JINJA2 ==========
 @app.template_filter('currency')

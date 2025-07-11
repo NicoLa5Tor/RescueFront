@@ -77,10 +77,10 @@ class HardwareMain {
       console.log('🔗 Inicializando API client...');
       
       // Check if proxy is available
-      const healthResponse = await fetch('/proxy/health');
+      const healthResponse = await fetch(`${window.API_BASE_URL}/health`, { credentials: 'include' });
       
       if (healthResponse.ok) {
-        this.apiClient = new EndpointTestClient('/proxy');
+        this.apiClient = new EndpointTestClient(window.API_BASE_URL);
         console.log('✅ API Client inicializado');
         
         // Make API client available to core module

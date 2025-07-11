@@ -1438,10 +1438,10 @@ function checkModalElements() {
 }
 
 // Get token from session and initialize
-fetch('/proxy/health')
+fetch(`${API_BASE_URL}/health`, { credentials: 'include' })
   .then(response => {
     if (response.ok) {
-      apiClient = new EndpointTestClient('/proxy');
+      apiClient = new EndpointTestClient(API_BASE_URL);
       console.log('API Client initialized');
       
       // Check modal elements
@@ -1479,10 +1479,10 @@ async function loadHardware() {
     
     let response;
     if (includeInactive) {
-      console.log('🌐 Haciendo petición a:', '/proxy/api/hardware/all-including-inactive');
+      console.log('🌐 Haciendo petición a:', `${API_BASE_URL}/api/hardware/all-including-inactive`);
       response = await apiClient.get_hardware_list_including_inactive();
     } else {
-      console.log('🌐 Haciendo petición a:', '/proxy/api/hardware');
+      console.log('🌐 Haciendo petición a:', `${API_BASE_URL}/api/hardware`);
       response = await apiClient.get_hardware_list();
     }
     
@@ -1980,7 +1980,7 @@ async function loadHardwareTypes() {
 // Load empresas from backend
 async function loadEmpresas() {
   try {
-    console.log('🏢 Cargando empresas desde /proxy/api/empresas...');
+    console.log('🏢 Cargando empresas desde ' + `${API_BASE_URL}/api/empresas` + '...');
     const response = await apiClient.get_empresas();
     const data = await response.json();
     

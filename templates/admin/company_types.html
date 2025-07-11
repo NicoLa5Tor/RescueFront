@@ -1452,7 +1452,7 @@ async function callAPI(method, endpoint, data = null) {
   
   try {
     console.log(`🔄 API Call: ${method} ${endpoint}`);
-    const response = await fetch(`/proxy${endpoint}`, options);
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
     const result = await response.json();
     
     console.log(`📡 API Response: ${response.status}`, result);
