@@ -6,7 +6,6 @@
 class SuperAdminDashboard {
     constructor() {
         this.client = null;
-        this.token = null;
         this.activityChart = null;
         this.distributionChart = null;
         this.initializeClient();

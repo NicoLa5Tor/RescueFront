@@ -12,20 +12,19 @@ import requests
 
 
 class EndpointTestClient:
-    """Client for performing requests against the backend API."""
+    """Client for performing requests against the backend API using cookies."""
 
-    def __init__(self, base_url: str = "http://localhost:5002", token: Optional[str] = None) -> None:
+    def __init__(self, base_url: str = "http://localhost:5002", *, cookies: Optional[Dict[str, str]] = None) -> None:
         self.base_url = base_url.rstrip("/")
-        self.token = token
+        # Store cookies that will be forwarded with each request
+        self.cookies: Dict[str, str] = cookies or {}
 
     # ------------------------------------------------------------------
     # Internal utilities
     # ------------------------------------------------------------------
     def _headers(self) -> Dict[str, str]:
-        headers = {"Content-Type": "application/json"}
-        if self.token:
-            headers["Authorization"] = f"Bearer {self.token}"
-        return headers
+        """Return default headers for requests."""
+        return {"Content-Type": "application/json"}
 
     def _request(
         self,
@@ -36,7 +35,16 @@ class EndpointTestClient:
         data: Optional[Dict[str, Any]] = None
     ) -> requests.Response:
         url = f"{self.base_url}{endpoint}"
-        return requests.request(method, url, params=params, json=data, headers=self._headers())
+        # Merge provided cookies with stored cookies
+        request_cookies = self.cookies.copy()
+        return requests.request(
+            method,
+            url,
+            params=params,
+            json=data,
+            headers=self._headers(),
+            cookies=request_cookies,
+        )
 
     # ------------------------------------------------------------------
     # Authentication and health endpoints
@@ -621,8 +629,9 @@ class EndpointTestClient:
     # ------------------------------------------------------------------
     # Public utilities
     # ------------------------------------------------------------------
-    def set_token(self, token: str) -> None:
-        self.token = token
+    def set_cookies(self, cookies: Dict[str, str]) -> None:
+        """Update cookies used for subsequent requests."""
+        self.cookies.update(cookies)
 
     def pretty_response(self, response: requests.Response) -> str:
         try:
