@@ -698,6 +698,7 @@ class HardwareCore {
     // Get form elements
     const empresaSelect = document.getElementById('hardwareEmpresa');
     const sedeSelect = document.getElementById('hardwareSede');
+    const direccionInput = document.getElementById('hardwareDireccion');
     
     // Basic validation
     if (!empresaSelect.value) {
@@ -709,6 +710,12 @@ class HardwareCore {
     if (!sedeSelect.value) {
       this.showNotification('Por favor selecciona una sede', 'error');
       sedeSelect.focus();
+      return;
+    }
+    
+    if (!direccionInput.value.trim()) {
+      this.showNotification('Por favor ingresa una dirección', 'error');
+      direccionInput.focus();
       return;
     }
     
