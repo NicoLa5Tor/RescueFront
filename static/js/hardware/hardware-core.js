@@ -275,9 +275,11 @@ class HardwareCore {
       // Set empresa and sede with better validation
       const empresaId = getSafeValue(hardware, 'empresa_id');
       const sedeValue = getSafeValue(hardware, 'sede');
+      const direccionValue = getSafeValue(hardware, 'direccion');
       
       console.log('🏢 Empresa ID del hardware:', empresaId);
       console.log('🏢 Sede del hardware:', sedeValue);
+      console.log('📍 Dirección del hardware:', direccionValue);
       
       if (empresaId) {
         // First, set the empresa select
@@ -303,6 +305,12 @@ class HardwareCore {
                   console.log('✅ Sede configurada:', sedeValue);
                 } else {
                   console.warn('⚠️ No se encontró sede para el hardware');
+                }
+                
+                // Set direccion value
+                if (direccionValue) {
+                  this.setInputValue('hardwareDireccion', direccionValue);
+                  console.log('✅ Dirección configurada:', direccionValue);
                 }
               }, 200);
             } else {
@@ -537,6 +545,7 @@ class HardwareCore {
       this.setElementText('viewHardwareType', getSafeValue(hardware, 'tipo'));
       this.setElementText('viewHardwareEmpresa', getSafeValue(hardware, 'empresa_nombre'));
       this.setElementText('viewHardwareSede', getSafeValue(hardware, 'sede'));
+      this.setElementText('viewHardwareDireccion', getSafeValue(hardware, 'direccion', 'N/A'));
       this.setElementText('viewHardwareTopic', getSafeValue(hardware, 'topic', 'No generado'));
 
       // Data fields with multiple possibilities
@@ -790,6 +799,7 @@ class HardwareCore {
       empresa_id: empresaId,
       empresa_nombre: empresaNombre,
       sede: sede,
+      direccion: this.getInputValue('hardwareDireccion'),
       datos: {
         datos: {
           brand: this.getInputValue('hardwareBrand'),
