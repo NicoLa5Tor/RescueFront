@@ -21,15 +21,9 @@ class SuperAdminDashboard {
     }
 
     isAuthenticated() {
-        // Check if auth_token cookie exists
-        const cookies = document.cookie.split(';');
-        for (let cookie of cookies) {
-            const [name, value] = cookie.trim().split('=');
-            if (name === 'auth_token' && value) {
-                return true;
-            }
-        }
-        return false;
+        // Check if user data exists (means authenticated)
+        // We can't check HTTPOnly cookies from JavaScript
+        return window.currentUser && window.currentUser.id;
     }
 
     async loadDashboardData() {

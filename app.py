@@ -55,34 +55,63 @@ def require_role(allowed_roles):
         from functools import wraps
         @wraps(f)
         def decorated_function(*args, **kwargs):
-            # Check if user is logged in
-            if 'token' not in session or 'user' not in session:
-                print(f"❌ No session found for route {request.endpoint}")
+            # Check if user is logged in - prioritize cookie over session
+            auth_token = request.cookies.get('auth_token')
+            user_data = session.get('user')
+            
+            # If no cookie token and no session, redirect to login
+            if not auth_token and not user_data:
+                print(f"❌ No auth token or session found for route {request.endpoint}")
                 return redirect(url_for('login'))
             
-            user_role = session['user'].get('role')
-            print(f"🔍 User role: {user_role}, Required roles: {allowed_roles}, Route: {request.endpoint}")
-            
-            # Validate that user role is one of the valid roles in our system
-            valid_roles = ['empresa', 'super_admin']
-            if user_role not in valid_roles:
-                print(f"❌ Invalid role {user_role} for user")
-                session.clear()  # Clear invalid session
-                return redirect(url_for('login'))
-            
-            # Check if user has required role
-            if user_role not in allowed_roles:
-                print(f"❌ Access denied. User role {user_role} not in {allowed_roles}")
-                # Redirect based on role - users can only access their allowed areas
-                if user_role == 'empresa':
-                    return redirect(url_for('empresa_dashboard'))
-                elif user_role == 'super_admin':
-                    return redirect(url_for('super_admin_dashboard'))
-                else:
-                    # Unknown role, redirect to login
+            # If we have cookie but no session, we need to validate the cookie
+            if auth_token and not user_data:
+                try:
+                    # Validate token with backend
+                    import requests
+                    response = requests.get(
+                        f"{BACKEND_API_URL}/health",
+                        cookies={'auth_token': auth_token}
+                    )
+                    if not response.ok:
+                        print(f"❌ Invalid auth token for route {request.endpoint}")
+                        return redirect(url_for('login'))
+                    
+                    # Token is valid but we don't have user data in session
+                    # This is OK - the backend will handle authorization
+                    print(f"✅ Valid auth token found for route {request.endpoint}")
+                    # Continue with the request - backend will validate role
+                    return f(*args, **kwargs)
+                except Exception as e:
+                    print(f"❌ Error validating auth token: {e}")
                     return redirect(url_for('login'))
             
-            print(f"✅ Access granted for {user_role} to {request.endpoint}")
+            # If we have session data, validate role
+            if user_data:
+                user_role = user_data.get('role')
+                print(f"🔍 User role: {user_role}, Required roles: {allowed_roles}, Route: {request.endpoint}")
+                
+                # Validate that user role is one of the valid roles in our system
+                valid_roles = ['empresa', 'super_admin']
+                if user_role not in valid_roles:
+                    print(f"❌ Invalid role {user_role} for user")
+                    session.clear()  # Clear invalid session
+                    return redirect(url_for('login'))
+                
+                # Check if user has required role
+                if user_role not in allowed_roles:
+                    print(f"❌ Access denied. User role {user_role} not in {allowed_roles}")
+                    # Redirect based on role - users can only access their allowed areas
+                    if user_role == 'empresa':
+                        return redirect(url_for('empresa_dashboard'))
+                    elif user_role == 'super_admin':
+                        return redirect(url_for('super_admin_dashboard'))
+                    else:
+                        # Unknown role, redirect to login
+                        return redirect(url_for('login'))
+                
+                print(f"✅ Access granted for {user_role} to {request.endpoint}")
+            
             return f(*args, **kwargs)
         return decorated_function
     return decorator
@@ -109,8 +138,8 @@ def attach_api_client():
             session.clear()
             return redirect(url_for('login', error='backend_unavailable'))
     
-    token = session.get('token')
-    g.api_client = EndpointTestClient(BACKEND_API_URL, token)
+    # No usar token de sesión - las cookies HTTPOnly se envían automáticamente
+    g.api_client = EndpointTestClient(BACKEND_API_URL, None)
 
 # ========== RUTAS PÚBLICAS ==========
 @app.route('/')
@@ -139,7 +168,8 @@ def login():
         res = client.login(usuario, password)
         if res.ok:
             data = res.json()
-            session['token'] = data.get('token')
+            # NO almacenar token en sesión - debe venir en cookie HTTPOnly
+            # session['token'] = data.get('token')  # Comentado - token en cookie
             session['user'] = data.get('user')
             # NO hacer la sesión permanente - será temporal por defecto
             session.permanent = False
@@ -160,7 +190,6 @@ def logout():
     """Cerrar sesión - Redirect para limpiar estados"""
     session.clear()
     return redirect(url_for('login'))
-
 @app.route('/api/sync-session', methods=['POST'])
 def sync_session():
     """Sincroniza la cookie JWT con la sesión Flask"""
@@ -168,10 +197,20 @@ def sync_session():
         # Leer datos del JWT desde el cuerpo de la petición
         data = request.get_json() or {}
         user_data = data.get('user')
+        token = data.get('token')  # Recibir el token desde el frontend
+        
+        # Si no hay token en el cuerpo, intentar obtenerlo de las cookies
+        if not token:
+            token = request.cookies.get('auth_token')
+        
+        print(f"SYNC: Token recibido - Body: {bool(data.get('token'))}, Cookie: {bool(request.cookies.get('auth_token'))}")
+        print(f"SYNC: Datos completos del body: {str(data)[:200]}...")
+        print(f"SYNC: Cookies completas: {dict(request.cookies)}")
+        print(f"SYNC: user_data presente: {bool(user_data)}")
         
         if user_data:
-            # Simular un token para la sesión (no es el JWT real, solo para compatibilidad)
-            session['token'] = 'jwt_cookie_auth'
+            # NO almacenar token en sesión - debe venir en cookie HTTPOnly
+            # session['token'] = token or 'cookie_auth'  # Comentado - token en cookie
             session['user'] = user_data
             session.permanent = False
             
@@ -195,33 +234,54 @@ def sync_session():
 # Proxy de todas las peticiones hacia el backend
 @app.route(f'{PROXY_PREFIX}/<path:endpoint>', methods=['GET', 'POST', 'PUT', 'DELETE', 'PATCH'])
 def proxy_api(endpoint):
-    if 'token' not in session:
+    # Permitir login sin sesión (es necesario para establecer la sesión)
+    if endpoint == 'auth/login':
+        pass  # Permitir login sin verificar sesión
+    # Verificar que tengamos una sesión válida O cookie de autenticación para otros endpoints
+    elif 'user' not in session and not request.cookies.get('auth_token'):
         return jsonify({'error': 'No autenticado'}), 401
 
-    print(f"🔄 PROXY: {request.method} /{endpoint} - Token presente: {bool(session.get('token'))}")
+    print(f"PROXY: {request.method} /{endpoint} - Session valid: {bool(session.get('user'))}")
+    print(f"PROXY: Request cookies: {dict(request.cookies)}")
+    auth_cookie = request.cookies.get('auth_token')
+    print(f"PROXY: Cookie auth_token: {auth_cookie[:50] if auth_cookie else 'None'}...")
     
     # Debug especial para toggle-status
     if 'toggle-status' in endpoint:
-        print(f"⚡ TOGGLE DEBUG:")
+        print(f"TOGGLE DEBUG:")
         print(f"  - Endpoint completo: /{endpoint}")
         print(f"  - Método: {request.method}")
         print(f"  - Headers: {dict(request.headers)}")
-        print(f"  - Token en sesión: {session.get('token')[:20] if session.get('token') else 'NO TOKEN'}...")
+        print(f"  - Usuario: {session.get('user', {}).get('username', 'NO USER')}")
     
     data = None
     if request.method in ['POST', 'PUT', 'PATCH']:
         data = request.get_json(silent=True)
-        print(f"📦 PROXY: Datos enviados - {data}")
+        print(f"PROXY DATA: PROXY: Datos enviados - {data}")
 
     try:
-        resp = g.api_client._request(request.method, f'/{endpoint}', params=request.args, data=data)
-        print(f"📡 PROXY: Respuesta del backend - Status: {resp.status_code}, Content-Length: {len(resp.content) if resp.content else 0}")
+        # Hacer la petición manualmente con las cookies
+        import requests
+        headers = {'Content-Type': 'application/json'}
+        cookies = dict(request.cookies)
+        
+        print(f"PROXY: Enviando cookies al backend: {cookies}")
+        
+        resp = requests.request(
+            request.method,
+            f"{BACKEND_API_URL}/{endpoint}",
+            params=request.args,
+            json=data,
+            headers=headers,
+            cookies=cookies
+        )
+        print(f"PROXY RESPONSE: PROXY: Respuesta del backend - Status: {resp.status_code}, Content-Length: {len(resp.content) if resp.content else 0}")
         
         # Log del contenido para endpoints críticos
         if endpoint in ['api/hardware', 'api/empresas', 'api/hardware-types'] or 'toggle-status' in endpoint:
             try:
                 content_json = resp.json()
-                print(f"📋 PROXY: Contenido de /{endpoint}:")
+                print(f"PROXY CONTENT: PROXY: Contenido de /{endpoint}:")
                 print(f"  - Success: {content_json.get('success', 'N/A')}")
                 print(f"  - Count: {content_json.get('count', 'N/A')}")
                 print(f"  - Data length: {len(content_json.get('data', [])) if content_json.get('data') else 0}")
@@ -234,11 +294,11 @@ def proxy_api(endpoint):
                     print(f"  - Message: {content_json.get('message', 'N/A')}")
                     print(f"  - Errors: {content_json.get('errors', 'N/A')}")
             except Exception as e:
-                print(f"🚨 PROXY: No se pudo parsear JSON de /{endpoint}: {e}")
+                print(f"PROXY ERROR: PROXY: No se pudo parsear JSON de /{endpoint}: {e}")
         
         return (resp.content, resp.status_code, resp.headers.items())
     except Exception as e:
-        print(f"💥 PROXY ERROR en /{endpoint}: {e}")
+        print(f"PROXY ERROR: PROXY ERROR en /{endpoint}: {e}")
         return jsonify({'error': 'Error del servidor'}), 500
 
 # ========== RUTAS DEL DASHBOARD - PROTEGIDAS POR SESION Y ROL ==========
@@ -266,8 +326,8 @@ def super_admin_dashboard():
         from dashboard_data_providers import RealDashboardDataProvider
         from config import BACKEND_API_URL
         
-        # Use real data provider with session token
-        real_provider = RealDashboardDataProvider(BACKEND_API_URL, session.get('token'))
+        # Use real data provider - cookies HTTPOnly se envían automáticamente
+        real_provider = RealDashboardDataProvider(BACKEND_API_URL, None)
         dashboard_data = real_provider.get_dashboard_data()
         
         # Add hardware stats if not already present
@@ -721,10 +781,17 @@ def favicon():
     """Favicon"""
     return app.send_static_file('favicon.ico')
 
+@app.route('/test-login')
+def test_login():
+    """Página de test para debugging del login"""
+    from flask import send_file
+    import os
+    return send_file(os.path.join(os.path.dirname(__file__), 'test_login_flow.html'))
+
 # ========== CONFIGURACIÓN DE DEBUG ==========
 if __name__ == '__main__':
     print("🚀 Iniciando Rescue Frontend...")
-    print(f"📡 Backend API: {BACKEND_API_URL}")
+    print(f"PROXY RESPONSE: Backend API: {BACKEND_API_URL}")
     print("🌐 Frontend URL: http://localhost:5050")
     print("🔐 Autenticación: manejada por Flask y proxy interno")
     print("=" * 50)

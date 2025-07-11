@@ -450,7 +450,10 @@
 <script>
   window.API_BASE_URL = '{{ api_url }}';
   window.DASHBOARD_DATA = {{ dashboard_data | tojson }};
-  window.sessionToken = '{{ session.token }}';
+  // NO almacenar sessionToken - el token debe estar únicamente en cookie HTTPOnly
+  // window.sessionToken = '{{ session.token }}';  // ELIMINADO POR SEGURIDAD
+  // Establecer datos de usuario para verificación de autenticación
+  window.currentUser = {{ session.user | tojson }};
 </script>
 
 <!-- Core Scripts -->
@@ -466,6 +469,15 @@
 
 <!-- Enhanced Dashboard Script -->
 <script src="{{ url_for('static', filename='js/dashboard/super-admin-dashboard-enhanced.js') }}"></script>
+
+<!-- Auth Verification Script (temporal para debugging) -->
+<script src="{{ url_for('static', filename='js/auth-verification.js') }}"></script>
+
+<!-- Security Cleanup Script -->
+<script src="{{ url_for('static', filename='js/security-cleanup.js') }}"></script>
+
+<!-- Final Token Cleanup Script -->
+<script src="{{ url_for('static', filename='js/final-token-cleanup.js') }}"></script>
 
 <!-- Chart Control Functions -->
 <script>

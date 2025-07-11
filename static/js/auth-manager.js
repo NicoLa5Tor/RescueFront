@@ -6,19 +6,40 @@
 if (typeof window.AuthManager === 'undefined') {
 class AuthManager {
     constructor() {
-        this.client = new EndpointTestClient('http://localhost:5002');
+        // Usar el proxy del frontend para que las cookies se manejen correctamente
+        this.client = new EndpointTestClient(window.location.origin + '/proxy');
     }
 
     /**
-     * Verifica si el usuario está autenticado haciendo una petición al backend
-     * (No podemos leer cookies HttpOnly desde JavaScript)
+     * Verifica si el usuario está autenticado
      */
     async isAuthenticated() {
         try {
-            // Hacer una petición simple para verificar si estamos autenticados
-            const response = await this.client._request('GET', '/health');
-            return response.ok;
+            // Verificar si tenemos datos de usuario
+            if (!window.currentUser) {
+                console.log('❌ No hay datos de usuario');
+                return false;
+            }
+            
+            // Verificar si la sesión es válida haciendo una petición al backend
+            // Las cookies se envían automáticamente
+            const response = await fetch('/proxy/health', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
+            });
+            
+            const isValid = response.ok;
+            if (!isValid) {
+                console.log('❌ Sesión inválida o expirada');
+                this.clearStoredAuth();
+            }
+            
+            return isValid;
         } catch (error) {
+            console.error('❌ Error verificando autenticación:', error);
             return false;
         }
     }
@@ -38,6 +59,32 @@ class AuthManager {
     }
 
     /**
+     * Obtiene el token almacenado desde cookie
+     */
+    getStoredToken() {
+        // El token viene en cookie segura, no necesitamos acceder a él directamente
+        // Solo verificamos si tenemos datos de usuario
+        return window.currentUser ? 'cookie_auth' : null;
+    }
+    
+    /**
+     * Obtiene los datos del usuario almacenados
+     */
+    getStoredUser() {
+        return window.currentUser || null;
+    }
+    
+    /**
+     * Limpia todos los datos de autenticación almacenados
+     */
+    clearStoredAuth() {
+        console.log('🧹 Limpiando datos de autenticación almacenados');
+        
+        // Limpiar variables globales
+        delete window.currentUser;
+    }
+    
+    /**
      * Sincroniza sesión con Flask
      */
     async syncSession(user) {
@@ -48,6 +95,7 @@ class AuthManager {
                 headers: {
                     'Content-Type': 'application/json'
                 },
+                credentials: 'include',  // Asegurar que las cookies se envían
                 body: JSON.stringify({ user })
             });
             
@@ -78,12 +126,19 @@ class AuthManager {
             console.log('📝 Datos de respuesta:', result);
             
             if (response.ok && result.success) {
-                console.log('✅ Login exitoso - cookie establecida automáticamente por el browser');
+                console.log('✅ Login exitoso - almacenando token y datos de usuario');
                 
-                // Sincronizar sesión con Flask
-                const syncSuccess = await this.syncSession(result.user);
+                // El token viene en cookie segura, no en la respuesta JSON
+                // Almacenar datos del usuario
+                const userData = result.data || result.user;
+                if (userData) {
+                    window.currentUser = userData;
+                }
+                
+                // Sincronizar sesión con Flask (cookie se envía automáticamente)
+                const syncSuccess = await this.syncSession(userData);
                 if (syncSuccess) {
-                    return { success: true, user: result.user };
+                    return { success: true, user: userData };
                 } else {
                     return { success: false, errors: ['Error sincronizando sesión'] };
                 }
@@ -107,6 +162,9 @@ class AuthManager {
             
             if (response.ok && result.success) {
                 console.log('✅ Logout exitoso');
+                // Limpiar datos de autenticación
+                this.clearStoredAuth();
+                
                 // Redirigir al login después del logout
                 setTimeout(() => {
                     window.location.href = '/login';
@@ -118,6 +176,8 @@ class AuthManager {
             }
         } catch (error) {
             console.error('❌ Error de conexión:', error);
+            // Limpiar datos locales aún si hay error de conexión
+            this.clearStoredAuth();
             return { success: false, errors: ['Error de conexión'] };
         }
     }

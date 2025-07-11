@@ -14,8 +14,30 @@ class EndpointTestClient {
         const headers = {
             'Content-Type': 'application/json',
         };
-        // No necesitamos agregar Authorization header ya que las cookies se envían automáticamente
+        
+        // No agregamos header Authorization porque el token viene en cookies
+        // Las cookies se envían automáticamente
+        
         return headers;
+    }
+    
+    // Obtener token almacenado
+    getStoredToken() {
+        // El token viene en cookie segura, no necesitamos acceder a él directamente
+        // Solo verificamos si tenemos datos de usuario
+        return window.currentUser ? 'cookie_auth' : null;
+    }
+    
+    // Obtener cookie
+    getCookie(name) {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            const [cookieName, cookieValue] = cookie.trim().split('=');
+            if (cookieName === name) {
+                return cookieValue;
+            }
+        }
+        return null;
     }
 
     async _request(method, endpoint, options = {}) {

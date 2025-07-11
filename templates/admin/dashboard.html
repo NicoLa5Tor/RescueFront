@@ -336,6 +336,8 @@
 <script>
   window.API_BASE_URL = '{{ api_url }}';
   window.ACTIVITY_DATA = '{{ (activity_data | default(None)) | tojson | safe }}';
+  // Establecer datos de usuario para verificación de autenticación
+  window.currentUser = {{ session.user | tojson }};
 </script>
 
 <!-- Core Scripts -->
@@ -350,6 +352,15 @@
 
 <!-- Admin Functions (including logout) -->
 <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+
+<!-- Auth Verification Script (temporal para debugging) -->
+<script src="{{ url_for('static', filename='js/auth-verification.js') }}"></script>
+
+<!-- Security Cleanup Script -->
+<script src="{{ url_for('static', filename='js/security-cleanup.js') }}"></script>
+
+<!-- Final Token Cleanup Script -->
+<script src="{{ url_for('static', filename='js/final-token-cleanup.js') }}"></script>
 
 {% block page_js %}
 <script id="dashboardData" type="application/json">

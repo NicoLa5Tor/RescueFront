@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Login Flow</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .success {
+            background: #d1edff;
+            border-color: #bee5eb;
+        }
+        .error {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        .info {
+            background: #e2e3e5;
+            border-color: #d6d8db;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Test Login Flow</h1>
+        <p>Esta página permite probar el flujo de login y verificar que el token se almacene correctamente.</p>
+        
+        <div>
+            <h3>Acciones:</h3>
+            <button onclick="testLogin()">🚀 Test Login</button>
+            <button onclick="checkToken()">🔍 Verificar Token</button>
+            <button onclick="testAPICall()">📡 Test API Call</button>
+            <button onclick="clearStorage()">🧹 Limpiar Storage</button>
+            <button onclick="clearLogs()">🗑️ Limpiar Logs</button>
+        </div>
+        
+        <div id="logs" class="log"></div>
+        
+        <div>
+            <h3>Estado Actual:</h3>
+            <div id="status" class="log info"></div>
+        </div>
+    </div>
+
+    <script>
+        // Función para logging
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logDiv = document.getElementById('logs');
+            const logEntry = `[${timestamp}] ${message}\n`;
+            logDiv.textContent += logEntry;
+            logDiv.scrollTop = logDiv.scrollHeight;
+            
+            // Cambiar clase según el tipo
+            if (type === 'success') {
+                logDiv.className = 'log success';
+            } else if (type === 'error') {
+                logDiv.className = 'log error';
+            } else {
+                logDiv.className = 'log info';
+            }
+        }
+
+        // Función para actualizar el estado
+        function updateStatus() {
+            const statusDiv = document.getElementById('status');
+            const token = getStoredToken();
+            const user = getStoredUser();
+            
+            statusDiv.innerHTML = `
+Token presente: ${token ? 'SÍ' : 'NO'}
+Token (primeros 50 chars): ${token ? token.substring(0, 50) + '...' : 'N/A'}
+Usuario: ${user ? JSON.stringify(user, null, 2) : 'N/A'}
+Window.sessionToken: ELIMINADO POR SEGURIDAD
+            `;
+        }
+
+        // Función para obtener token almacenado
+        function getStoredToken() {
+            // NO usar tokens almacenados - deben estar únicamente en cookies HTTPOnly
+            // Los tokens NO deben ser accesibles desde JavaScript
+            return null;
+        }
+
+        // Función para obtener usuario almacenado
+        function getStoredUser() {
+            return window.currentUser || null;
+        }
+
+        // Función para obtener cookie
+        function getCookie(name) {
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                const [cookieName, cookieValue] = cookie.trim().split('=');
+                if (cookieName === name) {
+                    return cookieValue;
+                }
+            }
+            return null;
+        }
+
+        // Test de login
+        async function testLogin() {
+            log('🚀 Iniciando test de login...');
+            
+            try {
+                const response = await fetch('/proxy/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        usuario: 'admin01',
+                        password: 'nico2004'
+                    }),
+                    credentials: 'include'
+                });
+                
+                const result = await response.json();
+                log('📡 Respuesta del servidor: ' + JSON.stringify(result, null, 2));
+                
+                if (response.ok && result.success) {
+                    log('✅ Login exitoso!', 'success');
+                    
+                    // En el nuevo sistema, el token viene en cookie HTTPOnly
+                    // No deberíamos ver el token en la respuesta JSON
+                    if (result.token) {
+                        log('⚠️  Token encontrado en respuesta JSON (no esperado)');
+                        log(`Token: ${result.token.substring(0, 50)}...`);
+                    } else {
+                        log('✅ Token no presente en respuesta JSON (correcto - está en cookie HTTPOnly)');
+                    }
+                    
+                    // Almacenar datos del usuario
+                    const userData = result.data || result.user;
+                    if (userData) {
+                        window.currentUser = userData;
+                        log('💾 Datos de usuario almacenados exitosamente');
+                    }
+                    
+                    // Verificar cookies
+                    const authCookie = getCookie('auth_token');
+                    if (authCookie) {
+                        log('✅ Cookie auth_token encontrada!', 'success');
+                        log(`Cookie: ${authCookie.substring(0, 50)}...`);
+                    } else {
+                        log('❌ Cookie auth_token NO encontrada (puede ser HTTPOnly)', 'error');
+                    }
+                    
+                    // Intentar sincronizar con Flask
+                    if (userData) {
+                        log('🔄 Sincronizando con Flask...');
+                        const syncResponse = await fetch('/api/sync-session', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            credentials: 'include',
+                            body: JSON.stringify({ user: userData })
+                        });
+                        
+                        const syncResult = await syncResponse.json();
+                        if (syncResponse.ok && syncResult.success) {
+                            log('✅ Sincronización con Flask exitosa!', 'success');
+                        } else {
+                            log('❌ Error en sincronización: ' + JSON.stringify(syncResult), 'error');
+                        }
+                    }
+                } else {
+                    log('❌ Error en login: ' + (result.message || 'Error desconocido'), 'error');
+                }
+            } catch (error) {
+                log('❌ Error de conexión: ' + error.message, 'error');
+            }
+            
+            updateStatus();
+        }
+
+        // Verificar token
+        function checkToken() {
+            log('🔍 Verificando token almacenado...');
+            
+            const token = getStoredToken();
+            if (token) {
+                log('✅ Token encontrado: ' + token.substring(0, 50) + '...');
+                
+                // Verificar si es un JWT válido
+                try {
+                    const parts = token.split('.');
+                    if (parts.length === 3) {
+                        const payload = JSON.parse(atob(parts[1]));
+                        log('📝 Payload del token:');
+                        log(JSON.stringify(payload, null, 2));
+                        
+                        // Verificar expiración
+                        if (payload.exp) {
+                            const expDate = new Date(payload.exp * 1000);
+                            const now = new Date();
+                            log(`⏰ Token expira: ${expDate.toLocaleString()}`);
+                            log(`⏰ Tiempo actual: ${now.toLocaleString()}`);
+                            
+                            if (expDate > now) {
+                                log('✅ Token válido y no expirado', 'success');
+                            } else {
+                                log('❌ Token expirado', 'error');
+                            }
+                        }
+                    } else {
+                        log('❌ Formato de token JWT inválido', 'error');
+                    }
+                } catch (error) {
+                    log('❌ Error decodificando token: ' + error.message, 'error');
+                }
+            } else {
+                log('❌ No se encontró token almacenado', 'error');
+            }
+            
+            updateStatus();
+        }
+
+        // Test API call
+        async function testAPICall() {
+            log('📡 Probando llamada API con cookies...');
+            
+            try {
+                // Probar endpoint protegido que requiere autenticación
+                const response = await fetch('/proxy/api/dashboard/stats', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include'  // Enviar cookies automáticamente
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    log('✅ API call exitosa!', 'success');
+                    log('Respuesta: ' + JSON.stringify(result, null, 2));
+                } else {
+                    log('❌ API call falló: ' + response.status + ' ' + response.statusText, 'error');
+                    
+                    // Intentar obtener el texto de la respuesta
+                    try {
+                        const errorText = await response.text();
+                        log('Detalle del error: ' + errorText);
+                    } catch (e) {
+                        log('No se pudo obtener detalle del error');
+                    }
+                }
+            } catch (error) {
+                log('❌ Error en API call: ' + error.message, 'error');
+            }
+        }
+
+        // Limpiar storage
+        function clearStorage() {
+            log('🧹 Limpiando storage...');
+            
+            // NO limpiar sessionToken - no debe existir
+            // delete window.sessionToken;  // ELIMINADO POR SEGURIDAD
+            delete window.currentUser;
+            
+            log('✅ Storage limpiado', 'success');
+            updateStatus();
+        }
+
+        // Limpiar logs
+        function clearLogs() {
+            document.getElementById('logs').textContent = '';
+            document.getElementById('logs').className = 'log info';
+        }
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function() {
+            log('🔧 Página de test cargada');
+            updateStatus();
+        });
+    </script>
+</body>
+</html>

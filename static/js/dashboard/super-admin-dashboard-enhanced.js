@@ -5,36 +5,56 @@ class SuperAdminDashboardEnhanced extends SuperAdminDashboard {
         this.retryDelay = 1000;
         this.isLoading = false;
     }
+    
+    // 1. MEJORA: Validación de autenticación robusta
+    async isAuthenticated() {
+        try {
+            // Verificar si tenemos datos de usuario
+            if (!window.currentUser) {
+                console.log('❌ No hay datos de usuario');
+                return false;
+            }
+            
+            // Verificar si la sesión es válida haciendo una petición al backend
+            // Las cookies se envían automáticamente
+            const response = await fetch('/proxy/health', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
+            });
+            
+            const isValid = response.ok;
+            if (!isValid) {
+                console.log('❌ Sesión inválida o expirada');
+                this.clearStoredAuth();
+            }
+            
+            return isValid;
+        } catch (error) {
+            console.error('❌ Error verificando autenticación:', error);
+            return false;
+        }
+    }
+    
+    // Método para limpiar autenticación
+    clearStoredAuth() {
+        console.log('🧹 Limpiando datos de autenticación almacenados');
+        
+        // Limpiar variables globales
+        delete window.currentUser;
+    }
 
     // 2. MEJORA: Mejor método de obtención de token
     getSessionToken() {
-        // Priorizar window.sessionToken
-        if (window.sessionToken && window.sessionToken !== 'None' && window.sessionToken !== 'null') {
-            return window.sessionToken;
+        // El token viene en cookie segura, no necesitamos acceder a él directamente
+        // Solo verificamos si tenemos datos de usuario
+        if (window.currentUser) {
+            return 'cookie_auth';
         }
         
-        // Luego sessionStorage
-        const sessionToken = sessionStorage.getItem('token');
-        if (sessionToken && sessionToken !== 'null') {
-            return sessionToken;
-        }
-        
-        // Luego localStorage
-        const localToken = localStorage.getItem('token');
-        if (localToken && localToken !== 'null') {
-            return localToken;
-        }
-        
-        // Finalmente cookies
-        const cookies = document.cookie.split(';');
-        for (let cookie of cookies) {
-            const [name, value] = cookie.trim().split('=');
-            if ((name === 'token' || name === 'session_token') && value && value !== 'null') {
-                return value;
-            }
-        }
-        
-        console.warn('No session token found. Dashboard will use fallback data.');
+        console.warn('No session token found.');
         return null;
     }
 
@@ -69,10 +89,15 @@ class SuperAdminDashboardEnhanced extends SuperAdminDashboard {
         console.log('🔄 Loading Super Admin Dashboard data...');
         
         // Check if user is authenticated
-        if (!this.isAuthenticated()) {
-            console.warn('⚠️ No valid authentication token found. Using fallback data.');
+        const isAuth = await this.isAuthenticated();
+        if (!isAuth) {
+            console.warn('⚠️ No valid authentication token found. Redirecting to login.');
             this.showLoginRequired();
             this.isLoading = false;
+            // Redirigir al login después de un breve delay
+            setTimeout(() => {
+                window.location.href = '/login';
+            }, 3000);
             return;
         }
         
