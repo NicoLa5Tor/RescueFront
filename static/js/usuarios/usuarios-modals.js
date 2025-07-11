@@ -51,7 +51,7 @@ class UsuariosModals {
     } else if (window.apiClient) {
       this.apiClient = window.apiClient;
     } else if (typeof EndpointTestClient !== 'undefined') {
-      this.apiClient = new EndpointTestClient('/proxy');
+      this.apiClient = new EndpointTestClient(window.API_BASE_URL);
     } else {
       this.apiClient = this.createBasicApiClient();
     }
@@ -62,28 +62,28 @@ class UsuariosModals {
    */
   createBasicApiClient() {
     return {
-      get_usuarios_by_empresa: (empresaId) => fetch(`/proxy/empresas/${empresaId}/usuarios`),
-      get_usuario: (empresaId, userId) => fetch(`/proxy/empresas/${empresaId}/usuarios/${userId}`),
+      get_usuarios_by_empresa: (empresaId) => fetch(`${window.API_BASE_URL}/empresas/${empresaId}/usuarios`, { credentials: 'include' }),
+      get_usuario: (empresaId, userId) => fetch(`${window.API_BASE_URL}/empresas/${empresaId}/usuarios/${userId}`, { credentials: 'include' }),
       toggle_usuario_status: (empresaId, userId, activo) => 
-        fetch(`/proxy/empresas/${empresaId}/usuarios/${userId}/toggle-status`, {
+        fetch(`${window.API_BASE_URL}/empresas/${empresaId}/usuarios/${userId}/toggle-status`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ activo })
         }),
       update_usuario: (empresaId, userId, data) =>
-        fetch(`/proxy/empresas/${empresaId}/usuarios/${userId}`, {
+        fetch(`${window.API_BASE_URL}/empresas/${empresaId}/usuarios/${userId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
         }),
       create_usuario: (empresaId, data) =>
-        fetch(`/proxy/empresas/${empresaId}/usuarios`, {
+        fetch(`${window.API_BASE_URL}/empresas/${empresaId}/usuarios`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
         }),
       delete_usuario: (empresaId, userId) =>
-        fetch(`/proxy/empresas/${empresaId}/usuarios/${userId}`, {
+        fetch(`${window.API_BASE_URL}/empresas/${empresaId}/usuarios/${userId}`, {
           method: 'DELETE'
         })
     };

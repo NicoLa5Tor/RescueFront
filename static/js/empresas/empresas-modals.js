@@ -53,7 +53,7 @@ class EmpresasModals {
     } else if (window.apiClient) {
       this.apiClient = window.apiClient;
     } else if (typeof EndpointTestClient !== 'undefined') {
-      this.apiClient = new EndpointTestClient('/proxy');
+      this.apiClient = new EndpointTestClient(window.API_BASE_URL);
     } else {
       this.apiClient = this.createBasicApiClient();
     }
@@ -64,32 +64,32 @@ class EmpresasModals {
    */
   createBasicApiClient() {
     return {
-      get_empresas_dashboard: () => fetch('/proxy/api/empresas/dashboard/all'),
-      get_empresas: () => fetch('/proxy/api/empresas'),
-      get_empresa: (id) => fetch(`/proxy/api/empresas/${id}`),
+      get_empresas_dashboard: () => fetch(`${window.API_BASE_URL}/api/empresas/dashboard/all`, { credentials: 'include' }),
+      get_empresas: () => fetch(`${window.API_BASE_URL}/api/empresas`, { credentials: 'include' }),
+      get_empresa: (id) => fetch(`${window.API_BASE_URL}/api/empresas/${id}`, { credentials: 'include' }),
       toggle_empresa_status: (id, activa) => 
-        fetch(`/proxy/api/empresas/${id}/toggle-status`, {
+        fetch(`${window.API_BASE_URL}/api/empresas/${id}/toggle-status`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ activa })
         }),
       create_empresa: (data) =>
-        fetch('/proxy/api/empresas/', {
+        fetch(`${window.API_BASE_URL}/api/empresas/`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
         }),
       update_empresa: (id, data) =>
-        fetch(`/proxy/api/empresas/${id}`, {
+        fetch(`${window.API_BASE_URL}/api/empresas/${id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
         }),
       delete_empresa: (id) =>
-        fetch(`/proxy/api/empresas/${id}`, {
+        fetch(`${window.API_BASE_URL}/api/empresas/${id}`, {
           method: 'DELETE'
         }),
-      get_tipos_empresa: () => fetch('/proxy/api/tipos_empresa')
+      get_tipos_empresa: () => fetch(`${window.API_BASE_URL}/api/tipos_empresa`, { credentials: 'include' })
     };
   }
 

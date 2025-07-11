@@ -7,7 +7,7 @@ with real API calls to your backend later.
 
 import random
 from datetime import datetime, timedelta
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from python_api_client import EndpointTestClient
 from flask import session
 import logging
@@ -17,10 +17,10 @@ logger = logging.getLogger(__name__)
 
 class RealDashboardDataProvider:
     """Provides dashboard data from real API endpoints"""
-    
-    def __init__(self, api_base_url: str, token: str = None):
+
+    def __init__(self, api_base_url: str, cookies: Optional[Dict[str, str]] = None):
         self.api_base_url = api_base_url
-        self.client = EndpointTestClient(api_base_url, token)
+        self.client = EndpointTestClient(api_base_url, cookies=cookies)
         self.dummy_provider = DashboardDataProvider()  # Fallback to dummy data
     
     def get_dashboard_data(self) -> Dict[str, Any]:
@@ -496,11 +496,11 @@ class CompanyTypesProvider:
 # Easy-to-use functions for templates
 def get_dashboard_stats():
     """Quick function to get dashboard stats for templates"""
-    # Try to get real data if we have a session token
+    # Try to get real data if we have backend cookies
     try:
-        if 'token' in session:
+        if 'backend_cookies' in session:
             from config import BACKEND_API_URL
-            real_provider = RealDashboardDataProvider(BACKEND_API_URL, session['token'])
+            real_provider = RealDashboardDataProvider(BACKEND_API_URL, session['backend_cookies'])
             return real_provider.get_dashboard_data()
     except Exception as e:
         logger.warning(f"Could not get real dashboard data: {e}")
@@ -511,11 +511,11 @@ def get_dashboard_stats():
 
 def get_companies_stats():
     """Quick function to get companies stats for templates"""
-    # Try to get real data if we have a session token
+    # Try to get real data if we have backend cookies
     try:
-        if 'token' in session:
+        if 'backend_cookies' in session:
             from config import BACKEND_API_URL
-            real_provider = RealDashboardDataProvider(BACKEND_API_URL, session['token'])
+            real_provider = RealDashboardDataProvider(BACKEND_API_URL, session['backend_cookies'])
             companies_response = real_provider.client.get_dashboard_recent_companies()
             if companies_response.ok:
                 return {
@@ -531,11 +531,11 @@ def get_companies_stats():
 
 def get_detailed_statistics():
     """Quick function to get detailed statistics for templates"""
-    # Try to get real data if we have a session token
+    # Try to get real data if we have backend cookies
     try:
-        if 'token' in session:
+        if 'backend_cookies' in session:
             from config import BACKEND_API_URL
-            real_provider = RealDashboardDataProvider(BACKEND_API_URL, session['token'])
+            real_provider = RealDashboardDataProvider(BACKEND_API_URL, session['backend_cookies'])
             performance_data = real_provider.get_system_performance()
             if performance_data:
                 return {
@@ -556,11 +556,11 @@ def get_detailed_statistics():
 
 def get_hardware_data():
     """Quick function to get hardware data for templates"""
-    # Try to get real data if we have a session token
+    # Try to get real data if we have backend cookies
     try:
-        if 'token' in session:
+        if 'backend_cookies' in session:
             from config import BACKEND_API_URL
-            real_provider = RealDashboardDataProvider(BACKEND_API_URL, session['token'])
+            real_provider = RealDashboardDataProvider(BACKEND_API_URL, session['backend_cookies'])
             hardware_stats = real_provider.get_hardware_stats()
             if hardware_stats:
                 return {

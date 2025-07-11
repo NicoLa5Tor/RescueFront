@@ -14,9 +14,12 @@ import requests
 class EndpointTestClient:
     """Client for performing requests against the backend API."""
 
-    def __init__(self, base_url: str = "http://localhost:5002", token: Optional[str] = None) -> None:
+    def __init__(self, base_url: str = "http://localhost:5002", token: Optional[str] = None, cookies: Optional[Dict[str, str]] = None) -> None:
         self.base_url = base_url.rstrip("/")
         self.token = token
+        self.session = requests.Session()
+        if cookies:
+            self.session.cookies.update(cookies)
 
     # ------------------------------------------------------------------
     # Internal utilities
@@ -36,13 +39,24 @@ class EndpointTestClient:
         data: Optional[Dict[str, Any]] = None
     ) -> requests.Response:
         url = f"{self.base_url}{endpoint}"
-        return requests.request(method, url, params=params, json=data, headers=self._headers())
+        return self.session.request(method, url, params=params, json=data, headers=self._headers())
 
     # ------------------------------------------------------------------
     # Authentication and health endpoints
     # ------------------------------------------------------------------
     def login(self, usuario: str, password: str) -> requests.Response:
-        return self._request("POST", "/auth/login", data={"usuario": usuario, "password": password})
+        response = self._request("POST", "/auth/login", data={"usuario": usuario, "password": password})
+        # Persist any authentication cookies returned by the backend
+        self.session.cookies.update(response.cookies)
+        return response
+
+    def set_cookies(self, cookies: Dict[str, str]) -> None:
+        """Update the session with given cookies."""
+        self.session.cookies.update(cookies)
+
+    def get_cookies(self) -> Dict[str, str]:
+        """Return current session cookies as a dict."""
+        return self.session.cookies.get_dict()
 
     def health(self) -> requests.Response:
         return self._request("GET", "/health")
