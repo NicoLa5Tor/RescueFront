@@ -265,7 +265,7 @@ class UsuariosMain {
         }
 
         // Actualizar estadísticas inmediatamente con todos los datos (igual que hardware)
-        this.updateStats(data);
+        this.updateUserStats(data);
 
         // DESPUÉS aplicar filtros automáticos
         this.applyFilters();
