@@ -2,8 +2,9 @@
  * JavaScript API Client for Frontend
  * Mirrors the Python client but for browser usage
  */
+if (typeof window.EndpointTestClient === 'undefined') {
 class EndpointTestClient {
-    constructor(baseUrl = '/proxy', token = null) {
+    constructor(baseUrl = 'http://localhost:5002', token = null) {
         this.baseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
         this.token = token;
     }
@@ -13,9 +14,7 @@ class EndpointTestClient {
         const headers = {
             'Content-Type': 'application/json',
         };
-        if (this.token) {
-            headers['Authorization'] = `Bearer ${this.token}`;
-        }
+        // No necesitamos agregar Authorization header ya que las cookies se envían automáticamente
         return headers;
     }
 
@@ -28,6 +27,7 @@ class EndpointTestClient {
         const config = {
             method,
             headers: this._headers(),
+            credentials: 'include',  // Incluir cookies en solicitudes cross-origin
             ...options
         };
 
@@ -43,6 +43,10 @@ class EndpointTestClient {
         return this._request('POST', '/auth/login', {
             data: { usuario, password }
         });
+    }
+
+    async logout() {
+        return this._request('POST', '/auth/logout');
     }
 
     async health() {
@@ -213,7 +217,9 @@ async toggle_usuario_status(empresaId, usuarioId, activo) {
 
     // Utility methods
     set_token(token) {
-        this.token = token;
+        // Ya no necesitamos establecer tokens manualmente
+        // Las cookies se manejan automáticamente
+        console.log('Note: Tokens are now handled via secure cookies');
     }
 
     async pretty_response(response) {
@@ -228,3 +234,4 @@ async toggle_usuario_status(empresaId, usuarioId, activo) {
 
 // Make it available globally
 window.EndpointTestClient = EndpointTestClient;
+}

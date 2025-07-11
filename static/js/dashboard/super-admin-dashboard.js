@@ -13,39 +13,23 @@ class SuperAdminDashboard {
     }
 
     initializeClient() {
-        // Initialize API client with proxy and token from session
+        // Initialize API client with proxy
         this.client = new EndpointTestClient('/proxy');
         
-        // Try to get token from session storage or a global variable
-        this.token = this.getSessionToken();
-        if (this.token) {
-            this.client.set_token(this.token);
-        }
+        // No necesitamos manejar tokens manualmente con cookies
+        console.log('Using cookie-based authentication');
     }
 
-    getSessionToken() {
-        // Try multiple sources for the token
-        if (window.sessionToken) {
-            return window.sessionToken;
-        }
-        if (sessionStorage.getItem('token')) {
-            return sessionStorage.getItem('token');
-        }
-        if (localStorage.getItem('token')) {
-            return localStorage.getItem('token');
-        }
-        
-        // Try to get from cookies as fallback
+    isAuthenticated() {
+        // Check if auth_token cookie exists
         const cookies = document.cookie.split(';');
         for (let cookie of cookies) {
             const [name, value] = cookie.trim().split('=');
-            if (name === 'token' || name === 'session_token') {
-                return value;
+            if (name === 'auth_token' && value) {
+                return true;
             }
         }
-        
-        console.warn('No session token found. Dashboard will use fallback data.');
-        return null;
+        return false;
     }
 
     async loadDashboardData() {
@@ -53,8 +37,8 @@ class SuperAdminDashboard {
         
         // Check if user is authenticated
         if (!this.isAuthenticated()) {
-            console.warn('⚠️ No valid authentication token found. Using fallback data.');
-            this.showLoginRequired();
+            console.warn('⚠️ No valid authentication cookie found. Redirecting to login.');
+            this.redirectToLogin();
             return;
         }
         
@@ -271,9 +255,7 @@ class SuperAdminDashboard {
 
         console.log('Updating stats section with:', stats);
 
-        // Log available fields for debugging
-        console.log('Available fields:', Object.keys(stats));
-        
+       
         // Update summary statistics - support different naming conventions
         const totalEmpresas =
             stats.total_empresas ||
@@ -312,16 +294,7 @@ class SuperAdminDashboard {
             stats.avgPerformance ||
             0;
         
-        console.log('Processing values:', {
-            totalEmpresas,
-            activeEmpresas,
-            totalUsers,
-            activeUsers,
-            totalHardware,
-            availableHardware,
-            performance,
-            avgPerformance
-        });
+      
         
         this.updateElement('#totalEmpresasCount', totalEmpresas);
         this.updateElement('#activeEmpresasCount', activeEmpresas);
@@ -608,32 +581,33 @@ class SuperAdminDashboard {
         }
     }
 
-    handleUnauthorized() {
-        console.warn('🚫 Unauthorized access detected. Redirecting to login...');
+    redirectToLogin() {
+        console.warn('🙫 Authentication required. Redirecting to login...');
         
-        // Clear any stored tokens
-        if (sessionStorage.getItem('token')) {
-            sessionStorage.removeItem('token');
-        }
-        if (localStorage.getItem('token')) {
-            localStorage.removeItem('token');
-        }
+        // Show message to user
+        this.showErrorMessage('Sesión requerida. Redirigiendo al login...');
+        
+        // Redirect to login page after a short delay
+        setTimeout(() => {
+            const loginUrl = window.location.origin + '/login';
+            window.location.href = loginUrl;
+        }, 1500);
+    }
+
+    handleUnauthorized() {
+        console.warn('🙫 Unauthorized access detected. Redirecting to login...');
         
         // Show message to user
         this.showErrorMessage('Sesión expirada. Redirigiendo al login...');
         
         // Redirect to login page after a short delay
         setTimeout(() => {
-            // Check if there's a login URL available
             const loginUrl = window.location.origin + '/login';
             window.location.href = loginUrl;
         }, 1500);
     }
 
-    // Check if user is authenticated
-    isAuthenticated() {
-        return this.token && this.token !== 'None' && this.token !== 'null';
-    }
+    // Este método ya está definido arriba, eliminamos la duplicación
 
     // Test connection to backend
     async testConnection() {
@@ -691,3 +665,9 @@ if (window.location.pathname.includes('/admin/super-dashboard')) {
     const dashboard = new SuperAdminDashboard();
     dashboard.init();
 }
+/**
+ * Mejoras específicas para tu SuperAdminDashboard existente
+ * Estas mejoras se integran con tu código actual sin cambiar la estructura
+ */
+
+// 1. MEJORA: Extend tu clase existente con mejor manejo de errores

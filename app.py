@@ -162,6 +162,37 @@ def logout():
     session.clear()
     return redirect(url_for('login'))
 
+@app.route('/api/sync-session', methods=['POST'])
+def sync_session():
+    """Sincroniza la cookie JWT con la sesión Flask"""
+    try:
+        # Leer datos del JWT desde el cuerpo de la petición
+        data = request.get_json() or {}
+        user_data = data.get('user')
+        
+        if user_data:
+            # Simular un token para la sesión (no es el JWT real, solo para compatibilidad)
+            session['token'] = 'jwt_cookie_auth'
+            session['user'] = user_data
+            session.permanent = False
+            
+            return jsonify({
+                'success': True,
+                'message': 'Sesión sincronizada',
+                'user': user_data
+            }), 200
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Datos de usuario faltantes'
+            }), 400
+            
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': f'Error interno: {str(e)}'
+        }), 500
+
 # Proxy de todas las peticiones hacia el backend
 @app.route(f'{PROXY_PREFIX}/<path:endpoint>', methods=['GET', 'POST', 'PUT', 'DELETE', 'PATCH'])
 def proxy_api(endpoint):
