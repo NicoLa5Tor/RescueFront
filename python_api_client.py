@@ -12,16 +12,31 @@ import requests
 
 
 class EndpointTestClient:
-    """Client for performing requests against the backend API."""
+    """Client for performing requests against the backend API.
 
-    def __init__(self, base_url: str = "http://localhost:5002", token: Optional[str] = None) -> None:
+    This client supports both legacy token based authentication and the new
+    cookie-based authentication. If ``cookies`` are provided, they will be sent
+    with each request. ``token`` support is kept for backwards compatibility.
+    """
+
+    def __init__(
+        self,
+        base_url: str = "http://localhost:5002",
+        token: Optional[str] = None,
+        cookies: Optional[Dict[str, str]] = None,
+    ) -> None:
         self.base_url = base_url.rstrip("/")
         self.token = token
+        self.cookies = cookies or {}
 
     # ------------------------------------------------------------------
     # Internal utilities
     # ------------------------------------------------------------------
     def _headers(self) -> Dict[str, str]:
+        """Return request headers.
+
+        Authorization header is included only when a legacy token is provided.
+        """
         headers = {"Content-Type": "application/json"}
         if self.token:
             headers["Authorization"] = f"Bearer {self.token}"
@@ -36,7 +51,14 @@ class EndpointTestClient:
         data: Optional[Dict[str, Any]] = None
     ) -> requests.Response:
         url = f"{self.base_url}{endpoint}"
-        return requests.request(method, url, params=params, json=data, headers=self._headers())
+        return requests.request(
+            method,
+            url,
+            params=params,
+            json=data,
+            headers=self._headers(),
+            cookies=self.cookies,
+        )
 
     # ------------------------------------------------------------------
     # Authentication and health endpoints
@@ -623,6 +645,10 @@ class EndpointTestClient:
     # ------------------------------------------------------------------
     def set_token(self, token: str) -> None:
         self.token = token
+
+    def set_cookies(self, cookies: Dict[str, str]) -> None:
+        """Update cookies used for requests."""
+        self.cookies.update(cookies)
 
     def pretty_response(self, response: requests.Response) -> str:
         try:
