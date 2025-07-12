@@ -85,11 +85,16 @@
   transform: translateZ(0) !important;
 }
 
-/* Ensure content is visible immediately */
-.usuarios-container * {
-  visibility: visible;
-  opacity: 1;
+/* Ensure content is visible immediately - SOLO para el contenido principal */
+.max-w-7xl .ios-header-container,
+.max-w-7xl .ios-stats-grid,
+.max-w-7xl .ios-hardware-grid,
+.max-w-7xl .ios-filters-container {
+  visibility: visible !important;
+  opacity: 1 !important;
 }
+
+/* Correcciones aplicadas globalmente en sidebar.css */
 </style>
 {% endblock %}
 
@@ -599,101 +604,113 @@
 </div>
 {% endblock %}
 
-{% block extra_js %}
+
+{% block page_js %}
 {{ super() }}
-<!-- Modal Utils - SAME AS HARDWARE -->
+<!-- Users Data Script -->
+<script id="usuariosData" type="application/json">
+{{ usuarios_data | tojson if usuarios_data else "null" }}
+</script>
+<script>
+// Load usuarios data from Python backend
+try {
+  const usuariosDataElement = document.getElementById('usuariosData');
+  const usuariosDataText = usuariosDataElement.textContent;
+  window.USUARIOS_DATA = usuariosDataText && usuariosDataText !== 'null' ? JSON.parse(usuariosDataText) : null;
+  console.log('👥 Usuarios data loaded:', window.USUARIOS_DATA);
+} catch (error) {
+  console.warn('⚠️ Error loading usuarios data:', error);
+  window.USUARIOS_DATA = null;
+}
+</script>
+
+<!-- Users Scripts -->
 <script src="{{ url_for('static', filename='js/api-client.js') }}"></script>
 <script src="{{ url_for('static', filename='js/modal-utils.js') }}"></script>
-<!-- Hardware GSAP Animations - EXACT COPY FROM HARDWARE -->
-<script src="{{ url_for('static', filename='js/hardware-animations.js') }}"></script>
-<!-- Users Main JavaScript -->
 <script src="{{ url_for('static', filename='js/usuarios-main.js') }}"></script>
-<!-- Users Modals JavaScript -->
 <script src="{{ url_for('static', filename='js/usuarios/usuarios-modals.js') }}"></script>
+
 <script>
-  // Performance optimizer específico para usuarios - SAME AS EMPRESAS
-  function applyCardOptimizations(card) {
-    // Usar las animaciones GSAP globales ya disponibles
-    if (window.HardwareAnimations) {
-      console.log('🔧 Optimizaciones GSAP aplicadas a tarjeta individual');
-      return;
-    }
-    
-    // Fallback para compatibilidad si GSAP no está disponible
-    const shimmer = card.querySelector('.ios-card-shimmer');
-    if (shimmer && !window.GSAPUtils?.prefersReducedMotion()) {
-      shimmer.style.opacity = '0';
-      shimmer.style.transform = 'rotate(45deg) translateX(-100%)';
-      console.log('🔧 Fallback aplicado a tarjeta individual');
-    }
+// Performance optimizer específico para usuarios
+function applyCardOptimizations(card) {
+  // Usar las animaciones GSAP globales ya disponibles
+  if (window.HardwareAnimations) {
+    console.log('🔧 Optimizaciones GSAP aplicadas a tarjeta individual');
+    return;
   }
   
-  // Función para aplicar optimizaciones a tarjetas ya existentes
-  function applyOptimizationsToExistingCards() {
-    const existingCards = document.querySelectorAll('.ios-hardware-card');
-    existingCards.forEach(card => {
-      applyCardOptimizations(card);
-    });
-    console.log(`🔧 Optimizaciones aplicadas a ${existingCards.length} tarjetas existentes`);
+  // Fallback para compatibilidad si GSAP no está disponible
+  const shimmer = card.querySelector('.ios-card-shimmer');
+  if (shimmer && !window.GSAPUtils?.prefersReducedMotion()) {
+    shimmer.style.opacity = '0';
+    shimmer.style.transform = 'rotate(45deg) translateX(-100%)';
+    console.log('🔧 Fallback aplicado a tarjeta individual');
   }
+}
 
-  // Global functions for backward compatibility
-  function openCreateUsuarioModal() {
-    // Si es usuario tipo empresa, ya tiene empresa seleccionada automáticamente
-    if (window.userRole === 'empresa' || (window.usuariosMain && window.usuariosMain.currentEmpresa)) {
-      if (window.usuariosModals) {
-        window.usuariosModals.openCreateModal();
-      } else {
-        alert('Sistema de modales no disponible');
-      }
-    } else {
-      alert('Selecciona una empresa primero');
-    }
-  }
-
-  function exportUsuarios() {
-    // Si es usuario tipo empresa, ya tiene empresa seleccionada automáticamente
-    if (window.userRole === 'empresa' || (window.usuariosMain && window.usuariosMain.currentEmpresa)) {
-      alert('Funcionalidad de exportación en desarrollo');
-    } else {
-      alert('Selecciona una empresa primero');
-    }
-  }
-
-  
-  // Aplicar optimizaciones a tarjetas existentes cuando sea necesario
-  applyOptimizationsToExistingCards();
-  
-  // Configurar modalManager para modales de usuarios
-  if (window.modalManager) {
-    const userModals = ['viewUserModal', 'editUserModal', 'toggleUserModal', 'createUserModal', 'userUpdateModal'];
-    userModals.forEach(modalId => {
-      const modal = document.getElementById(modalId);
-      if (modal) {
-        window.modalManager.setupModal(modalId);
-        console.log('🔧 Modal configurado con modalManager:', modalId);
-      }
-    });
-    console.log('✅ Todos los modales de usuarios configurados con modalManager');
-  } else {
-    console.warn('⚠️ modalManager no disponible');
-  }
-  
-  console.log('📻 Usuarios main module loaded');
-  
-  // Definir variables globales para el rol y empresa
-  window.userRole = '{{ user_role or "" }}';
-  window.empresaId = '{{ empresa_id or "" }}';
-  window.empresaNombre = '{{ empresa_username or "" }}';
-  
-  console.log('🔧 Variables globales definidas:', {
-    userRole: window.userRole,
-    empresaId: window.empresaId,
-    empresaNombre: window.empresaNombre
+// Función para aplicar optimizaciones a tarjetas ya existentes
+function applyOptimizationsToExistingCards() {
+  const existingCards = document.querySelectorAll('.ios-hardware-card');
+  existingCards.forEach(card => {
+    applyCardOptimizations(card);
   });
+  console.log(`🔧 Optimizaciones aplicadas a ${existingCards.length} tarjetas existentes`);
+}
+
+// Global functions for backward compatibility
+function openCreateUsuarioModal() {
+  // Si es usuario tipo empresa, ya tiene empresa seleccionada automáticamente
+  if (window.userRole === 'empresa' || (window.usuariosMain && window.usuariosMain.currentEmpresa)) {
+    if (window.usuariosModals) {
+      window.usuariosModals.openCreateModal();
+    } else {
+      alert('Sistema de modales no disponible');
+    }
+  } else {
+    alert('Selecciona una empresa primero');
+  }
+}
+
+function exportUsuarios() {
+  // Si es usuario tipo empresa, ya tiene empresa seleccionada automáticamente
+  if (window.userRole === 'empresa' || (window.usuariosMain && window.usuariosMain.currentEmpresa)) {
+    alert('Funcionalidad de exportación en desarrollo');
+  } else {
+    alert('Selecciona una empresa primero');
+  }
+}
+
+// Aplicar optimizaciones a tarjetas existentes cuando sea necesario
+applyOptimizationsToExistingCards();
+
+// Configurar modalManager para modales de usuarios
+if (window.modalManager) {
+  const userModals = ['viewUserModal', 'editUserModal', 'toggleUserModal', 'createUserModal', 'userUpdateModal'];
+  userModals.forEach(modalId => {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+      window.modalManager.setupModal(modalId);
+      console.log('🔧 Modal configurado con modalManager:', modalId);
+    }
+  });
+  console.log('✅ Todos los modales de usuarios configurados con modalManager');
+} else {
+  console.warn('⚠️ modalManager no disponible');
+}
+
+console.log('📻 Usuarios main module loaded');
+
+// Definir variables globales para el rol y empresa
+window.userRole = '{{ user_role or "" }}';
+window.empresaId = '{{ empresa_id or "" }}';
+window.empresaNombre = '{{ empresa_username or "" }}';
+
+console.log('🔧 Variables globales definidas:', {
+  userRole: window.userRole,
+  empresaId: window.empresaId,
+  empresaNombre: window.empresaNombre
+});
 </script>
 {% endblock %}
-
-{%- block page_js -%}{% endblock %}
 
 {% block footer %}{% endblock %}

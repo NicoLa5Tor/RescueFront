@@ -85,6 +85,9 @@ class DashboardStatsProvider:
     @staticmethod
     def get_summary_stats() -> Dict[str, Any]:
         """Return dashboard summary statistics"""
+        # Get hardware stats from HardwareProvider
+        hardware_stats = HardwareProvider.get_hardware_stats()
+        
         return {
             'total_empresas': random.randint(25, 65),
             'active_empresas': random.randint(20, 55),
@@ -93,6 +96,8 @@ class DashboardStatsProvider:
             'empresa_members': random.randint(8, 35),
             'performance': random.randint(75, 95),
             'avg_performance': random.randint(65, 85),
+            'total_hardware': hardware_stats.get('total_items', 0),
+            'available_hardware': hardware_stats.get('available_items', 0),
             'empresa_name': random.choice([
                 'Tech Solutions Corp', 'Digital Industries', 'Global Systems',
                 'Smart Dynamics', 'Cyber Technologies', 'Future Group',
@@ -495,19 +500,28 @@ class CompanyTypesProvider:
 
 # Easy-to-use functions for templates
 def get_dashboard_stats():
-    """Quick function to get dashboard stats for templates"""
-    # Try to get real data if we have a session token
-    try:
-        if 'token' in session:
-            from config import BACKEND_API_URL
-            real_provider = RealDashboardDataProvider(BACKEND_API_URL, session['token'])
-            return real_provider.get_dashboard_data()
-    except Exception as e:
-        logger.warning(f"Could not get real dashboard data: {e}")
+    """Quick function to get dashboard stats for templates - DEPRECATED: Use real API calls directly"""
+    # This function is deprecated. Dashboard should use real API calls directly from the backend
+    logger.error("get_dashboard_stats() is deprecated. Use real API endpoints in app.py instead.")
     
-    # Fallback to dummy data
-    provider = DashboardDataProvider()
-    return provider.get_dashboard_data()
+    # Return minimal structure to prevent template errors
+    return {
+        'summary_stats': {
+            'total_empresas': 0,
+            'active_empresas': 0,
+            'total_users': 0,
+            'active_users': 0,
+            'total_hardware': 0,
+            'available_hardware': 0,
+            'performance': 0,
+            'avg_performance': 0
+        },
+        'recent_companies': [],
+        'recent_users': [],
+        'activity_chart': {},
+        'distribution_chart': {},
+        'performance_trend': {}
+    }
 
 def get_companies_stats():
     """Quick function to get companies stats for templates"""

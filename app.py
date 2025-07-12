@@ -313,39 +313,164 @@ def admin_dashboard():
 @app.route('/admin/super-dashboard')
 @require_role(['super_admin'])
 def super_admin_dashboard():
-    """Super Admin Dashboard - Exclusivo para super_admin"""
-    # Get real dashboard data using the new provider
+    """Super Admin Dashboard - Exclusivo para super_admin - DATOS REALES ÚNICAMENTE"""
+    print(f"🔥 SUPER ADMIN DASHBOARD: Iniciando carga de datos REALES...")
+    
     try:
-        from dashboard_data_providers import RealDashboardDataProvider
-        from config import BACKEND_API_URL
+        # Obtener datos reales del backend vía API usando el proxy interno
+        # En lugar de usar el cliente API directamente, vamos a usar requests con cookies
+        import requests
         
-        # Use real data provider - cookies HTTPOnly se envían automáticamente
-        real_provider = RealDashboardDataProvider(BACKEND_API_URL, None)
-        dashboard_data = real_provider.get_dashboard_data()
+        # Obtener cookies de la petición actual
+        cookies = dict(request.cookies)
+        headers = {'Content-Type': 'application/json'}
         
-        # Add hardware stats if not already present
-        if 'total_hardware' not in dashboard_data.get('summary_stats', {}):
-            hardware_stats = real_provider.get_hardware_stats()
-            dashboard_data['summary_stats']['total_hardware'] = hardware_stats.get('total_items', 0)
-            dashboard_data['summary_stats']['available_hardware'] = hardware_stats.get('available_items', 0)
+        print(f"🍪 Using cookies for API calls: {cookies}")
         
-        print(f"✅ Loaded real dashboard data successfully")
+        # Hacer llamadas directas al backend con cookies
+        dashboard_stats_response = requests.get(
+            f"{BACKEND_API_URL}/api/dashboard/stats",
+            cookies=cookies,
+            headers=headers
+        )
+        
+        performance_response = requests.get(
+            f"{BACKEND_API_URL}/api/dashboard/system-performance",
+            cookies=cookies,
+            headers=headers
+        )
+        
+        # Inicializar datos con estructura básica
+        dashboard_data = {
+            'summary_stats': {},
+            'recent_companies': [],
+            'recent_users': [],
+            'activity_chart': {},
+            'distribution_chart': {},
+            'performance_metrics': {}
+        }
+        
+        # Procesar estadísticas principales
+        if dashboard_stats_response.ok:
+            stats_data = dashboard_stats_response.json()
+            print(f"📊 Stats Response RAW: {stats_data}")
+            print(f"📊 Stats Response TYPE: {type(stats_data)}")
+            print(f"📊 Stats Response KEYS: {list(stats_data.keys()) if isinstance(stats_data, dict) else 'NOT A DICT'}")
+            
+            # Extraer datos de stats según la estructura real {'success': True, 'data': {...}}
+            if stats_data.get('success') and 'data' in stats_data:
+                dashboard_data['summary_stats'] = stats_data['data']
+                print(f"✅ Summary stats loaded successfully: {dashboard_data['summary_stats']}")
+                print(f"✅ Summary stats keys: {list(dashboard_data['summary_stats'].keys()) if isinstance(dashboard_data['summary_stats'], dict) else 'NOT A DICT'}")
+            else:
+                print(f"❌ Stats response format unexpected: {stats_data}")
+                print(f"❌ Success field: {stats_data.get('success')}")
+                print(f"❌ Has data field: {'data' in stats_data}")
+                # Intentar usar los datos directamente si no hay wrapper
+                if isinstance(stats_data, dict) and any(key in stats_data for key in ['total_empresas', 'total_users', 'total_hardware']):
+                    print(f"🔄 Trying to use stats data directly without wrapper...")
+                    dashboard_data['summary_stats'] = stats_data
+                    print(f"✅ Summary stats loaded directly: {dashboard_data['summary_stats']}")
+        else:
+            print(f"❌ Failed to load dashboard stats: {dashboard_stats_response.status_code}")
+            print(f"❌ Response text: {dashboard_stats_response.text[:500] if hasattr(dashboard_stats_response, 'text') else 'NO TEXT'}")
+        
+        # Procesar métricas de performance
+        if performance_response.ok:
+            perf_data = performance_response.json()
+            print(f"⚡ Performance Response: {perf_data}")
+            
+            # Las métricas de performance vienen directamente según la estructura: 
+            # {'uptime_percentage': 99.01, 'response_time': 151, ...}
+            dashboard_data['performance_metrics'] = perf_data
+            print(f"✅ Performance metrics loaded: {dashboard_data['performance_metrics']}")
+        else:
+            print(f"❌ Failed to load performance metrics: {performance_response.status_code}")
+        
+        # Obtener companies y users recientes usando requests con cookies
+        try:
+            companies_response = requests.get(
+                f"{BACKEND_API_URL}/api/dashboard/recent-companies",
+                cookies=cookies,
+                headers=headers
+            )
+            if companies_response.ok:
+                companies_data = companies_response.json()
+                if companies_data.get('success') and 'data' in companies_data:
+                    dashboard_data['recent_companies'] = companies_data['data']
+                    print(f"✅ Recent companies loaded: {len(dashboard_data['recent_companies'])} items")
+        except Exception as e:
+            print(f"⚠️ Error loading recent companies: {e}")
+        
+        try:
+            users_response = requests.get(
+                f"{BACKEND_API_URL}/api/dashboard/recent-users",
+                cookies=cookies,
+                headers=headers
+            )
+            if users_response.ok:
+                users_data = users_response.json()
+                if users_data.get('success') and 'data' in users_data:
+                    dashboard_data['recent_users'] = users_data['data']
+                    print(f"✅ Recent users loaded: {len(dashboard_data['recent_users'])} items")
+        except Exception as e:
+            print(f"⚠️ Error loading recent users: {e}")
+        
+        # Obtener gráficos usando requests con cookies
+        try:
+            activity_response = requests.get(
+                f"{BACKEND_API_URL}/api/dashboard/activity-chart",
+                cookies=cookies,
+                headers=headers
+            )
+            if activity_response.ok:
+                activity_data = activity_response.json()
+                if activity_data.get('success') and 'data' in activity_data:
+                    dashboard_data['activity_chart'] = activity_data['data']
+                    print(f"✅ Activity chart loaded")
+        except Exception as e:
+            print(f"⚠️ Error loading activity chart: {e}")
+        
+        try:
+            distribution_response = requests.get(
+                f"{BACKEND_API_URL}/api/dashboard/distribution-chart",
+                cookies=cookies,
+                headers=headers
+            )
+            if distribution_response.ok:
+                distribution_data = distribution_response.json()
+                if distribution_data.get('success') and 'data' in distribution_data:
+                    dashboard_data['distribution_chart'] = distribution_data['data']
+                    print(f"✅ Distribution chart loaded")
+        except Exception as e:
+            print(f"⚠️ Error loading distribution chart: {e}")
+        
+        print(f"🔥 SUPER ADMIN DASHBOARD: Datos finales para renderizar:")
+        print(f"  - Summary Stats: {dashboard_data.get('summary_stats', {})}")
+        print(f"  - Recent Companies count: {len(dashboard_data.get('recent_companies', []))}")
+        print(f"  - Recent Users count: {len(dashboard_data.get('recent_users', []))}")
+        print(f"  - Performance Metrics: {dashboard_data.get('performance_metrics', {})}")
         
     except Exception as e:
-        print(f"❌ Error loading real dashboard data: {e}")
-        # Fallback to dummy data
-        dashboard_data = get_dashboard_stats()
-        
-        # Add hardware stats to the data
-        try:
-            from dashboard_data_providers import HardwareProvider
-            hardware_stats = HardwareProvider.get_hardware_stats()
-            dashboard_data['summary_stats']['total_hardware'] = hardware_stats.get('total_items', 0)
-            dashboard_data['summary_stats']['available_hardware'] = hardware_stats.get('available_items', 0)
-        except Exception as e:
-            print(f"Error loading hardware stats: {e}")
-            dashboard_data['summary_stats']['total_hardware'] = 0
-            dashboard_data['summary_stats']['available_hardware'] = 0
+        print(f"❌ Critical error loading dashboard data: {e}")
+        # En caso de error crítico, usar estructura mínima para evitar fallos de renderizado
+        dashboard_data = {
+            'summary_stats': {
+                'total_empresas': 0,
+                'active_empresas': 0,
+                'total_users': 0,
+                'active_users': 0,
+                'total_hardware': 0,
+                'available_hardware': 0,
+                'performance': 0,
+                'avg_performance': 0
+            },
+            'recent_companies': [],
+            'recent_users': [],
+            'activity_chart': {},
+            'distribution_chart': {},
+            'performance_metrics': {}
+        }
     
     return render_template(
         'admin/super_admin_dashboard.html',
@@ -387,6 +512,25 @@ def admin_users():
         initial_total_users = stats.get('total_users', len(usuarios_list))
         initial_active_users = stats.get('active_users', len([u for u in usuarios_list if u.get('activo')]))
 
+    # Crear dashboard_data mínimo para heredar del template base
+    dashboard_data = {
+        'summary_stats': {
+            'total_empresas': 0,
+            'active_empresas': 0,
+            'total_users': initial_total_users,
+            'active_users': initial_active_users,
+            'total_hardware': 0,
+            'available_hardware': 0,
+            'performance': 0,
+            'avg_performance': 0
+        },
+        'recent_companies': [],
+        'recent_users': [],
+        'activity_chart': {},
+        'distribution_chart': {},
+        'performance_metrics': {}
+    }
+
     return render_template(
         'admin/users.html',
         api_url=PROXY_PREFIX,
@@ -396,6 +540,7 @@ def admin_users():
         empresa_id=empresa_id,
         empresa_username=empresa_username,
         usuarios_data=usuarios_data,
+        dashboard_data=dashboard_data,
         initial_total_users=initial_total_users,
         initial_active_users=initial_active_users
     )

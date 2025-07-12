@@ -43,14 +43,15 @@
       box-shadow: var(--shadow-card);
       /* Show sidebar by default on desktop */
       display: block;
+      margin-top: 6%; 
   }
 }
 
-@media (min-width: 1200px) {
+/* @media (min-width: 1200px) {
   .sidebar {
       width: calc(var(--sidebar-width) + 2rem);
   }
-}
+} */
 
 /* ===== SIDEBAR STATES ===== */
 .sidebar--open {
@@ -142,7 +143,10 @@
   border: 1px solid var(--glass-border);
   transition: all var(--transition-normal);
   position: relative;
-  overflow: hidden;
+  overflow: visible;
+  height: auto;
+  min-height: auto;
+  max-height: none;
 }
 
 .sidebar__profile::before {
@@ -175,6 +179,9 @@
   gap: var(--space-3);
   position: relative;
   z-index: 1;
+  height: auto;
+  min-height: auto;
+  overflow: visible;
 }
 
 @media (min-width: 640px) {
@@ -234,6 +241,8 @@
 .sidebar__profile-info {
   min-width: 0;
   flex: 1;
+  height: auto;
+  overflow: visible;
 }
 
 .sidebar__profile-name {
@@ -657,6 +666,7 @@
   background: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
+  margin-top: 6%;
 }
 
 /* ===== DARK MODE ENHANCEMENTS ===== */

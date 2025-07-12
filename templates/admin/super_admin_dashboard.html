@@ -6,17 +6,31 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 
-<!-- Dashboard CSS (in order) -->
-<link href="{{ url_for('static', filename='css/dashboard/main-layout.css') }}" rel="stylesheet">
+<!-- Dashboard CSS básico -->
 <link href="{{ url_for('static', filename='css/dashboard/variables.css') }}" rel="stylesheet">
-<link href="{{ url_for('static', filename='css/dashboard/base.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/dashboard/navbar.css') }}" rel="stylesheet">
-<link href="{{ url_for('static', filename='css/dashboard/animations.css') }}" rel="stylesheet">
-<link href="{{ url_for('static', filename='css/dashboard/cards.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/dashboard/sidebar.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/dashboard/main-layout.css') }}" rel="stylesheet">
+
+<!-- Super Dashboard iOS Styles SOLO para componentes específicos -->
+<link href="{{ url_for('static', filename='css/super-dashboard/super-dashboard-main.css') }}" rel="stylesheet">
 
 <!-- Enhanced CSS for improved functionality -->
 <style>
+/* Corregir layout del main-content para sidebar */
+@media (min-width: 1024px) {
+  .main-content {
+    margin-left: var(--sidebar-width) !important;
+    width: calc(100% - var(--sidebar-width)) !important;
+  }
+}
+
+@media (min-width: 1200px) {
+  .main-content {
+    margin-left: calc(var(--sidebar-width) + 2rem) !important;
+    width: calc(100% - var(--sidebar-width) - 2rem) !important;
+  }
+}
 .stat-updated {
   animation: statHighlight 1s ease-in-out;
 }
@@ -71,8 +85,33 @@
   transform: rotate(180deg);
   transition: transform 0.3s ease;
 }
-</style>
 
+/* Solo estilos básicos, sin modificar fondos */
+
+/* Center chart titles */
+.chart-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--space-6) var(--space-6) var(--space-4);
+}
+
+.chart-header h3 {
+  margin: 0;
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
+  color: var(--text-primary) !important;
+  line-height: var(--leading-tight);
+}
+
+.chart-header p {
+  margin: var(--space-1) 0 0 0;
+  font-size: var(--text-sm);
+  color: var(--text-secondary) !important;
+  line-height: var(--leading-tight);
+}
+</style>
 {% endblock %}
 
 {% block navbar %}
@@ -203,37 +242,33 @@
 
   <!-- Main Content -->
   <main class="main-content" role="main">
-    {% block dashboard_content %}
-    <!-- Header -->
-    <div class="mb-8">
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-        <div>
-          <h1 class="text-3xl font-bold text-white">Panel de Super Admin 🛡️</h1>
-          <p class="text-gray-600 text-white mt-1">Control total del sistema multi-tenant</p>
-          <!-- Connection Status Indicator -->
-          <div id="connectionStatus" class="flex items-center space-x-2 mt-2 text-sm">
-            <div class="w-2 h-2 rounded-full bg-green-500" id="connectionIndicator"></div>
-            <span class="text-gray-400" id="connectionText">Conectado</span>
-            <span class="text-gray-500 text-xs" id="lastUpdateTime"></span>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {% block dashboard_content %}
+      <!-- Header con estilo iOS pero manteniendo estructura Tailwind -->
+      <div class="mb-8">
+        <div class="ios-header-container">
+          <div class="ios-header-backdrop">
+            <div class="ios-header-content">
+              <div class="ios-header-text">
+                <div class="ios-header-icon">
+                  <i class="fas fa-shield-alt"></i>
+                </div>
+                <div>
+                  <h1 class="ios-header-title">Panel de Super Admin 🛡️</h1>
+                  <p class="ios-header-subtitle">Control total del sistema multi-tenant
+                    <!-- Connection Status Indicator -->
+                    <span id="connectionStatus" class="inline-flex items-center space-x-2 mt-2 text-sm">
+                      <span class="w-2 h-2 rounded-full bg-green-500" id="connectionIndicator"></span>
+                      <span class="text-white/70" id="connectionText">Conectado</span>
+                      <span class="text-white/50 text-xs" id="lastUpdateTime"></span>
+                    </span>
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="flex flex-col xs:flex-row space-y-2 xs:space-y-0 xs:space-x-3">
-          <button class="btn-secondary">
-            <i class="fas fa-calendar-alt"></i>
-            <span class="hidden xs:inline">Últimos 30 días</span>
-            <span class="xs:hidden">30 días</span>
-          </button>
-          <button class="btn-secondary refresh-button" onclick="refreshDashboard()" title="Actualizar datos" aria-label="Refrescar dashboard">
-            <i class="fas fa-sync-alt"></i>
-            <span class="hidden xs:inline">Actualizar</span>
-          </button>
-          <button class="btn-primary">
-            <i class="fas fa-download"></i>
-            Exportar
-          </button>
-        </div>
       </div>
-    </div>
 
     <!-- Toast Container for Notifications -->
     <div id="toastContainer" class="fixed top-4 right-4 z-50 space-y-2" role="alert" aria-live="polite"></div>
@@ -277,54 +312,65 @@
       </div>
     </div>
 
-    <!-- Stats Grid -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-8" id="statsGrid">
-      <div class="glass-card p-4 text-center" role="region" aria-labelledby="empresas-label">
-        <p class="text-sm text-gray-500" id="empresas-label">Total Empresas</p>
-        <p id="totalEmpresasCount" class="text-2xl font-bold" aria-live="polite">0</p>
-        <p class="text-xs text-gray-500">Activas <span id="activeEmpresasCount" aria-live="polite">0</span></p>
+      <!-- Enhanced iOS Stats Cards - HARDWARE STYLE -->
+      <div class="ios-stats-grid">
+        <div class="ios-stat-card" data-stat="total">
+          <div class="ios-stat-icon ios-stat-icon-blue">
+            <i class="fas fa-building"></i>
+          </div>
+          <div class="ios-stat-content">
+            <div class="ios-stat-label">Total Empresas</div>
+            <div class="ios-stat-value" id="totalEmpresasCount">0</div>
+            <div class="ios-stat-trend">Activas <span id="activeEmpresasCount">0</span></div>
+          </div>
+          <div class="ios-stat-shimmer"></div>
+        </div>
+        
+        <div class="ios-stat-card" data-stat="users">
+          <div class="ios-stat-icon ios-stat-icon-green">
+            <i class="fas fa-users"></i>
+          </div>
+          <div class="ios-stat-content">
+            <div class="ios-stat-label">Total Usuarios</div>
+            <div class="ios-stat-value" id="totalUsersCount">0</div>
+            <div class="ios-stat-trend">Activos <span id="activeUsersCount">0</span></div>
+          </div>
+          <div class="ios-stat-shimmer"></div>
+        </div>
+        
+        <div class="ios-stat-card" data-stat="hardware">
+          <div class="ios-stat-icon ios-stat-icon-purple">
+            <i class="fas fa-microchip"></i>
+          </div>
+          <div class="ios-stat-content">
+            <div class="ios-stat-label">Hardware</div>
+            <div class="ios-stat-value" id="totalHardwareCount">0</div>
+            <div class="ios-stat-trend">Disponible <span id="availableHardwareCount">0</span></div>
+          </div>
+          <div class="ios-stat-shimmer"></div>
+        </div>
+        
+        <div class="ios-stat-card" data-stat="performance">
+          <div class="ios-stat-icon ios-stat-icon-orange">
+            <i class="fas fa-chart-bar"></i>
+          </div>
+          <div class="ios-stat-content">
+            <div class="ios-stat-label">Rendimiento</div>
+            <div class="ios-stat-value" id="performanceCount">0</div>
+            <div class="ios-stat-trend">Promedio <span id="avgPerformanceCount">0</span></div>
+          </div>
+          <div class="ios-stat-shimmer"></div>
+        </div>
       </div>
-      <div class="glass-card p-4 text-center" role="region" aria-labelledby="usuarios-label">
-        <p class="text-sm text-gray-500" id="usuarios-label">Total Usuarios</p>
-        <p id="totalUsersCount" class="text-2xl font-bold" aria-live="polite">0</p>
-        <p class="text-xs text-gray-500">Activos <span id="activeUsersCount" aria-live="polite">0</span></p>
-      </div>
-      <div class="glass-card p-4 text-center" role="region" aria-labelledby="hardware-label">
-        <p class="text-sm text-gray-500" id="hardware-label">Hardware</p>
-        <p id="totalHardwareCount" class="text-2xl font-bold" aria-live="polite">0</p>
-        <p class="text-xs text-gray-500">Disponible <span id="availableHardwareCount" aria-live="polite">0</span></p>
-      </div>
-      <div class="glass-card p-4 text-center" role="region" aria-labelledby="rendimiento-label">
-        <p class="text-sm text-gray-500" id="rendimiento-label">Rendimiento</p>
-        <p id="performanceCount" class="text-2xl font-bold" aria-live="polite">0</p>
-        <p class="text-xs text-gray-500">Promedio <span id="avgPerformanceCount" aria-live="polite">0</span></p>
-      </div>
-    </div>
 
     <!-- Charts Section -->
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
       <!-- Main Chart -->
-      <div class="xl:col-span-2 glass-card chart-card">
+      <div class="xl:col-span-2 glass-card chart-card theme-transition gsap-animated">
         <div class="chart-header">
           <div>
-            <h3 class="text-xl font-bold text-black dark:text-white">Actividad del Sistema</h3>
-            <p class="text-sm text-gray-500 dark:text-gray-400">Métricas por empresa en tiempo real</p>
-          </div>
-          <div class="chart-controls">
-            <select id="chartPeriod" class="text-sm border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-700 mr-2" aria-label="Período de tiempo">
-              <option value="24h">Últimas 24h</option>
-              <option value="7d" selected>Últimos 7 días</option>
-              <option value="30d">Últimos 30 días</option>
-            </select>
-            <button class="chart-control-btn" onclick="refreshActivityChart()" aria-label="Refresh chart" title="Actualizar gráfico">
-              <i class="fas fa-sync-alt"></i>
-            </button>
-            <button class="chart-control-btn" onclick="expandChart('dashboardChart')" aria-label="Expand chart" title="Expandir gráfico">
-              <i class="fas fa-expand"></i>
-            </button>
-            <button class="chart-control-btn" onclick="downloadChart('dashboardChart')" aria-label="Download chart" title="Descargar gráfico">
-              <i class="fas fa-download"></i>
-            </button>
+            <h3 style="color: var(--text-primary) !important;" class="text-xl font-bold text-black dark:text-white">Actividad del Sistema</h3>
+            <p style="color: var(--text-secondary) !important;" class="text-sm text-gray-600 dark:text-gray-400">Métricas por empresa en tiempo real</p>
           </div>
         </div>
         <div class="p-6 relative">
@@ -342,21 +388,11 @@
       </div>
 
       <!-- Distribution Chart -->
-      <div class="glass-card chart-card">
+      <div class="glass-card chart-card theme-transition gsap-animated">
         <div class="chart-header">
           <div>
-            <h3 class="text-xl font-bold text-black dark:text-white">Distribución</h3>
-            <p class="text-sm text-gray-500 dark:text-gray-400">Por categorías</p>
-          </div>
-          <div class="chart-controls">
-            <select id="distributionType" class="text-sm border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-700 mr-2" aria-label="Tipo de distribución">
-              <option value="companies">Empresas</option>
-              <option value="users">Usuarios</option>
-              <option value="hardware">Hardware</option>
-            </select>
-            <button class="chart-control-btn" onclick="refreshDistributionChart()" aria-label="Refresh chart" title="Actualizar distribución">
-              <i class="fas fa-sync-alt"></i>
-            </button>
+            <h3 style="color: var(--text-primary) !important;" class="text-xl font-bold text-black dark:text-white">Distribución</h3>
+            <p style="color: var(--text-secondary) !important;" class="text-sm text-gray-600 dark:text-gray-400">Por categorías</p>
           </div>
         </div>
         <div class="p-6 relative">
@@ -377,12 +413,12 @@
     <!-- Activity Lists -->
     <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
       <!-- Recent Companies -->
-      <div class="glass-card">
+      <div class="glass-card theme-transition gsap-animated">
         <div class="p-6 border-b border-gray-100 dark:border-gray-700">
           <div class="flex items-center justify-between">
             <div>
-              <h3 class="text-xl font-bold text-black dark:text-white">Empresas Recientes</h3>
-              <p class="text-sm text-gray-500 dark:text-gray-400">Últimas incorporaciones</p>
+              <h3 style="color: var(--text-primary) !important;" class="text-xl font-bold text-black dark:text-white">Empresas Recientes</h3>
+              <p style="color: var(--text-secondary) !important;" class="text-sm text-gray-600 dark:text-gray-400">Últimas incorporaciones</p>
             </div>
             <a href="{{ url_for('admin_empresas') }}" class="text-purple-600 hover:text-purple-700 font-medium" aria-label="Ver todas las empresas">
               Ver todas <i class="fas fa-arrow-right ml-1"></i>
@@ -402,12 +438,12 @@
       </div>
 
       <!-- Recent Users -->
-      <div class="glass-card">
+      <div class="glass-card theme-transition gsap-animated">
         <div class="p-6 border-b border-gray-100 dark:border-gray-700">
           <div class="flex items-center justify-between">
             <div>
-              <h3 class="text-xl font-bold text-black dark:text-white">Usuarios Recientes</h3>
-              <p class="text-sm text-gray-500 dark:text-gray-400">Nuevos miembros</p>
+              <h3 style="color: var(--text-primary) !important;" class="text-xl font-bold text-black dark:text-white">Usuarios Recientes</h3>
+              <p style="color: var(--text-secondary) !important;" class="text-sm text-gray-600 dark:text-gray-400">Nuevos miembros</p>
             </div>
             <a href="{{ url_for('admin_users') }}" class="text-purple-600 hover:text-purple-700 font-medium" aria-label="Ver todos los usuarios">
               Ver todos <i class="fas fa-arrow-right ml-1"></i>
@@ -442,12 +478,86 @@
 <!-- API Configuration -->
 <script>
   window.API_BASE_URL = '{{ api_url }}';
-  window.DASHBOARD_DATA = {{ dashboard_data | tojson }};
-  // NO almacenar sessionToken - el token debe estar únicamente en cookie HTTPOnly
-  // window.sessionToken = '{{ session.token }}';  // ELIMINADO POR SEGURIDAD
-  // Establecer datos de usuario para verificación de autenticación
-  window.currentUser = {{ session.user | tojson }};
+  
+  // Dashboard data con verificación de integridad
+  try {
+    window.DASHBOARD_DATA = {{ dashboard_data | tojson }};
+    console.log('✅ DASHBOARD_DATA cargado correctamente:', window.DASHBOARD_DATA);
+  } catch (e) {
+    console.error('❌ Error cargando DASHBOARD_DATA:', e);
+    window.DASHBOARD_DATA = null;
+  }
+  
+  // Usuario actual
+  try {
+    window.currentUser = {{ session.user | tojson }};
+    console.log('✅ currentUser cargado:', window.currentUser);
+  } catch (e) {
+    console.error('❌ Error cargando currentUser:', e);
+    window.currentUser = null;
+  }
+  
+  // Inicializar las tarjetas con datos del servidor al cargar la página
+  function initializeDashboardCards() {
+    console.log('🎯 Inicializando tarjetas del dashboard...');
+    
+    if (window.DASHBOARD_DATA && window.DASHBOARD_DATA.summary_stats) {
+      const stats = window.DASHBOARD_DATA.summary_stats;
+      console.log('📊 Stats disponibles:', stats);
+      
+      // Actualizar tarjetas con datos reales
+      const updateElement = (selector, value) => {
+        const element = document.querySelector(selector);
+        if (element) {
+          element.textContent = value;
+          console.log(`✅ Actualizado ${selector} = ${value}`);
+        } else {
+          console.warn(`⚠️ Elemento no encontrado: ${selector}`);
+        }
+      };
+      
+      // Mapear campos con flexibilidad en nombres
+      updateElement('#totalEmpresasCount', stats.total_empresas || stats.totalEmpresas || stats.total_companies || 0);
+      updateElement('#activeEmpresasCount', stats.active_empresas || stats.activeEmpresas || stats.active_companies || 0);
+      updateElement('#totalUsersCount', stats.total_users || stats.totalUsers || 0);
+      updateElement('#activeUsersCount', stats.active_users || stats.activeUsers || 0);
+      updateElement('#totalHardwareCount', stats.total_hardware || stats.totalHardware || 0);
+      updateElement('#availableHardwareCount', stats.available_hardware || stats.availableHardware || 0);
+      updateElement('#performanceCount', stats.performance || stats.performanceValue || 0);
+      updateElement('#avgPerformanceCount', stats.avg_performance || stats.avgPerformance || 0);
+      
+      console.log('✅ Inicialización de tarjetas completada');
+    } else {
+      console.warn('⚠️ No hay datos de dashboard disponibles para inicializar las tarjetas');
+    }
+    
+    // Inicializar métricas de performance si están disponibles
+    if (window.DASHBOARD_DATA && window.DASHBOARD_DATA.performance_metrics) {
+      const perf = window.DASHBOARD_DATA.performance_metrics;
+      console.log('⚡ Performance metrics disponibles:', perf);
+      
+      // Se pueden agregar más elementos de performance aquí si es necesario
+      // updateElement('#cpu-usage', perf.cpu_usage + '%');
+      // updateElement('#memory-usage', perf.memory_usage + '%');
+    }
+  }
+  
+  // Ejecutar inicialización cuando el DOM esté listo
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeDashboardCards);
+  } else {
+    initializeDashboardCards();
+  }
+  
+  // Fallback por si acaso
+  setTimeout(initializeDashboardCards, 100);
 </script>
+
+<!-- GSAP Configuration Global -->
+<script src="{{ url_for('static', filename='js/gsap-config.js') }}"></script>
+
+<!-- Super Dashboard GSAP Animations (identical to hardware) -->
+<script src="{{ url_for('static', filename='js/super-dashboard-animations.js') }}"></script>
 
 <!-- Core Scripts -->
 <script src="{{ url_for('static', filename='js/dashboard/sidebar-manager.js') }}"></script>
@@ -456,6 +566,73 @@
 <script src="{{ url_for('static', filename='js/dashboard/dashboard.js') }}"></script>
 <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
 <script src="{{ url_for('static', filename='js/dashboard/super-admin-dashboard.js') }}"></script>
+
+<!-- Performance optimizer específico para super dashboard -->
+<script>
+  // Función GLOBAL para aplicar optimizaciones a una tarjeta específica (usando GSAP global)
+  function applyCardOptimizations(card) {
+    // Usar las animaciones GSAP globales ya disponibles
+    if (window.SuperDashboardAnimations) {
+      // Las animaciones de hover ya están configuradas en super-dashboard-animations.js
+      console.log('🔧 Optimizaciones GSAP aplicadas a tarjeta individual');
+      return;
+    }
+    
+    // Fallback para compatibilidad si GSAP no está disponible
+    const shimmer = card.querySelector('.ios-card-shimmer');
+    if (shimmer && !window.GSAPUtils?.prefersReducedMotion()) {
+      shimmer.style.opacity = '0';
+      shimmer.style.transform = 'rotate(45deg) translateX(-100%)';
+      console.log('🔧 Fallback aplicado a tarjeta individual');
+    }
+  }
+  
+  // Función para aplicar optimizaciones a tarjetas ya existentes
+  function applyOptimizationsToExistingCards() {
+    const existingCards = document.querySelectorAll('.ios-dashboard-card, .glass-card');
+    existingCards.forEach(card => {
+      applyCardOptimizations(card);
+    });
+    console.log(`🔧 Optimizaciones aplicadas a ${existingCards.length} tarjetas existentes`);
+  }
+  
+  document.addEventListener('DOMContentLoaded', function() {
+    console.log('🛠️ Super Dashboard page loaded with GSAP optimizations');
+    
+    // Las animaciones principales ya se manejan en super-dashboard-animations.js
+    // Solo mantenemos funcionalidad específica que no está en GSAP
+    
+    // Observer para tarjetas que se añaden dinámicamente
+    const dashboardGrid = document.getElementById('dashboardGrid');
+    if (dashboardGrid) {
+      const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          mutation.addedNodes.forEach(function(node) {
+            if (node.nodeType === 1 && (node.classList.contains('ios-dashboard-card') || node.classList.contains('glass-card'))) {
+              console.log('👀 Nueva tarjeta detectada, aplicando animación GSAP...');
+              
+              // Usar animación GSAP para nueva tarjeta
+              if (window.SuperDashboardAnimations) {
+                window.SuperDashboardAnimations.animateNewCard(node);
+              } else {
+                applyCardOptimizations(node);
+              }
+            }
+          });
+        });
+      });
+      
+      observer.observe(dashboardGrid, {
+        childList: true,
+        subtree: true
+      });
+      
+      console.log('👀 Observer configurado para detectar nuevas tarjetas');
+    }
+    
+    console.log('✅ Super Dashboard page optimizations applied successfully');
+  });
+</script>
 
 <!-- API Client -->
 <script src="{{ url_for('static', filename='js/api-client.js') }}"></script>
@@ -553,81 +730,161 @@ function updateConnectionStatus(status) {
 </script>
 {% block dashboard_js %}
 <script>
-// VERSION SUPER SIMPLE PARA DEBUGGING
-console.log('🔥 SCRIPT EJECUTÁNDOSE...');
+// ============================================
+// SUPER ADMIN DASHBOARD - INICIALIZACIÓN CORRECTA
+// ============================================
 
-// Esperar a que todo esté listo
-setTimeout(function() {
-    console.log('🔥 TIMEOUT EJECUTÁNDOSE...');
+// Función principal para actualizar las estadísticas
+function updateDashboardStats() {
+    console.log('📊 Iniciando actualización de estadísticas...');
     
-    // Verificar datos
     const data = window.DASHBOARD_DATA;
-    console.log('🔥 DATA:', data);
+    console.log('📦 Datos del dashboard:', data);
     
-    if (data && data.summary_stats) {
-        console.log('🔥 STATS:', data.summary_stats);
-        
-        // Buscar elementos
-        const totalEmpresas = document.getElementById('totalEmpresasCount');
-        const totalUsers = document.getElementById('totalUsersCount');
-        
-        console.log('🔥 ELEMENTOS:');
-        console.log('  Empresas element:', totalEmpresas);
-        console.log('  Users element:', totalUsers);
-        
-        if (totalEmpresas) {
-            console.log('🔥 ACTUALIZANDO EMPRESAS...');
-            totalEmpresas.textContent = data.summary_stats.total_empresas;
-            console.log('🔥 EMPRESAS ACTUALIZADO A:', totalEmpresas.textContent);
-        }
-        
-        if (totalUsers) {
-            console.log('🔥 ACTUALIZANDO USUARIOS...');
-            totalUsers.textContent = data.summary_stats.total_users;
-            console.log('🔥 USUARIOS ACTUALIZADO A:', totalUsers.textContent);
-        }
-        
-        // Forzar todos los campos
-        document.getElementById('activeEmpresasCount').textContent = data.summary_stats.active_empresas;
-        document.getElementById('activeUsersCount').textContent = data.summary_stats.active_users;
-        document.getElementById('totalHardwareCount').textContent = data.summary_stats.total_hardware;
-        document.getElementById('availableHardwareCount').textContent = data.summary_stats.available_hardware;
-        document.getElementById('performanceCount').textContent = data.summary_stats.performance + '%';
-        document.getElementById('avgPerformanceCount').textContent = data.summary_stats.avg_performance + '%';
-        
-        console.log('🔥 TODOS LOS CAMPOS ACTUALIZADOS');
-    } else {
-        console.log('🔥 NO HAY DATOS O NO HAY SUMMARY_STATS');
+    if (!data || !data.summary_stats) {
+        console.error('❌ No se encontraron datos del dashboard');
+        return;
     }
-}, 2000); // 2 segundos de delay para asegurar que todo esté cargado
-
-// También intentar inmediatamente
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('🔥 DOM CONTENT LOADED');
     
-    // Intentar actualizar inmediatamente también
+    const stats = data.summary_stats;
+    console.log('📊 Estadísticas:', stats);
+    
+    // Mapear elementos con sus respectivos valores
+    const mappings = [
+        { id: 'totalEmpresasCount', value: stats.total_empresas || 0 },
+        { id: 'activeEmpresasCount', value: stats.active_empresas || 0 },
+        { id: 'totalUsersCount', value: stats.total_users || 0 },
+        { id: 'activeUsersCount', value: stats.active_users || 0 },
+        { id: 'totalHardwareCount', value: stats.total_hardware || 0 },
+        { id: 'availableHardwareCount', value: stats.available_hardware || 0 },
+        { id: 'performanceCount', value: (stats.performance || 0) + '%' },
+        { id: 'avgPerformanceCount', value: (stats.avg_performance || 0) + '%' }
+    ];
+    
+    // Actualizar cada elemento
+    mappings.forEach(({ id, value }) => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.textContent = value;
+            console.log(`✅ ${id}: ${value}`);
+        } else {
+            console.warn(`⚠️ Elemento no encontrado: ${id}`);
+        }
+    });
+    
+    console.log('✅ Actualización de estadísticas completada');
+}
+
+// Función para manejar listas de empresas recientes
+function updateRecentCompanies() {
     const data = window.DASHBOARD_DATA;
-    if (data && data.summary_stats) {
-        console.log('🔥 ACTUALIZANDO INMEDIATAMENTE...');
-        
-        try {
-            document.getElementById('totalEmpresasCount').textContent = data.summary_stats.total_empresas;
-            document.getElementById('totalUsersCount').textContent = data.summary_stats.total_users;
-            document.getElementById('activeEmpresasCount').textContent = data.summary_stats.active_empresas;
-            document.getElementById('activeUsersCount').textContent = data.summary_stats.active_users;
-            document.getElementById('totalHardwareCount').textContent = data.summary_stats.total_hardware;
-            document.getElementById('availableHardwareCount').textContent = data.summary_stats.available_hardware;
-            document.getElementById('performanceCount').textContent = data.summary_stats.performance + '%';
-            document.getElementById('avgPerformanceCount').textContent = data.summary_stats.avg_performance + '%';
-            
-            console.log('🔥 ACTUALIZACIÓN INMEDIATA COMPLETADA');
-        } catch (error) {
-            console.error('🔥 ERROR EN ACTUALIZACIÓN INMEDIATA:', error);
-        }
+    if (!data || !data.recent_companies) return;
+    
+    const container = document.getElementById('recentEmpresasContainer');
+    if (!container) return;
+    
+    const companies = data.recent_companies;
+    console.log('🏢 Actualizando empresas recientes:', companies);
+    
+    if (companies.length === 0) {
+        container.innerHTML = '<p class="text-center text-gray-500 p-4">No hay empresas recientes</p>';
+        return;
     }
-});
+    
+    container.innerHTML = companies.map(company => `
+        <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg mb-3">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center">
+                    <i class="fas fa-building text-purple-600 dark:text-purple-400"></i>
+                </div>
+                <div>
+                    <p class="font-medium text-black dark:text-white">${company.name || 'Sin nombre'}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">${company.industry || 'Sin industria'}</p>
+                </div>
+            </div>
+            <div class="text-right">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                    ${company.status || 'Activa'}
+                </span>
+            </div>
+        </div>
+    `).join('');
+}
 
-console.log('🔥 SCRIPT COMPLETO');
+// Función para manejar listas de usuarios recientes
+function updateRecentUsers() {
+    const data = window.DASHBOARD_DATA;
+    if (!data || !data.recent_users) return;
+    
+    const container = document.getElementById('recentUsersContainer');
+    if (!container) return;
+    
+    const users = data.recent_users;
+    console.log('👥 Actualizando usuarios recientes:', users);
+    
+    if (users.length === 0) {
+        container.innerHTML = '<p class="text-center text-gray-500 p-4">No hay usuarios recientes</p>';
+        return;
+    }
+    
+    container.innerHTML = users.map(user => {
+        const initials = (user.name || 'NN').split(' ').map(n => n[0]).join('').toUpperCase();
+        return `
+            <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg mb-3">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                        <span class="font-medium text-blue-600 dark:text-blue-400">${initials}</span>
+                    </div>
+                    <div>
+                        <p class="font-medium text-black dark:text-white">${user.name || 'Sin nombre'}</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">${user.email || 'Sin email'}</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                        ${user.role || 'Usuario'}
+                    </span>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// Función principal de inicialización
+function initializeDashboard() {
+    console.log('🚀 Inicializando Super Admin Dashboard...');
+    
+    // Verificar que tenemos datos
+    if (!window.DASHBOARD_DATA) {
+        console.error('❌ No se encontraron datos del dashboard en window.DASHBOARD_DATA');
+        return;
+    }
+    
+    // Actualizar todas las secciones
+    updateDashboardStats();
+    updateRecentCompanies();
+    updateRecentUsers();
+    
+    console.log('✅ Dashboard inicializado correctamente');
+}
+
+// Ejecutar cuando el DOM esté listo
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeDashboard);
+} else {
+    initializeDashboard();
+}
+
+// También ejecutar con un pequeño delay para asegurar que todos los elementos estén disponibles
+setTimeout(initializeDashboard, 500);
+
+// Función de recarga manual
+window.refreshDashboardStats = function() {
+    console.log('🔄 Recargando estadísticas manualmente...');
+    updateDashboardStats();
+};
+
+console.log('🏁 Script de inicialización del dashboard cargado');
 </script>
 {% endblock %}
 {% endblock %}

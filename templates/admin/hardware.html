@@ -589,7 +589,7 @@
       </button>
       <button type="button" class="ios-blur-btn ios-blur-btn-primary" onclick="openInNewTab()" id="openInNewTabBtn">
         <i class="fas fa-external-link-alt mr-2"></i>
-        Abrir en nueva pestaña
+        Abrir en Google Maps
       </button>
     </div>
   </div>
@@ -767,7 +767,7 @@ function initializeLeafletMap(lat, lng, zoom = 15, hardwareName = 'Hardware') {
   }
 }
 
-// Function to open location modal
+// Function to open location modal - EXACTLY LIKE EDIT MODAL
 function openLocationModal() {
   if (!window.currentLocationUrl) {
     console.error('No location URL available');
@@ -786,8 +786,15 @@ function openLocationModal() {
       const currentHardwareName = document.getElementById('viewHardwareName')?.textContent || 'Hardware';
       subtitle.textContent = `Ubicación de ${currentHardwareName}`;
       
-      // Show modal
-      modal.classList.remove('hidden');
+      // USE MODAL MANAGER - SAME AS EDIT MODAL
+      if (window.modalManager) {
+        window.modalManager.openModal('locationModal');
+      } else {
+        // Fallback if modalManager not available
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        document.body.classList.add('modal-open');
+      }
       
       // Add fade-in animation
       setTimeout(() => {
@@ -805,7 +812,7 @@ function openLocationModal() {
   }
 }
 
-// Function to close location modal
+// Function to close location modal - EXACTLY LIKE EDIT MODAL
 function closeLocationModal() {
   const modal = document.getElementById('locationModal');
   
@@ -813,11 +820,18 @@ function closeLocationModal() {
     // Add fade-out animation
     modal.classList.remove('modal-show');
     
-    // Hide modal and cleanup map after animation
-    setTimeout(() => {
+    // USE MODAL MANAGER - SAME AS EDIT MODAL
+    if (window.modalManager) {
+      window.modalManager.closeModal('locationModal');
+    } else {
+      // Fallback if modalManager not available
       modal.classList.add('hidden');
-      
-      // Cleanup map
+      document.body.style.overflow = '';
+      document.body.classList.remove('modal-open');
+    }
+    
+    // Cleanup map after modal is closed
+    setTimeout(() => {
       if (currentMap) {
         currentMap.remove();
         currentMap = null;
@@ -872,7 +886,7 @@ function openLocationModalFromCard(hardwareId, locationUrl) {
     return;
   }
   
-  // Always open modal with Leaflet map
+  // Always open modal with Leaflet map - USE MODAL MANAGER
   const modal = document.getElementById('locationModal');
   const subtitle = document.getElementById('locationModalSubtitle');
   
@@ -884,8 +898,15 @@ function openLocationModalFromCard(hardwareId, locationUrl) {
     
     console.log('🗺️ Opening modal...');
     
-    // Show modal
-    modal.classList.remove('hidden');
+    // USE MODAL MANAGER - SAME AS EDIT MODAL
+    if (window.modalManager) {
+      window.modalManager.openModal('locationModal');
+    } else {
+      // Fallback if modalManager not available
+      modal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+      document.body.classList.add('modal-open');
+    }
     
     // Add fade-in animation and initialize map
     setTimeout(() => {

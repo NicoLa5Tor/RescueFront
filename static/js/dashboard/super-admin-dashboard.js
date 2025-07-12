@@ -421,6 +421,11 @@ class SuperAdminDashboard {
                 this.activityChart.destroy();
             }
             
+            // Get theme colors
+            const isDark = document.documentElement.classList.contains('dark');
+            const textColor = isDark ? '#e5e7eb' : '#374151';
+            const gridColor = isDark ? '#374151' : '#e5e7eb';
+            
             this.activityChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -437,18 +442,28 @@ class SuperAdminDashboard {
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
+                        x: {
+                            ticks: { color: textColor },
+                            grid: { color: gridColor }
+                        },
                         y: {
-                            beginAtZero: true
+                            beginAtZero: true,
+                            ticks: { color: textColor },
+                            grid: { color: gridColor }
                         }
                     },
                     plugins: {
                         legend: {
                             display: true,
-                            position: 'top'
+                            position: 'top',
+                            labels: { color: textColor }
                         }
                     }
                 }
             });
+            
+            // Store chart reference in canvas for theme updates
+            ctx.chart = this.activityChart;
         }
     }
 
@@ -464,6 +479,10 @@ class SuperAdminDashboard {
             if (this.distributionChart) {
                 this.distributionChart.destroy();
             }
+            
+            // Get theme colors
+            const isDark = document.documentElement.classList.contains('dark');
+            const textColor = isDark ? '#e5e7eb' : '#374151';
             
             this.distributionChart = new Chart(ctx, {
                 type: 'doughnut',
@@ -490,12 +509,16 @@ class SuperAdminDashboard {
                             position: 'bottom',
                             labels: {
                                 padding: 20,
-                                usePointStyle: true
+                                usePointStyle: true,
+                                color: textColor
                             }
                         }
                     }
                 }
             });
+            
+            // Store chart reference in canvas for theme updates
+            ctx.chart = this.distributionChart;
         }
     }
 
@@ -658,6 +681,9 @@ window.SuperAdminDashboard = SuperAdminDashboard;
 if (window.location.pathname.includes('/admin/super-dashboard')) {
     const dashboard = new SuperAdminDashboard();
     dashboard.init();
+    
+    // Make dashboard globally available for theme manager
+    window.superAdminDashboard = dashboard;
 }
 /**
  * Mejoras específicas para tu SuperAdminDashboard existente

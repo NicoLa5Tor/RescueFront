@@ -6,15 +6,112 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 
-<!-- Dashboard CSS (in order) -->
-<link href="{{ url_for('static', filename='css/dashboard/main-layout.css') }}" rel="stylesheet">
+<!-- Dashboard CSS básico -->
 <link href="{{ url_for('static', filename='css/dashboard/variables.css') }}" rel="stylesheet">
-<link href="{{ url_for('static', filename='css/dashboard/base.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/dashboard/navbar.css') }}" rel="stylesheet">
-<link href="{{ url_for('static', filename='css/dashboard/animations.css') }}" rel="stylesheet">
-<link href="{{ url_for('static', filename='css/dashboard/cards.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/dashboard/sidebar.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/dashboard/main-layout.css') }}" rel="stylesheet">
 
+<!-- Super Dashboard iOS Styles SOLO para componentes específicos -->
+<link href="{{ url_for('static', filename='css/super-dashboard/super-dashboard-main.css') }}" rel="stylesheet">
+
+<!-- Enhanced CSS for improved functionality -->
+<style>
+/* Corregir layout del main-content para sidebar */
+@media (min-width: 1024px) {
+  .main-content {
+    margin-left: var(--sidebar-width) !important;
+    width: calc(100% - var(--sidebar-width)) !important;
+  }
+}
+
+@media (min-width: 1200px) {
+  .main-content {
+    margin-left: calc(var(--sidebar-width) + 2rem) !important;
+    width: calc(100% - var(--sidebar-width) - 2rem) !important;
+  }
+}
+.stat-updated {
+  animation: statHighlight 1s ease-in-out;
+}
+
+@keyframes statHighlight {
+  0% { 
+    background-color: rgba(59, 130, 246, 0.1);
+    transform: scale(1);
+  }
+  50% { 
+    background-color: rgba(59, 130, 246, 0.2);
+    transform: scale(1.05);
+  }
+  100% { 
+    background-color: transparent;
+    transform: scale(1);
+  }
+}
+
+.skeleton-item {
+  animation: skeleton-loading 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes skeleton-loading {
+  0% { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+
+.toast-notification {
+  transition: all 0.3s ease-in-out;
+}
+
+.toast-notification.toast-enter {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+.toast-notification.toast-exit {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+.chart-loading-overlay {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.dark .chart-loading-overlay {
+  background: rgba(31, 41, 55, 0.8);
+}
+
+.refresh-button:hover {
+  transform: rotate(180deg);
+  transition: transform 0.3s ease;
+}
+
+/* Solo estilos básicos, sin modificar fondos */
+
+/* Center chart titles */
+.chart-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--space-6) var(--space-6) var(--space-4);
+}
+
+.chart-header h3 {
+  margin: 0;
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
+  color: var(--text-primary) !important;
+  line-height: var(--leading-tight);
+}
+
+.chart-header p {
+  margin: var(--space-1) 0 0 0;
+  font-size: var(--text-sm);
+  color: var(--text-secondary) !important;
+  line-height: var(--leading-tight);
+}
+</style>
 {% endblock %}
 
 {% block navbar %}
@@ -31,7 +128,7 @@
           <i class="fas fa-shield-alt"></i>
         </div>
         <div class="navbar__logo-text">
-          <h1 class="navbar__logo-title text-black dark:text-white">Rescue Dashboard</h1>
+          <h1 class="navbar__logo-title text-black dark:text-white">{% if user_role == 'empresa' %}Rescue Dashboard{% else %}Super Admin Panel{% endif %}</h1>
           <p class="navbar__logo-subtitle">Sistema Multi-Tenant</p>
         </div>
       </div>
@@ -40,7 +137,7 @@
     <!-- Center Section -->
     <div class="navbar__center">
       <div class="navbar__search">
-        <input type="text" class="navbar__search-input" placeholder="Buscar...">
+        <input type="text" class="navbar__search-input" placeholder="Buscar..." aria-label="Buscar en el dashboard">
         <button class="navbar__search-button" aria-label="Search">
           <i class="fas fa-search"></i>
         </button>
@@ -52,22 +149,22 @@
     
     <!-- Right Section -->
     <div class="navbar__right">
-      <button class="navbar__action" aria-label="Notifications">
+      <button class="navbar__action" aria-label="Notifications" title="Notificaciones">
         <i class="fas fa-bell"></i>
         <span class="navbar__notification-badge"></span>
       </button>
       
-      <button class="navbar__action navbar__theme-toggle" id="themeToggle" aria-label="Toggle theme">
+      <button class="navbar__action navbar__theme-toggle" id="themeToggle" aria-label="Toggle theme" title="Cambiar tema">
         <i class="fas fa-moon" id="themeIcon"></i>
       </button>
       
-      <button class="navbar__user">
+      <button class="navbar__user" aria-label="Menú de usuario">
         <div class="navbar__user-avatar">
-          <span class="user-initials">{% if user_role == 'empresa' %}EM{% else %}AD{% endif %}</span>
+          <span class="user-initials">{% if user_role == 'empresa' %}EM{% else %}SA{% endif %}</span>
         </div>
         <div class="navbar__user-info">
-          <p class="navbar__user-name">{% if user_role == 'empresa' %}Empresa{% else %}Admin{% endif %}</p>
-          <p class="navbar__user-role">{% if user_role == 'empresa' %}Empresa{% else %}Administrador{% endif %}</p>
+          <p class="navbar__user-name">{% if user_role == 'empresa' %}Empresa{% else %}Super Admin{% endif %}</p>
+          <p class="navbar__user-role">{% if user_role == 'empresa' %}Empresa{% else %}Administrador Principal{% endif %}</p>
         </div>
         <i class="fas fa-chevron-down navbar__user-chevron"></i>
       </button>
@@ -88,11 +185,11 @@
       <div class="sidebar__profile">
         <div class="sidebar__profile-content">
           <div class="sidebar__profile-avatar">
-            <span class="user-initials">{% if user_role == 'empresa' %}EM{% else %}AD{% endif %}</span>
+            <span class="user-initials">{% if user_role == 'empresa' %}EM{% else %}SA{% endif %}</span>
           </div>
           <div class="sidebar__profile-info">
-            <p class="sidebar__profile-name">{% if user_role == 'empresa' %}Empresa{% else %}Admin Principal{% endif %}</p>
-            <p class="sidebar__profile-role">{% if user_role == 'empresa' %}Empresa{% else %}Super Admin{% endif %}</p>
+            <p class="sidebar__profile-name">{% if user_role == 'empresa' %}Empresa{% else %}Super Admin{% endif %}</p>
+            <p class="sidebar__profile-role">{% if user_role == 'empresa' %}Empresa{% else %}Administrador Principal{% endif %}</p>
           </div>
         </div>
       </div>
@@ -149,7 +246,7 @@
       
       <!-- Logout -->
       <div class="sidebar__logout">
-        <button class="sidebar__logout-btn" onclick="logout()">
+        <button class="sidebar__logout-btn" data-logout aria-label="Cerrar sesión">
           <i class="fas fa-sign-out-alt"></i>
           <span>Cerrar Sesión</span>
         </button>
