@@ -25,11 +25,125 @@
   visibility: visible !important;
 }
 
-/* Estilos específicos para usuarios */
+/* Estilos específicos para usuarios y widgets de entrada */
 .usuario-item .ios-info-label {
   display: flex;
   align-items: center;
   font-size: 0.75rem;
+}
+
+/* Manejo específico del input de teléfono con intl-tel-input */
+.phone-input-container {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  gap: 2px;
+  align-items: stretch;
+  width: 100%;
+  position: relative;
+}
+
+/* Forzar que el plugin no modifique la estructura */
+.iti {
+  position: static !important;
+  width: 100% !important;
+  grid-column: 2 !important;
+  display: block !important;
+}
+
+/* Ocultar el selector de país del plugin y crear uno personalizado */
+.iti__flag-container {
+  display: none !important;
+}
+
+/* Crear un selector de país funcional */
+.phone-country-selector {
+  grid-column: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+  border-right: none;
+  position: relative;
+  padding: 0 8px;
+  z-index: 10002;
+}
+
+.phone-country-selector:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.phone-country-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: rgba(0, 0, 0, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+  z-index: 10001;
+  max-height: 200px;
+  overflow-y: auto;
+  display: none;
+  min-width: 200px;
+  width: max-content;
+  white-space: nowrap;
+}
+
+.phone-country-dropdown.show {
+  display: block;
+}
+
+.phone-country-option {
+  padding: 8px 12px;
+  color: white;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: background 0.2s ease;
+}
+
+.phone-country-option:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.phone-country-option.selected {
+  background: rgba(59, 130, 246, 0.3);
+}
+
+/* Ajustar el input para que ocupe solo su espacio */
+.iti input[type="tel"] {
+  width: 100% !important;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  border-left: none !important;
+  padding-left: 16px !important;
+}
+
+/* Asegurar que el placeholder aparezca en la posición correcta */
+.iti input[type="tel"]::placeholder {
+  padding-left: 0;
+  text-indent: 0;
+  opacity: 0.7;
+}
+
+/* Ajustes para que el dropdown no se superponga */
+.iti__country-list {
+  z-index: 9999;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 300px;
+  max-height: 200px;
+  overflow-y: auto;
 }
 
 /* Hacer que ciertos elementos ocupen fila completa */
@@ -357,7 +471,33 @@
               <label for="editUserTelefono" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
                 <i class="fas fa-phone text-green-400 mr-2"></i>Teléfono
               </label>
-              <input type="tel" id="editUserTelefono" class="ios-blur-input" required placeholder="Número de teléfono">
+              <div class="phone-input-container">
+                <div class="phone-country-selector" onclick="toggleCountryDropdown(this)">
+                  <span class="country-flag">🇨🇴</span>
+                  <span class="country-code">+57</span>
+                  <div class="phone-country-dropdown">
+                    <div class="phone-country-option" data-country="co" data-code="+57" onclick="selectCountry(this, event)">
+                      <span>🇨🇴 Colombia (+57)</span>
+                    </div>
+                    <div class="phone-country-option" data-country="us" data-code="+1" onclick="selectCountry(this, event)">
+                      <span>🇺🇸 Estados Unidos (+1)</span>
+                    </div>
+                    <div class="phone-country-option" data-country="mx" data-code="+52" onclick="selectCountry(this, event)">
+                      <span>🇲🇽 México (+52)</span>
+                    </div>
+                    <div class="phone-country-option" data-country="ar" data-code="+54" onclick="selectCountry(this, event)">
+                      <span>🇦🇷 Argentina (+54)</span>
+                    </div>
+                    <div class="phone-country-option" data-country="cl" data-code="+56" onclick="selectCountry(this, event)">
+                      <span>🇨🇱 Chile (+56)</span>
+                    </div>
+                    <div class="phone-country-option" data-country="pe" data-code="+51" onclick="selectCountry(this, event)">
+                      <span>🇵🇪 Perú (+51)</span>
+                    </div>
+                  </div>
+                </div>
+                <input type="tel" id="editUserTelefono" class="ios-blur-input" required placeholder="Número de teléfono">
+              </div>
             </div>
             
             <!-- Sede -->
@@ -509,7 +649,33 @@
               <label for="createUserTelefono" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
                 <i class="fas fa-phone text-green-400 mr-2"></i>Teléfono
               </label>
-              <input type="tel" id="createUserTelefono" class="ios-blur-input" required placeholder="Número de teléfono">
+              <div class="phone-input-container">
+                <div class="phone-country-selector" onclick="toggleCountryDropdown(this)">
+                  <span class="country-flag">🇨🇴</span>
+                  <span class="country-code">+57</span>
+                  <div class="phone-country-dropdown">
+                    <div class="phone-country-option" data-country="co" data-code="+57" onclick="selectCountry(this, event)">
+                      <span>🇨🇴 Colombia (+57)</span>
+                    </div>
+                    <div class="phone-country-option" data-country="us" data-code="+1" onclick="selectCountry(this, event)">
+                      <span>🇺🇸 Estados Unidos (+1)</span>
+                    </div>
+                    <div class="phone-country-option" data-country="mx" data-code="+52" onclick="selectCountry(this, event)">
+                      <span>🇲🇽 México (+52)</span>
+                    </div>
+                    <div class="phone-country-option" data-country="ar" data-code="+54" onclick="selectCountry(this, event)">
+                      <span>🇦🇷 Argentina (+54)</span>
+                    </div>
+                    <div class="phone-country-option" data-country="cl" data-code="+56" onclick="selectCountry(this, event)">
+                      <span>🇨🇱 Chile (+56)</span>
+                    </div>
+                    <div class="phone-country-option" data-country="pe" data-code="+51" onclick="selectCountry(this, event)">
+                      <span>🇵🇪 Perú (+51)</span>
+                    </div>
+                  </div>
+                </div>
+                <input type="tel" id="createUserTelefono" class="ios-blur-input" required placeholder="Número de teléfono">
+              </div>
             </div>
             
             <!-- Sede -->
@@ -624,6 +790,12 @@ try {
 }
 </script>
 
+<!-- intl-tel-input CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/css/intlTelInput.css">
+
+<!-- intl-tel-input JS -->
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/intlTelInput.min.js"></script>
+
 <!-- Users Scripts -->
 <script src="{{ url_for('static', filename='js/api-client.js') }}"></script>
 <script src="{{ url_for('static', filename='js/modal-utils.js') }}"></script>
@@ -709,6 +881,65 @@ console.log('🔧 Variables globales definidas:', {
   userRole: window.userRole,
   empresaId: window.empresaId,
   empresaNombre: window.empresaNombre
+});
+
+// Funciones para el selector de país personalizado
+function toggleCountryDropdown(selector) {
+  const dropdown = selector.querySelector('.phone-country-dropdown');
+  const isVisible = dropdown.classList.contains('show');
+  
+  // Cerrar todos los dropdowns abiertos
+  document.querySelectorAll('.phone-country-dropdown.show').forEach(d => {
+    d.classList.remove('show');
+  });
+  
+  // Mostrar/ocultar el dropdown actual
+  if (!isVisible) {
+    dropdown.classList.add('show');
+  }
+}
+
+function selectCountry(option, event) {
+  // Prevenir que el evento se propague
+  if (event) {
+    event.stopPropagation();
+  }
+  
+  const country = option.dataset.country;
+  const code = option.dataset.code;
+  const text = option.textContent.trim();
+  
+  // Actualizar el selector
+  const selector = option.closest('.phone-country-selector');
+  const flagSpan = selector.querySelector('.country-flag');
+  const codeSpan = selector.querySelector('.country-code');
+  
+  // Extraer la bandera y el código del texto
+  const parts = text.split(' ');
+  const flag = parts[0]; // La bandera es el primer elemento
+  flagSpan.textContent = flag;
+  codeSpan.textContent = code;
+  
+  // Marcar como seleccionado
+  selector.querySelectorAll('.phone-country-option').forEach(opt => {
+    opt.classList.remove('selected');
+  });
+  option.classList.add('selected');
+  
+  // Cerrar el dropdown
+  const dropdown = selector.querySelector('.phone-country-dropdown');
+  dropdown.classList.remove('show');
+  
+  console.log('País seleccionado:', { country, code, flag, text });
+}
+
+// Cerrar dropdowns al hacer click fuera
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.phone-country-selector')) {
+    document.querySelectorAll('.phone-country-dropdown.show').forEach(dropdown => {
+      dropdown.classList.remove('show');
+    });
+  }
 });
 </script>
 {% endblock %}

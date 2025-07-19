@@ -57,10 +57,11 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  line-height: 1.3;
 }
 
 .dark .usuario-modal-title {
-  color: var(--text-primary, #ffffff);
+  color: var(--text-primary, #f9fafb);
 }
 
 .usuario-modal-close {
@@ -296,6 +297,12 @@
   display: inline-block;
 }
 
+.dark .usuario-tag {
+  background: rgba(59, 130, 246, 0.3);
+  color: #93c5fd;
+  border-color: rgba(59, 130, 246, 0.4);
+}
+
 .especialidad-tag {
   padding: 0.25rem 0.75rem;
   background: rgba(34, 197, 94, 0.2);
@@ -305,6 +312,74 @@
   font-weight: 500;
   border: 1px solid rgba(34, 197, 94, 0.3);
   display: inline-block;
+}
+
+.dark .especialidad-tag {
+  background: rgba(34, 197, 94, 0.3);
+  color: #86efac;
+  border-color: rgba(34, 197, 94, 0.4);
+}
+
+/* Mejorar contraste en texto de vista de detalle */
+.usuario-modal-content p,
+.usuario-modal-content .text-sm {
+  color: var(--text-secondary, #6b7280);
+  line-height: 1.5;
+}
+
+.dark .usuario-modal-content p,
+.dark .usuario-modal-content .text-sm {
+  color: var(--text-secondary, #d1d5db);
+}
+
+/* Mejorar texto de etiquetas informativas */
+.usuario-info-label {
+  color: var(--text-tertiary, #9ca3af);
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.dark .usuario-info-label {
+  color: var(--text-tertiary, #9ca3af);
+}
+
+.usuario-info-value {
+  color: var(--text-primary, #374151);
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.dark .usuario-info-value {
+  color: var(--text-primary, #f3f4f6);
+}
+
+/* Estado activo/inactivo */
+.usuario-status-active {
+  color: #059669;
+  background: rgba(5, 150, 105, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 0.75rem;
+}
+
+.dark .usuario-status-active {
+  color: #34d399;
+  background: rgba(52, 211, 153, 0.2);
+}
+
+.usuario-status-inactive {
+  color: #dc2626;
+  background: rgba(220, 38, 38, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 0.75rem;
+}
+
+.dark .usuario-status-inactive {
+  color: #f87171;
+  background: rgba(248, 113, 113, 0.2);
 }
 
 @media (max-width: 768px) {

@@ -43,29 +43,127 @@
   100% { background-position: 0% 50%; }
 }
 
-/* Modal animations */
-#locationModal.modal-show {
-  animation: fadeIn 0.3s ease-out;
+/* ===== ANIMACIONES MEJORADAS DEL MODAL CON GSAP ===== */
+
+/* Estados iniciales para animaciones GSAP */
+#locationModal {
+opacity: 1;
+  pointer-events: all;
+  transition: pointer-events 0s linear 0s;
 }
 
-#locationModal.modal-show .ios-blur-modal-container {
-  animation: slideInUp 0.4s ease-out;
+#locationModal.modal-opening {
+opacity: 1 !important;
+  pointer-events: all;
+  transition: pointer-events 0s linear 0s;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+#locationModal .ios-blur-modal-container {
+  transform: scale(0.8) translateY(30px);
+  opacity: 0;
 }
 
-@keyframes slideInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+#locationModal.modal-opening .ios-blur-modal-container {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+
+/* Estado de loading para el mapa */
+#locationMap {
+  opacity: 1 !important;
+  transform: scale(1) !important;
+  transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 600px !important;
+  z-index: 1 !important;
+  position: relative !important;
+  display: block !important;
+  background: #f8fafc !important;
+}
+
+#locationMap.map-loaded {
+  opacity: 1 !important;
+  transform: scale(1) !important;
+}
+
+/* Shimmer effect mejorado para loading */
+.map-loading-container {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border-radius: 12px;
+}
+
+.map-loading-shimmer {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.6) 50%, 
+    transparent 100%
+  );
+  animation: mapShimmerSlide 1.5s ease-in-out infinite;
+}
+
+@keyframes mapShimmerSlide {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+/* Loading spinner mejorado */
+.map-loading-spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  z-index: 10;
+}
+
+.map-loading-spinner .spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(59, 130, 246, 0.2);
+  border-top: 3px solid #3b82f6;
+  border-radius: 50%;
+  animation: mapSpinnerRotate 1s linear infinite;
+}
+
+@keyframes mapSpinnerRotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.map-loading-spinner .loading-text {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7280;
+  text-align: center;
+}
+
+/* Animación de entrada del backdrop */
+#locationModal .ios-blur-modal-backdrop {
+  opacity: 0;
+}
+
+#locationModal.modal-opening .ios-blur-modal-backdrop {
+  opacity: 1;
+}
+
+/* Mejoras para el modo oscuro */
+.dark .map-loading-container {
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+}
+
+.dark .map-loading-spinner .loading-text {
+  color: #d1d5db;
 }
 
 /* Button styles */

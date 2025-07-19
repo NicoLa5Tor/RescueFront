@@ -21,7 +21,11 @@ class UsuariosModals {
     this.isCreating = false;
     this.isUpdating = false;
     
-    this.initializeModals();
+    // International phone input instances
+    this.createPhoneInput = null;
+    this.editPhoneInput = null;
+    
+this.initializeModals();
   }
 
   /**
@@ -87,12 +91,112 @@ class UsuariosModals {
           method: 'DELETE'
         })
     };
+}
+
+  /**
+   * Initialize international telephone input fields
+   */
+  initIntlTelInput() {
+    // Check if intl-tel-input library is available
+    if (typeof window.intlTelInput === 'undefined') {
+      console.warn('⚠️ intl-tel-input library not loaded yet');
+      setTimeout(() => this.initIntlTelInput(), 500); // Retry after 500ms
+      return;
+    }
+
+    console.log('🔄 Inicializando intl-tel-input plugin');
+
+    const createPhoneInput = document.getElementById('createUserTelefono');
+    if (createPhoneInput) {
+      console.log('📱 Elemento encontrado para crear usuario:', createPhoneInput);
+      
+      // Destroy existing instance if any
+      if (this.createPhoneInput) {
+        try {
+          this.createPhoneInput.destroy();
+        } catch (e) {
+          console.warn('Error destroying existing instance:', e);
+        }
+      }
+      
+      try {
+        this.createPhoneInput = window.intlTelInput(createPhoneInput, {
+          initialCountry: 'co', // Default to Colombia
+          preferredCountries: ['co', 'us', 'mx', 've', 'ar', 'cl', 'pe'],
+          separateDialCode: true,
+          formatOnDisplay: true,
+          nationalMode: false,
+          autoPlaceholder: 'polite',
+          placeholderNumberType: 'MOBILE',
+          utilsScript: 'https://cdn.jsdelivr.net/npm/intl-tel-input@18.5.3/build/js/utils.js'
+        });
+        
+        console.log('✅ Input de crear usuario inicializado:', this.createPhoneInput);
+        
+        // Debug: Check if flag container is visible
+        const flagContainer = createPhoneInput.parentElement.querySelector('.iti__flag-container');
+        if (flagContainer) {
+          console.log('✅ Flag container creado:', flagContainer);
+          flagContainer.style.display = 'flex';
+          flagContainer.style.visibility = 'visible';
+        } else {
+          console.error('❌ No se encontró el flag container');
+        }
+      } catch (error) {
+        console.error('❌ Error inicializando intl-tel-input para crear:', error);
+      }
+    } else {
+      console.warn('⚠️ No se encontró el elemento createUserTelefono');
+    }
+
+    const editPhoneInput = document.getElementById('editUserTelefono');
+    if (editPhoneInput) {
+      console.log('📱 Elemento encontrado para editar usuario:', editPhoneInput);
+      
+      // Destroy existing instance if any
+      if (this.editPhoneInput) {
+        try {
+          this.editPhoneInput.destroy();
+        } catch (e) {
+          console.warn('Error destroying existing instance:', e);
+        }
+      }
+      
+      try {
+        this.editPhoneInput = window.intlTelInput(editPhoneInput, {
+          initialCountry: 'co', // Default to Colombia
+          preferredCountries: ['co', 'us', 'mx', 've', 'ar', 'cl', 'pe'],
+          separateDialCode: true,
+          formatOnDisplay: true,
+          nationalMode: false,
+          autoPlaceholder: 'polite',
+          placeholderNumberType: 'MOBILE',
+          utilsScript: 'https://cdn.jsdelivr.net/npm/intl-tel-input@18.5.3/build/js/utils.js'
+        });
+        
+        console.log('✅ Input de editar usuario inicializado:', this.editPhoneInput);
+        
+        // Debug: Check if flag container is visible
+        const flagContainer = editPhoneInput.parentElement.querySelector('.iti__flag-container');
+        if (flagContainer) {
+          console.log('✅ Flag container creado:', flagContainer);
+          flagContainer.style.display = 'flex';
+          flagContainer.style.visibility = 'visible';
+        } else {
+          console.error('❌ No se encontró el flag container');
+        }
+      } catch (error) {
+        console.error('❌ Error inicializando intl-tel-input para editar:', error);
+      }
+    } else {
+      console.warn('⚠️ No se encontró el elemento editUserTelefono');
+    }
   }
 
   /**
    * Setup event listeners
    */
-  setupEventListeners() {
+setupEventListeners() {
     // Form submission
     const createForm = document.getElementById('createUserForm');
     if (createForm) {
@@ -333,7 +437,24 @@ editForm.addEventListener('submit', (e) => {
     }
     
     const telefono = document.getElementById('editUserTelefono');
-    if (telefono) telefono.value = user.telefono || '';
+    if (telefono) {
+      telefono.value = user.telefono || '';
+      
+      // Initialize intl-tel-input after setting the value
+      setTimeout(() => {
+        this.initIntlTelInput();
+        
+        // If the phone number includes country code, set the country
+        if (this.editPhoneInput && user.telefono && user.telefono.length > 10) {
+          try {
+            // Try to set the number with country code
+            this.editPhoneInput.setNumber('+' + user.telefono);
+          } catch (error) {
+            console.warn('⚠️ Error al establecer número con código de país:', error);
+          }
+        }
+      }, 300);
+    }
     
     const tipoTurno = document.getElementById('editUserTipoTurno');
     if (tipoTurno) tipoTurno.value = user.tipo_turno || 'medio_dia';
@@ -383,13 +504,32 @@ editForm.addEventListener('submit', (e) => {
       }
 
       // Get form data
+      const telefonoField = document.getElementById('editUserTelefono');
+      let telefonoValue = telefonoField.value.trim();
+      
+      // Extract full phone number with country code if intl-tel-input is available
+      if (this.editPhoneInput && this.editPhoneInput.getNumber) {
+        try {
+          // Get the full international number without the + sign
+          const fullNumber = this.editPhoneInput.getNumber();
+          if (fullNumber && fullNumber.startsWith('+')) {
+            telefonoValue = fullNumber.substring(1); // Remove the + sign
+            console.log('📞 Número completo extraído:', telefonoValue);
+          } else {
+            console.warn('⚠️ No se pudo extraer el número completo, usando valor del campo');
+          }
+        } catch (error) {
+          console.error('❌ Error al extraer número completo:', error);
+        }
+      }
+      
       const formData = {
         nombre: document.getElementById('editUsername').value.trim(),
         email: document.getElementById('editUserEmail').value.trim(),
         cedula: document.getElementById('editUserCedula').value.trim(),
         especialidades: this.especialidades.filter(esp => esp.trim() !== ''),
         sede: document.getElementById('editUserSede').value.trim(),
-        telefono: document.getElementById('editUserTelefono').value.trim(),
+        telefono: telefonoValue,
         tipo_turno: document.getElementById('editUserTipoTurno').value,
         rol: document.getElementById('editUserRol').value
       };
@@ -415,8 +555,8 @@ editForm.addEventListener('submit', (e) => {
 
       if (!formData.telefono) {
         validationErrors.push('El teléfono es obligatorio');
-      } else if (!/^\d{7,15}$/.test(formData.telefono)) {
-        validationErrors.push('El teléfono debe contener solo números y tener entre 7 y 15 dígitos');
+      } else if (!/^\d{7,18}$/.test(formData.telefono)) {
+        validationErrors.push('El teléfono debe contener solo números y tener entre 7 y 18 dígitos');
       }
 
       if (!formData.sede) {
@@ -757,6 +897,12 @@ editForm.addEventListener('submit', (e) => {
       
       // Clear form
       this.clearCreateForm();
+      
+      // Initialize intl-tel-input after opening modal
+      setTimeout(() => {
+        this.initIntlTelInput();
+      }, 200);
+      
       this.openModal('createUserModal');
     } catch (error) {
       console.error('Error al abrir modal de creación:', error);
@@ -831,13 +977,32 @@ editForm.addEventListener('submit', (e) => {
       }
       
       // Get form data
+      const telefonoField = document.getElementById('createUserTelefono');
+      let telefonoValue = telefonoField.value.trim();
+      
+      // Extract full phone number with country code if intl-tel-input is available
+      if (this.createPhoneInput && this.createPhoneInput.getNumber) {
+        try {
+          // Get the full international number without the + sign
+          const fullNumber = this.createPhoneInput.getNumber();
+          if (fullNumber && fullNumber.startsWith('+')) {
+            telefonoValue = fullNumber.substring(1); // Remove the + sign
+            console.log('📞 Número completo extraído:', telefonoValue);
+          } else {
+            console.warn('⚠️ No se pudo extraer el número completo, usando valor del campo');
+          }
+        } catch (error) {
+          console.error('❌ Error al extraer número completo:', error);
+        }
+      }
+      
       const formData = {
         nombre: document.getElementById('createUsername').value.trim(),
         email: document.getElementById('createUserEmail').value.trim(),
         cedula: document.getElementById('createUserCedula').value.trim(),
         especialidades: this.especialidades.filter(esp => esp.trim() !== ''),
         sede: document.getElementById('createUserSede').value.trim(),
-        telefono: document.getElementById('createUserTelefono').value.trim(),
+        telefono: telefonoValue,
         tipo_turno: document.getElementById('createUserTipoTurno').value,
         rol: document.getElementById('createUserRol').value
       };
@@ -863,8 +1028,8 @@ editForm.addEventListener('submit', (e) => {
 
       if (!formData.telefono) {
         validationErrors.push('El teléfono es obligatorio');
-      } else if (!/^\d{7,15}$/.test(formData.telefono)) {
-        validationErrors.push('El teléfono debe contener solo números y tener entre 7 y 15 dígitos');
+      } else if (!/^\d{7,18}$/.test(formData.telefono)) {
+        validationErrors.push('El teléfono debe contener solo números y tener entre 7 y 18 dígitos');
       }
 
       if (!formData.sede) {

@@ -34,11 +34,14 @@
   overflow: hidden !important;
 }
 
+/* ===== TARJETAS DE HARDWARE MEJORADAS PARA TEMAS CLARO Y OSCURO ===== */
+
 .ios-hardware-card {
-  background: rgba(255, 255, 255, 0.08) !important;
-  backdrop-filter: blur(20px) saturate(1.5) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(1.5) !important;
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  /* Tema claro por defecto */
+  background: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(20px) saturate(1.8) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(1.8) !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
   border-radius: 18px !important;
   padding: 1.25rem !important;
   position: relative;
@@ -46,8 +49,8 @@
   transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
   cursor: pointer;
   box-shadow: 
-    0 8px 25px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    0 8px 25px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
   
   /* Inicialmente invisible para animaciones GSAP */
   opacity: 0;
