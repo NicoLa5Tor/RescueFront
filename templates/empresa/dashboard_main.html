@@ -10,105 +10,28 @@
 /* Asegurar visibilidad por defecto */
 .ios-stats-grid .ios-stat-card,
 .dashboard-main-container .ios-stat-card,
+.ios-hardware-grid .ios-hardware-card,
+.dashboard-main-container .ios-hardware-card,
 .quick-access-card {
   opacity: 1 !important;
   transform: none !important;
   visibility: visible !important;
 }
 
-/* Estilos para KPIs principales */
-.kpi-card {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 16px;
-  padding: 1.5rem;
-  transition: all 0.3s ease;
-}
-
-.kpi-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-}
-
-/* Quick access cards */
-.quick-access-card {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 16px;
-  padding: 2rem;
-  text-align: center;
-  transition: all 0.3s ease;
+/* Asegurar que las tarjetas iOS funcionen como enlaces */
+.ios-hardware-card {
   cursor: pointer;
   text-decoration: none;
   color: inherit;
 }
 
-.quick-access-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
-  border-color: rgba(255, 255, 255, 0.3);
+.ios-hardware-card:hover {
   text-decoration: none;
   color: inherit;
 }
 
-.quick-access-icon {
-  width: 80px;
-  height: 80px;
-  margin: 0 auto 1rem;
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2rem;
-  color: white;
-}
-
-.quick-access-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: white;
-  margin-bottom: 0.5rem;
-}
-
-.quick-access-description {
-  font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.7);
-  line-height: 1.4;
-}
-
-/* Empresa info section */
-.empresa-info-card {
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(29, 78, 216, 0.1));
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(59, 130, 246, 0.3);
-  border-radius: 20px;
-  padding: 2rem;
-}
-
-/* Welcome section */
-.welcome-section {
-  text-align: center;
-  margin-bottom: 3rem;
-}
-
-.welcome-title {
-  font-size: 3rem;
-  font-weight: 800;
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 0.5rem;
-}
-
-.welcome-subtitle {
-  font-size: 1.25rem;
-  color: rgba(255, 255, 255, 0.8);
-  margin-bottom: 1rem;
-}
+/* Estilos específicos para dashboard empresarial - usando clases iOS */
+/* Los estilos personalizados ahora están definidos en ios-header.css e ios-cards.css */
 </style>
 {% endblock %}
 
@@ -116,29 +39,23 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 dashboard-main-container">
   
   <!-- Welcome Section -->
-  <div class="welcome-section">
-    <h1 class="welcome-title">¡Bienvenido!</h1>
-    <p class="welcome-subtitle">Panel de Control Empresarial</p>
-    <div class="text-sm text-white/60">
-      {{ dashboard_summary.empresa.nombre }}
-    </div>
-  </div>
-
-  <!-- Empresa Info Card -->
-  <div class="empresa-info-card mb-8">
-    <div class="flex items-center justify-between">
-      <div class="flex items-center space-x-4">
-        <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
-          <span class="text-white font-bold text-3xl">{{ dashboard_summary.empresa.nombre[:2].upper() }}</span>
+  <div class="ios-header-container mb-8">
+    <div class="ios-header-backdrop">
+      <div class="ios-header-content">
+        <div class="ios-header-text">
+          <div class="ios-header-icon">
+            <span class="text-white font-bold text-2xl">{{ dashboard_summary.empresa.nombre[:2].upper() }}</span>
+          </div>
+          <div>
+            <h1 class="ios-header-title">¡Bienvenido!</h1>
+            <p class="ios-header-subtitle">Panel de Control Empresarial • {{ dashboard_summary.empresa.nombre }}</p>
+          </div>
         </div>
-        <div>
-          <h2 class="text-2xl font-bold text-white">{{ dashboard_summary.empresa.nombre }}</h2>
-          <p class="text-blue-200">Dashboard Empresarial</p>
-        </div>
-      </div>
-      <div class="text-right">
-        <div class="px-4 py-2 bg-green-500 text-white text-sm font-medium rounded-full">
-          {% if dashboard_summary.empresa.activa %}ACTIVA{% else %}INACTIVA{% endif %}
+        <div class="ios-header-actions">
+          <div class="ios-status-badge {% if dashboard_summary.empresa.activa %}ios-status-available{% else %}ios-status-stock{% endif %}">
+            <i class="fas {% if dashboard_summary.empresa.activa %}fa-check-circle{% else %}fa-times-circle{% endif %}"></i>
+            <span>{% if dashboard_summary.empresa.activa %}ACTIVA{% else %}INACTIVA{% endif %}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -150,62 +67,58 @@
       <i class="fas fa-tachometer-alt mr-2 text-blue-400"></i>
       KPIs Principales
     </h3>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div class="ios-stats-grid">
       
       <!-- Total Usuarios -->
-      <div class="kpi-card">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-white/80 text-sm font-medium">Total Usuarios</p>
-            <p class="text-3xl font-bold text-white">{{ dashboard_summary.kpis.usuarios_total }}</p>
-            <p class="text-green-400 text-xs">{{ dashboard_summary.kpis.usuarios_activos }} activos</p>
-          </div>
-          <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center">
-            <i class="fas fa-users text-white text-xl"></i>
-          </div>
+      <div class="ios-stat-card gsap-animated">
+        <div class="ios-stat-icon ios-stat-icon-blue">
+          <i class="fas fa-users"></i>
         </div>
+        <div class="ios-stat-content">
+          <div class="ios-stat-label">Total Usuarios</div>
+          <div class="ios-stat-value">{{ dashboard_summary.kpis.usuarios_total }}</div>
+          <div class="ios-stat-trend">{{ dashboard_summary.kpis.usuarios_activos }} activos</div>
+        </div>
+        <div class="ios-stat-shimmer"></div>
       </div>
 
       <!-- Hardware Total -->
-      <div class="kpi-card">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-white/80 text-sm font-medium">Hardware Total</p>
-            <p class="text-3xl font-bold text-white">{{ dashboard_summary.kpis.hardware_total }}</p>
-            <p class="text-blue-400 text-xs">dispositivos</p>
-          </div>
-          <div class="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center">
-            <i class="fas fa-microchip text-white text-xl"></i>
-          </div>
+      <div class="ios-stat-card gsap-animated">
+        <div class="ios-stat-icon ios-stat-icon-green">
+          <i class="fas fa-microchip"></i>
         </div>
+        <div class="ios-stat-content">
+          <div class="ios-stat-label">Hardware Total</div>
+          <div class="ios-stat-value">{{ dashboard_summary.kpis.hardware_total }}</div>
+          <div class="ios-stat-trend">dispositivos</div>
+        </div>
+        <div class="ios-stat-shimmer"></div>
       </div>
 
       <!-- Alertas Activas -->
-      <div class="kpi-card">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-white/80 text-sm font-medium">Alertas Activas</p>
-            <p class="text-3xl font-bold text-white">{{ dashboard_summary.kpis.alertas_activas }}</p>
-            <p class="text-yellow-400 text-xs">pendientes</p>
-          </div>
-          <div class="w-12 h-12 bg-yellow-500 rounded-lg flex items-center justify-center">
-            <i class="fas fa-exclamation-triangle text-white text-xl"></i>
-          </div>
+      <div class="ios-stat-card gsap-animated">
+        <div class="ios-stat-icon ios-stat-icon-red">
+          <i class="fas fa-exclamation-triangle"></i>
         </div>
+        <div class="ios-stat-content">
+          <div class="ios-stat-label">Alertas Activas</div>
+          <div class="ios-stat-value">{{ dashboard_summary.kpis.alertas_activas }}</div>
+          <div class="ios-stat-trend">pendientes</div>
+        </div>
+        <div class="ios-stat-shimmer"></div>
       </div>
 
       <!-- Estado General -->
-      <div class="kpi-card">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-white/80 text-sm font-medium">Estado General</p>
-            <p class="text-3xl font-bold text-green-400">OK</p>
-            <p class="text-white/60 text-xs">sistema operativo</p>
-          </div>
-          <div class="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center">
-            <i class="fas fa-check-circle text-white text-xl"></i>
-          </div>
+      <div class="ios-stat-card gsap-animated">
+        <div class="ios-stat-icon ios-stat-icon-purple">
+          <i class="fas fa-check-circle"></i>
         </div>
+        <div class="ios-stat-content">
+          <div class="ios-stat-label">Estado General</div>
+          <div class="ios-stat-value">OK</div>
+          <div class="ios-stat-trend">sistema operativo</div>
+        </div>
+        <div class="ios-stat-shimmer"></div>
       </div>
 
     </div>
@@ -217,25 +130,43 @@
       <i class="fas fa-rocket mr-2 text-purple-400"></i>
       Acceso Rápido
     </h3>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="ios-hardware-grid">
       
       {% for item in dashboard_summary.quick_access %}
-      <a href="{{ url_for(item.url) }}" class="quick-access-card">
-        <div class="quick-access-icon">
-          <i class="{{ item.icon }}"></i>
+      <a href="{{ url_for(item.url) }}" class="ios-hardware-card gsap-animated">
+        <div class="ios-card-header">
+          <div class="ios-card-icon">
+            <i class="{{ item.icon }}"></i>
+          </div>
+          <div class="ios-status-badge ios-status-available">
+            <i class="fas fa-check"></i>
+            <span>Disponible</span>
+          </div>
         </div>
-        <h4 class="quick-access-title">{{ item.name }}</h4>
-        <p class="quick-access-description">{{ item.description }}</p>
+        <div class="ios-card-body">
+          <h4 class="ios-card-title">{{ item.name }}</h4>
+          <p class="ios-card-subtitle">{{ item.description }}</p>
+        </div>
+        <div class="ios-card-shimmer"></div>
       </a>
       {% endfor %}
 
       <!-- Estadísticas del Sistema (adicional) -->
-      <div class="quick-access-card" onclick="showSystemInfo()">
-        <div class="quick-access-icon" style="background: linear-gradient(135deg, #10b981, #047857);">
-          <i class="fas fa-info-circle"></i>
+      <div class="ios-hardware-card gsap-animated" onclick="showSystemInfo()">
+        <div class="ios-card-header">
+          <div class="ios-card-icon" style="background: linear-gradient(135deg, #10b981, #047857);">
+            <i class="fas fa-info-circle"></i>
+          </div>
+          <div class="ios-status-badge ios-status-available">
+            <i class="fas fa-info"></i>
+            <span>Sistema</span>
+          </div>
         </div>
-        <h4 class="quick-access-title">Información del Sistema</h4>
-        <p class="quick-access-description">Ver detalles técnicos y estado del sistema</p>
+        <div class="ios-card-body">
+          <h4 class="ios-card-title">Información del Sistema</h4>
+          <p class="ios-card-subtitle">Ver detalles técnicos y estado del sistema</p>
+        </div>
+        <div class="ios-card-shimmer"></div>
       </div>
 
     </div>
