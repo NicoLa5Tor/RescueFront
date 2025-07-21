@@ -305,16 +305,29 @@ class HardwareMain {
     this.isLoadingHardware = true;
     
     try {
-      console.log('🔄 Cargando hardware...');
+      console.log('🔄 Cargando hardware específico para empresa...');
+      
+      // Obtener ID de empresa del contexto
+      const empresaId = window.EMPRESA_ID || document.body.dataset.empresaId;
+      if (!empresaId) {
+        console.error('❌ No se encontró ID de empresa');
+        this.renderHardware([]);
+        return;
+      }
+      
+      console.log('🏢 ID de empresa:', empresaId);
       
       const includeInactiveFilter = document.getElementById('includeInactiveFilter');
       const includeInactive = includeInactiveFilter ? includeInactiveFilter.value === 'all' : false;
       
       let response;
+      // USAR ENDPOINTS ESPECÍFICOS DE EMPRESA - NO DE ADMIN
       if (includeInactive) {
-        response = await this.apiClient.get_hardware_list_including_inactive();
+        console.log('🌐 Usando endpoint de empresa con inactivos');
+        response = await this.apiClient.get_hardware_by_empresa_including_inactive(empresaId);
       } else {
-        response = await this.apiClient.get_hardware_list();
+        console.log('🌐 Usando endpoint de empresa activos');
+        response = await this.apiClient.get_hardware_by_empresa(empresaId);
       }
       
       if (!response.ok) {

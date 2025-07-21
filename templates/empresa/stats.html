@@ -1,0 +1,289 @@
+{% extends "empresa/dashboard.html" %}
+
+{% block title %}Estadísticas Avanzadas - {{ empresa_username }}{% endblock %}
+
+{% block extra_css %}
+{{ super() }}
+<!-- Usar los estilos iOS que ya sabemos -->
+<link href="{{ url_for('static', filename='css/hardware/hardware-main.css') }}" rel="stylesheet">
+<style>
+/* Asegurar visibilidad por defecto de estadísticas empresa */
+.ios-stats-grid .ios-stat-card,
+.empresa-stats-container .ios-stat-card {
+  opacity: 1 !important;
+  transform: none !important;
+  visibility: visible !important;
+}
+
+/* Colores específicos para tipos de estadísticas */
+.ios-stat-icon-usuarios {
+  background: linear-gradient(135deg, #3b82f6, #1e40af);
+}
+
+.ios-stat-icon-hardware {
+  background: linear-gradient(135deg, #10b981, #047857);
+}
+
+.ios-stat-icon-alertas {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.ios-stat-icon-actividad {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+}
+
+/* Estilos específicos para tarjetas de distribución */
+.distribucion-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  padding: 1.5rem;
+}
+
+.distribucion-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.distribucion-item:last-child {
+  border-bottom: none;
+}
+
+.distribucion-label {
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
+}
+
+.distribucion-value {
+  color: white;
+  font-weight: bold;
+}
+</style>
+{% endblock %}
+
+{% block main_content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  
+  <!-- Enhanced iOS Header -->
+  <div class="ios-header-container mb-8">
+    <div class="ios-header-backdrop">
+      <div class="ios-header-content">
+        <div class="ios-header-text">
+          <div class="ios-header-icon">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          <div>
+            <h1 class="ios-header-title">Estadísticas Avanzadas</h1>
+            <p class="ios-header-subtitle">Análisis detallado de {{ empresa_statistics.empresa.nombre }}</p>
+          </div>
+        </div>
+        <div class="ios-header-actions">
+          <button class="ios-action-btn ios-action-btn-secondary" onclick="exportEmpresaStats()">
+            <i class="fas fa-download"></i>
+            <span>Exportar</span>
+          </button>
+          <button class="ios-action-btn ios-action-btn-primary" onclick="refreshEmpresaStats()">
+            <i class="fas fa-sync-alt"></i>
+            <span>Actualizar</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Información de la empresa -->
+  <div class="ios-filters-container ios-blur-bg mb-8">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center space-x-4">
+        <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
+          <span class="text-white font-bold text-2xl">{{ empresa_statistics.empresa.nombre[:2].upper() }}</span>
+        </div>
+        <div>
+          <h3 class="text-xl font-semibold text-white">{{ empresa_statistics.empresa.nombre }}</h3>
+          <p class="text-sm text-white/70">Activa desde {{ empresa_statistics.empresa.fecha_creacion[:10] }}</p>
+        </div>
+      </div>
+      <div class="text-right">
+        <div class="px-3 py-1 bg-green-500 text-white text-xs font-medium rounded-full">
+          {% if empresa_statistics.empresa.activa %}ACTIVA{% else %}INACTIVA{% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Enhanced iOS Stats Cards usando datos reales -->
+  <div class="ios-stats-grid empresa-stats-container mb-8">
+    <!-- Usuarios Stats -->
+    <div class="ios-stat-card">
+      <div class="ios-stat-icon ios-stat-icon-usuarios">
+        <i class="fas fa-users"></i>
+      </div>
+      <div class="ios-stat-content">
+        <div class="ios-stat-label">Total Usuarios</div>
+        <div class="ios-stat-value">{{ empresa_statistics.usuarios.total }}</div>
+        <div class="ios-stat-trend">{{ empresa_statistics.usuarios.activos }} activos</div>
+      </div>
+      <div class="ios-stat-shimmer"></div>
+    </div>
+
+    <div class="ios-stat-card">
+      <div class="ios-stat-icon ios-stat-icon-hardware">
+        <i class="fas fa-microchip"></i>
+      </div>
+      <div class="ios-stat-content">
+        <div class="ios-stat-label">Hardware Total</div>
+        <div class="ios-stat-value">{{ empresa_statistics.hardware.total }}</div>
+        <div class="ios-stat-trend">{{ empresa_statistics.hardware.activos }} activos</div>
+      </div>
+      <div class="ios-stat-shimmer"></div>
+    </div>
+
+    <div class="ios-stat-card">
+      <div class="ios-stat-icon ios-stat-icon-alertas">
+        <i class="fas fa-exclamation-triangle"></i>
+      </div>
+      <div class="ios-stat-content">
+        <div class="ios-stat-label">Alertas</div>
+        <div class="ios-stat-value">{{ empresa_statistics.alertas.total }}</div>
+        <div class="ios-stat-trend">{{ empresa_statistics.alertas.activas }} activas</div>
+      </div>
+      <div class="ios-stat-shimmer"></div>
+    </div>
+
+    <div class="ios-stat-card">
+      <div class="ios-stat-icon ios-stat-icon-actividad">
+        <i class="fas fa-activity"></i>
+      </div>
+      <div class="ios-stat-content">
+        <div class="ios-stat-label">Actividad (30d)</div>
+        <div class="ios-stat-value">{{ empresa_statistics.actividad_reciente.logs_ultimos_30_dias }}</div>
+        <div class="ios-stat-trend">logs registrados</div>
+      </div>
+      <div class="ios-stat-shimmer"></div>
+    </div>
+  </div>
+
+  <!-- Distribución detallada -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+    <!-- Distribución de Hardware -->
+    <div class="distribucion-card">
+      <h3 class="text-lg font-bold text-white mb-4">
+        <i class="fas fa-cogs mr-2 text-green-400"></i>
+        Hardware por Tipo
+      </h3>
+      <div class="space-y-2">
+        {% for tipo, cantidad in empresa_statistics.hardware.por_tipo.items() %}
+        <div class="distribucion-item">
+          <span class="distribucion-label">{{ tipo|title }}</span>
+          <span class="distribucion-value">{{ cantidad }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Distribución de Alertas -->
+    <div class="distribucion-card">
+      <h3 class="text-lg font-bold text-white mb-4">
+        <i class="fas fa-bell mr-2 text-yellow-400"></i>
+        Alertas por Prioridad
+      </h3>
+      <div class="space-y-2">
+        {% for prioridad, cantidad in empresa_statistics.alertas.por_prioridad.items() %}
+        <div class="distribucion-item">
+          <span class="distribucion-label">{{ prioridad|title }}</span>
+          <span class="distribucion-value">{{ cantidad }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Estado de Usuarios -->
+    <div class="distribucion-card">
+      <h3 class="text-lg font-bold text-white mb-4">
+        <i class="fas fa-user-friends mr-2 text-blue-400"></i>
+        Estado de Usuarios
+      </h3>
+      <div class="space-y-2">
+        <div class="distribucion-item">
+          <span class="distribucion-label">Activos</span>
+          <span class="distribucion-value text-green-400">{{ empresa_statistics.usuarios.activos }}</span>
+        </div>
+        <div class="distribucion-item">
+          <span class="distribucion-label">Inactivos</span>
+          <span class="distribucion-value text-red-400">{{ empresa_statistics.usuarios.inactivos }}</span>
+        </div>
+        <div class="distribucion-item">
+          <span class="distribucion-label">Total</span>
+          <span class="distribucion-value">{{ empresa_statistics.usuarios.total }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actividad reciente -->
+  <div class="distribucion-card">
+    <h3 class="text-xl font-bold text-white mb-4">
+      <i class="fas fa-clock mr-2 text-purple-400"></i>
+      Actividad Reciente
+    </h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <p class="text-white/80 mb-2">Logs registrados en los últimos 30 días:</p>
+        <p class="text-3xl font-bold text-white">{{ empresa_statistics.actividad_reciente.logs_ultimos_30_dias }}</p>
+      </div>
+      <div>
+        <p class="text-white/80 mb-2">Última actividad registrada:</p>
+        <p class="text-lg text-white">{{ empresa_statistics.actividad_reciente.ultima_actividad[:19].replace('T', ' ') }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer con información del rol -->
+  <div class="mt-8 text-center">
+    <span class="text-white/60 text-sm">
+      Estadísticas Avanzadas • {{ empresa_statistics.empresa.nombre }}
+    </span>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block page_js %}
+<script id="empresaStatisticsData" type="application/json">
+{{ empresa_statistics | tojson }}
+</script>
+
+<script>
+// Cargar datos de estadísticas empresa
+try {
+  const estadisticasElement = document.getElementById('empresaStatisticsData');
+  const estadisticasText = estadisticasElement.textContent;
+  window.EMPRESA_STATISTICS = estadisticasText && estadisticasText !== 'null' ? JSON.parse(estadisticasText) : null;
+  console.log('📊 Estadísticas empresa cargadas:', window.EMPRESA_STATISTICS);
+} catch (error) {
+  console.warn('⚠️ Error cargando estadísticas empresa:', error);
+  window.EMPRESA_STATISTICS = null;
+}
+
+// Funciones para los botones de acción
+function exportEmpresaStats() {
+  alert('Funcionalidad de exportación en desarrollo');
+}
+
+function refreshEmpresaStats() {
+  console.log('🔄 Actualizando estadísticas...');
+  // Reload the page to refresh stats
+  window.location.reload();
+}
+
+// Log para debugging
+console.log('📊 Vista de estadísticas empresa inicializada');
+console.log('👤 Usuario:', '{{ empresa_username }}');
+console.log('🆔 Empresa ID:', '{{ empresa_id }}');
+console.log('📋 Rol:', '{{ user_role }}');
+</script>
+{% endblock %}

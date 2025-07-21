@@ -162,6 +162,9 @@ def login():
         initial_error = 'La sesión expiró porque el servidor no está disponible.'
     
     if request.method == 'POST':
+        # LIMPIAR COMPLETAMENTE la sesión anterior
+        session.clear()
+        
         usuario = request.form.get('usuario')
         password = request.form.get('password')
         client = EndpointTestClient(BACKEND_API_URL)
@@ -607,9 +610,9 @@ def admin_stats():
     )
 
 @app.route('/admin/hardware')
-@require_role(['super_admin', 'empresa'])
+@require_role(['super_admin'])
 def admin_hardware():
-    """Gestión de hardware - Para super_admin y empresa"""
+    """Gestión de hardware - Solo para super_admin"""
     
     # Get real hardware data from backend
     try:
@@ -634,6 +637,79 @@ def admin_hardware():
         api_url=PROXY_PREFIX, 
         hardware_data=hardware_data,
         active_page='hardware'
+    )
+
+@app.route('/empresa/hardware')
+@require_role(['empresa'])
+def empresa_hardware():
+    """Gestión de hardware para empresa - Función única y simple"""
+    empresa_id = session.get('user', {}).get('id')
+    empresa_username = session.get('user', {}).get('username')
+    
+    try:
+        # Llamada directa al endpoint de hardware por empresa
+        auth_token = request.cookies.get('auth_token')
+        if auth_token:
+            import requests
+            backend_url = f"{BACKEND_API_URL}/api/hardware/empresa/{empresa_id}"
+            cookies = {'auth_token': auth_token}
+            response = requests.get(backend_url, cookies=cookies)
+            
+            if response.ok:
+                data = response.json()
+                if data.get('success'):
+                    hardware_list = data.get('data', [])
+                    
+                    # Obtener tipos de hardware
+                    types_response = requests.get(f"{BACKEND_API_URL}/api/hardware-types", cookies=cookies)
+                    hardware_types = []
+                    if types_response.ok:
+                        types_data = types_response.json()
+                        if types_data.get('success'):
+                            hardware_types = types_data.get('data', [])
+                    
+                    hardware_data = {
+                        'hardware_list': hardware_list,
+                        'hardware_types': hardware_types,
+                        'hardware_stats': {
+                            'total_items': len(hardware_list),
+                            'active_items': len([h for h in hardware_list if h.get('activa', True)]),
+                            'inactive_items': len([h for h in hardware_list if not h.get('activa', True)]),
+                            'available_items': len([h for h in hardware_list if h.get('activa', True)]),
+                            'out_of_stock': len([h for h in hardware_list if not h.get('activa', True)]),
+                            'total_value': sum(h.get('datos', {}).get('price', 0) * h.get('datos', {}).get('stock', 0) for h in hardware_list)
+                        }
+                    }
+                else:
+                    raise Exception(f"Backend error: {data.get('errors', [])}")
+            else:
+                raise Exception(f"HTTP {response.status_code}: {response.text}")
+        else:
+            raise Exception("No auth token found")
+            
+    except Exception as e:
+        print(f"Error getting hardware data for empresa {empresa_id}: {e}")
+        hardware_data = {
+            'hardware_list': [],
+            'hardware_types': [],
+            'hardware_stats': {
+                'total_items': 0,
+                'active_items': 0,
+                'inactive_items': 0,
+                'available_items': 0,
+                'out_of_stock': 0,
+                'total_value': 0
+            }
+        }
+    
+    return render_template(
+        'empresa/hardware.html', 
+        api_url=PROXY_PREFIX, 
+        hardware_data=hardware_data,
+        active_page='hardware',
+        user_role='empresa',
+        empresa_id=empresa_id,
+        empresa_username=empresa_username
     )
 
 @app.route('/admin/company-types')
@@ -723,21 +799,87 @@ def admin_company_types():
 @app.route('/empresa')
 @require_role(['empresa'])
 def empresa_dashboard():
-    """Dashboard de empresa - Reutiliza vista admin/stats.html"""
-    # Get detailed statistics dummy data from Python providers
-    statistics_data = get_detailed_statistics()
-    
+    """Dashboard de empresa - Resumen ejecutivo con KPIs principales"""
     # Get empresa info from session
     empresa_id = session.get('user', {}).get('id')
     empresa_username = session.get('user', {}).get('username')
     
+    # Get real empresa name from backend like in stats
+    empresa_nombre = 'Mi Empresa'
+    try:
+        if empresa_id:
+            auth_token = request.cookies.get('auth_token')
+            if auth_token:
+                import requests
+                backend_url = f"{BACKEND_API_URL}/api/empresas/{empresa_id}/statistics"
+                cookies = {'auth_token': auth_token}
+                response = requests.get(backend_url, cookies=cookies)
+                if response.ok:
+                    data = response.json()
+                    if data.get('success'):
+                        backend_data = data.get('data', {})
+                        empresa_nombre = backend_data.get('empresa', {}).get('nombre', 'Mi Empresa')
+    except Exception as e:
+        print(f"Error getting empresa name for dashboard: {e}")
+    
+    # Get summary data (lighter version for dashboard)
+    dashboard_summary = {
+        'empresa': {
+            'id': empresa_id,
+            'nombre': empresa_nombre,
+            'activa': True
+        },
+        'kpis': {
+            'usuarios_total': 0,
+            'usuarios_activos': 0,
+            'hardware_total': 0,
+            'alertas_activas': 0
+        },
+        'quick_access': [
+            {'name': 'Gestión de Usuarios', 'url': 'empresa_usuarios', 'icon': 'fas fa-users', 'description': 'Administra usuarios de tu empresa'},
+            {'name': 'Estadísticas Avanzadas', 'url': 'empresa_stats', 'icon': 'fas fa-chart-line', 'description': 'Análisis detallado de rendimiento'}
+        ]
+    }
+    
+    try:
+        if empresa_id:
+            # Try to get basic statistics for dashboard KPIs using same method as empresa_stats
+            auth_token = request.cookies.get('auth_token')
+            if auth_token:
+                # Make direct request to backend with cookie authentication
+                import requests
+                backend_url = f"{BACKEND_API_URL}/api/empresas/{empresa_id}/statistics"
+                cookies = {'auth_token': auth_token}
+                response = requests.get(backend_url, cookies=cookies)
+                
+                if response.ok:
+                    data = response.json()
+                    if data.get('success'):
+                        backend_data = data.get('data', {})
+                        dashboard_summary['kpis'].update({
+                            'usuarios_total': backend_data.get('usuarios', {}).get('total_usuarios', 0),
+                            'usuarios_activos': backend_data.get('usuarios', {}).get('usuarios_activos', 0),
+                            'hardware_total': backend_data.get('hardware', {}).get('total_hardware', 0),
+                            'alertas_activas': backend_data.get('alertas', {}).get('alertas_activas', 0)
+                        })
+                        print(f"✅ Dashboard KPIs loaded for {empresa_id} using cookies")
+                    else:
+                        print(f"⚠️ Backend returned error for dashboard KPIs: {data.get('errors', [])}")
+                else:
+                    print(f"⚠️ Dashboard KPIs request failed. Status: {response.status_code}")
+                    if response.status_code == 401:
+                        print(f"❌ Unauthorized for dashboard KPIs - token might be invalid")
+            else:
+                print(f"❌ No auth token found in cookies for dashboard KPIs")
+    except Exception as e:
+        print(f"⚠️ Error fetching dashboard KPIs: {e}")
+    
     return render_template(
-        'admin/stats.html', 
+        'empresa/dashboard_main.html', 
         api_url=PROXY_PREFIX, 
-        statistics_data=statistics_data,
-        active_page='stats',
+        dashboard_summary=dashboard_summary,
+        active_page='dashboard',
         user_role='empresa',
-        empresa_view=True,
         empresa_id=empresa_id,
         empresa_username=empresa_username
     )
@@ -770,11 +912,10 @@ def empresa_usuarios():
     initial_active_users = stats.get('active_users', len([u for u in usuarios_list if u.get('activo')]))
 
     return render_template(
-        'admin/users.html',
+        'empresa/usuarios.html',
         api_url=PROXY_PREFIX,
         active_page='users',
         user_role='empresa',
-        empresa_view=True,
         empresa_id=empresa_id,
         empresa_username=empresa_username,
         usuarios_data=usuarios_data,
@@ -782,26 +923,130 @@ def empresa_usuarios():
         initial_active_users=initial_active_users
     )
 
-# Hardware no disponible para empresas
 
 @app.route('/empresa/stats')
 @require_role(['empresa'])
 def empresa_stats():
-    """Estadísticas de empresa - Reutiliza vista admin/stats.html"""
-    # Get detailed statistics dummy data from Python providers
-    statistics_data = get_detailed_statistics()
-    
+    """Estadísticas específicas de empresa usando datos reales del backend"""
     # Get empresa info from session
     empresa_id = session.get('user', {}).get('id')
     empresa_username = session.get('user', {}).get('username')
     
+    # Initialize default data structure matching backend response format
+    empresa_statistics = {
+        'empresa': {
+            'id': empresa_id,
+            'nombre': empresa_username or 'Mi Empresa',
+            'activa': True,
+            'fecha_creacion': '2024-01-01'
+        },
+        'usuarios': {
+            'total': 0,
+            'activos': 0,
+            'inactivos': 0
+        },
+        'hardware': {
+            'total': 0,
+            'activos': 0,
+            'inactivos': 0,
+            'por_tipo': {
+                'botonera': 0,
+                'semaforo': 0,
+                'pantalla': 0
+            }
+        },
+        'alertas': {
+            'total': 0,
+            'activas': 0,
+            'resueltas': 0,
+            'por_prioridad': {
+                'alta': 0,
+                'media': 0,
+                'baja': 0
+            }
+        },
+        'actividad_reciente': {
+            'logs_ultimos_30_dias': 0,
+            'ultima_actividad': '2024-07-20T10:30:00Z'
+        }
+    }
+    
+    try:
+        if empresa_id:
+            # Try to get real statistics from backend with authentication cookies
+            auth_token = request.cookies.get('auth_token')
+            if auth_token:
+                # Make direct request to backend with cookie authentication
+                import requests
+                backend_url = f"{BACKEND_API_URL}/api/empresas/{empresa_id}/statistics"
+                cookies = {'auth_token': auth_token}
+                response = requests.get(backend_url, cookies=cookies)
+                
+                if response.ok:
+                    data = response.json()
+                    if data.get('success'):
+                        backend_data = data.get('data', {})
+                        print(f"📊 Raw backend data: {backend_data}")
+                        
+                        # Map backend data to frontend expected structure
+                        empresa_statistics = {
+                            'empresa': {
+                                'id': backend_data.get('empresa', {}).get('id', empresa_id),
+                                'nombre': backend_data.get('empresa', {}).get('nombre', empresa_username or 'Mi Empresa'),
+                                'activa': backend_data.get('empresa', {}).get('activa', True),
+                                'fecha_creacion': backend_data.get('empresa', {}).get('fecha_creacion', '2024-01-01')
+                            },
+                            'usuarios': {
+                                'total': backend_data.get('usuarios', {}).get('total_usuarios', 0),
+                                'activos': backend_data.get('usuarios', {}).get('usuarios_activos', 0),
+                                'inactivos': backend_data.get('usuarios', {}).get('usuarios_inactivos', 0)
+                            },
+                            'hardware': {
+                                'total': backend_data.get('hardware', {}).get('total_hardware', 0),
+                                'activos': backend_data.get('hardware', {}).get('hardware_activo', 0),
+                                'inactivos': backend_data.get('hardware', {}).get('hardware_inactivo', 0),
+                                'por_tipo': backend_data.get('hardware', {}).get('por_tipo', {
+                                    'botonera': 0,
+                                    'semaforo': 0,
+                                    'televisor': 0,
+                                    'pantalla': 0
+                                })
+                            },
+                            'alertas': {
+                                'total': backend_data.get('alertas', {}).get('total_alertas', 0),
+                                'activas': backend_data.get('alertas', {}).get('alertas_activas', 0),
+                                'resueltas': backend_data.get('alertas', {}).get('alertas_inactivas', 0),
+                                'por_prioridad': {
+                                    'critica': backend_data.get('alertas', {}).get('alertas_por_prioridad', {}).get('critica', 0),
+                                    'alta': backend_data.get('alertas', {}).get('alertas_por_prioridad', {}).get('alta', 0),
+                                    'media': backend_data.get('alertas', {}).get('alertas_por_prioridad', {}).get('media', 0),
+                                    'baja': backend_data.get('alertas', {}).get('alertas_por_prioridad', {}).get('baja', 0)
+                                }
+                            },
+                            'actividad_reciente': {
+                                'logs_ultimos_30_dias': backend_data.get('alertas', {}).get('alertas_recientes_30d', 0),
+                                'ultima_actividad': backend_data.get('empresa', {}).get('fecha_creacion', '2024-07-20T10:30:00Z')
+                            }
+                        }
+                        print(f"✅ Loaded and mapped empresa statistics for {empresa_id}")
+                        print(f"📋 Mapped data: {empresa_statistics}")
+                    else:
+                        print(f"⚠️ Backend returned error: {data.get('errors', [])}")
+                else:
+                    print(f"⚠️ Backend statistics not available, using defaults. Status: {response.status_code}")
+                    if response.status_code == 401:
+                        print(f"❌ Unauthorized - token might be invalid or expired")
+            else:
+                print(f"❌ No auth token found in cookies")
+    except Exception as e:
+        print(f"❌ Error fetching empresa statistics: {e}")
+    
     return render_template(
-        'admin/stats.html', 
+        'empresa/stats.html', 
         api_url=PROXY_PREFIX, 
-        statistics_data=statistics_data,
+        empresa_statistics=empresa_statistics,
         active_page='stats',
         user_role='empresa',
-        empresa_view=True,
         empresa_id=empresa_id,
         empresa_username=empresa_username
     )

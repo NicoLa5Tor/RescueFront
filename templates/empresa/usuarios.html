@@ -1,0 +1,934 @@
+{% extends "empresa/dashboard.html" %}
+
+{% block title %}Usuarios - Empresa{% endblock %}
+
+{% block extra_css %}
+{{ super() }}
+<!-- USAR EXACTAMENTE LOS MISMOS ESTILOS DE HARDWARE -->
+<link href="{{ url_for('static', filename='css/modals.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/hardware/hardware-main.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/usuarios/usuarios-modal-fix.css') }}" rel="stylesheet">
+<style>
+/* Asegurar visibilidad por defecto - OVERRIDE para usuarios */
+.ios-header-container,
+.ios-stats-grid .ios-stat-card,
+.ios-hardware-grid .ios-hardware-card {
+  opacity: 1 !important;
+  transform: none !important;
+  visibility: visible !important;
+}
+
+/* Asegurar que las tarjetas de usuarios sean visibles desde el inicio */
+.usuario-item {
+  opacity: 1 !important;
+  transform: none !important;
+  visibility: visible !important;
+}
+
+/* Estilos específicos para usuarios y widgets de entrada */
+.usuario-item .ios-info-label {
+  display: flex;
+  align-items: center;
+  font-size: 0.75rem;
+}
+
+/* Manejo específico del input de teléfono con intl-tel-input */
+.phone-input-container {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  gap: 2px;
+  align-items: stretch;
+  width: 100%;
+  position: relative;
+}
+
+/* Forzar que el plugin no modifique la estructura */
+.iti {
+  position: static !important;
+  width: 100% !important;
+  grid-column: 2 !important;
+  display: block !important;
+}
+
+/* Ocultar el selector de país del plugin y crear uno personalizado */
+.iti__flag-container {
+  display: none !important;
+}
+
+/* Crear un selector de país funcional */
+.phone-country-selector {
+  grid-column: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+  border-right: none;
+  position: relative;
+  padding: 0 8px;
+  z-index: 10002;
+}
+
+.phone-country-selector:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.phone-country-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: rgba(0, 0, 0, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+  z-index: 10001;
+  max-height: 200px;
+  overflow-y: auto;
+  display: none;
+  min-width: 200px;
+  width: max-content;
+  white-space: nowrap;
+}
+
+.phone-country-dropdown.show {
+  display: block;
+}
+
+.phone-country-option {
+  padding: 8px 12px;
+  color: white;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: background 0.2s ease;
+}
+
+.phone-country-option:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.phone-country-option.selected {
+  background: rgba(59, 130, 246, 0.3);
+}
+
+/* Ajustar el input para que ocupe solo su espacio */
+.iti input[type="tel"] {
+  width: 100% !important;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  border-left: none !important;
+  padding-left: 16px !important;
+}
+
+/* Asegurar que el placeholder aparezca en la posición correcta */
+.iti input[type="tel"]::placeholder {
+  padding-left: 0;
+  text-indent: 0;
+  opacity: 0.7;
+}
+
+/* Ajustes para que el dropdown no se superponga */
+.iti__country-list {
+  z-index: 9999;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 300px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+/* Hacer que ciertos elementos ocupen fila completa */
+.usuario-item .ios-info-item.full-width {
+  grid-column: 1 / -1;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.usuario-item .ios-card-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+/* Botones específicos para usuarios */
+.ios-card-btn-info {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.ios-card-btn-info:hover {
+  background: linear-gradient(135deg, #2563eb, #1e40af);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+}
+
+/* Utilizar estilos del hardware para header */
+.usuarios-container .ios-header-container {
+  opacity: 1;
+  transform: none;
+  visibility: visible;
+}
+
+/* Modal visibility fixes - ALTA PRIORIDAD */
+.ios-modal-backdrop {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  z-index: 9999 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.ios-blur-modal-container {
+  position: relative !important;
+  z-index: 10000 !important;
+  max-width: 600px;
+  width: 90%;
+  transform: translateZ(0) !important;
+}
+</style>
+{% endblock %}
+
+{% block main_content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Enhanced iOS Header - EXACT COPY FROM HARDWARE -->
+    <div class="ios-header-container mb-8">
+      <div class="ios-header-backdrop">
+        <div class="ios-header-content">
+          <div class="ios-header-text">
+            <div class="ios-header-icon">
+              <i class="fas fa-users"></i>
+            </div>
+            <div>
+              <h1 class="ios-header-title">Gestión de Usuarios</h1>
+              <p class="ios-header-subtitle">Administra usuarios de tu empresa</p>
+            </div>
+          </div>
+          <div class="ios-header-actions">
+            <button class="ios-action-btn ios-action-btn-secondary" onclick="exportUsuarios()">
+              <i class="fas fa-download"></i>
+              <span>Exportar</span>
+            </button>
+            <button class="ios-action-btn ios-action-btn-primary" onclick="openCreateUsuarioModal()">
+              <i class="fas fa-user-plus"></i>
+              <span>Nuevo Usuario</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Información de empresa fija para usuarios tipo empresa -->
+    <div id="selectedEmpresaInfo" class="ios-filters-container ios-blur-bg mb-8">
+      <div class="flex items-center space-x-4">
+        <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
+          <span id="empresaInitials" class="text-white font-bold text-lg">{{ empresa_username[:2].upper() if empresa_username else 'EM' }}</span>
+        </div>
+        <div>
+          <h3 id="selectedEmpresaName" class="text-lg font-semibold text-white">{{ empresa_username or 'Mi Empresa' }}</h3>
+          <p id="selectedEmpresaLocation" class="text-sm text-white/70">Vista de empresa</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filtros de búsqueda y estado -->
+    <div id="usuariosFilters" class="ios-filters-container ios-blur-bg mb-8" style="display: none;">
+      <div class="ios-filters-grid">
+        <div class="ios-filter-item">
+          <label class="ios-filter-label">Buscar Usuario</label>
+          <input type="text" id="searchInput" class="ios-filter-input" placeholder="Nombre, email, cédula o rol...">
+        </div>
+        
+        <div class="ios-filter-item">
+          <label class="ios-filter-label">Estado</label>
+          <select id="statusFilter" class="ios-filter-input">
+            <option value="">Todos los estados</option>
+            <option value="active">Solo activos</option>
+            <option value="inactive">Solo inactivos</option>
+          </select>
+        </div>
+        
+        <div class="ios-filter-item">
+          <label class="ios-filter-label">Incluir Inactivos</label>
+          <select id="includeInactiveFilter" class="ios-filter-input">
+            <option value="active">Solo activos</option>
+            <option value="all">Incluir inactivos</option>
+          </select>
+        </div>
+        
+        <div class="ios-filter-item">
+          <button class="ios-action-btn ios-action-btn-secondary w-full" onclick="clearUsuariosFilters()">
+            <i class="fas fa-filter-circle-xmark mr-2"></i>
+            Limpiar Filtros
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Enhanced iOS Stats Cards - SAME AS EMPRESAS -->
+    <div class="ios-stats-grid" id="usuariosStatsGrid" style="display: none;">
+      <div class="ios-stat-card" data-stat="total">
+        <div class="ios-stat-icon ios-stat-icon-blue">
+          <i class="fas fa-users"></i>
+        </div>
+        <div class="ios-stat-content">
+          <div class="ios-stat-label text-sm font-medium text-gray-600 dark:text-gray-400">Total Usuarios</div>
+          <div class="ios-stat-value text-2xl md:text-3xl font-bold text-gray-900 dark:text-white" id="usersTotalCount">{{ initial_total_users | default(0) }}</div>
+          <div class="ios-stat-trend text-xs text-gray-500 dark:text-gray-500">Usuarios registrados</div>
+        </div>
+        <div class="ios-stat-shimmer"></div>
+      </div>
+      
+      <div class="ios-stat-card" data-stat="active">
+        <div class="ios-stat-icon ios-stat-icon-green">
+          <i class="fas fa-user-check"></i>
+        </div>
+        <div class="ios-stat-content">
+          <div class="ios-stat-label text-sm font-medium text-gray-600 dark:text-gray-400">Activos</div>
+          <div class="ios-stat-value text-2xl md:text-3xl font-bold text-gray-900 dark:text-white" id="usersActiveCount">{{ initial_active_users | default(0) }}</div>
+          <div class="ios-stat-trend text-xs text-gray-500 dark:text-gray-500">Usuarios activos</div>
+        </div>
+        <div class="ios-stat-shimmer"></div>
+      </div>
+      
+      <div class="ios-stat-card" data-stat="roles">
+        <div class="ios-stat-icon ios-stat-icon-purple">
+          <i class="fas fa-user-tag"></i>
+        </div>
+        <div class="ios-stat-content">
+          <div class="ios-stat-label text-sm font-medium text-gray-600 dark:text-gray-400">Roles</div>
+          <div class="ios-stat-value text-2xl md:text-3xl font-bold text-gray-900 dark:text-white" id="usersRolesCount">0</div>
+          <div class="ios-stat-trend text-xs text-gray-500 dark:text-gray-500">Roles diferentes</div>
+        </div>
+        <div class="ios-stat-shimmer"></div>
+      </div>
+      
+      <div class="ios-stat-card" data-stat="recent">
+        <div class="ios-stat-icon ios-stat-icon-orange">
+          <i class="fas fa-calendar-plus"></i>
+        </div>
+        <div class="ios-stat-content">
+          <div class="ios-stat-label text-sm font-medium text-gray-600 dark:text-gray-400">Este Mes</div>
+          <div class="ios-stat-value text-2xl md:text-3xl font-bold text-gray-900 dark:text-white" id="usersNewCount">0</div>
+          <div class="ios-stat-trend text-xs text-gray-500 dark:text-gray-500">Nuevos usuarios</div>
+        </div>
+        <div class="ios-stat-shimmer"></div>
+      </div>
+    </div>
+
+    <!-- Enhanced iOS Usuarios Grid - SAME STYLE AS EMPRESAS -->
+    <div class="ios-hardware-grid" id="usuariosGrid">
+      <!-- Los usuarios se cargarán aquí dinámicamente -->
+      <div class="text-center py-8 col-span-full">
+        <i class="fas fa-users text-3xl text-gray-400 mb-4"></i>
+        <p class="text-gray-500">Cargando usuarios de la empresa...</p>
+      </div>
+</div>
+
+  <!-- Enhanced View Usuario Modal - EXACT STYLE AS EMPRESAS -->
+  <div id="viewUserModal" class="ios-modal-backdrop hidden">
+    <div class="ios-blur-modal-container w-full max-w-2xl">
+      <!-- Modal Header -->
+      <div class="ios-blur-header">
+        <div class="flex items-center justify-between w-full">
+          <div class="flex items-center space-x-3">
+            <div class="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
+              <i class="fas fa-eye text-white text-xl"></i>
+            </div>
+            <div>
+              <h3 class="text-2xl font-bold text-white dark:text-white" id="viewUserTitle">Detalles del Usuario</h3>
+              <p class="text-sm text-white/70 dark:text-gray-300">Información completa del usuario seleccionado</p>
+            </div>
+          </div>
+          <button type="button" class="ios-blur-btn ios-blur-btn-secondary !p-2 !min-w-0" onclick="usuariosModals.closeViewModal()" aria-label="Cerrar modal">
+            <i class="fas fa-times text-lg"></i>
+          </button>
+        </div>
+      </div>
+      
+      <!-- Modal Body -->
+      <div class="ios-blur-body">
+        <div id="viewUserContent">
+          <!-- Details will be loaded here -->
+        </div>
+      </div>
+      
+      <!-- Modal Footer -->
+      <div class="ios-blur-footer">
+        <button type="button" class="ios-blur-btn ios-blur-btn-secondary" onclick="usuariosModals.closeViewModal()">
+          <i class="fas fa-times mr-2"></i>
+          <span class="text-sm font-medium">Cerrar</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit User Modal - HARDWARE STYLE -->
+  <div id="editUserModal" class="ios-modal-backdrop hidden">
+    <div class="ios-blur-modal-container w-full max-w-4xl">
+      <!-- Modal Header -->
+      <div class="ios-blur-header">
+        <div class="flex items-center justify-between w-full">
+          <div class="flex items-center space-x-3">
+            <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+              <i class="fas fa-user-edit text-white text-xl"></i>
+            </div>
+            <div>
+              <h3 class="text-2xl font-bold text-white dark:text-white">Editar Usuario</h3>
+              <p class="text-sm text-white/70 dark:text-gray-300">Modifica los datos del usuario</p>
+            </div>
+          </div>
+          <button type="button" class="ios-blur-btn ios-blur-btn-secondary !p-2 !min-w-0" onclick="usuariosModals.closeEditModal()" aria-label="Cerrar modal">
+            <i class="fas fa-times text-lg"></i>
+          </button>
+        </div>
+      </div>
+      
+      <!-- Modal Body -->
+      <div class="ios-blur-body">
+        <form id="editUserForm">
+          <div class="form-grid">
+            <!-- Nombre -->
+            <div class="form-group">
+              <label for="editUsername" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+                <i class="fas fa-user text-blue-400 mr-2"></i>Nombre Completo *
+              </label>
+              <input type="text" id="editUsername" class="ios-blur-input" required placeholder="Ej: Juan Pérez">
+            </div>
+            
+            <!-- Email -->
+            <div class="form-group">
+              <label for="editUserEmail" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+                <i class="fas fa-envelope text-purple-400 mr-2"></i>Email *
+              </label>
+              <input type="email" id="editUserEmail" class="ios-blur-input" required placeholder="usuario@empresa.com">
+            </div>
+            
+            <!-- Cédula -->
+            <div class="form-group">
+              <label for="editUserCedula" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+                <i class="fas fa-id-card text-cyan-400 mr-2"></i>Cédula *
+              </label>
+              <input type="text" id="editUserCedula" class="ios-blur-input" required placeholder="Número de cédula">
+            </div>
+            
+            <!-- Teléfono -->
+            <div class="form-group">
+              <label for="editUserTelefono" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+                <i class="fas fa-phone text-green-400 mr-2"></i>Teléfono
+              </label>
+              <div class="phone-input-container">
+                <div class="phone-country-selector" onclick="toggleCountryDropdown(this)">
+                  <span class="country-flag">🇨🇴</span>
+                  <span class="country-code">+57</span>
+                  <div class="phone-country-dropdown">
+                    <div class="phone-country-option" data-country="co" data-code="+57" onclick="selectCountry(this, event)">
+                      <span>🇨🇴 Colombia (+57)</span>
+                    </div>
+                    <div class="phone-country-option" data-country="us" data-code="+1" onclick="selectCountry(this, event)">
+                      <span>🇺🇸 Estados Unidos (+1)</span>
+                    </div>
+                    <div class="phone-country-option" data-country="mx" data-code="+52" onclick="selectCountry(this, event)">
+                      <span>🇲🇽 México (+52)</span>
+                    </div>
+                    <div class="phone-country-option" data-country="ar" data-code="+54" onclick="selectCountry(this, event)">
+                      <span>🇦🇷 Argentina (+54)</span>
+                    </div>
+                    <div class="phone-country-option" data-country="cl" data-code="+56" onclick="selectCountry(this, event)">
+                      <span>🇨🇱 Chile (+56)</span>
+                    </div>
+                    <div class="phone-country-option" data-country="pe" data-code="+51" onclick="selectCountry(this, event)">
+                      <span>🇵🇪 Perú (+51)</span>
+                    </div>
+                  </div>
+                </div>
+                <input type="tel" id="editUserTelefono" class="ios-blur-input" required placeholder="Número de teléfono">
+              </div>
+            </div>
+            
+            <!-- Sede -->
+            <div class="form-group">
+              <label for="editUserSede" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+                <i class="fas fa-building text-orange-400 mr-2"></i>Sede *
+              </label>
+              <select id="editUserSede" class="ios-blur-input" required>
+                <option value="">Seleccionar sede...</option>
+              </select>
+            </div>
+            
+            <!-- Tipo de Turno -->
+            <div class="form-group">
+              <label for="editUserTipoTurno" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+                <i class="fas fa-clock text-red-400 mr-2"></i>Tipo de Turno *
+              </label>
+              <select id="editUserTipoTurno" class="ios-blur-input" required>
+                <option value="medio_dia">Medio día</option>
+                <option value="dia_completo">Día completo</option>
+                <option value="nocturno">Nocturno</option>
+                <option value="24_horas">24 horas</option>
+              </select>
+            </div>
+            
+            <!-- Rol -->
+            <div class="form-group">
+              <label for="editUserRol" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+                <i class="fas fa-user-tag text-purple-400 mr-2"></i>Rol *
+              </label>
+              <select id="editUserRol" class="ios-blur-input" required>
+                <option value="">Seleccionar rol...</option>
+              </select>
+            </div>
+            
+            <!-- Especialidades -->
+            <div class="form-group form-group-full">
+              <label class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+                <i class="fas fa-user-md text-yellow-400 mr-2"></i>Especialidades
+              </label>
+              <div id="editEspecialidadesContainer" class="space-y-3">
+                <div class="flex space-x-2">
+                  <button type="button" class="ios-blur-btn ios-blur-btn-primary !p-2 !min-w-0" onclick="usuariosModals.addEspecialidad('edit')">
+                    <i class="fas fa-plus"></i>
+                  </button>
+                  <span class="text-white/70 text-sm self-center">Agregar especialidad</span>
+                </div>
+                <div id="editEspecialidadesList" class="space-y-2">
+                  <!-- Especialidades will be displayed here -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      
+      <!-- Modal Footer -->
+      <div class="ios-blur-footer">
+        <button type="button" class="ios-blur-btn ios-blur-btn-secondary" onclick="usuariosModals.closeEditModal()">
+          <i class="fas fa-times mr-2"></i>
+          <span class="text-sm font-medium">Cancelar</span>
+        </button>
+        <button type="submit" form="editUserForm" class="ios-blur-btn ios-blur-btn-primary" onclick="usuariosModals.confirmEdit()">
+          <i class="fas fa-save mr-2"></i>
+          <span class="text-sm font-medium">Guardar Cambios</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Activate/Deactivate User Modal -->
+  <div id="toggleUserModal" class="ios-modal-backdrop hidden">
+    <div class="ios-blur-modal-container max-w-md mx-auto">
+      <div class="ios-blur-header text-center">
+        <div class="toggle-modal-icon mx-auto mb-4">
+          <i class="fas fa-power-off text-4xl"></i>
+        </div>
+        <h3 class="text-2xl font-bold text-white mb-2" id="toggleUserModalTitle">Activar Usuario</h3>
+      </div>
+      <div class="ios-blur-body text-center">
+        <p class="text-white/80 text-lg mb-6" id="toggleUserModalMessage">
+          ¿Estás seguro de que quieres cambiar el estado de este usuario?
+        </p>
+        <div class="flex gap-4 justify-center">
+          <button class="ios-blur-btn ios-blur-btn-secondary" onclick="usuariosModals.closeToggleModal()">
+            <i class="fas fa-times mr-2"></i>
+            Cancelar
+          </button>
+          <button class="ios-blur-btn ios-blur-btn-primary" id="toggleUserConfirmBtn" onclick="usuariosModals.confirmToggle()">
+            <i class="fas fa-check mr-2" id="toggleConfirmIcon"></i>
+            <span id="toggleConfirmText">Confirmar</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create User Modal - HARDWARE STYLE -->
+  <div id="createUserModal" class="ios-modal-backdrop hidden">
+    <div class="ios-blur-modal-container w-full max-w-4xl">
+      <!-- Modal Header -->
+      <div class="ios-blur-header">
+        <div class="flex items-center justify-between w-full">
+          <div class="flex items-center space-x-3">
+            <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
+              <i class="fas fa-user-plus text-white text-xl"></i>
+            </div>
+            <div>
+              <h3 class="text-2xl font-bold text-white dark:text-white">Crear Usuario</h3>
+              <p class="text-sm text-white/70 dark:text-gray-300">Registra un nuevo usuario en el sistema</p>
+            </div>
+          </div>
+          <button type="button" class="ios-blur-btn ios-blur-btn-secondary !p-2 !min-w-0" onclick="usuariosModals.closeCreateModal()" aria-label="Cerrar modal">
+            <i class="fas fa-times text-lg"></i>
+          </button>
+        </div>
+      </div>
+      
+      <!-- Modal Body -->
+      <div class="ios-blur-body">
+        <form id="createUserForm">
+          <div class="form-grid">
+            <!-- Nombre -->
+            <div class="form-group">
+              <label for="createUsername" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+                <i class="fas fa-user text-blue-400 mr-2"></i>Nombre Completo *
+              </label>
+              <input type="text" id="createUsername" class="ios-blur-input" required placeholder="Ej: Juan Pérez">
+            </div>
+            
+            <!-- Email -->
+            <div class="form-group">
+              <label for="createUserEmail" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+                <i class="fas fa-envelope text-purple-400 mr-2"></i>Email
+              </label>
+              <input type="email" id="createUserEmail" class="ios-blur-input" required placeholder="usuario@empresa.com">
+            </div>
+            
+            <!-- Cédula -->
+            <div class="form-group">
+              <label for="createUserCedula" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+                <i class="fas fa-id-card text-cyan-400 mr-2"></i>Cédula *
+              </label>
+              <input type="text" id="createUserCedula" class="ios-blur-input" required placeholder="Número de cédula">
+            </div>
+            
+            <!-- Teléfono -->
+            <div class="form-group">
+              <label for="createUserTelefono" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+                <i class="fas fa-phone text-green-400 mr-2"></i>Teléfono
+              </label>
+              <div class="phone-input-container">
+                <div class="phone-country-selector" onclick="toggleCountryDropdown(this)">
+                  <span class="country-flag">🇨🇴</span>
+                  <span class="country-code">+57</span>
+                  <div class="phone-country-dropdown">
+                    <div class="phone-country-option" data-country="co" data-code="+57" onclick="selectCountry(this, event)">
+                      <span>🇨🇴 Colombia (+57)</span>
+                    </div>
+                    <div class="phone-country-option" data-country="us" data-code="+1" onclick="selectCountry(this, event)">
+                      <span>🇺🇸 Estados Unidos (+1)</span>
+                    </div>
+                    <div class="phone-country-option" data-country="mx" data-code="+52" onclick="selectCountry(this, event)">
+                      <span>🇲🇽 México (+52)</span>
+                    </div>
+                    <div class="phone-country-option" data-country="ar" data-code="+54" onclick="selectCountry(this, event)">
+                      <span>🇦🇷 Argentina (+54)</span>
+                    </div>
+                    <div class="phone-country-option" data-country="cl" data-code="+56" onclick="selectCountry(this, event)">
+                      <span>🇨🇱 Chile (+56)</span>
+                    </div>
+                    <div class="phone-country-option" data-country="pe" data-code="+51" onclick="selectCountry(this, event)">
+                      <span>🇵🇪 Perú (+51)</span>
+                    </div>
+                  </div>
+                </div>
+                <input type="tel" id="createUserTelefono" class="ios-blur-input" required placeholder="Número de teléfono">
+              </div>
+            </div>
+            
+            <!-- Sede -->
+            <div class="form-group">
+              <label for="createUserSede" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+                <i class="fas fa-building text-orange-400 mr-2"></i>Sede *
+              </label>
+              <select id="createUserSede" class="ios-blur-input" required>
+                <option value="">Seleccionar sede...</option>
+              </select>
+            </div>
+            
+            <!-- Tipo de Turno -->
+            <div class="form-group">
+              <label for="createUserTipoTurno" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+                <i class="fas fa-clock text-red-400 mr-2"></i>Tipo de Turno *
+              </label>
+              <select id="createUserTipoTurno" class="ios-blur-input" required>
+                <option value="medio_dia">Medio día</option>
+                <option value="dia_completo">Día completo</option>
+                <option value="nocturno">Nocturno</option>
+                <option value="24_horas">24 horas</option>
+              </select>
+            </div>
+            
+            <!-- Rol -->
+            <div class="form-group">
+              <label for="createUserRol" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+                <i class="fas fa-user-tag text-purple-400 mr-2"></i>Rol *
+              </label>
+              <select id="createUserRol" class="ios-blur-input" required>
+                <option value="">Seleccionar rol...</option>
+              </select>
+            </div>
+            
+            <!-- Especialidades -->
+            <div class="form-group form-group-full">
+              <label class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+                <i class="fas fa-user-md text-yellow-400 mr-2"></i>Especialidades
+              </label>
+              <div id="createEspecialidadesContainer" class="space-y-3">
+                <div class="flex space-x-2">
+                  <button type="button" class="ios-blur-btn ios-blur-btn-primary !p-2 !min-w-0" onclick="usuariosModals.addEspecialidad('create')">
+                    <i class="fas fa-plus"></i>
+                  </button>
+                  <span class="text-white/70 text-sm self-center">Agregar especialidad</span>
+                </div>
+                <div id="createEspecialidadesList" class="space-y-2">
+                  <!-- Especialidades will be displayed here -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      
+      <!-- Modal Footer -->
+      <div class="ios-blur-footer">
+        <button type="button" class="ios-blur-btn ios-blur-btn-secondary" onclick="usuariosModals.closeCreateModal()">
+          <i class="fas fa-times mr-2"></i>
+          <span class="text-sm font-medium">Cancelar</span>
+        </button>
+        <button type="submit" form="createUserForm" class="ios-blur-btn ios-blur-btn-primary" onclick="usuariosModals.confirmCreate()">
+          <i class="fas fa-plus mr-2"></i>
+          <span class="text-sm font-medium">Crear Usuario</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Update User Modal -->
+  <div id="userUpdateModal" class="ios-modal-backdrop hidden">
+    <div class="ios-blur-modal-container max-w-md mx-auto">
+      <div class="ios-blur-header text-center">
+        <div class="client-update-icon mx-auto mb-4">
+          <i class="fas fa-sync-alt text-4xl text-emerald-400"></i>
+        </div>
+        <h3 class="text-2xl font-bold text-white mb-2" id="userUpdateModalTitle">Usuario Actualizado</h3>
+      </div>
+      <div class="ios-blur-body text-center">
+        <p class="text-white/80 text-lg mb-6" id="userUpdateModalMessage">
+          El usuario se ha actualizado exitosamente.
+        </p>
+        <button class="ios-blur-btn ios-blur-btn-primary mx-auto" onclick="usuariosModals.closeUpdateModal()">
+          <i class="fas fa-check mr-2"></i>
+          Aceptar
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block page_js %}
+{{ super() }}
+<!-- Users Data Script -->
+<script id="usuariosData" type="application/json">
+{{ usuarios_data | tojson if usuarios_data else "null" }}
+</script>
+<script>
+// Load usuarios data from Python backend
+try {
+  const usuariosDataElement = document.getElementById('usuariosData');
+  const usuariosDataText = usuariosDataElement.textContent;
+  window.USUARIOS_DATA = usuariosDataText && usuariosDataText !== 'null' ? JSON.parse(usuariosDataText) : null;
+  console.log('👥 Usuarios data loaded:', window.USUARIOS_DATA);
+} catch (error) {
+  console.warn('⚠️ Error loading usuarios data:', error);
+  window.USUARIOS_DATA = null;
+}
+</script>
+
+<!-- intl-tel-input CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/css/intlTelInput.css">
+
+<!-- intl-tel-input JS -->
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/intlTelInput.min.js"></script>
+
+<!-- Users Scripts -->
+<script src="{{ url_for('static', filename='js/api-client.js') }}"></script>
+<script src="{{ url_for('static', filename='js/modal-utils.js') }}"></script>
+<script src="{{ url_for('static', filename='js/usuarios-main.js') }}"></script>
+<script src="{{ url_for('static', filename='js/usuarios/usuarios-modals.js') }}"></script>
+
+<script>
+// Performance optimizer específico para usuarios
+function applyCardOptimizations(card) {
+  // Usar las animaciones GSAP globales ya disponibles
+  if (window.HardwareAnimations) {
+    console.log('🔧 Optimizaciones GSAP aplicadas a tarjeta individual');
+    return;
+  }
+  
+  // Fallback para compatibilidad si GSAP no está disponible
+  const shimmer = card.querySelector('.ios-card-shimmer');
+  if (shimmer && !window.GSAPUtils?.prefersReducedMotion()) {
+    shimmer.style.opacity = '0';
+    shimmer.style.transform = 'rotate(45deg) translateX(-100%)';
+    console.log('🔧 Fallback aplicado a tarjeta individual');
+  }
+}
+
+// Función para aplicar optimizaciones a tarjetas ya existentes
+function applyOptimizationsToExistingCards() {
+  const existingCards = document.querySelectorAll('.ios-hardware-card');
+  existingCards.forEach(card => {
+    applyCardOptimizations(card);
+  });
+  console.log(`🔧 Optimizaciones aplicadas a ${existingCards.length} tarjetas existentes`);
+}
+
+// Global functions for backward compatibility
+function openCreateUsuarioModal() {
+  // Si es usuario tipo empresa, ya tiene empresa seleccionada automáticamente
+  if (window.userRole === 'empresa' || (window.usuariosMain && window.usuariosMain.currentEmpresa)) {
+    if (window.usuariosModals) {
+      window.usuariosModals.openCreateModal();
+    } else {
+      alert('Sistema de modales no disponible');
+    }
+  } else {
+    alert('Selecciona una empresa primero');
+  }
+}
+
+function exportUsuarios() {
+  // Si es usuario tipo empresa, ya tiene empresa seleccionada automáticamente
+  if (window.userRole === 'empresa' || (window.usuariosMain && window.usuariosMain.currentEmpresa)) {
+    alert('Funcionalidad de exportación en desarrollo');
+  } else {
+    alert('Selecciona una empresa primero');
+  }
+}
+
+// Aplicar optimizaciones a tarjetas existentes cuando sea necesario
+applyOptimizationsToExistingCards();
+
+// Configurar modalManager para modales de usuarios
+if (window.modalManager) {
+  const userModals = ['viewUserModal', 'editUserModal', 'toggleUserModal', 'createUserModal', 'userUpdateModal'];
+  userModals.forEach(modalId => {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+      window.modalManager.setupModal(modalId);
+      console.log('🔧 Modal configurado con modalManager:', modalId);
+    }
+  });
+  console.log('✅ Todos los modales de usuarios configurados con modalManager');
+} else {
+  console.warn('⚠️ modalManager no disponible');
+}
+
+console.log('📻 Usuarios main module loaded');
+
+// Definir variables globales para el rol y empresa
+window.userRole = '{{ user_role or "" }}';
+window.empresaId = '{{ empresa_id or "" }}';
+window.empresaNombre = '{{ empresa_username or "" }}';
+
+console.log('🔧 Variables globales definidas:', {
+  userRole: window.userRole,
+  empresaId: window.empresaId,
+  empresaNombre: window.empresaNombre
+});
+
+// AUTO-INICIALIZAR EMPRESA Y CARGAR USUARIOS PARA VISTA DE EMPRESA
+if (window.userRole === 'empresa' && window.empresaId) {
+  console.log('🏢 Vista de empresa detectada - Auto-inicializando...');
+  
+  // Esperar a que usuariosMain esté disponible
+  const initEmpresaView = () => {
+    if (window.usuariosMain) {
+      console.log('✅ UsuariosMain disponible, configurando empresa automáticamente');
+      
+      // Configurar la empresa actual directamente
+      window.usuariosMain.currentEmpresa = {
+        _id: window.empresaId,
+        nombre: window.empresaNombre || 'Mi Empresa'
+      };
+      
+      // Actualizar info de empresa en la UI
+      window.usuariosMain.updateEmpresaInfo(window.usuariosMain.currentEmpresa);
+      
+      // Cargar usuarios automáticamente
+      window.usuariosMain.loadUsuarios();
+      
+      console.log('✅ Vista de empresa inicializada automáticamente');
+    } else {
+      console.log('⏳ Esperando a que usuariosMain esté disponible...');
+      setTimeout(initEmpresaView, 100);
+    }
+  };
+  
+  // Inicializar después de que todo esté cargado
+  setTimeout(initEmpresaView, 200);
+}
+
+// Funciones para el selector de país personalizado
+function toggleCountryDropdown(selector) {
+  const dropdown = selector.querySelector('.phone-country-dropdown');
+  const isVisible = dropdown.classList.contains('show');
+  
+  // Cerrar todos los dropdowns abiertos
+  document.querySelectorAll('.phone-country-dropdown.show').forEach(d => {
+    d.classList.remove('show');
+  });
+  
+  // Mostrar/ocultar el dropdown actual
+  if (!isVisible) {
+    dropdown.classList.add('show');
+  }
+}
+
+function selectCountry(option, event) {
+  // Prevenir que el evento se propague
+  if (event) {
+    event.stopPropagation();
+  }
+  
+  const country = option.dataset.country;
+  const code = option.dataset.code;
+  const text = option.textContent.trim();
+  
+  // Actualizar el selector
+  const selector = option.closest('.phone-country-selector');
+  const flagSpan = selector.querySelector('.country-flag');
+  const codeSpan = selector.querySelector('.country-code');
+  
+  // Extraer la bandera y el código del texto
+  const parts = text.split(' ');
+  const flag = parts[0]; // La bandera es el primer elemento
+  flagSpan.textContent = flag;
+  codeSpan.textContent = code;
+  
+  // Marcar como seleccionado
+  selector.querySelectorAll('.phone-country-option').forEach(opt => {
+    opt.classList.remove('selected');
+  });
+  option.classList.add('selected');
+  
+  // Cerrar el dropdown
+  const dropdown = selector.querySelector('.phone-country-dropdown');
+  dropdown.classList.remove('show');
+  
+  console.log('País seleccionado:', { country, code, flag, text });
+}
+
+// Cerrar dropdowns al hacer click fuera
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.phone-country-selector')) {
+    document.querySelectorAll('.phone-country-dropdown.show').forEach(dropdown => {
+      dropdown.classList.remove('show');
+    });
+  }
+});
+</script>
+{% endblock %}

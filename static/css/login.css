@@ -393,3 +393,49 @@ body {
 .hidden {
   display: none !important;
 }
+
+/* ========== FIXES PARA VISIBILIDAD DEL BOTÓN ========== */
+/* Asegurar que el contenedor principal tenga altura suficiente */
+.login-background {
+  min-height: 100vh;
+  min-height: 100dvh; /* Para soporte de altura dinámica en móviles */
+  position: fixed;
+  inset: 0;
+}
+
+/* Asegurar que el formulario tenga espacio suficiente */
+#loginCard {
+  margin-bottom: 2rem;
+}
+
+/* Mejoras para el botón de submit */
+#submitBtn {
+  margin-top: 1.5rem !important;
+  margin-bottom: 1rem !important;
+  z-index: 100;
+  position: relative;
+}
+
+/* Asegurar que en pantallas pequeñas haya suficiente espacio */
+@media (max-height: 700px) {
+  .login-background {
+    position: relative;
+    min-height: 100vh;
+  }
+  
+  #loginCard {
+    margin-bottom: 3rem;
+  }
+  
+  #submitBtn {
+    margin-top: 2rem !important;
+    margin-bottom: 1.5rem !important;
+  }
+}
+
+/* Para pantallas muy pequeñas */
+@media (max-height: 600px) {
+  .login-background {
+    padding-bottom: 4rem;
+  }
+}

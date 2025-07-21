@@ -1,4 +1,4 @@
-{% extends "admin/dashboard.html" %}
+{% extends "empresa/dashboard.html" %}
 
 {% block title %}Hardware - Sistema Multi-Tenant{% endblock %}
 
@@ -621,7 +621,7 @@
 {% endblock %}
 
 {% block page_js %}
-<!-- Leaflet JS -->
+<!– Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script src="{{ url_for('static', filename='js/api-client.js') }}"></script>
 <script src="{{ url_for('static', filename='js/modal-utils.js') }}"></script>
@@ -629,6 +629,13 @@
 <script src="{{ url_for('static', filename='js/hardware/hardware-validation.js') }}"></script>
 <script src="{{ url_for('static', filename='js/hardware/hardware-core.js') }}"></script>
 <script src="{{ url_for('static', filename='js/hardware/hardware-main.js') }}"></script>
+<!-- Empresa context for JavaScript -->
+<script>
+// Proporcionar contexto de empresa para JavaScript
+window.EMPRESA_ID = '{{ empresa_id }}';
+window.EMPRESA_USERNAME = '{{ empresa_username }}';
+console.log('🏢 Contexto de empresa configurado:', { id: window.EMPRESA_ID, username: window.EMPRESA_USERNAME });
+</script>
 <!-- Debug script para el problema del PUT -->
 <script src="{{ url_for('static', filename='js/hardware-debug-put.js') }}"></script>
 <script>
@@ -2053,9 +2060,8 @@ fetch('/proxy/health')
       // Initialize filter listeners first
       initializeFilterListeners();
       
-      // CARGAR HARDWARE INMEDIATAMENTE PARA ADMINISTRADOR
-      console.log('✅ API Client listo, cargando hardware de administrador...');
-      loadHardware();
+      // NO cargar datos aquí - ya lo hace hardware-main.js
+      console.log('✅ API Client listo, hardware-main.js se encargará de cargar datos');
     }
   })
   .catch(err => console.error('Error initializing API client:', err));
@@ -2063,6 +2069,7 @@ fetch('/proxy/health')
 // Functions for CRUD operations
 let isLoadingHardware = false;
 
+// FUNCIÓN ESPECÍFICA PARA EMPRESAS - NO USA ENDPOINTS DE ADMIN
 async function loadHardware() {
   if (isLoadingHardware) {
     console.warn('⚠️ loadHardware ya en progreso, saltando llamada duplicada...');
@@ -2071,19 +2078,30 @@ async function loadHardware() {
   
   isLoadingHardware = true;
   try {
-    console.log('🔄 Cargando hardware...');
+    console.log('🔄 Cargando hardware ESPECÍFICO para empresa...');
+    
+    // Obtener ID de empresa del contexto
+    const empresaId = window.EMPRESA_ID || '{{ empresa_id }}';
+    if (!empresaId) {
+      console.error('❌ No se encontró ID de empresa');
+      renderHardware([]);
+      return;
+    }
+    
+    console.log('🏢 ID de empresa:', empresaId);
     
     // Determinar qué endpoint usar basado en el filtro de inactivos
     const includeInactiveFilter = document.getElementById('includeInactiveFilter');
     const includeInactive = includeInactiveFilter ? includeInactiveFilter.value === 'all' : false;
     
     let response;
+    // SOLO USAR ENDPOINTS DE EMPRESA - NO FALLBACK A ADMIN
     if (includeInactive) {
-      console.log('🌐 Haciendo petición a:', '/proxy/api/hardware/all-including-inactive');
-      response = await apiClient.get_hardware_list_including_inactive();
+      console.log('🌐 Usando endpoint de empresa con inactivos:', `/proxy/api/hardware/empresa/${empresaId}/including-inactive`);
+      response = await apiClient.get_hardware_by_empresa_including_inactive(empresaId);
     } else {
-      console.log('🌐 Haciendo petición a:', '/proxy/api/hardware');
-      response = await apiClient.get_hardware_list();
+      console.log('🌐 Usando endpoint de empresa activos:', `/proxy/api/hardware/empresa/${empresaId}`);
+      response = await apiClient.get_hardware_by_empresa(empresaId);
     }
     
     console.log('📡 Respuesta recibida - Status:', response.status, 'OK:', response.ok);
@@ -2093,8 +2111,12 @@ async function loadHardware() {
         console.error('❌ Error 401: No autorizado. Redirigiendo al login...');
         window.location.href = '/login';
         return;
+      } else if (response.status === 404) {
+        console.error('❌ Error 404: Endpoint de empresa no encontrado:', response.status);
+        throw new Error(`Endpoint de empresa no disponible: ${response.status}`);
+      } else {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-      throw new Error(`HTTP error! status: ${response.status}`);
     }
     
     const data = await response.json();
@@ -2503,7 +2525,7 @@ function createHardwareCard(hardware) {
             <i class="fas fa-map-location-dot"></i>
           </button>` : ''
         }
-        <button class="ios-card-btn ${hardware.activa ? 'ios-card-btn-warning' : 'ios-card-btn-success'}" 
+        <button class="ios-card-btn ${hardware.activa ? 'ios-card-btn-warning' : 'ios-card-btn-success'}"
                 onclick="toggleHardwareStatus('${hardware._id}', ${!hardware.activa})" 
                 title="${hardware.activa ? 'Desactivar' : 'Activar'}">
           <i class="fas ${hardware.activa ? 'fa-power-off' : 'fa-play'}"></i>
@@ -2604,6 +2626,11 @@ async function loadEmpresas() {
       window.empresas = data.data;
       // Populate empresa dropdown
       populateEmpresaDropdown(data.data);
+      
+      // If in empresa mode, pre-select current empresa
+      if (window.EMPRESA_MODE && window.EMPRESA_ID) {
+        preSelectCurrentEmpresa();
+      }
     } else {
       console.error('❌ Error loading empresas:', data.errors);
     }
@@ -2633,6 +2660,30 @@ function populateEmpresaDropdown(empresas) {
   });
   
   console.log(`✅ ${empresas.length} empresas agregadas al dropdown`);
+}
+
+// Pre-select current empresa in empresa mode
+function preSelectCurrentEmpresa() {
+  if (!window.EMPRESA_ID) {
+    console.warn('⚠️ No hay ID de empresa disponible para pre-seleccionar');
+    return;
+  }
+  
+  const empresaSelect = document.getElementById('hardwareEmpresa');
+  if (!empresaSelect) {
+    console.warn('⚠️ Elemento hardwareEmpresa no encontrado para pre-selección');
+    return;
+  }
+  
+  // Set the current empresa as selected
+  empresaSelect.value = window.EMPRESA_ID;
+  console.log('🏢 Empresa pre-seleccionada:', window.EMPRESA_ID);
+  
+  // Load sedes for the pre-selected empresa
+  loadSedesByEmpresa();
+  
+  // Also disable the empresa select in empresa mode (optional)
+  // empresaSelect.disabled = true;
 }
 
 // Load sedes for selected empresa
@@ -2975,6 +3026,21 @@ function initializeFilterListeners() {
   
   filtersInitialized = true;
   console.log('✅ Event listeners de filtros inicializados');
+}
+
+// EMPRESA MODE: Configurar el cliente JavaScript para empresa
+window.EMPRESA_MODE = true;
+window.EMPRESA_ID = '{{ empresa_id }}';
+console.log('🏢 EMPRESA Hardware mode initialized for ID:', window.EMPRESA_ID);
+
+// Sobrescribir la función de carga de hardware para empresa
+if (typeof window.loadHardware === 'function') {
+  const originalLoadHardware = window.loadHardware;
+  window.loadHardware = function() {
+    console.log('🏢 Loading hardware for empresa:', window.EMPRESA_ID);
+    // Llamar al endpoint específico de empresa
+    return originalLoadHardware();
+  };
 }
 
 // Initialize on DOM load

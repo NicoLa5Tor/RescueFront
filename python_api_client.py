@@ -33,10 +33,11 @@ class EndpointTestClient:
         endpoint: str,
         *,
         params: Optional[Dict[str, Any]] = None,
-        data: Optional[Dict[str, Any]] = None
+        data: Optional[Dict[str, Any]] = None,
+        cookies: Optional[Dict[str, str]] = None
     ) -> requests.Response:
         url = f"{self.base_url}{endpoint}"
-        return requests.request(method, url, params=params, json=data, headers=self._headers())
+        return requests.request(method, url, params=params, json=data, headers=self._headers(), cookies=cookies)
 
     # ------------------------------------------------------------------
     # Authentication and health endpoints
@@ -106,6 +107,10 @@ class EndpointTestClient:
     def get_empresa_activity(self, empresa_id: str) -> requests.Response:
         """GET /api/empresas/{empresa_id}/activity - Actividad de empresa"""
         return self._request("GET", f"/api/empresas/{empresa_id}/activity")
+
+    def get_empresa_statistics(self, empresa_id: str) -> requests.Response:
+        """GET /api/empresas/{empresa_id}/statistics - Estadísticas específicas de empresa"""
+        return self._request("GET", f"/api/empresas/{empresa_id}/statistics")
 
 
     # ------------------------------------------------------------------
@@ -219,6 +224,83 @@ class EndpointTestClient:
     def get_hardware_by_empresa(self, empresa_id: str) -> requests.Response:
         """GET /api/hardware/empresa/{empresa_id} - Obtener hardware por empresa"""
         return self._request("GET", f"/api/hardware/empresa/{empresa_id}")
+    
+    def get_hardware_by_empresa_including_inactive(self, empresa_id: str) -> requests.Response:
+        """GET /api/hardware/empresa/{empresa_id}/including-inactive - Hardware por empresa incluyendo inactivos"""
+        return self._request("GET", f"/api/hardware/empresa/{empresa_id}/including-inactive")
+    
+    def get_hardware_data_for_empresa_frontend(self, empresa_id: str) -> Dict[str, Any]:
+        """Get hardware data for specific empresa formatted for frontend with statistics."""
+        try:
+            # Prefer endpoint that includes inactive hardware and returns stats
+            response = self.get_hardware_by_empresa_including_inactive(empresa_id)
+            
+            # Fallback to standard endpoint if the first fails
+            if not response.ok:
+                response = self.get_hardware_by_empresa(empresa_id)
+            
+            # Also get hardware types
+            types_response = self.get_hardware_types()
+            
+            if response.ok:
+                data = response.json()
+                types_data = types_response.json() if types_response.ok else {'success': False, 'data': []}
+                
+                if data.get('success'):
+                    hardware_list = data.get('data', [])
+                    backend_stats = data.get('stats') or {}
+                    
+                    # Use stats from backend when available, otherwise compute them
+                    total = backend_stats.get('total', len(hardware_list))
+                    active = backend_stats.get(
+                        'activos', len([h for h in hardware_list if h.get('activa', True)])
+                    )
+                    inactive = backend_stats.get(
+                        'inactivos', len([h for h in hardware_list if not h.get('activa', True)])
+                    )
+                    
+                    # Calculate additional stats
+                    available_items = len([h for h in hardware_list if h.get('datos', {}).get('status') == 'available'])
+                    out_of_stock = len([h for h in hardware_list if h.get('datos', {}).get('status') == 'out_of_stock'])
+                    
+                    # Calculate total value
+                    total_value = sum(
+                        (h.get('datos', {}).get('price', 0) or 0) * (h.get('datos', {}).get('stock', 0) or 0) 
+                        for h in hardware_list
+                    )
+                    
+                    stats = {
+                        'total_items': total,
+                        'active_items': active,
+                        'inactive_items': inactive,
+                        'available_items': available_items or active,  # Fallback to active count
+                        'out_of_stock': out_of_stock or inactive,  # Fallback to inactive count
+                        'total_value': total_value,
+                    }
+                    
+                    return {
+                        'hardware_list': hardware_list,
+                        'hardware_types': types_data.get('data', []) if types_data.get('success') else [],
+                        'hardware_stats': stats,
+                        'count': len(hardware_list),
+                    }
+        except Exception as e:
+            print(f"Error getting empresa hardware data: {e}")
+        
+        # Fallback empty structure if everything fails
+        return {
+            'hardware_list': [],
+            'hardware_types': [],
+            'hardware_stats': {
+                'total_items': 0,
+                'active_items': 0,
+                'inactive_items': 0,
+                'available_items': 0,
+                'out_of_stock': 0,
+                'total_value': 0,
+            },
+            'count': 0,
+        }
 
     # ------------------------------------------------------------------
     # Hardware types endpoints
