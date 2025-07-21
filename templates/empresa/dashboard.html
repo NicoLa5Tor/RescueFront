@@ -213,6 +213,10 @@
               <div class="sidebar__link-icon"><i class="fas fa-chart-bar"></i></div>
               <span class="sidebar__link-text">Estadísticas</span>
             </a>
+            <a href="{{ url_for('empresa_alertas') }}" class="sidebar__link {% if active_page=='alertas' %}sidebar__link--active{% endif %}">
+              <div class="sidebar__link-icon"><i class="fas fa-exclamation-triangle"></i></div>
+              <span class="sidebar__link-text">Alertas</span>
+            </a>
           </div>
         </div>
       </nav>
@@ -250,6 +254,25 @@
             <i class="fas fa-download"></i>
             Exportar
           </button>
+        </div>
+      </div>
+    </div>
+    <!-- Alertas Activas -->
+    <div class="mb-6 sm:mb-8 px-4 sm:px-6 lg:px-8">
+      <h2 class="text-xl sm:text-2xl font-bold text-white mb-4">Alertas Activas</h2>
+      <div id="activeAlerts" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
+        <!-- Aquí se inyectarán las alertas dinámicamente -->
+        <div class="ios-stat-card">
+          <!-- Card de ejemplo -->
+          <div class="ios-stat-icon ios-stat-icon-red">
+            <i class="fas fa-bell text-lg sm:text-xl"></i>
+          </div>
+          <div class="ios-stat-content">
+            <div class="ios-stat-label text-xs sm:text-sm">Ejemplo de Alerta</div>
+            <div class="ios-stat-value text-lg sm:text-xl lg:text-2xl">1</div>
+            <div class="ios-stat-trend text-xs">Alta prioridad</div>
+          </div>
+          <div class="ios-stat-shimmer"></div>
         </div>
       </div>
     </div>
@@ -302,7 +325,155 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Configuración específica para empresas
     window.EMPRESA_ROLE = 'empresa';
+    
+    // Cargar alertas activas en el dashboard principal
+    loadActiveAlertsForDashboard();
 });
+
+async function loadActiveAlertsForDashboard() {
+    try {
+        console.log('🏢 DASHBOARD: Iniciando carga de alertas para dashboard principal');
+        
+        // Obtener empresa_id del usuario actual
+        const empresaId = window.currentUser?.empresa_id || window.currentUser?.id;
+        console.log('🏢 DASHBOARD: EmpresaId:', empresaId);
+        console.log('🏢 DASHBOARD: currentUser:', window.currentUser);
+        
+        if (!empresaId) {
+            console.log('🏢 DASHBOARD: No se pudo obtener el ID de empresa');
+            showNoAlertsMessage();
+            return;
+        }
+        
+        const url = `/proxy/api/mqtt-alerts/empresa/${empresaId}/active-by-sede`;
+        console.log('🏢 DASHBOARD: URL:', url);
+        
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include'
+        });
+        
+        console.log('🏢 DASHBOARD: Response status:', response.status);
+        console.log('🏢 DASHBOARD: Response ok:', response.ok);
+        
+        if (!response.ok) {
+            console.log('🏢 DASHBOARD: Response no ok:', response.status, response.statusText);
+            showNoAlertsMessage();
+            return;
+        }
+        
+        const data = await response.json();
+        console.log('🏢 DASHBOARD: Data recibida:', data);
+        console.log('🏢 DASHBOARD: data.success:', data.success);
+        console.log('🏢 DASHBOARD: data.alertas_por_sede:', data.alertas_por_sede);
+        
+        if (data.success && data.alertas_por_sede && Object.keys(data.alertas_por_sede).length > 0) {
+            console.log('🏢 DASHBOARD: Procesando alertas...');
+            
+            // Convertir el objeto de alertas por sede en un array plano
+            const allAlerts = [];
+            Object.entries(data.alertas_por_sede).forEach(([sede, alertas]) => {
+                console.log(`🏢 DASHBOARD: Sede ${sede}: ${alertas.length} alertas`);
+                alertas.forEach(alerta => {
+                    allAlerts.push({
+                        ...alerta,
+                        sede: sede
+                    });
+                });
+            });
+            
+            console.log(`🏢 DASHBOARD: Total alertas: ${allAlerts.length}`);
+            
+            // Ordenar por prioridad (crítica > alta > media > baja) y tomar las primeras 3
+            const priorityOrder = { 'critica': 4, 'alta': 3, 'media': 2, 'baja': 1 };
+            allAlerts.sort((a, b) => (priorityOrder[b.prioridad] || 0) - (priorityOrder[a.prioridad] || 0));
+            
+            const top3 = allAlerts.slice(0, 3);
+            console.log(`🏢 DASHBOARD: Top 3 alertas:`, top3);
+            
+            renderAlertsInDashboard(top3);
+        } else {
+            console.log('🏢 DASHBOARD: No hay alertas o estructura incorrecta');
+            console.log('🏢 DASHBOARD: data.success:', data.success);
+            console.log('🏢 DASHBOARD: alertas_por_sede keys:', data.alertas_por_sede ? Object.keys(data.alertas_por_sede) : 'null');
+            showNoAlertsMessage();
+        }
+        
+    } catch (error) {
+        console.log('🏢 DASHBOARD: ERROR cargando alertas:', error);
+        showNoAlertsMessage();
+    }
+}
+
+function renderAlertsInDashboard(alerts) {
+    const container = document.getElementById('activeAlerts');
+    if (!container) return;
+    
+    const alertsHTML = alerts.map(alert => {
+        const priorityColor = getPriorityColor(alert.prioridad);
+        const originIcon = alert.origen_tipo === 'hardware' ? 'fa-microchip' : 'fa-user';
+        
+        return `
+            <div class="ios-stat-card">
+                <div class="ios-stat-icon" style="background: ${priorityColor};">
+                    <i class="fas ${originIcon}"></i>
+                </div>
+                <div class="ios-stat-content">
+                    <div class="ios-stat-label">${alert.origen_tipo === 'hardware' ? alert.hardware_nombre || 'Hardware' : 'Usuario'}</div>
+                    <div class="ios-stat-value">${alert.prioridad.toUpperCase()}</div>
+                    <div class="ios-stat-trend">${alert.sede}</div>
+                </div>
+                <div class="ios-stat-shimmer"></div>
+            </div>
+        `;
+    }).join('');
+    
+    container.innerHTML = alertsHTML;
+}
+
+function getPriorityColor(prioridad) {
+    switch(prioridad) {
+        case 'critica': return 'linear-gradient(135deg, #dc2626, #b91c1c)';
+        case 'alta': return 'linear-gradient(135deg, #ea580c, #c2410c)';
+        case 'media': return 'linear-gradient(135deg, #eab308, #ca8a04)';
+        case 'baja': return 'linear-gradient(135deg, #16a34a, #15803d)';
+        default: return 'linear-gradient(135deg, #6b7280, #4b5563)';
+    }
+}
+
+function showNoAlertsMessage() {
+    const container = document.getElementById('activeAlerts');
+    if (!container) return;
+    
+    container.innerHTML = `
+        <div class="ios-stat-card">
+            <div class="ios-stat-icon ios-stat-icon-green">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="ios-stat-content">
+                <div class="ios-stat-label">Sin Alertas</div>
+                <div class="ios-stat-value">0</div>
+                <div class="ios-stat-trend">Todo en orden</div>
+            </div>
+            <div class="ios-stat-shimmer"></div>
+        </div>
+        <div class="ios-stat-card">
+            <div class="ios-stat-icon ios-stat-icon-blue">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <div class="ios-stat-content">
+                <div class="ios-stat-label">Sistema</div>
+                <div class="ios-stat-value">OK</div>
+                <div class="ios-stat-trend">Funcionando correctamente</div>
+            </div>
+            <div class="ios-stat-shimmer"></div>
+        </div>
+    `;
+}
 </script>
 {% endblock %}
+
 {% endblock %}
