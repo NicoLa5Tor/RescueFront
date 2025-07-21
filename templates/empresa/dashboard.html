@@ -12,12 +12,18 @@
 <link href="{{ url_for('static', filename='css/dashboard/sidebar.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/dashboard/main-layout.css') }}" rel="stylesheet">
 
+<!-- Hardware iOS Design System (CSS principal que incluye todo) -->
+<link href="{{ url_for('static', filename='css/hardware/hardware-main.css') }}" rel="stylesheet">
+
 <!-- Super Dashboard iOS Styles SOLO para componentes específicos -->
 <link href="{{ url_for('static', filename='css/super-dashboard/super-dashboard-main.css') }}" rel="stylesheet">
 
-<!-- Enhanced CSS for improved functionality -->
+<!-- Global Text Theme CSS -->
+<link href="{{ url_for('static', filename='css/global-text-theme.css') }}" rel="stylesheet">
+
+<!-- CSS personalizado comentado - Usando solo CSS de hardware -->
 <style>
-/* Corregir layout del main-content para sidebar */
+/* Layout fixes mantenidos para compatibilidad */
 @media (min-width: 1024px) {
   .main-content {
     margin-left: var(--sidebar-width) !important;
@@ -31,6 +37,9 @@
     width: calc(100% - var(--sidebar-width) - 2rem) !important;
   }
 }
+
+/* Resto de estilos comentados - usando CSS de hardware */
+/*
 .stat-updated {
   animation: statHighlight 1s ease-in-out;
 }
@@ -86,7 +95,6 @@
   transition: transform 0.3s ease;
 }
 
-/* Center chart titles */
 .chart-header {
   display: flex;
   flex-direction: column;
@@ -109,6 +117,7 @@
   color: var(--text-secondary) !important;
   line-height: var(--leading-tight);
 }
+*/
 </style>
 {% endblock %}
 
@@ -237,42 +246,96 @@
   <!-- Main Content -->
   <main class="main-content">
     {% block main_content %}
-    <!-- Default content for empresa dashboard -->
-    <div class="mb-8">
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-        <div>
-          <h1 class="text-3xl font-bold text-white">Bienvenido Empresa 👋</h1>
-          <p class="text-gray-600 text-white mt-1">Panel de control empresarial</p>
-        </div>
-        <div class="flex flex-col xs:flex-row space-y-2 xs:space-y-0 xs:space-x-3">
-          <button class="btn-secondary">
-            <i class="fas fa-calendar-alt"></i>
-            <span class="hidden xs:inline">Últimos 30 días</span>
-            <span class="xs:hidden">30 días</span>
-          </button>
-          <button class="btn-primary">
-            <i class="fas fa-download"></i>
-            Exportar
-          </button>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Enhanced iOS Header -->
+      <div class="ios-header-container mb-8">
+        <div class="ios-header-backdrop">
+          <div class="ios-header-content">
+            <div class="ios-header-text">
+              <div class="ios-header-icon">
+                <i class="fas fa-tachometer-alt"></i>
+              </div>
+              <div>
+                <h1 class="ios-header-title">Dashboard Empresarial</h1>
+                <p class="ios-header-subtitle">Monitorea y administra tu sistema integral</p>
+              </div>
+            </div>
+            <div class="ios-header-actions">
+              <button class="ios-action-btn">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Últimos 30 días</span>
+              </button>
+              <button class="ios-action-btn ios-action-btn-primary">
+                <i class="fas fa-download"></i>
+                Exportar
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-    <!-- Alertas Activas -->
-    <div class="mb-6 sm:mb-8 px-4 sm:px-6 lg:px-8">
-      <h2 class="text-xl sm:text-2xl font-bold text-white mb-4">Alertas Activas</h2>
-      <div id="activeAlerts" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
-        <!-- Aquí se inyectarán las alertas dinámicamente -->
-        <div class="ios-stat-card">
-          <!-- Card de ejemplo -->
-          <div class="ios-stat-icon ios-stat-icon-red">
-            <i class="fas fa-bell text-lg sm:text-xl"></i>
+
+      <!-- Enhanced iOS Stats Overview -->
+      <div class="ios-stats-grid mb-8">
+        <div class="ios-stat-card gsap-animated" data-stat="total-users">
+          <div class="ios-stat-icon ios-stat-icon-blue">
+            <i class="fas fa-users"></i>
           </div>
           <div class="ios-stat-content">
-            <div class="ios-stat-label text-xs sm:text-sm">Ejemplo de Alerta</div>
-            <div class="ios-stat-value text-lg sm:text-xl lg:text-2xl">1</div>
-            <div class="ios-stat-trend text-xs">Alta prioridad</div>
+            <div class="ios-stat-label">Total Usuarios</div>
+            <div class="ios-stat-value" id="totalUsersCount">--</div>
+            <div class="ios-stat-trend">Activos en sistema</div>
           </div>
           <div class="ios-stat-shimmer"></div>
+        </div>
+        
+        <div class="ios-stat-card gsap-animated" data-stat="hardware">
+          <div class="ios-stat-icon ios-stat-icon-purple">
+            <i class="fas fa-microchip"></i>
+          </div>
+          <div class="ios-stat-content">
+            <div class="ios-stat-label">Hardware</div>
+            <div class="ios-stat-value" id="hardwareCount">--</div>
+            <div class="ios-stat-trend">Dispositivos conectados</div>
+          </div>
+          <div class="ios-stat-shimmer"></div>
+        </div>
+        
+        <div class="ios-stat-card gsap-animated" data-stat="alertas">
+          <div class="ios-stat-icon ios-stat-icon-red">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <div class="ios-stat-content">
+            <div class="ios-stat-label">Alertas Activas</div>
+            <div class="ios-stat-value" id="alertasActivasCount">--</div>
+            <div class="ios-stat-trend">Requieren atención</div>
+          </div>
+          <div class="ios-stat-shimmer"></div>
+        </div>
+        
+        <div class="ios-stat-card gsap-animated" data-stat="system">
+          <div class="ios-stat-icon ios-stat-icon-green">
+            <i class="fas fa-shield-alt"></i>
+          </div>
+          <div class="ios-stat-content">
+            <div class="ios-stat-label">Estado Sistema</div>
+            <div class="ios-stat-value" id="systemStatus">OK</div>
+            <div class="ios-stat-trend">Funcionando correctamente</div>
+          </div>
+          <div class="ios-stat-shimmer"></div>
+        </div>
+      </div>
+
+      <!-- Alertas Activas Section -->
+      <div class="mb-6 sm:mb-8">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white">Alertas Más Recientes</h2>
+          <a href="{{ url_for('empresa_alertas') }}" class="ios-action-btn">
+            <i class="fas fa-list"></i>
+            Ver Todas
+          </a>
+        </div>
+        <div id="activeAlerts" class="ios-stats-grid">
+          <!-- Aquí se inyectarán las alertas dinámicamente -->
         </div>
       </div>
     </div>
@@ -326,9 +389,120 @@ document.addEventListener('DOMContentLoaded', function() {
     // Configuración específica para empresas
     window.EMPRESA_ROLE = 'empresa';
     
+    // Aplicar animaciones GSAP a las cards de estadísticas
+    animateStatCards();
+    
+    // Cargar estadísticas generales
+    loadDashboardStats();
+    
     // Cargar alertas activas en el dashboard principal
     loadActiveAlertsForDashboard();
 });
+
+// Función para animar las cards de estadísticas usando GSAP
+function animateStatCards() {
+    const statCards = document.querySelectorAll('.ios-stat-card');
+    if (window.gsap && statCards.length > 0) {
+        // Configurar estado inicial
+        window.gsap.set(statCards, { 
+            opacity: 0, 
+            y: 30,
+            scale: 0.95
+        });
+        
+        // Animar entrada con stagger
+        window.gsap.to(statCards, {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.6,
+            ease: "back.out(1.2)",
+            stagger: 0.1
+        });
+        
+        console.log('🎨 GSAP: Animaciones aplicadas a cards de estadísticas');
+    }
+}
+
+// Función para cargar estadísticas generales del dashboard
+async function loadDashboardStats() {
+    try {
+        console.log('📊 DASHBOARD: Cargando estadísticas generales...');
+        
+        const empresaId = window.currentUser?.empresa_id || window.currentUser?.id;
+        if (!empresaId) {
+            console.log('❌ DASHBOARD: No se pudo obtener ID de empresa');
+            return;
+        }
+
+        // Simular carga de datos (reemplazar con endpoint real cuando esté disponible)
+        await simulateStatsLoading();
+        
+        console.log('✅ DASHBOARD: Estadísticas cargadas correctamente');
+        
+    } catch (error) {
+        console.error('❌ DASHBOARD: Error cargando estadísticas:', error);
+        showStatsError();
+    }
+}
+
+// Simulación de carga de estadísticas (temporal)
+async function simulateStatsLoading() {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            // Actualizar valores simulados con animación
+            animateStatValue('totalUsersCount', Math.floor(Math.random() * 50) + 10);
+            animateStatValue('hardwareCount', Math.floor(Math.random() * 20) + 5);
+            animateStatValue('alertasActivasCount', Math.floor(Math.random() * 10));
+            resolve();
+        }, 1500);
+    });
+}
+
+// Función para animar la actualización de valores estadísticos
+function animateStatValue(elementId, newValue) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+    
+    // Obtener valor actual
+    const currentValue = parseInt(element.textContent) || 0;
+    
+    if (window.gsap) {
+        // Usar GSAP para animar el contador
+        const counterObj = { value: currentValue };
+        
+        window.gsap.to(counterObj, {
+            value: newValue,
+            duration: 1.2,
+            ease: "power2.out",
+            onUpdate: function() {
+                element.textContent = Math.round(counterObj.value);
+            },
+            onComplete: function() {
+                // Agregar efecto de highlight
+                element.parentElement.parentElement.classList.add('stat-updated');
+                setTimeout(() => {
+                    element.parentElement.parentElement.classList.remove('stat-updated');
+                }, 1000);
+            }
+        });
+    } else {
+        // Fallback sin animación
+        element.textContent = newValue;
+    }
+}
+
+// Función para mostrar error en estadísticas
+function showStatsError() {
+    const statValues = ['totalUsersCount', 'hardwareCount', 'alertasActivasCount'];
+    statValues.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.textContent = 'Error';
+            element.classList.add('text-red-500');
+        }
+    });
+}
 
 async function loadActiveAlertsForDashboard() {
     try {
@@ -417,7 +591,7 @@ function renderAlertsInDashboard(alerts) {
         const originIcon = alert.origen_tipo === 'hardware' ? 'fa-microchip' : 'fa-user';
         
         return `
-            <div class="ios-stat-card">
+            <div class="ios-stat-card gsap-animated">
                 <div class="ios-stat-icon" style="background: ${priorityColor};">
                     <i class="fas ${originIcon}"></i>
                 </div>
@@ -432,6 +606,20 @@ function renderAlertsInDashboard(alerts) {
     }).join('');
     
     container.innerHTML = alertsHTML;
+    
+    // Aplicar animaciones GSAP a las nuevas cards
+    const newCards = container.querySelectorAll('.ios-stat-card');
+    if (window.gsap && newCards.length > 0) {
+        window.gsap.set(newCards, { opacity: 0, y: 20, scale: 0.9 });
+        window.gsap.to(newCards, {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.5,
+            ease: "back.out(1.1)",
+            stagger: 0.1
+        });
+    }
 }
 
 function getPriorityColor(prioridad) {
@@ -449,7 +637,7 @@ function showNoAlertsMessage() {
     if (!container) return;
     
     container.innerHTML = `
-        <div class="ios-stat-card">
+        <div class="ios-stat-card gsap-animated">
             <div class="ios-stat-icon ios-stat-icon-green">
                 <i class="fas fa-check-circle"></i>
             </div>
@@ -460,7 +648,7 @@ function showNoAlertsMessage() {
             </div>
             <div class="ios-stat-shimmer"></div>
         </div>
-        <div class="ios-stat-card">
+        <div class="ios-stat-card gsap-animated">
             <div class="ios-stat-icon ios-stat-icon-blue">
                 <i class="fas fa-shield-alt"></i>
             </div>
@@ -472,6 +660,20 @@ function showNoAlertsMessage() {
             <div class="ios-stat-shimmer"></div>
         </div>
     `;
+    
+    // Aplicar animaciones GSAP a las cards de "sin alertas"
+    const noAlertCards = container.querySelectorAll('.ios-stat-card');
+    if (window.gsap && noAlertCards.length > 0) {
+        window.gsap.set(noAlertCards, { opacity: 0, y: 20, scale: 0.9 });
+        window.gsap.to(noAlertCards, {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.5,
+            ease: "back.out(1.1)",
+            stagger: 0.1
+        });
+    }
 }
 </script>
 {% endblock %}
