@@ -549,7 +549,7 @@
     <!-- No alerts message -->
     <div id="noAlertsMessage" class="no-alerts-message hidden">
       <i class="fas fa-bell-slash text-4xl sm:text-6xl mb-4 opacity-50"></i>
-      <p class="text-base sm:text-lg">No se encontraron alertas activas</p>
+      <p class="text-base sm:text-lg">No hay alertas activas</p>
       <p class="text-xs sm:text-sm mt-2">Las alertas aparecerán aquí cuando se activen</p>
     </div>
   </div>
@@ -985,12 +985,31 @@ async function showAlertDetails(alertId) {
         return;
     }
     
-    // Para alertas del cache básico, usar datos disponibles
-    const displayName = alert.hardware_nombre || 'Hardware';
+    // Determinar el tipo de origen de la alerta
+    const isUserOrigin = alert.origen_tipo === 'usuario' || alert.data?.origen === 'usuario_movil';
+    const displayName = alert.hardware_nombre || (alert.data?.botonera_ubicacion?.hardware_nombre) || 'Hardware';
     const empresaName = alert.empresa_nombre || 'Empresa';
     subtitle.textContent = `${displayName} - ${empresaName}`;
     
     content.innerHTML = `
+        <!-- Header con información del origen de la alerta -->
+        <div class="mb-4 p-3 rounded-lg ${isUserOrigin ? 'bg-gradient-to-r from-blue-600 to-indigo-700' : 'bg-gradient-to-r from-gray-600 to-gray-700'}">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <i class="fas fa-${isUserOrigin ? 'user' : 'microchip'} text-white mr-2"></i>
+                    <span class="text-white font-medium">
+                        ${isUserOrigin ? 'Alerta creada por Usuario' : 'Alerta del Sistema'}
+                    </span>
+                </div>
+                ${isUserOrigin && alert.data?.usuario_nombre ? `
+                    <div class="text-right">
+                        <p class="text-white text-sm font-medium">${alert.data.usuario_nombre}</p>
+                        <p class="text-gray-200 text-xs">${alert.data?.usuario_rol || 'Usuario'}</p>
+                    </div>
+                ` : ''}
+            </div>
+        </div>
+        
         <!-- Header con imagen de alerta -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <!-- Imagen y tipo de alerta -->
@@ -1005,7 +1024,7 @@ async function showAlertDetails(alertId) {
                         </h3>
                         <div class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium" 
                              style="background-color: ${alert.data.tipo_alarma_info.color_alerta}20; color: ${alert.data.tipo_alarma_info.color_alerta};">
-                            ${alert.data.tipo_alarma || 'N/A'}
+                            ${alert.data.tipo_alarma || alert.tipo_alerta || 'N/A'}
                         </div>
                     </div>
                 ` : `
@@ -1033,7 +1052,28 @@ async function showAlertDetails(alertId) {
                             <span class="text-indigo-200 text-sm">Sede:</span>
                             <span class="text-white font-medium ml-2">${alert.sede}</span>
                         </div>
-                        ${alert.data?.ubicacion ? `
+                        ${alert.data?.botonera_ubicacion?.direccion ? `
+                            <div>
+                                <span class="text-indigo-200 text-sm">Dirección:</span>
+                                <span class="text-white font-medium ml-2">${alert.data.botonera_ubicacion.direccion}</span>
+                            </div>
+                            ${alert.data.botonera_ubicacion.direccion_url ? `
+                                <div class="mt-2">
+                                    <a href="${alert.data.botonera_ubicacion.direccion_url}" target="_blank" 
+                                       class="inline-flex items-center px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-lg transition-colors">
+                                        <i class="fas fa-map-marked-alt mr-1"></i>
+                                        Ver en Google Maps
+                                    </a>
+                                    ${alert.data.botonera_ubicacion.direccion_open_maps ? `
+                                        <a href="${alert.data.botonera_ubicacion.direccion_open_maps}" target="_blank" 
+                                           class="ml-2 inline-flex items-center px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-xs rounded-lg transition-colors">
+                                            <i class="fas fa-map mr-1"></i>
+                                            OpenMaps
+                                        </a>
+                                    ` : ''}
+                                </div>
+                            ` : ''}
+                        ` : alert.data?.ubicacion ? `
                             <div>
                                 <span class="text-indigo-200 text-sm">Ubicación específica:</span>
                                 <span class="text-white font-medium ml-2">${alert.data.ubicacion}</span>
@@ -1101,6 +1141,44 @@ async function showAlertDetails(alertId) {
                     </div>
                 ` : ''}
                 
+                <!-- Información específica del usuario creador (solo para alertas de usuario) -->
+                ${isUserOrigin && (alert.data?.usuario_email || alert.data?.usuario_telefono) ? `
+                    <div class="modal-section bg-gradient-to-r from-violet-700 to-purple-800 rounded-lg p-4">
+                        <h4 class="text-lg font-semibold text-white mb-3 flex items-center">
+                            <i class="fas fa-user-circle mr-2"></i>Usuario que Reportó
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            ${alert.data.usuario_email ? `
+                                <div>
+                                    <span class="text-purple-200 text-sm">Email:</span>
+                                    <span class="text-white font-medium ml-2">${alert.data.usuario_email}</span>
+                                </div>
+                            ` : ''}
+                            ${alert.data.usuario_telefono ? `
+                                <div>
+                                    <span class="text-purple-200 text-sm">Teléfono:</span>
+                                    <span class="text-white font-medium ml-2">${alert.data.usuario_telefono}</span>
+                                </div>
+                            ` : ''}
+                            ${alert.data.metadatos?.plataforma ? `
+                                <div class="md:col-span-2">
+                                    <span class="text-purple-200 text-sm">Reportada desde:</span>
+                                    <span class="inline-flex items-center ml-2 px-2 py-1 bg-purple-600 text-white text-xs rounded-full">
+                                        <i class="fas fa-mobile-alt mr-1"></i>
+                                        ${alert.data.metadatos.plataforma === 'mobile_app' ? 'Aplicación Móvil' : alert.data.metadatos.plataforma}
+                                    </span>
+                                    ${alert.data.metadatos.tipo_procesamiento ? `
+                                        <span class="inline-flex items-center ml-1 px-2 py-1 bg-indigo-600 text-white text-xs rounded-full">
+                                            <i class="fas fa-cogs mr-1"></i>
+                                            ${alert.data.metadatos.tipo_procesamiento === 'manual' ? 'Manual' : 'Automático'}
+                                        </span>
+                                    ` : ''}
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                ` : ''}
+                
                 <!-- Fechas importantes -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="modal-section bg-gradient-to-r from-purple-700 to-pink-800 rounded-lg p-4">
@@ -1120,6 +1198,29 @@ async function showAlertDetails(alertId) {
                         </div>
                     ` : ''}
                 </div>
+                
+                <!-- Información de desactivación (si la alerta está inactiva) -->
+                ${!alert.activo && alert.desactivado_por ? `
+                    <div class="modal-section bg-gradient-to-r from-gray-700 to-red-800 rounded-lg p-4">
+                        <h4 class="text-lg font-semibold text-white mb-3 flex items-center">
+                            <i class="fas fa-power-off mr-2"></i>Información de Desactivación
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div>
+                                <span class="text-gray-200 text-sm">Desactivada por:</span>
+                                <span class="text-white font-medium ml-2">
+                                    ${alert.desactivado_por.tipo === 'usuario' ? 'Usuario' : 'Sistema'}
+                                </span>
+                            </div>
+                            <div>
+                                <span class="text-gray-200 text-sm">Fecha de desactivación:</span>
+                                <span class="text-white font-medium ml-2">
+                                    ${new Date(alert.desactivado_por.fecha_desactivacion).toLocaleString()}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                ` : ''}
             </div>
         </div>
         
@@ -1452,20 +1553,17 @@ async function findAlertById(alertId) {
         
         // Paso 1: Buscar en cache local
         const cachedAlert = getAlertById(alertId);
-        if (cachedAlert) {
+
+        // Paso 2: Si la alerta está en cache y tiene datos completos, la usamos
+        if (cachedAlert && cachedAlert.is_full_data) {
+            console.log(`✅ FIND: Alerta ${alertId} encontrada en cache con datos completos.`);
+            cacheMetadata.cacheHits++;
             return cachedAlert;
         }
         
-        // Paso 2: Si no está en cache, consultar al backend
-        console.log(`📡 FIND: Consultando backend para alerta ${alertId}...`);
+        // Paso 3: Si no está en cache o los datos son incompletos, SIEMPRE consultar al backend
+        console.log(`📡 FIND: Datos incompletos o no cacheados. Consultando backend para alerta ${alertId}...`);
         
-        const empresaId = window.currentUser?.empresa_id || window.currentUser?.id;
-        if (!empresaId) {
-            console.error('❌ FIND: No se pudo obtener empresa_id');
-            return null;
-        }
-        
-        // Llamar al endpoint específico de alerta por ID
         const response = await fetch(`/proxy/api/mqtt-alerts/${alertId}`, {
             method: 'GET',
             headers: {
@@ -1484,8 +1582,8 @@ async function findAlertById(alertId) {
         if (data.success && data.alert) {
             console.log(`✅ FIND: Alerta ${alertId} encontrada en backend`);
             
-            // Guardar en cache para futuras consultas
-            const alertData = {
+            // Mapear y guardar la alerta completa en el cache
+            const fullAlertData = {
                 _id: data.alert._id,
                 hardware_nombre: data.alert.hardware_nombre,
                 prioridad: data.alert.prioridad,
@@ -1493,18 +1591,29 @@ async function findAlertById(alertId) {
                 empresa_nombre: data.alert.empresa_nombre,
                 sede: data.alert.sede,
                 fecha_creacion: data.alert.fecha_creacion,
-                contactos_count: data.alert.contactos_count || data.alert.numeros_telefonicos?.length || 0,
-                // Metadata del cache
+                fecha_actualizacion: data.alert.fecha_actualizacion,
+                fecha_desactivacion: data.alert.fecha_desactivacion,
+                contactos_count: data.alert.numeros_telefonicos?.length || 0,
+                numeros_telefonicos: data.alert.numeros_telefonicos || [],
+                topic: data.alert.topic,
+                topics_otros_hardware: data.alert.topics_otros_hardware || [],
+                data: data.alert.data || {},
+                origen_tipo: data.alert.origen_tipo,
+                origen_id: data.alert.origen_id,
+                usuario_id: data.alert.usuario_id,
+                desactivado_por: data.alert.desactivado_por,
+                tipo_alerta: data.alert.tipo_alerta,
                 cached_at: new Date().toISOString(),
-                fetched_from_backend: true
+                fetched_from_backend: true,
+                is_full_data: true // Marcar que tiene datos completos
             };
             
-            alertsCache.set(alertId, alertData);
+            alertsCache.set(alertId, fullAlertData);
             cacheMetadata.totalCachedAlerts = alertsCache.size;
             
-            console.log(`📦 FIND: Alerta ${alertId} guardada en cache desde backend`);
+            console.log(`📦 FIND: Alerta ${alertId} con datos completos guardada en cache`);
             
-            return alertData;
+            return fullAlertData;
         }
         
         console.log(`❌ FIND: Alerta ${alertId} no encontrada en backend`);
