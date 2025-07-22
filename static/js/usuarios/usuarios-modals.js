@@ -1495,7 +1495,15 @@ editForm.addEventListener('submit', (e) => {
       modalElement.style.display = 'flex';
       modalElement.style.alignItems = 'flex-start';
       modalElement.style.justifyContent = 'center';
-      modalElement.style.paddingTop = '10vh';
+      
+      // Specific padding for different modal types
+      if (modalId === 'createUserModal' || modalId === 'editUserModal') {
+        modalElement.style.paddingTop = '3vh';
+      } else if (modalId === 'toggleUserModal' || modalId === 'userUpdateModal') {
+        modalElement.style.paddingTop = '8vh';
+      } else {
+        modalElement.style.paddingTop = '5vh';
+      }
 
       // Remover clase hidden y añadir clases de estado
       modalElement.classList.remove('hidden');
@@ -1755,6 +1763,14 @@ editForm.addEventListener('submit', (e) => {
     // Agregar clase de emergencia al body
     document.body.classList.add('force-modal-visible');
     
+    // Specific padding for different modal types
+    let paddingTop = '5vh';
+    if (modalId === 'createUserModal' || modalId === 'editUserModal') {
+      paddingTop = '3vh';
+    } else if (modalId === 'toggleUserModal' || modalId === 'userUpdateModal') {
+      paddingTop = '8vh';
+    }
+    
     // Forzar estilos críticos
     modal.style.cssText = `
       position: fixed !important;
@@ -1768,7 +1784,7 @@ editForm.addEventListener('submit', (e) => {
       display: flex !important;
       align-items: flex-start !important;
       justify-content: center !important;
-      padding-top: 10vh !important;
+      padding-top: ${paddingTop} !important;
       background: rgba(0, 0, 0, 0.8) !important;
       visibility: visible !important;
       opacity: 1 !important;
