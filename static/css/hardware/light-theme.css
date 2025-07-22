@@ -1,7 +1,4 @@
-/* ===== LIGHT THEME STYLES FOR HARDWARE ===== */
-
-/* Light theme header styles */
-:root:not(.dark) .ios-header-backdrop {
+/* :root:not(.dark) .ios-header-backdrop {
   background: linear-gradient(135deg, 
     rgba(255, 255, 255, 0.95) 0%, 
     rgba(248, 250, 252, 0.9) 50%,
@@ -17,7 +14,6 @@
   overflow: hidden;
 }
 
-/* Light theme header decorative elements - hover only */
 :root:not(.dark) .ios-header-backdrop::before {
   content: '';
   position: absolute;
@@ -64,7 +60,6 @@
   100% { transform: rotate(360deg); }
 }
 
-/* Light theme header content */
 :root:not(.dark) .ios-header-content {
   position: relative;
   z-index: 10;
@@ -174,7 +169,6 @@
   50% { transform: rotate(180deg) scale(1.1); }
 }
 
-/* Light theme header corner decorations - hover only */
 :root:not(.dark) .ios-header-container::before {
   content: '';
   position: absolute;
@@ -226,7 +220,6 @@
   50% { transform: translateY(-10px) scale(1.1); opacity: 1; }
 }
 
-/* Light theme header text container extra styling - hover only */
 :root:not(.dark) .ios-header-text {
   position: relative;
 }
@@ -259,7 +252,6 @@
   100% { opacity: 1; transform: scale(1.02); }
 }
 
-/* Light theme stats cards */
 :root:not(.dark) .ios-stat-card {
   background: rgba(255, 255, 255, 0.9) !important;
   backdrop-filter: blur(20px) saturate(1.5) !important;
@@ -290,7 +282,6 @@
   color: rgba(100, 116, 139, 0.8);
 }
 
-/* Light theme filters */
 :root:not(.dark) .ios-blur-bg {
   background: rgba(255, 255, 255, 0.9) !important;
   backdrop-filter: blur(20px) saturate(1.5) !important;
@@ -325,7 +316,6 @@
     0 8px 25px rgba(59, 130, 246, 0.15) !important;
 }
 
-/* Light theme hardware cards */
 :root:not(.dark) .ios-hardware-card,
 :root:not(.dark) .ios-hardware-card.hardware-item {
   background: rgba(255, 255, 255, 0.9) !important;
@@ -361,7 +351,6 @@
   color: rgba(30, 41, 59, 0.9);
 }
 
-/* Light theme action buttons */
 :root:not(.dark) .ios-action-btn {
   background: rgba(255, 255, 255, 0.95) !important;
   backdrop-filter: blur(12px) saturate(1.3) !important;
@@ -429,7 +418,6 @@
   transform: translateY(-4px) scale(1.05) !important;
 }
 
-/* Light theme card buttons */
 :root:not(.dark) .ios-card-btn {
   background: rgba(255, 255, 255, 0.8) !important;
   backdrop-filter: blur(8px) !important;
@@ -445,4 +433,4 @@
   box-shadow: 
     0 8px 20px rgba(59, 130, 246, 0.15),
     inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
-}
+} */

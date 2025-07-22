@@ -1,6 +1,4 @@
-/* ===== HARDWARE TOGGLE MODAL STYLES ===== */
-
-/* Enhanced Toggle Modal Styles */
+/* 
 .toggle-modal-backdrop {
   position: fixed !important;
   top: 0;
@@ -34,7 +32,6 @@
   transform: translateY(0) !important;
 }
 
-/* Dark mode specific */
 .dark .toggle-modal-container {
   background: var(--bg-secondary, #1f2937) !important;
   border-color: var(--border-color, #374151) !important;
@@ -165,7 +162,6 @@
   box-shadow: 0 6px 16px rgba(107, 114, 128, 0.4) !important;
 }
 
-/* Fallback styles for modal visibility */
 #toggleHardwareModal {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
 }
@@ -182,9 +178,6 @@
   align-items: center !important;
 }
 
-/* ===== CLIENT UPDATE MODAL STYLES ===== */
-
-/* Client Update Modal Styles (Separate from Toggle Modal) */
 .client-update-backdrop {
   position: fixed !important;
   top: 0;
@@ -220,7 +213,6 @@
   transform: translateY(-20px) !important;
 }
 
-/* Responsive adjustments for client update modal */
 @media (max-height: 600px) {
   .client-update-backdrop {
     padding-top: 5vh !important;
@@ -298,4 +290,4 @@
 .client-update-button:hover {
   transform: translateY(-2px) !important;
   box-shadow: 0 6px 16px rgba(255, 255, 255, 0.4) !important;
-}
+} */

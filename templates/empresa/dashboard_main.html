@@ -6,6 +6,8 @@
 {{ super() }}
 <!-- Usar los estilos iOS que ya sabemos -->
 <link href="{{ url_for('static', filename='css/hardware/hardware-main.css') }}" rel="stylesheet">
+<!-- Estilos del modal de sistema -->
+<link href="{{ url_for('static', filename='css/dashboard/dashboard-modals.css') }}" rel="stylesheet">
 <style>
 /* Asegurar visibilidad por defecto */
 .ios-stats-grid .ios-stat-card,
@@ -183,6 +185,83 @@
   </div>
 
 </div>
+
+<!-- Modal de Información del Sistema -->
+<div id="systemInfoModal" class="system-info-modal-backdrop hidden">
+  <div class="system-info-modal-container">
+    <div class="system-info-modal-icon">
+      <i class="fas fa-info-circle"></i>
+    </div>
+    
+    <h3 class="system-info-modal-title">Información del Sistema</h3>
+    
+    <div class="system-info-modal-content">
+      <div class="system-info-section">
+        <div class="system-info-section-title">
+          <i class="fas fa-building"></i>
+          Información Empresarial
+        </div>
+        <div class="info-line">
+          <span class="info-label"><i class="fas fa-building"></i> Empresa:</span>
+          <span class="info-value">{{ empresa_username }}</span>
+        </div>
+        <div class="info-line">
+          <span class="info-label"><i class="fas fa-id-card"></i> ID:</span>
+          <span class="info-value">{{ empresa_id }}</span>
+        </div>
+        <div class="info-line">
+          <span class="info-label"><i class="fas fa-user-tag"></i> Rol:</span>
+          <span class="info-value">{{ user_role }}</span>
+        </div>
+      </div>
+      
+      <div class="system-info-section">
+        <div class="system-info-section-title">
+          <i class="fas fa-chart-line"></i>
+          Estadísticas Actuales
+        </div>
+        <div class="info-line">
+          <span class="info-label"><i class="fas fa-users"></i> Usuarios Total:</span>
+          <span class="info-value">{{ dashboard_summary.kpis.usuarios_total }}</span>
+        </div>
+        <div class="info-line">
+          <span class="info-label"><i class="fas fa-user-check"></i> Usuarios Activos:</span>
+          <span class="info-value">{{ dashboard_summary.kpis.usuarios_activos }}</span>
+        </div>
+        <div class="info-line">
+          <span class="info-label"><i class="fas fa-microchip"></i> Hardware Total:</span>
+          <span class="info-value">{{ dashboard_summary.kpis.hardware_total }}</span>
+        </div>
+        <div class="info-line">
+          <span class="info-label"><i class="fas fa-exclamation-triangle"></i> Alertas Activas:</span>
+          <span class="info-value">{{ dashboard_summary.kpis.alertas_activas }}</span>
+        </div>
+      </div>
+      
+      <div class="system-info-section">
+        <div class="system-info-section-title">
+          <i class="fas fa-cog"></i>
+          Estado del Sistema
+        </div>
+        <div class="info-line">
+          <span class="info-label"><i class="fas fa-database"></i> KPIs Cargados:</span>
+          <span class="info-value" id="kpisLoadedStatus">Verificando...</span>
+        </div>
+        <div class="info-line">
+          <span class="info-label"><i class="fas fa-clock"></i> Última Actualización:</span>
+          <span class="info-value" id="lastUpdateStatus">Ahora</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="system-info-modal-buttons">
+      <button class="system-info-btn system-info-btn-close" onclick="hideSystemInfo()">
+        <i class="fas fa-times"></i>
+        Cerrar
+      </button>
+    </div>
+  </div>
+</div>
 {% endblock %}
 
 {% block page_js %}
@@ -204,20 +283,96 @@ try {
 
 // Función para mostrar información del sistema
 function showSystemInfo() {
-  const systemInfo = `
-    🏢 Empresa: {{ empresa_username }}
-    🆔 ID: {{ empresa_id }}
-    👤 Rol: {{ user_role }}
-    📊 KPIs Cargados: ${window.DASHBOARD_SUMMARY ? 'Sí' : 'No'}
-    
-    📈 Estadísticas:
-    - Usuarios Total: {{ dashboard_summary.kpis.usuarios_total }}
-    - Usuarios Activos: {{ dashboard_summary.kpis.usuarios_activos }}
-    - Hardware Total: {{ dashboard_summary.kpis.hardware_total }}
-    - Alertas Activas: {{ dashboard_summary.kpis.alertas_activas }}
-  `;
+  // Actualizar información dinámica
+  const kpisLoadedElement = document.getElementById('kpisLoadedStatus');
+  const lastUpdateElement = document.getElementById('lastUpdateStatus');
   
-  alert(systemInfo);
+  if (kpisLoadedElement) {
+    kpisLoadedElement.textContent = window.DASHBOARD_SUMMARY ? 'Sí' : 'No';
+    kpisLoadedElement.style.color = window.DASHBOARD_SUMMARY ? '#10b981' : '#ef4444';
+  }
+  
+  if (lastUpdateElement) {
+    const now = new Date();
+    lastUpdateElement.textContent = now.toLocaleTimeString('es-ES', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+  }
+  
+  // Mostrar el modal con animación
+  const modal = document.getElementById('systemInfoModal');
+  if (modal) {
+    const container = modal.querySelector('.system-info-modal-container');
+    
+    // Resetear cualquier animación previa
+    if (container) {
+      container.classList.remove('animate-in', 'animate-out');
+    }
+    
+    // Mostrar backdrop primero
+    modal.classList.remove('hidden');
+    
+    // Forzar reflow para que la transición funcione
+    modal.offsetHeight;
+    
+    // Aplicar clases de animación
+    modal.classList.add('show');
+    if (container) {
+      container.classList.add('animate-in');
+    }
+    
+    // Prevenir scroll del body completamente
+    document.body.classList.add('modal-open');
+  }
+}
+
+// Función para ocultar información del sistema
+function hideSystemInfo() {
+  const modal = document.getElementById('systemInfoModal');
+  if (modal) {
+    const container = modal.querySelector('.system-info-modal-container');
+    
+    // Aplicar animación de salida
+    if (container) {
+      container.classList.remove('animate-in');
+      container.classList.add('animate-out');
+    }
+    
+    // Remover clase show para iniciar fade out del backdrop
+    modal.classList.remove('show');
+    
+    // Después de la animación, ocultar completamente
+    setTimeout(() => {
+      modal.classList.add('hidden');
+      if (container) {
+        container.classList.remove('animate-out');
+      }
+      
+      // Restaurar scroll del body
+      document.body.classList.remove('modal-open');
+    }, 300); // Duración de la animación
+  }
+}
+
+// Cerrar modal al hacer clic fuera de él
+function initSystemInfoModal() {
+  const modal = document.getElementById('systemInfoModal');
+  if (modal) {
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) {
+        hideSystemInfo();
+      }
+    });
+    
+    // Cerrar con tecla ESC
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+        hideSystemInfo();
+      }
+    });
+  }
 }
 
 // Animaciones suaves para las tarjetas
@@ -230,6 +385,9 @@ document.addEventListener('DOMContentLoaded', function() {
       card.style.transform = 'translateY(0)';
     }, index * 100);
   });
+  
+  // Inicializar el modal del sistema
+  initSystemInfoModal();
   
   console.log('🏢 Dashboard principal de empresa inicializado');
   console.log('👤 Usuario:', '{{ empresa_username }}');

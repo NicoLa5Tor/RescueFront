@@ -6,7 +6,7 @@
   inset: 0;
   z-index: var(--z-modal-backdrop, 9995); /* Z-index muy alto */
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   background-color: rgba(0, 0, 0, 0.75);
   transition: opacity 0.3s ease, backdrop-filter 0.3s ease;
@@ -15,6 +15,7 @@
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   padding: 1rem;
+  padding-top: 10vh;
 }
 
 .modal-backdrop.hidden {
@@ -524,9 +525,10 @@ body.ios-modal-open {
   -webkit-backdrop-filter: blur(20px) saturate(1.8) brightness(0.8) !important;
   z-index: 9995;
   display: flex !important;
-  align-items: center !important;
+  align-items: flex-start !important;
   justify-content: center !important;
   padding: 1rem;
+  padding-top: 10vh;
 }
 
 /* Hide modal completely when hidden class is present */
@@ -538,9 +540,10 @@ body.ios-modal-open {
 
 /* Special positioning for toggle modals - appear near current viewport */
 .ios-modal-backdrop.toggle-modal {
-  align-items: center !important;
+  align-items: flex-start !important;
   justify-content: center !important;
   padding: 1rem !important;
+  padding-top: 10vh !important;
   /* Don't move the scroll position - use fixed position relative to viewport */
   overflow: hidden !important;
   /* Override the calculated padding-top to keep modal centered */
@@ -606,8 +609,9 @@ body.ios-modal-open {
   width: 100vw; height: 100vh;
   background: rgba(0,0,0,0.5); /* semitransparente */
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
+  padding-top: 10vh;
   z-index: 9999; /* encima de todo */
 
 }

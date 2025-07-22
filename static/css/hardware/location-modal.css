@@ -1,6 +1,4 @@
-/* ===== HARDWARE LOCATION MODAL STYLES ===== */
-
-/* Location Modal Specific Styles */
+/* 
 #locationModal {
   z-index: 10000;
 }
@@ -30,7 +28,6 @@
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
 }
 
-/* Loading state for iframe */
 #locationIframe[src=""] {
   background: linear-gradient(45deg, #f1f5f9, #e2e8f0);
   background-size: 400% 400%;
@@ -43,9 +40,7 @@
   100% { background-position: 0% 50%; }
 }
 
-/* ===== ANIMACIONES MEJORADAS DEL MODAL CON GSAP ===== */
 
-/* Estados iniciales para animaciones GSAP */
 #locationModal {
 opacity: 1;
   pointer-events: all;
@@ -68,7 +63,6 @@ opacity: 1 !important;
   opacity: 1;
 }
 
-/* Estado de loading para el mapa */
 #locationMap {
   opacity: 1 !important;
   transform: scale(1) !important;
@@ -87,7 +81,6 @@ opacity: 1 !important;
   transform: scale(1) !important;
 }
 
-/* Shimmer effect mejorado para loading */
 .map-loading-container {
   position: relative;
   overflow: hidden;
@@ -114,7 +107,6 @@ opacity: 1 !important;
   100% { left: 100%; }
 }
 
-/* Loading spinner mejorado */
 .map-loading-spinner {
   position: absolute;
   top: 50%;
@@ -148,7 +140,6 @@ opacity: 1 !important;
   text-align: center;
 }
 
-/* Animación de entrada del backdrop */
 #locationModal .ios-blur-modal-backdrop {
   opacity: 0;
 }
@@ -157,7 +148,6 @@ opacity: 1 !important;
   opacity: 1;
 }
 
-/* Mejoras para el modo oscuro */
 .dark .map-loading-container {
   background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
 }
@@ -166,7 +156,6 @@ opacity: 1 !important;
   color: #d1d5db;
 }
 
-/* Button styles */
 #openInNewTabBtn {
   background: linear-gradient(135deg, #10b981, #059669);
   transition: all 0.3s ease;
@@ -189,7 +178,6 @@ opacity: 1 !important;
   box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
 }
 
-/* Location button in cards */
 .ios-card-btn-location {
   background: linear-gradient(135deg, #10b981, #059669) !important;
   border: 1px solid rgba(255, 255, 255, 0.3) !important;
@@ -207,7 +195,6 @@ opacity: 1 !important;
     inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
 }
 
-/* Subtle pulse animation for location button */
 .ios-card-btn-location:not(:hover) {
   animation: locationPulse 3s ease-in-out infinite;
 }
@@ -217,7 +204,6 @@ opacity: 1 !important;
   50% { box-shadow: 0 6px 15px rgba(16, 185, 129, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.4); }
 }
 
-/* Responsive design */
 @media (max-width: 768px) {
   #locationModal .ios-blur-modal-container {
     max-width: 95vw;
@@ -249,7 +235,6 @@ opacity: 1 !important;
   }
 }
 
-/* Error state styles */
 .iframe-error {
   display: flex;
   align-items: center;
@@ -270,7 +255,6 @@ opacity: 1 !important;
   display: block;
 }
 
-/* Loading state */
 .iframe-loading {
   display: flex;
   align-items: center;
@@ -297,7 +281,6 @@ opacity: 1 !important;
   to { transform: rotate(360deg); }
 }
 
-/* Shimmer effect for loading */
 .location-shimmer {
   background: linear-gradient(90deg, 
     rgba(255, 255, 255, 0.1) 0%, 
@@ -313,7 +296,6 @@ opacity: 1 !important;
   100% { background-position: 200% 0; }
 }
 
-/* Dark mode optimizations */
 @media (prefers-color-scheme: dark) {
   #locationIframe {
     background: #1e293b;
@@ -324,7 +306,6 @@ opacity: 1 !important;
   }
 }
 
-/* Ensure card header has enough space */
 .ios-card-header {
   display: flex;
   justify-content: space-between;
@@ -333,7 +314,6 @@ opacity: 1 !important;
   min-height: 48px;
 }
 
-/* Header right container */
 .ios-card-header-right {
   display: flex;
   align-items: center;
@@ -341,7 +321,6 @@ opacity: 1 !important;
   flex-shrink: 0;
 }
 
-/* Location icon button in header */
 .ios-location-icon-btn {
   width: 42px;
   height: 42px;
@@ -364,7 +343,6 @@ opacity: 1 !important;
   margin-right: 0.5rem;
 }
 
-/* Google Maps button specific styles */
 .ios-google-maps-btn {
   background: linear-gradient(135deg, #4285f4, #1a73e8) !important;
   box-shadow: 
@@ -394,7 +372,6 @@ opacity: 1 !important;
   }
 }
 
-/* OpenStreetMap button specific styles */
 .ios-openstreet-maps-btn {
   background: linear-gradient(135deg, #10b981, #059669) !important;
   box-shadow: 
@@ -432,7 +409,6 @@ opacity: 1 !important;
     inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
 
-/* Pulse effect for location icon */
 .ios-location-icon-btn:not(:hover) {
   animation: locationIconPulse 2s ease-in-out infinite;
 }
@@ -448,7 +424,6 @@ opacity: 1 !important;
   }
 }
 
-/* Shimmer effect for location icon */
 .ios-location-icon-btn::before {
   content: '';
   position: absolute;
@@ -471,7 +446,6 @@ opacity: 1 !important;
   transform: rotate(45deg) translateX(100%);
 }
 
-/* Shimmer effect for Google Maps button */
 .ios-google-maps-btn::before {
   background: linear-gradient(45deg, 
     transparent 30%, 
@@ -479,10 +453,9 @@ opacity: 1 !important;
     transparent 70%);
 }
 
-/* Shimmer effect for OpenStreetMap button */
 .ios-openstreet-maps-btn::before {
   background: linear-gradient(45deg, 
     transparent 30%, 
     rgba(255, 255, 255, 0.3) 50%, 
     transparent 70%);
-}
+} */

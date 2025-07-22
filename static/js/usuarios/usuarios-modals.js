@@ -1493,8 +1493,9 @@ editForm.addEventListener('submit', (e) => {
       modalElement.style.bottom = '0';
       modalElement.style.zIndex = '9999';
       modalElement.style.display = 'flex';
-      modalElement.style.alignItems = 'center';
+      modalElement.style.alignItems = 'flex-start';
       modalElement.style.justifyContent = 'center';
+      modalElement.style.paddingTop = '10vh';
 
       // Remover clase hidden y añadir clases de estado
       modalElement.classList.remove('hidden');
@@ -1765,8 +1766,9 @@ editForm.addEventListener('submit', (e) => {
       height: 100vh !important;
       z-index: 999999 !important;
       display: flex !important;
-      align-items: center !important;
+      align-items: flex-start !important;
       justify-content: center !important;
+      padding-top: 10vh !important;
       background: rgba(0, 0, 0, 0.8) !important;
       visibility: visible !important;
       opacity: 1 !important;

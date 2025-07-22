@@ -1,0 +1,499 @@
+/* ===== DASHBOARD SYSTEM INFO MODAL - HARDWARE STYLE ===== */
+
+/* Body scroll prevention when modal is open */
+body.modal-open {
+  overflow: hidden !important;
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 100vh !important;
+  width: 100vw !important;
+}
+
+.system-info-modal-backdrop {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75) !important;
+  backdrop-filter: blur(8px);
+  z-index: 9999 !important;
+  display: none !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+  padding: 1rem !important;
+  padding-top: 10vh !important;
+  opacity: 0;
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.system-info-modal-backdrop.show {
+  display: flex !important;
+  opacity: 1;
+  animation: backdropFadeIn 0.3s ease-out forwards;
+}
+
+.system-info-modal-backdrop.hidden {
+  display: none !important;
+}
+
+.system-info-modal-container {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0;
+  padding: 2rem 1.5rem !important;
+  box-shadow: none !important;
+  max-width: 90vw;
+  width: 100%;
+  max-height: 90vh !important;
+  text-align: center;
+  position: relative;
+  z-index: 10000 !important;
+  transform: scale(0.7) translateY(50px);
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-y: auto;
+}
+
+.system-info-modal-backdrop.show .system-info-modal-container {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+
+/* Light theme - sin background */
+:not(.dark) .system-info-modal-container {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Responsive container widths */
+@media (min-width: 640px) {
+  .system-info-modal-container {
+    max-width: 500px;
+    width: 90%;
+    padding: 2.5rem 2rem !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .system-info-modal-container {
+    max-width: 600px;
+    padding: 3rem 2.5rem !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .system-info-modal-backdrop {
+    padding: 2rem !important;
+    padding-top: 8vh !important;
+  }
+}
+
+/* Sin shimmer effect ya que no hay contenedor */
+
+/* Modal icon - estilo hardware */
+.system-info-modal-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin: 0 auto 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  position: relative;
+  z-index: 1;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Modal title */
+.system-info-modal-title {
+  font-size: 1.75rem !important;
+  font-weight: bold !important;
+  color: #ffffff !important;
+  margin-bottom: 1.25rem !important;
+  position: relative;
+  z-index: 10001 !important;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Título siempre blanco, tanto en tema claro como oscuro */
+:not(.dark) .system-info-modal-title {
+  color: #ffffff !important;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5) !important;
+}
+
+.dark .system-info-modal-title {
+  color: #ffffff !important;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Modal content */
+.system-info-modal-content {
+  color: var(--text-secondary, #374151) !important;
+  font-size: 0.85rem !important;
+  margin-bottom: 2rem !important;
+  position: relative;
+  z-index: 10001 !important;
+  line-height: 1.5 !important;
+  text-align: left;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1rem;
+  backdrop-filter: blur(10px);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  max-height: 50vh;
+  overflow-y: auto;
+  
+  /* Scrollbar bonito para el contenido del modal */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(16, 185, 129, 0.6) rgba(255, 255, 255, 0.1);
+}
+
+/* Webkit scrollbar personalizado para el contenido */
+.system-info-modal-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.system-info-modal-content::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.system-info-modal-content::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.system-info-modal-content::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #059669 0%, #047857 100%);
+  transform: scaleX(1.2);
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+}
+
+.system-info-modal-content::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(180deg, #047857 0%, #065f46 100%);
+}
+
+.dark .system-info-modal-content {
+  color: var(--text-secondary, #e2e8f0) !important;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5) !important;
+  background: rgba(255, 255, 255, 0.03);
+  scrollbar-color: rgba(16, 185, 129, 0.8) rgba(0, 0, 0, 0.2);
+}
+
+/* Dark theme scrollbar */
+.dark .system-info-modal-content::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.dark .system-info-modal-content::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  box-shadow: 0 0 5px rgba(16, 185, 129, 0.3);
+}
+
+.dark .system-info-modal-content::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #059669 0%, #047857 100%);
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.6);
+}
+
+.system-info-modal-content .info-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.system-info-modal-content .info-line:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.system-info-modal-content .info-label {
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.system-info-modal-content .info-value {
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+  font-size: 0.8rem;
+  text-align: right;
+  word-break: break-all;
+}
+
+/* Modal section headers */
+.system-info-section {
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid rgba(16, 185, 129, 0.3);
+}
+
+.system-info-section:last-child {
+  margin-bottom: 0;
+}
+
+.system-info-section-title {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #10b981;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Modal buttons */
+.system-info-modal-buttons {
+  display: flex !important;
+  gap: 1rem !important;
+  justify-content: center !important;
+  position: relative;
+  z-index: 10001 !important;
+}
+
+.system-info-btn {
+  padding: 1rem 2rem !important;
+  border: none !important;
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+  font-size: 1rem !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  min-width: 120px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.5rem !important;
+}
+
+.system-info-btn-close {
+  background: #10b981 !important;
+  color: #ffffff !important;
+  border: 2px solid #059669 !important;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3) !important;
+}
+
+.system-info-btn-close:hover {
+  background: #059669 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4) !important;
+}
+
+/* Animaciones mejoradas */
+@keyframes backdropFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: scale(0.7) translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes modalSlideDown {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.7) translateY(50px);
+  }
+}
+
+.system-info-modal-container.animate-in {
+  animation: modalSlideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.system-info-modal-container.animate-out {
+  animation: modalSlideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Responsive adjustments mejorado */
+@media (max-width: 640px) {
+  .system-info-modal-backdrop {
+    padding: 0.5rem !important;
+    align-items: flex-start !important;
+    padding-top: 8vh !important;
+  }
+  
+  .system-info-modal-container {
+    padding: 1.5rem 1rem !important;
+    max-width: 95vw;
+    max-height: 85vh;
+    margin: 0;
+    border-radius: 16px;
+  }
+  
+  .system-info-modal-content {
+    font-size: 0.75rem;
+    padding: 0.75rem;
+    max-height: 40vh;
+  }
+  
+  .system-info-modal-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+  }
+  
+  .system-info-modal-title {
+    font-size: 1.25rem !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  .system-info-section-title {
+    font-size: 0.8rem;
+  }
+  
+  .system-info-modal-content .info-label,
+  .system-info-modal-content .info-value {
+    font-size: 0.7rem;
+  }
+  
+  .system-info-modal-content .info-line {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+    padding: 0.375rem 0;
+  }
+  
+  .system-info-modal-content .info-value {
+    text-align: left;
+    margin-left: 1.5rem;
+  }
+  
+  .system-info-btn {
+    padding: 0.75rem 1.5rem !important;
+    font-size: 0.875rem !important;
+    min-width: 100px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .system-info-modal-backdrop {
+    padding: 0.25rem !important;
+    padding-top: 5vh !important;
+  }
+  
+  .system-info-modal-container {
+    padding: 1rem 0.75rem !important;
+    max-width: 98vw;
+    max-height: 90vh;
+    border-radius: 12px;
+  }
+  
+  .system-info-modal-content {
+    padding: 0.5rem;
+    max-height: 45vh;
+  }
+  
+  .system-info-modal-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+  
+  .system-info-modal-title {
+    font-size: 1.1rem !important;
+  }
+}
+
+@media (max-height: 600px) {
+  .system-info-modal-container {
+    max-height: 95vh !important;
+    padding: 1rem !important;
+  }
+  
+  .system-info-modal-content {
+    max-height: 50vh;
+  }
+  
+  .system-info-modal-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .system-info-modal-title {
+    font-size: 1.25rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+}
+
+/* Force modal visibility for debugging */
+.force-system-modal-visible .system-info-modal-backdrop {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  z-index: 999999 !important;
+  background: rgba(0, 0, 0, 0.8) !important;
+}
+
+.force-system-modal-visible .system-info-modal-container {
+  position: relative !important;
+  z-index: 999999 !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  transform: scale(1) !important;
+}
+
+/* Font family for modal */
+#systemInfoModal {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+}
+
+#systemInfoModal * {
+  box-sizing: border-box !important;
+}
+
+#systemInfoModal .system-info-modal-container {
+  min-height: 300px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
