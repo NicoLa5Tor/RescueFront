@@ -1,0 +1,188 @@
+/* ===== CSS EXTRAÍDO EXACTO DEL TEMPLATE JINJA2 - SIN MODIFICACIONES ===== */
+
+/* Asegurar visibilidad por defecto - OVERRIDE para usuarios */
+.ios-header-container,
+.ios-stats-grid .ios-stat-card,
+.ios-hardware-grid .ios-hardware-card {
+  opacity: 1 !important;
+  transform: none !important;
+  visibility: visible !important;
+}
+
+/* Asegurar que las tarjetas de usuarios sean visibles desde el inicio */
+.usuario-item {
+  opacity: 1 !important;
+  transform: none !important;
+  visibility: visible !important;
+}
+
+/* Estilos específicos para usuarios y widgets de entrada */
+.usuario-item .ios-info-label {
+  display: flex;
+  align-items: center;
+  font-size: 0.75rem;
+}
+
+/* Manejo específico del input de teléfono con intl-tel-input */
+.phone-input-container {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  gap: 2px;
+  align-items: stretch;
+  width: 100%;
+  position: relative;
+}
+
+/* Forzar que el plugin no modifique la estructura */
+.iti {
+  position: static !important;
+  width: 100% !important;
+  grid-column: 2 !important;
+  display: block !important;
+}
+
+/* Ocultar el selector de país del plugin y crear uno personalizado */
+.iti__flag-container {
+  display: none !important;
+}
+
+/* Crear un selector de país funcional */
+.phone-country-selector {
+  grid-column: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+  border-right: none;
+  position: relative;
+  padding: 0 8px;
+  z-index: 10002;
+}
+
+.phone-country-selector:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.phone-country-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: rgba(0, 0, 0, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+  z-index: 10001;
+  max-height: 200px;
+  overflow-y: auto;
+  display: none;
+  min-width: 200px;
+  width: max-content;
+  white-space: nowrap;
+}
+
+.phone-country-dropdown.show {
+  display: block;
+}
+
+.phone-country-option {
+  padding: 8px 12px;
+  color: white;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: background 0.2s ease;
+}
+
+.phone-country-option:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.phone-country-option.selected {
+  background: rgba(59, 130, 246, 0.3);
+}
+
+/* Ajustar el input para que ocupe solo su espacio */
+.iti input[type="tel"] {
+  width: 100% !important;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  border-left: none !important;
+  padding-left: 16px !important;
+}
+
+/* Asegurar que el placeholder aparezca en la posición correcta */
+.iti input[type="tel"]::placeholder {
+  padding-left: 0;
+  text-indent: 0;
+  opacity: 0.7;
+}
+
+/* Ajustes para que el dropdown no se superponga */
+.iti__country-list {
+  z-index: 9999;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 300px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+/* Hacer que ciertos elementos ocupen fila completa */
+.usuario-item .ios-info-item.full-width {
+  grid-column: 1 / -1;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.usuario-item .ios-card-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+/* Botones específicos para usuarios */
+.ios-card-btn-info {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.ios-card-btn-info:hover {
+  background: linear-gradient(135deg, #2563eb, #1e40af);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+}
+
+/* Utilizar estilos del hardware para header */
+.usuarios-container .ios-header-container {
+  opacity: 1;
+  transform: none;
+  visibility: visible;
+}
+
+/* Estilos específicos para usuarios únicos que no están en usuarios-modal-fix.css */
+.ios-blur-modal-container {
+  max-width: 600px;
+  width: 90%;
+  transform: translateZ(0) !important;
+}
+
+/* Ensure content is visible immediately - SOLO para el contenido principal */
+.max-w-7xl .ios-header-container,
+.max-w-7xl .ios-stats-grid,
+.max-w-7xl .ios-hardware-grid,
+.max-w-7xl .ios-filters-container {
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Correcciones aplicadas globalmente en sidebar.css */
