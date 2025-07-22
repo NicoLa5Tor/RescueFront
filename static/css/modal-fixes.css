@@ -1,22 +1,13 @@
-/* ===== MODAL FIXES - CORRECCIÓN DE POSICIONAMIENTO ===== */
-
-/* IMPORTANTE: Este archivo corrige el problema de modales que no flotan correctamente */
-
-/* ===== RESET DE CONTEXTOS DE APILAMIENTO ===== */
-
-/* Prevenir que elementos del layout interfieran con los modales */
+/* 
 .dashboard-layout,
 .min-h-screen,
 .main-content,
 .sidebar,
 .navbar {
-  /* NO crear contextos de apilamiento que interfieran con modales */
   isolation: auto !important;
 }
 
-/* ===== CORRECCIÓN DE MODALES ===== */
 
-/* BACKDROP DE MODALES - POSICIONAMIENTO CORRECTO */
 .modal-backdrop,
 .ios-modal-backdrop,
 .toggle-modal-backdrop,
@@ -28,19 +19,17 @@
   bottom: 0 !important;
   width: 100vw !important;
   height: 100vh !important;
-  z-index: 9999 !important; /* Z-index súper alto */
+  z-index: 9999 !important; 
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   background: rgba(0, 0, 0, 0.6) !important;
   backdrop-filter: blur(8px) !important;
   -webkit-backdrop-filter: blur(8px) !important;
-  /* Forzar que esté por encima de TODO */
   transform: translateZ(0) !important;
   will-change: transform !important;
 }
 
-/* Estado oculto para modales */
 .modal-backdrop.hidden,
 .ios-modal-backdrop.hidden,
 .toggle-modal-backdrop.hidden,
@@ -50,21 +39,18 @@
   opacity: 0 !important;
 }
 
-/* CONTENEDORES DE MODALES */
 .modal-container,
 .ios-blur-modal-container,
 .toggle-modal-container,
 .client-update-container {
   position: relative !important;
-  z-index: 10000 !important; /* Z-index aún más alto */
+  z-index: 10000 !important; 
   margin: auto !important;
-  transform: translateZ(0) !important; /* Forzar contexto de apilamiento */
+  transform: translateZ(0) !important;
   will-change: transform !important;
-  /* NO tocar width, height, max-width, max-height - mantener tamaños originales */
   box-sizing: border-box !important;
 }
 
-/* ===== CORRECCIÓN ESPECÍFICA PARA iOS BLUR MODALS ===== */
 
 .ios-blur-modal-container {
   background: rgba(255, 255, 255, 0.08) !important;
@@ -92,25 +78,8 @@
     inset 0 -1px 0 rgba(255, 255, 255, 0.05) !important;
 }
 
-/* ===== CORRECCIÓN PARA MODALES DE HARDWARE ===== */
 
-.toggle-modal-container {
-  /* NO tocar background, border, border-radius, padding, box-shadow, max-width, width, text-align */
-  /* Mantener estilos originales del modal */
-}
 
-.dark .toggle-modal-container {
-  /* NO tocar estilos - mantener originales */
-}
-
-.client-update-container {
-  /* NO tocar background, border, border-radius, padding, box-shadow, max-width, width, text-align */
-  /* Mantener estilos originales del modal */
-}
-
-/* ===== CORRECCIÓN DE SCROLL BODY ===== */
-
-/* Prevenir scroll del body cuando modal está abierto */
 body.modal-open,
 body.ios-modal-open {
   overflow: hidden !important;
@@ -125,45 +94,16 @@ body.ios-modal-open {
 
 
 
-/* Mobile */
 @media (max-width: 640px) {
   .modal-backdrop,
   .ios-modal-backdrop,
   .toggle-modal-backdrop,
   .client-update-backdrop {
-    /* Solo ajustar padding del backdrop si es necesario */
     padding: 1rem !important;
   }
   
-  /* NO tocar tamaños de contenedores - mantener responsive original */
 }
 
-/* Tablet */
-@media (min-width: 641px) and (max-width: 1024px) {
-  /* NO tocar tamaños de contenedores - mantener responsive original */
-}
-
-/* ===== DEBUGGING (COMENTAR EN PRODUCCIÓN) ===== */
-
-/* Descomentar para debug
-.modal-backdrop,
-.ios-modal-backdrop,
-.toggle-modal-backdrop,
-.client-update-backdrop {
-  border: 5px solid red !important;
-}
-
-.modal-container,
-.ios-blur-modal-container,
-.toggle-modal-container,
-.client-update-container {
-  border: 3px solid yellow !important;
-}
-*/
-
-/* ===== ANIMACIONES MEJORADAS ===== */
-
-/* Animación de entrada para modales */
 .modal-backdrop:not(.hidden) .modal-container,
 .ios-modal-backdrop:not(.hidden) .ios-blur-modal-container,
 .toggle-modal-backdrop:not(.hidden) .toggle-modal-container,
@@ -182,9 +122,6 @@ body.ios-modal-open {
   }
 }
 
-/* ===== FORZAR VISIBILIDAD ===== */
-
-/* En caso de emergencia, forzar visibilidad total */
 .force-modal-visible .modal-backdrop,
 .force-modal-visible .ios-modal-backdrop,
 .force-modal-visible .toggle-modal-backdrop,
@@ -212,10 +149,6 @@ body.ios-modal-open {
   opacity: 1 !important;
   transform: scale(1) !important;
 }
-
-/* ===== COMPATIBILIDAD CON BIBLIOTECAS EXISTENTES ===== */
-
-/* Asegurar compatibilidad con diferentes sistemas de modales */
 [role="dialog"],
 [aria-modal="true"],
 .modal,
@@ -224,7 +157,6 @@ body.ios-modal-open {
   z-index: 9999 !important;
 }
 
-/* Bootstrap modal fix */
 .modal-backdrop {
   z-index: 9998 !important;
 }
@@ -232,9 +164,6 @@ body.ios-modal-open {
 .modal {
   z-index: 9999 !important;
 }
-
-/* ===== PRINT STYLES ===== */
-
 @media print {
   .modal-backdrop,
   .ios-modal-backdrop,
@@ -243,9 +172,6 @@ body.ios-modal-open {
     display: none !important;
   }
 }
-
-/* ===== HIGH CONTRAST MODE ===== */
-
 @media (prefers-contrast: high) {
   .modal-container,
   .ios-blur-modal-container,
@@ -253,4 +179,4 @@ body.ios-modal-open {
   .client-update-container {
     border: 3px solid currentColor !important;
   }
-}
+} */

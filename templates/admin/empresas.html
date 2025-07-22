@@ -4,27 +4,22 @@
 
 {% block extra_css %}
 {{ super() }}
-<link href="{{ url_for('static', filename='css/modals.css') }}" rel="stylesheet">
+<!-- SISTEMA UNIFICADO - TODO EN UNO -->
 <link href="{{ url_for('static', filename='css/hardware/hardware-main.css') }}" rel="stylesheet">
-<!-- IMPORTAR ESTILOS DE MODALES DEL HARDWARE -->
-<link href="{{ url_for('static', filename='css/hardware/hardware-modals.css') }}" rel="stylesheet">
-<link href="{{ url_for('static', filename='css/hardware/modals.css') }}" rel="stylesheet">
-<link href="{{ url_for('static', filename='css/empresas/empresas-cards.css') }}" rel="stylesheet">
-<link href="{{ url_for('static', filename='css/empresas/empresas-modals.css') }}" rel="stylesheet">
-<!-- EMPRESAS MODAL FIX - SAME AS HARDWARE/COMPANY TYPES -->
-<link href="{{ url_for('static', filename='css/empresas/empresas-modal-fix.css') }}" rel="stylesheet">
 <style>
-/* Asegurar visibilidad por defecto - OVERRIDE para empresas */
+/* Asegurar visibilidad por defecto - SISTEMA UNIFICADO */
 .ios-header-container,
 .ios-stats-grid .ios-stat-card,
-.ios-hardware-grid .ios-hardware-card {
+.ios-hardware-grid .ios-hardware-card,
+.ios-empresas-grid .ios-empresa-card {
   opacity: 1 !important;
   transform: none !important;
   visibility: visible !important;
 }
 
 /* Asegurar que las tarjetas de empresas sean visibles desde el inicio */
-.empresa-item {
+.empresa-item,
+.ios-empresa-card {
   opacity: 1 !important;
   transform: none !important;
   visibility: visible !important;
@@ -202,8 +197,8 @@
       </div>
     </div>
 
-    <!-- Enhanced iOS Empresas Grid - HARDWARE STYLE CON CONTENIDO ESPECÍFICO -->
-    <div class="ios-hardware-grid" id="empresasGrid">
+    <!-- Enhanced iOS Empresas Grid - SISTEMA UNIFICADO -->
+    <div class="ios-empresas-grid" id="empresasGrid">
       <!-- Las empresas se cargarán aquí dinámicamente -->
       <div class="text-center py-8 col-span-full">
         <i class="fas fa-spinner fa-spin text-3xl text-gray-400 mb-4"></i>
@@ -293,7 +288,7 @@
   
   // Función para aplicar optimizaciones a tarjetas ya existentes
   function applyOptimizationsToExistingCards() {
-    const existingCards = document.querySelectorAll('.ios-hardware-card');
+    const existingCards = document.querySelectorAll('.ios-hardware-card, .ios-empresa-card');
     existingCards.forEach(card => {
       applyCardOptimizations(card);
     });
@@ -305,7 +300,8 @@
     const elements = [
       '.ios-header-container',
       '.ios-stats-grid .ios-stat-card',
-      '.ios-hardware-grid .ios-hardware-card'
+      '.ios-hardware-grid .ios-hardware-card',
+      '.ios-empresas-grid .ios-empresa-card'
     ];
     
     elements.forEach(selector => {
@@ -342,8 +338,8 @@
       const observer = new MutationObserver(function(mutations) {
         mutations.forEach(function(mutation) {
           mutation.addedNodes.forEach(function(node) {
-            if (node.nodeType === 1 && node.classList.contains('ios-hardware-card')) {
-              console.log('👀 Nueva tarjeta detectada, aplicando animación GSAP...');
+            if (node.nodeType === 1 && (node.classList.contains('ios-hardware-card') || node.classList.contains('ios-empresa-card'))) {
+              console.log('👀 Nueva tarjeta detectada (hardware/empresa), aplicando animación GSAP...');
               
               // Usar animación GSAP para nueva tarjeta
               if (window.HardwareAnimations) {

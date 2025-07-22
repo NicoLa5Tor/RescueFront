@@ -95,6 +95,184 @@
     
     <!-- Modal Debug Utility -->
     <script src="{{ url_for('static', filename='js/modal-debug.js') }}"></script>
+    
+    <!-- Global Card Visibility Optimizations -->
+    <script>
+    // ===== SISTEMA GLOBAL DE VISIBILIDAD DE TARJETAS =====
+    // Esta función centralizada maneja la visibilidad de todas las tarjetas iOS
+    // en todas las vistas de empresa, eliminando la dependencia de GSAP
+    
+    window.ensureCardsVisibility = function() {
+        // Find all iOS cards that might be invisible
+        const hardwareCards = document.querySelectorAll('.ios-hardware-card');
+        const statCards = document.querySelectorAll('.ios-stat-card');
+        const userCards = document.querySelectorAll('.usuario-item');
+        const alertCards = document.querySelectorAll('.alert-item, .ios-alert-card');
+        
+        let totalOptimized = 0;
+        
+        // Optimize hardware cards
+        hardwareCards.forEach(card => {
+            if (card.style.opacity === '0' || !card.classList.contains('gsap-animated')) {
+                card.style.opacity = '1';
+                card.style.visibility = 'visible';
+                card.style.transform = 'translateY(0)';
+                card.classList.add('gsap-animated', 'optimized');
+                
+                // Hide shimmer
+                const shimmer = card.querySelector('.ios-card-shimmer');
+                if (shimmer) shimmer.style.opacity = '0';
+                
+                totalOptimized++;
+            }
+        });
+        
+        // Optimize stat cards
+        statCards.forEach(card => {
+            if (card.style.opacity === '0' || !card.classList.contains('gsap-animated')) {
+                card.style.opacity = '1';
+                card.style.visibility = 'visible';
+                card.style.transform = 'translateY(0)';
+                card.classList.add('gsap-animated', 'optimized');
+                
+                // Hide shimmer
+                const shimmer = card.querySelector('.ios-stat-shimmer');
+                if (shimmer) shimmer.style.opacity = '0';
+                
+                totalOptimized++;
+            }
+        });
+        
+        // Optimize user cards
+        userCards.forEach(card => {
+            if (card.style.opacity === '0' || !card.classList.contains('gsap-animated')) {
+                card.style.opacity = '1';
+                card.style.visibility = 'visible';
+                card.style.transform = 'translateY(0)';
+                card.classList.add('gsap-animated', 'optimized');
+                
+                // Hide shimmer
+                const shimmer = card.querySelector('.ios-card-shimmer');
+                if (shimmer) shimmer.style.opacity = '0';
+                
+                totalOptimized++;
+            }
+        });
+        
+        // Optimize alert cards
+        alertCards.forEach(card => {
+            if (card.style.opacity === '0' || !card.classList.contains('gsap-animated')) {
+                card.style.opacity = '1';
+                card.style.visibility = 'visible';
+                card.style.transform = 'translateY(0)';
+                card.classList.add('gsap-animated', 'optimized');
+                
+                // Hide shimmer
+                const shimmer = card.querySelector('.ios-card-shimmer');
+                if (shimmer) shimmer.style.opacity = '0';
+                
+                totalOptimized++;
+            }
+        });
+        
+        if (totalOptimized > 0) {
+            console.log(`🔧 GLOBAL: Optimized ${totalOptimized} cards for visibility`);
+        }
+        
+        return totalOptimized;
+    };
+    
+    // Función global para aplicar optimizaciones a una tarjeta individual
+    window.applyCardOptimizations = function(card) {
+        if (!card) return;
+        
+        // Asegurar que las tarjetas sean siempre visibles
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+        card.style.visibility = 'visible';
+        
+        // Agregar clase optimized para CSS
+        card.classList.add('gsap-animated', 'optimized');
+        
+        // Configurar shimmer sin animaciones complejas
+        const shimmer = card.querySelector('.ios-card-shimmer, .ios-stat-shimmer');
+        if (shimmer) {
+            shimmer.style.opacity = '0';
+        }
+        
+        console.log('🔧 GLOBAL: Optimizaciones aplicadas a tarjeta individual');
+    };
+    
+    // Función para aplicar optimizaciones a tarjetas existentes
+    window.applyOptimizationsToExistingCards = function() {
+        const existingCards = document.querySelectorAll('.ios-hardware-card, .ios-stat-card, .usuario-item, .alert-item, .ios-alert-card');
+        existingCards.forEach(card => {
+            window.applyCardOptimizations(card);
+        });
+        console.log(`🔧 GLOBAL: Optimizaciones aplicadas a ${existingCards.length} tarjetas existentes`);
+        return existingCards.length;
+    };
+    
+    // Función mejorada para animar tarjetas de estadísticas
+    window.animateStatCards = function() {
+        const statCards = document.querySelectorAll('.ios-stat-card');
+        if (window.gsap && statCards.length > 0) {
+            // Configurar estado inicial
+            window.gsap.set(statCards, { 
+                opacity: 0, 
+                y: 30,
+                scale: 0.95
+            });
+            
+            // Animar entrada con stagger
+            window.gsap.to(statCards, {
+                opacity: 1,
+                y: 0,
+                scale: 1,
+                duration: 0.6,
+                ease: "back.out(1.2)",
+                stagger: 0.1
+            });
+            
+            console.log('🎨 GLOBAL GSAP: Animaciones aplicadas a cards de estadísticas');
+        } else {
+            // Fallback SIN GSAP: asegurar visibilidad inmediata
+            console.log('⚡ GLOBAL FALLBACK: Aplicando visibilidad directa a cards (sin GSAP)');
+            statCards.forEach(card => {
+                card.style.opacity = '1';
+                card.style.visibility = 'visible';
+                card.style.transform = 'translateY(0)';
+                card.classList.add('gsap-animated'); // Agregar clase para CSS
+            });
+        }
+    };
+    
+    // Auto-run visibility check on DOM ready
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initial check
+        setTimeout(() => {
+            window.ensureCardsVisibility();
+        }, 100);
+        
+        // Apply optimizations to existing cards
+        setTimeout(() => {
+            window.applyOptimizationsToExistingCards();
+        }, 200);
+        
+        // Animate stat cards if present
+        setTimeout(() => {
+            window.animateStatCards();
+        }, 300);
+        
+        // Periodic check to catch dynamically loaded cards
+        setInterval(() => {
+            window.ensureCardsVisibility();
+        }, 1000);
+        
+        console.log('🔧 GLOBAL: Sistema completo de visibilidad de tarjetas inicializado');
+    });
+    
+    </script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>
