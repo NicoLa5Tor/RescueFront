@@ -289,8 +289,8 @@
   border-color: rgba(255, 255, 255, 0.3);
 }
 
-/* Prevent body scroll when modal is open */
-body.modal-open {
+/* Prevent body scroll when modal is open - SOLO PARA COMPANY TYPES */
+body.company-types-modal-open {
   overflow: hidden;
 }
 

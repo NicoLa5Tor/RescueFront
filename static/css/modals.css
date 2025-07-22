@@ -15,7 +15,7 @@
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   padding: 1rem;
-  padding-top: 10vh;
+  padding-top: 2vh;
 }
 
 .modal-backdrop.hidden {
@@ -543,7 +543,7 @@ body.ios-modal-open {
   align-items: flex-start !important;
   justify-content: center !important;
   padding: 1rem !important;
-  padding-top: 10vh !important;
+  padding-top: 1vh !important;
   /* Don't move the scroll position - use fixed position relative to viewport */
   overflow: hidden !important;
   /* Override the calculated padding-top to keep modal centered */
@@ -611,7 +611,7 @@ body.ios-modal-open {
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding-top: 10vh;
+  padding-top: 2vh;
   z-index: 9999; /* encima de todo */
 
 }

@@ -6,8 +6,6 @@
 {{ super() }}
 <link href="{{ url_for('static', filename='css/modals.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/hardware/hardware-main.css') }}" rel="stylesheet">
-<link href="{{ url_for('static', filename='css/company-types/company-types-main.css') }}" rel="stylesheet">
-<link href="{{ url_for('static', filename='css/company-types/company-types-modal-fix.css') }}" rel="stylesheet">
 <style>
 /* Asegurar visibilidad por defecto - OVERRIDE para tipos de empresa */
 .ios-header-container,
@@ -208,6 +206,8 @@
   <!-- Enhanced iOS Company Types Grid - HARDWARE STYLE CON CONTENIDO ESPECÍFICO -->
     <div class="ios-hardware-grid" id="companyTypesGrid">
       {% for company_type in company_types_data.company_types %}
+      {# Filtrar por estado activo según el parámetro include_inactive #}
+      {% if include_inactive or company_type.active %}
       <div class="ios-hardware-card company-type-item" data-type-id="{{ company_type.id }}" data-status="{{ company_type.active|lower }}">
         <div class="ios-card-header">
           <div class="ios-card-icon">
@@ -262,23 +262,46 @@
           </div>
         </div>
         
-        <!-- Características destacadas (si existen) -->
+        <!-- Características destacadas mejoradas (si existen) -->
         {% if company_type.features and company_type.features|length > 0 %}
-        <div class="mt-3 mb-3">
-          <div class="text-xs font-semibold text-blue-800 dark:text-blue-400 mb-2">
-            <i class="fas fa-list mr-1 text-blue-700 dark:text-blue-400"></i>
-            Características principales:
+        <div class="mt-4 mb-3">
+          <div class="flex items-center justify-between mb-3">
+            <div class="text-xs font-bold text-blue-800 dark:text-blue-400 flex items-center">
+              <i class="fas fa-tags mr-2 text-blue-700 dark:text-blue-400"></i>
+              <span>Características principales</span>
+            </div>
+            <div class="text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700/50 px-2 py-1 rounded-full">
+              {{ company_type.features|length }} total
+            </div>
           </div>
-          <div class="flex flex-wrap gap-1">
-            {% for feature in company_type.features[:3] %}
-            <span class="inline-block px-2 py-1 bg-blue-700 dark:bg-blue-500/20 text-white dark:text-blue-300 text-xs font-semibold rounded-full border border-blue-800 dark:border-blue-500/30">
-              {{ feature }}
-            </span>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {% for feature in company_type.features[:4] %}
+            {% set color_index = loop.index0 % 6 %}
+            {% set colors = [
+              'bg-gradient-to-r from-purple-500 to-pink-500 border-purple-300 shadow-purple-200',
+              'bg-gradient-to-r from-blue-500 to-indigo-500 border-blue-300 shadow-blue-200',
+              'bg-gradient-to-r from-green-500 to-emerald-500 border-green-300 shadow-green-200',
+              'bg-gradient-to-r from-yellow-500 to-orange-500 border-yellow-300 shadow-yellow-200',
+              'bg-gradient-to-r from-red-500 to-rose-500 border-red-300 shadow-red-200',
+              'bg-gradient-to-r from-indigo-500 to-purple-500 border-indigo-300 shadow-indigo-200'
+            ] %}
+            <div class="feature-tag group {{ colors[color_index] }} text-white text-xs font-semibold rounded-lg border border-opacity-30 px-3 py-2 shadow-sm hover:shadow-md transform hover:scale-105 transition-all duration-200">
+              <div class="flex items-center justify-between">
+                <span class="truncate flex-1 drop-shadow-sm">{{ feature }}</span>
+                <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 ml-2">
+                  <i class="fas fa-sparkles text-xs"></i>
+                </div>
+              </div>
+            </div>
             {% endfor %}
-            {% if company_type.features|length > 3 %}
-            <span class="inline-block px-2 py-1 bg-gray-700 dark:bg-gray-500/20 text-white dark:text-gray-300 text-xs font-semibold rounded-full border border-gray-800 dark:border-gray-500/30">
-              +{{ company_type.features|length - 3 }} más
-            </span>
+            {% if company_type.features|length > 4 %}
+            <div class="feature-tag-more group bg-gradient-to-r from-slate-600 to-gray-700 text-white text-xs font-semibold rounded-lg border border-slate-400 border-opacity-30 px-3 py-2 shadow-sm hover:shadow-md transform hover:scale-105 transition-all duration-200 col-span-1 sm:col-span-2">
+              <div class="flex items-center justify-center">
+                <i class="fas fa-plus-circle mr-2 opacity-70 group-hover:opacity-100 transition-opacity"></i>
+                <span class="drop-shadow-sm">{{ company_type.features|length - 4 }} características adicionales</span>
+                <i class="fas fa-arrow-right ml-2 opacity-0 group-hover:opacity-100 transition-all duration-200 transform group-hover:translate-x-1"></i>
+              </div>
+            </div>
             {% endif %}
           </div>
         </div>
@@ -307,6 +330,7 @@
         <!-- iOS Card Shimmer Effect -->
         <div class="ios-card-shimmer"></div>
       </div>
+      {% endif %}
       {% endfor %}
     </div>
   </div>
@@ -315,7 +339,7 @@
 
 <!-- Create/Edit Company Type Modal - EXACT HARDWARE STYLE -->
 <div id="companyTypeModal" class="ios-modal-backdrop hidden">
-  <div class="ios-blur-modal-container w-full max-w-2xl">
+  <div class="ios-blur-modal-container w-full max-w-4xl">
     <!-- Modal Header -->
     <div class="ios-blur-header">
       <div class="flex items-center justify-between w-full">
@@ -405,7 +429,7 @@
 
 <!-- View Details Modal - EXACT HARDWARE STYLE -->
 <div id="detailsModal" class="ios-modal-backdrop hidden">
-  <div class="ios-blur-modal-container w-full max-w-2xl">
+  <div class="ios-blur-modal-container w-full max-w-4xl">
     <!-- Modal Header -->
     <div class="ios-blur-header">
       <div class="flex items-center justify-between w-full">
@@ -414,8 +438,8 @@
             <i class="fas fa-eye text-white text-xl"></i>
           </div>
           <div>
-            <h3 class="text-2xl font-bold text-white dark:text-white" id="detailsTitle">Detalles del Tipo</h3>
-            <p class="text-sm text-white/70 dark:text-gray-300">Información completa del tipo seleccionado</p>
+            <h3 class="text-2xl font-bold text-white" id="detailsTitle">Detalles del Tipo</h3>
+            <p class="text-sm text-white/70">Información completa del tipo seleccionado</p>
           </div>
         </div>
         <button type="button" class="ios-blur-btn ios-blur-btn-secondary !p-2 !min-w-0" onclick="closeDetailsModal()" aria-label="Cerrar modal">
@@ -426,8 +450,8 @@
     
     <!-- Modal Body -->
     <div class="ios-blur-body">
-      <div id="detailsContent">
-        <!-- Details will be loaded here -->
+      <div id="detailsContent" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Details will be loaded here using Hardware-style cards -->
       </div>
     </div>
     
@@ -435,7 +459,7 @@
     <div class="ios-blur-footer">
       <button type="button" class="ios-blur-btn ios-blur-btn-secondary" onclick="closeDetailsModal()">
         <i class="fas fa-times mr-2"></i>
-        <span class="text-sm font-medium">Cerrar</span>
+        Cerrar
       </button>
     </div>
   </div>
@@ -598,6 +622,8 @@
 <script src="{{ url_for('static', filename='js/api-client.js') }}"></script>
 <script src="{{ url_for('static', filename='js/modal-utils.js') }}"></script>
 <script src="{{ url_for('static', filename='js/dashboard/basic-managers.js') }}"></script>
+<!-- Company Types Main JavaScript -->
+<script src="{{ url_for('static', filename='js/company-types/company-types-main.js') }}"></script>
 <script>
 let editingCompanyType = null;
 let currentFeatures = [];
@@ -647,17 +673,31 @@ document.addEventListener('DOMContentLoaded', function() {
   // Ejecutar inmediatamente
   forceVisibility();
   
-  // Get initial state from URL parameter (usar variable global)
-  console.log(`🔧 Show inactive: ${currentShowingInactive}`);
+  // Inicializar filtro - por defecto solo mostrar tipos activos
+  console.log(`🔧 Initializing with active-only filter: ${currentShowingInactive}`);
   
-  // Apply initial filter - by default show only active types
+  // Leer parámetro URL para override si es necesario (pero default es false)
+  const urlParams = new URLSearchParams(window.location.search);
+  const includeInactiveParam = urlParams.get('include_inactive');
+  if (includeInactiveParam === 'true') {
+    currentShowingInactive = true;
+    console.log('📋 URL override: showing all types including inactive');
+  }
+  
+  // Apply initial filter - by default show only active types - INMEDIATAMENTE
+  console.log('🎯 Applying initial filter immediately...');
+  filterTypesByActiveStatus(currentShowingInactive);
+  // Sincronizar estado del botón
+  syncButtonState();
+  // Forzar visibilidad nuevamente después del filtro
+  forceVisibility();
+  
+  // También aplicar después de un pequeño delay por si hay elementos que cargan tarde
   setTimeout(() => {
+    console.log('🔄 Re-applying filter after delay...');
     filterTypesByActiveStatus(currentShowingInactive);
-    // Sincronizar estado del botón
     syncButtonState();
-    // Forzar visibilidad nuevamente después del filtro
-    forceVisibility();
-  }, 100);
+  }, 50);
 });
 
 // Función de test para probar el toggle modal
@@ -679,14 +719,16 @@ function openCreateModal() {
   document.getElementById('companyTypeForm').reset();
   updateFeaturesList(); // Clear features display
   
-  // Open modal using modal manager (handles scroll prevention)
+  // Open modal using modal manager (handles scroll prevention) - EXACT HARDWARE STYLE
   if (window.modalManager) {
     window.modalManager.openModal('companyTypeModal');
     window.modalManager.setupModal('companyTypeModal');
   } else {
-    // Fallback for compatibility
+    // Fallback for compatibility - EXACT HARDWARE STYLE
     const modal = document.getElementById('companyTypeModal');
     modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    document.body.classList.add('modal-open');
   }
 }
 
@@ -714,25 +756,29 @@ async function editCompanyType(id) {
     return;
   }
   
-  // Open modal using modal manager (handles scroll prevention)
+  // Open modal using modal manager (handles scroll prevention) - EXACT HARDWARE STYLE
   if (window.modalManager) {
     window.modalManager.openModal('companyTypeModal');
     window.modalManager.setupModal('companyTypeModal');
   } else {
-    // Fallback for compatibility
+    // Fallback for compatibility - EXACT HARDWARE STYLE
     const modal = document.getElementById('companyTypeModal');
     modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    document.body.classList.add('modal-open');
   }
 }
 
 function closeModal() {
-  // Use modalManager (handles scroll restoration)
+  // Use modalManager (handles scroll restoration) - EXACT HARDWARE STYLE
   if (window.modalManager) {
     window.modalManager.closeModal('companyTypeModal');
   } else {
-    // Fallback for compatibility
+    // Fallback for compatibility - EXACT HARDWARE STYLE
     const modal = document.getElementById('companyTypeModal');
     modal.classList.add('hidden');
+    document.body.style.overflow = '';
+    document.body.classList.remove('modal-open');
   }
   
   editingCompanyType = null;
@@ -744,37 +790,95 @@ async function viewCompanyType(id) {
     if (response.success && response.data) {
       const data = response.data;
       document.getElementById('detailsTitle').textContent = `Detalles: ${data.nombre}`;
+      
+      // Hardware-style colorful cards layout
       document.getElementById('detailsContent').innerHTML = `
-        <div class="space-y-4">
-          <div class="flex items-center space-x-3">
-            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-              <i class="fas fa-building text-purple-600 text-xl"></i>
-            </div>
-            <div>
-              <h4 class="text-lg font-semibold text-gray-900 dark:text-white">${data.nombre}</h4>
-              <p class="text-sm text-gray-500 dark:text-gray-400">ID: ${id}</p>
-            </div>
+        <div class="bg-gradient-to-br from-purple-500 via-pink-500 to-red-500 rounded-xl p-5 shadow-lg transform hover:scale-105 transition-all duration-300">
+          <label class="block text-sm font-bold text-white mb-3 drop-shadow-lg">
+            <i class="fas fa-tag mr-2 text-yellow-200"></i>Nombre del Tipo
+          </label>
+          <div class="text-xl font-bold text-white drop-shadow-md">${data.nombre}</div>
+        </div>
+        
+        <div class="bg-gradient-to-br from-${data.activo ? 'green' : 'red'}-500 via-${data.activo ? 'emerald' : 'pink'}-500 to-${data.activo ? 'teal' : 'rose'}-500 rounded-xl p-5 shadow-lg transform hover:scale-105 transition-all duration-300">
+          <label class="block text-sm font-bold text-white mb-3 drop-shadow-lg">
+            <i class="fas fa-toggle-on mr-2 text-yellow-200"></i>Estado
+          </label>
+          <div class="text-xl font-bold text-white drop-shadow-md">${data.activo ? '✅ Activo' : '❌ Inactivo'}</div>
+        </div>
+        
+        <div class="bg-gradient-to-br from-orange-500 via-yellow-500 to-amber-500 rounded-xl p-5 shadow-lg transform hover:scale-105 transition-all duration-300">
+          <label class="block text-sm font-bold text-white mb-3 drop-shadow-lg">
+            <i class="fas fa-building mr-2 text-yellow-200"></i>Empresas Asociadas
+          </label>
+          <div class="text-xl font-bold text-white drop-shadow-md">${data.companies_count || data.empresas_count || 0} empresas</div>
+        </div>
+        
+        <div class="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-xl p-5 shadow-lg transform hover:scale-105 transition-all duration-300">
+          <label class="block text-sm font-bold text-white mb-3 drop-shadow-lg">
+            <i class="fas fa-list mr-2 text-yellow-200"></i>Características
+          </label>
+          <div class="text-xl font-bold text-white drop-shadow-md">${data.caracteristicas ? data.caracteristicas.length : 0} definidas</div>
+        </div>
+        
+        <div class="bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900 rounded-xl p-5 shadow-lg transform hover:scale-105 transition-all duration-300">
+          <label class="block text-sm font-bold text-white mb-3 drop-shadow-lg">
+            <i class="fas fa-calendar-alt mr-2 text-yellow-200"></i>Fecha de Creación
+          </label>
+          <div class="text-xl font-bold text-white drop-shadow-md">${data.created_at || data.fecha_creacion || 'No disponible'}</div>
+        </div>
+        
+        <div class="col-span-1 md:col-span-2 bg-gradient-to-br from-violet-600 via-purple-700 to-indigo-800 rounded-xl p-5 shadow-lg transform hover:scale-105 transition-all duration-300">
+          <label class="block text-sm font-bold text-white mb-3 drop-shadow-lg">
+            <i class="fas fa-align-left mr-2 text-yellow-200"></i>Descripción
+          </label>
+          <div class="text-lg font-medium text-white drop-shadow-md leading-relaxed">
+            ${data.descripcion || '<em class="text-gray-200">Sin descripción disponible</em>'}
           </div>
-          <div>
-            <h5 class="text-base font-semibold text-gray-900 dark:text-white mb-2">Descripción</h5>
-            <p class="text-sm text-gray-600 dark:text-gray-400">${data.descripcion || 'Sin descripción'}</p>
+        </div>
+        
+        ${data.caracteristicas && data.caracteristicas.length > 0 ? `
+        <div class="col-span-1 md:col-span-2 bg-gradient-to-br from-emerald-600 via-teal-700 to-cyan-800 rounded-xl p-6 shadow-xl transform hover:scale-105 transition-all duration-300">
+          <label class="block text-sm font-bold text-white mb-4 drop-shadow-lg">
+            <i class="fas fa-tags mr-2 text-yellow-200"></i>Lista de Características
+            <span class="ml-2 text-xs bg-white bg-opacity-20 px-2 py-1 rounded-full">${data.caracteristicas.length} total</span>
+          </label>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-4">
+            ${data.caracteristicas.map((feature, index) => {
+              const colors = [
+                'from-purple-500 to-pink-500 border-purple-300',
+                'from-blue-500 to-indigo-500 border-blue-300',
+                'from-green-500 to-emerald-500 border-green-300',
+                'from-yellow-500 to-orange-500 border-yellow-300',
+                'from-red-500 to-pink-500 border-red-300',
+                'from-indigo-500 to-purple-500 border-indigo-300',
+                'from-teal-500 to-cyan-500 border-teal-300',
+                'from-orange-500 to-red-500 border-orange-300'
+              ];
+              const colorClass = colors[index % colors.length];
+              return `
+                <div class="group bg-gradient-to-br ${colorClass} rounded-lg p-3 shadow-md transform hover:scale-105 hover:shadow-lg transition-all duration-300 border border-opacity-30">
+                  <div class="flex items-center justify-between">
+                    <span class="text-white font-semibold text-sm drop-shadow-sm group-hover:drop-shadow-md transition-all">${feature}</span>
+                    <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                      <i class="fas fa-sparkles text-white text-xs"></i>
+                    </div>
+                  </div>
+                  <div class="mt-2 h-1 bg-white bg-opacity-20 rounded-full overflow-hidden">
+                    <div class="h-full bg-white bg-opacity-40 rounded-full animate-pulse"></div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
           </div>
-          <div>
-            <h5 class="text-base font-semibold text-gray-900 dark:text-white mb-2">Estado</h5>
-            <span class="text-sm font-semibold ${data.activo ? 'text-green-600' : 'text-red-600'} ml-2">${data.activo ? 'Activo' : 'Inactivo'}</span>
-          </div>
-          <div>
-            <h5 class="text-base font-semibold text-gray-900 dark:text-white mb-2">Características</h5>
-            <div class="flex flex-wrap gap-2">
-              ${data.caracteristicas && data.caracteristicas.length > 0 ? 
-                data.caracteristicas.map(feature => 
-                  `<span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-xs font-medium">${feature}</span>`
-                ).join('') : 
-                '<span class="text-gray-500 dark:text-gray-400 text-sm">No hay características definidas</span>'
-              }
+          <div class="mt-4 pt-3 border-t border-white border-opacity-20">
+            <div class="flex items-center justify-between text-xs text-white text-opacity-80">
+              <span><i class="fas fa-info-circle mr-1"></i>Características definidas para este tipo</span>
+              <span><i class="fas fa-clock mr-1"></i>Última actualización</span>
             </div>
           </div>
         </div>
+        ` : ''}
       `;
     }
   } catch (error) {
@@ -783,28 +887,29 @@ async function viewCompanyType(id) {
     return;
   }
   
-  // Open modal immediately without scrolling - use modalManager
-  
-  // Open modal using modal manager
+  // Open modal using modal manager - EXACT HARDWARE STYLE
   if (window.modalManager) {
     window.modalManager.openModal('detailsModal');
     window.modalManager.setupModal('detailsModal');
   } else {
-    // Fallback for compatibility
+    // Fallback for compatibility - EXACT HARDWARE STYLE
     const modal = document.getElementById('detailsModal');
     modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    document.body.classList.add('modal-open');
   }
 }
 
 function closeDetailsModal() {
-  // Use modalManager for consistent closing - no scroll restoration needed
+  // Use modalManager for consistent closing - EXACT HARDWARE STYLE
   if (window.modalManager) {
     window.modalManager.closeModal('detailsModal');
   } else {
-    // Fallback for compatibility
+    // Fallback for compatibility - EXACT HARDWARE STYLE
     const modal = document.getElementById('detailsModal');
     modal.classList.add('hidden');
     document.body.style.overflow = '';
+    document.body.classList.remove('modal-open');
   }
 }
 
@@ -864,13 +969,14 @@ function openToggleCompanyTypeModal(id, currentStatus, typeName) {
     if (confirmIcon) confirmIcon.className = 'fas fa-pause mr-2';
   }
   
-  // Show modal using modalManager (consistent with other modals)
+  // Show modal using modalManager (consistent with other modals) - EXACT HARDWARE STYLE
   if (window.modalManager) {
     window.modalManager.openModal('toggleCompanyTypeModal');
   } else {
-    // Fallback
+    // Fallback - EXACT HARDWARE STYLE
     modal.classList.remove('hidden');
     modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
     document.body.classList.add('modal-open');
   }
   
@@ -921,13 +1027,14 @@ function closeToggleModal() {
   }
   
   function resetAndHideModal() {
-    // Use modalManager for consistent closing
+    // Use modalManager for consistent closing - EXACT HARDWARE STYLE
     if (window.modalManager) {
       window.modalManager.closeModal('toggleCompanyTypeModal');
     } else {
-      // Fallback
+      // Fallback - EXACT HARDWARE STYLE
       modal.classList.add('hidden');
       modal.style.display = 'none';
+      document.body.style.overflow = '';
       document.body.classList.remove('modal-open');
     }
     
@@ -1163,13 +1270,14 @@ function showClientUpdateModal(message = 'El tipo de empresa se ha actualizado e
   
   messageEl.textContent = message;
   
-  // Show modal using modalManager (consistent with other modals)
+  // Show modal using modalManager (consistent with other modals) - EXACT HARDWARE STYLE
   if (window.modalManager) {
     window.modalManager.openModal('clientUpdateModal');
   } else {
-    // Fallback
+    // Fallback - EXACT HARDWARE STYLE
     modal.classList.remove('hidden');
     modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
     document.body.classList.add('modal-open');
   }
   
@@ -1231,13 +1339,14 @@ function closeUpdateModal() {
   }
   
   function resetAndHideUpdateModal() {
-    // Use modalManager for consistent closing
+    // Use modalManager for consistent closing - EXACT HARDWARE STYLE
     if (window.modalManager) {
       window.modalManager.closeModal('clientUpdateModal');
     } else {
-      // Fallback
+      // Fallback - EXACT HARDWARE STYLE
       modal.classList.add('hidden');
       modal.style.display = 'none';
+      document.body.style.overflow = '';
       document.body.classList.remove('modal-open');
     }
     
@@ -1251,8 +1360,8 @@ function exportTypes() {
   showClientUpdateModal('Los tipos de empresa se están exportando. El archivo CSV se descargará automáticamente.');
 }
 
-// Variable global para trackear el estado actual
-let currentShowingInactive = {{ 'true' if include_inactive else 'false' }};
+// Variable global para trackear el estado actual - POR DEFECTO SOLO ACTIVOS
+let currentShowingInactive = false; // Siempre empezar mostrando solo activos
 
 // Función para sincronizar estado del botón con variable global
 function syncButtonState() {
@@ -1279,32 +1388,33 @@ function syncButtonState() {
   console.log(`🔄 Button state synced. Showing inactive: ${currentShowingInactive}`);
 }
 
-// SIMPLIFIED: Toggle between showing only active or all types - ARREGLADO
+// FIXED: Toggle by reloading page with correct parameter
 function toggleIncludeInactive() {
-  // Usar variable global que se actualiza dinámicamente
+  // Determinar el nuevo estado
   const newShowInactive = !currentShowingInactive;
   
   console.log(`🔄 Toggle: Currently showing inactive: ${currentShowingInactive}, New: ${newShowInactive}`);
   
-  // Actualizar variable global
-  currentShowingInactive = newShowInactive;
+  // Mostrar estado de carga en el botón
+  const button = document.querySelector('button[onclick="toggleIncludeInactive()"]');
+  if (button) {
+    const originalContent = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span class="text-sm font-medium">Cargando...</span>';
+    button.disabled = true;
+  }
   
-  // Sincronizar apariencia del botón
-  syncButtonState();
-  
-  // Filter types by active status - SIMPLE!
-  filterTypesByActiveStatus(newShowInactive);
-  
-  // Update URL without page reload
+  // Construir URL con el parámetro correcto
   const currentUrl = new URL(window.location);
   if (newShowInactive) {
     currentUrl.searchParams.set('include_inactive', 'true');
+    console.log('🔄 Reloading to show ALL types (active + inactive)');
   } else {
     currentUrl.searchParams.delete('include_inactive');
+    console.log('🔄 Reloading to show ONLY active types');
   }
-  window.history.replaceState({}, '', currentUrl.toString());
   
-  console.log(`✅ Toggle completed. New state: ${currentShowingInactive}`);
+  // Recargar la página para que Jinja2 renderice correctamente
+  window.location.href = currentUrl.toString();
 }
 
 // SIMPLE: Filter types by checking 'activo' field - no complex logic needed!

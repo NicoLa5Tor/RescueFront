@@ -131,7 +131,7 @@ def validate_backend_connection():
 @app.before_request
 def attach_api_client():
     # Validar conectividad con backend para rutas protegidas (solo admin routes)
-    protected_routes = ['admin_dashboard', 'super_admin_dashboard', 'admin_users', 'admin_empresas', 'admin_stats', 'admin_hardware']
+    protected_routes = ['admin_dashboard', 'super_admin_dashboard', 'admin_users', 'admin_empresas', 'admin_hardware']
     if request.endpoint in protected_routes:
         if not validate_backend_connection():
             print("❌ Backend no disponible, limpiando sesión")
@@ -595,19 +595,6 @@ def admin_empresa_alias():
     """Legacy singular path redirect - Solo para super_admin"""
     return redirect(url_for('admin_empresas'))
 
-@app.route('/admin/stats')
-@require_role(['super_admin', 'empresa'])
-def admin_stats():
-    """Estadísticas - Para super_admin y empresa"""
-    # Get detailed statistics dummy data from Python providers
-    statistics_data = get_detailed_statistics()
-    
-    return render_template(
-        'admin/stats.html', 
-        api_url=PROXY_PREFIX, 
-        statistics_data=statistics_data,
-        active_page='stats'
-    )
 
 @app.route('/admin/hardware')
 @require_role(['super_admin'])

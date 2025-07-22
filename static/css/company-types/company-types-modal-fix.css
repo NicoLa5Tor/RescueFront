@@ -1,6 +1,6 @@
-/* ===== COMPANY TYPES MODAL FIX - FORZAR VIEWPORT CORRECTO =====
+/* ===== COMPANY TYPES MODAL FIX - SIN INTERFERENCIA CON OTROS MODALES =====
 
-/* FUERZA POSICIONAMIENTO FIJO ABSOLUTO PARA TODOS LOS MODALES DE COMPANY TYPES */
+/* FUERZA POSICIONAMIENTO FIJO ABSOLUTO SOLO PARA MODALES DE COMPANY TYPES */
 #companyTypeModal,
 #detailsModal,
 #toggleCompanyTypeModal,
@@ -24,7 +24,7 @@
   contain: layout style paint !important;
 }
 
-/* APLICAR BACKDROP CUANDO NO ESTÁ HIDDEN - TODOS LOS MODALES */
+/* APLICAR BACKDROP CUANDO NO ESTÁ HIDDEN - SOLO MODALES DE COMPANY TYPES */
 #companyTypeModal:not(.hidden),
 #detailsModal:not(.hidden),
 #toggleCompanyTypeModal:not(.hidden),
@@ -39,7 +39,7 @@
   padding-top: 10vh !important;
 }
 
-/* ESTADO OCULTO - MUY IMPORTANTE */
+/* ESTADO OCULTO - SOLO MODALES DE COMPANY TYPES */
 #companyTypeModal.hidden,
 #detailsModal.hidden,
 #toggleCompanyTypeModal.hidden,
@@ -50,7 +50,7 @@
   pointer-events: none !important;
 }
 
-/* OVERRIDE CUALQUIER CONTENEDOR PADRE QUE PUEDA INTERFERIR */
+/* OVERRIDE CUALQUIER CONTENEDOR PADRE - SOLO MODALES DE COMPANY TYPES */
 * #companyTypeModal,
 * #detailsModal,
 * #toggleCompanyTypeModal,
@@ -67,21 +67,27 @@
   padding: 0 !important;
 }
 
-/* PREVENIR HERENCIA DE OVERFLOW - SIN MOVER SCROLL */
-body.modal-open {
-  overflow: hidden !important;
-  /* NO aplicar position: fixed para evitar el salto de scroll */
-  /* Mantener la posición actual del scroll sin saltar arriba */
-}
+/* NO INTERFERIR CON OTROS MODALES - SOLO APLICAR A COMPANY TYPES */
+/* NOTA: Se removió la regla body.modal-open general que causaba interferencia */
 
-/* FORZAR QUE EL CONTENEDOR DEL MODAL SE CENTRE CORRECTAMENTE */
-.ios-blur-modal-container {
+/* FORZAR QUE EL CONTENEDOR DEL MODAL SE CENTRE CORRECTAMENTE - SOLO PARA COMPANY TYPES */
+#companyTypeModal .ios-blur-modal-container,
+#detailsModal .ios-blur-modal-container,
+#toggleCompanyTypeModal .ios-blur-modal-container,
+#clientUpdateModal .ios-blur-modal-container {
   position: relative !important;
-  /* Restaurar tamaño original - dejar que modals.css maneje las dimensiones */
   margin: 0 !important;
 }
 
-/* RESPONSIVE PARA MÓVILES - MANTENER TAMAÑOS ORIGINALES */
+/* PREVENIR SCROLL SOLO CUANDO MODALES DE COMPANY TYPES ESTÁN ABIERTOS */
+body:has(#companyTypeModal:not(.hidden)),
+body:has(#detailsModal:not(.hidden)),
+body:has(#toggleCompanyTypeModal:not(.hidden)),
+body:has(#clientUpdateModal:not(.hidden)) {
+  overflow: hidden !important;
+}
+
+/* RESPONSIVE PARA MÓVILES - SOLO MODALES DE COMPANY TYPES */
 @media (max-width: 768px) {
   #companyTypeModal:not(.hidden),
   #detailsModal:not(.hidden),
@@ -90,13 +96,9 @@ body.modal-open {
     padding: 0.5rem !important;
     align-items: flex-start !important;
   }
-  /* Dejar que el CSS principal maneje las dimensiones móviles */
 }
 
-/* MODAL FIX COMPLETADO - READY FOR PRODUCTION */
-/* Los modales de company types ahora flotan correctamente sobre el viewport completo */
-
-/* REGLA FINAL - OVERRIDE CUALQUIER OTRA ESPECIFICIDAD */
+/* REGLA FINAL - SOLO PARA MODALES DE COMPANY TYPES */
 body #companyTypeModal,
 body #detailsModal,
 body #toggleCompanyTypeModal,

@@ -37,8 +37,8 @@ class ModalManager {
             return;
         }
         
-        // Prevenir scroll del body
-        this.preventBodyScroll();
+        // Prevenir scroll del body con clase específica si se proporciona
+        this.preventBodyScroll(modalId, options);
         
         // Agregar modal a la lista de modales abiertos
         this.openModals.add(modalId);
@@ -77,7 +77,7 @@ class ModalManager {
         
         // Restaurar scroll del body si no hay más modales abiertos
         if (this.openModals.size === 0) {
-            this.restoreBodyScroll();
+            this.restoreBodyScroll(modalId, options);
         }
         
         // Callback opcional
@@ -113,24 +113,38 @@ class ModalManager {
     
     /**
      * Previene el scroll del body
+     * @param {string} modalId - ID del modal (opcional, para clases específicas)
+     * @param {Object} options - Opciones adicionales
      */
-    preventBodyScroll() {
+    preventBodyScroll(modalId = '', options = {}) {
         if (this.openModals.size === 0) {
             // Solo aplicar overflow hidden - sin position fixed para evitar scroll jump
             document.body.style.overflow = 'hidden';
-            document.body.classList.add('modal-open');
-            console.log('Body scroll disabled - modal appears in current view without scroll jump');
+            
+            // Aplicar clase específica si se proporciona, sino usar la genérica
+            const modalClass = options.modalClass || this.getModalSpecificClass(modalId) || 'modal-open';
+            document.body.classList.add(modalClass);
+            
+            console.log(`Body scroll disabled with class: ${modalClass}`);
         }
     }
     
     /**
      * Restaura el scroll del body
+     * @param {string} modalId - ID del modal (opcional, para clases específicas)
+     * @param {Object} options - Opciones adicionales
      */
-    restoreBodyScroll() {
-        // Restaurar overflow y remover clases de modal
+    restoreBodyScroll(modalId = '', options = {}) {
+        // Restaurar overflow
         document.body.style.overflow = '';
-        document.body.classList.remove('modal-open');
-        console.log('Body scroll enabled - user stays in same position');
+        
+        // Remover todas las clases de modal conocidas
+        const modalClasses = ['modal-open', 'company-types-modal-open', 'usuarios-modal-open'];
+        modalClasses.forEach(className => {
+            document.body.classList.remove(className);
+        });
+        
+        console.log('Body scroll enabled - all modal classes removed');
     }
     
     /**
@@ -205,6 +219,26 @@ class ModalManager {
      */
     getOpenModals() {
         return Array.from(this.openModals);
+    }
+    
+    /**
+     * Obtiene la clase específica para un modal basado en su ID
+     * @param {string} modalId - ID del modal
+     * @returns {string|null} - Clase específica o null
+     */
+    getModalSpecificClass(modalId) {
+        // Mapeo de IDs de modal a clases específicas
+        const modalClassMap = {
+            'companyTypeModal': 'company-types-modal-open',
+            'toggleCompanyTypeModal': 'company-types-modal-open', 
+            'clientUpdateModal': 'company-types-modal-open',
+            'detailsModal': 'company-types-modal-open',
+            'userModal': 'usuarios-modal-open',
+            'createUserModal': 'usuarios-modal-open',
+            'editUserModal': 'usuarios-modal-open'
+        };
+        
+        return modalClassMap[modalId] || null;
     }
 }
 
