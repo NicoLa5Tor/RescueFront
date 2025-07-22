@@ -489,131 +489,476 @@
   min-height: 100px;
 }
 
+/* ===== ENHANCED SEDES CONTAINER ===== */
 .empresa-sedes-container {
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 1rem;
-  background: rgba(255, 255, 255, 0.02);
+  border: 2px solid rgba(245, 158, 11, 0.3);
+  border-radius: 16px;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(245, 158, 11, 0.03));
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(245, 158, 11, 0.1);
 }
 
+.empresa-sedes-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #f59e0b, transparent);
+  transition: left 0.6s ease;
+}
+
+.empresa-sedes-container:hover {
+  border-color: rgba(245, 158, 11, 0.5);
+  box-shadow: 0 8px 30px rgba(245, 158, 11, 0.2);
+  transform: translateY(-2px);
+}
+
+.empresa-sedes-container:hover::before {
+  left: 100%;
+}
+
+/* Enhanced sede items with animation */
 .empresa-sede-item {
   display: flex;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
   align-items: center;
+  padding: 0.75rem;
+  background: rgba(245, 158, 11, 0.05);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  animation: slideInFromLeft 0.4s ease-out;
 }
 
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.empresa-sede-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(180deg, #f59e0b, #d97706);
+  transition: width 0.3s ease;
+}
+
+.empresa-sede-item:hover {
+  background: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.4);
+  transform: translateX(4px);
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.2);
+}
+
+.empresa-sede-item:hover::before {
+  width: 8px;
+}
+
+/* Enhanced sede input with better styling */
 .empresa-sede-input {
   flex: 1;
-  padding: 0.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.05);
+  padding: 0.875rem 1rem;
+  border: 2px solid rgba(245, 158, 11, 0.2);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.9);
   color: var(--text-primary, #111827);
   font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(5px);
+  box-shadow: inset 0 2px 4px rgba(245, 158, 11, 0.1);
+}
+
+.empresa-sede-input:focus {
+  outline: none;
+  border-color: #f59e0b;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 
+    inset 0 2px 4px rgba(245, 158, 11, 0.1),
+    0 0 0 3px rgba(245, 158, 11, 0.2);
+  transform: scale(1.02);
+}
+
+.empresa-sede-input::placeholder {
+  color: rgba(156, 163, 175, 0.8);
+  font-style: italic;
 }
 
 .dark .empresa-sede-input {
+  background: rgba(31, 41, 55, 0.8);
   color: var(--text-primary, #ffffff);
+  border-color: rgba(245, 158, 11, 0.3);
 }
 
+.dark .empresa-sede-input:focus {
+  background: rgba(31, 41, 55, 0.9);
+  border-color: #f59e0b;
+}
+
+/* Enhanced remove button with hover effects */
 .empresa-sede-remove {
-  padding: 0.5rem;
+  padding: 0.75rem;
   border: none;
-  background: rgba(239, 68, 68, 0.2);
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.2));
   color: #ef4444;
-  border-radius: 6px;
+  border-radius: 10px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  min-width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
+}
+
+.empresa-sede-remove::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(239, 68, 68, 0.3);
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  transform: translate(-50%, -50%);
 }
 
 .empresa-sede-remove:hover {
-  background: rgba(239, 68, 68, 0.3);
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(220, 38, 38, 0.3));
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
 }
 
+.empresa-sede-remove:hover::before {
+  width: 100%;
+  height: 100%;
+}
+
+.empresa-sede-remove:active {
+  transform: scale(0.95);
+}
+
+/* Enhanced add button with better visual appeal */
 .empresa-sede-add {
-  padding: 0.5rem 1rem;
-  border: 1px dashed rgba(255, 255, 255, 0.3);
-  background: transparent;
+  padding: 1rem 1.5rem;
+  border: 2px dashed rgba(245, 158, 11, 0.4);
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.05), transparent);
   color: var(--text-secondary, #6b7280);
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.4s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 0.75rem;
   width: 100%;
+  font-weight: 600;
+  font-size: 0.9rem;
+  position: relative;
+  overflow: hidden;
+  margin-top: 0.5rem;
+}
+
+.empresa-sede-add::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: -100%;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #f59e0b, transparent);
+  transition: left 0.6s ease;
+  transform: translateY(-50%);
 }
 
 .empresa-sede-add:hover {
-  border-color: #3b82f6;
-  color: #3b82f6;
-  background: rgba(59, 130, 246, 0.05);
+  border-color: #f59e0b;
+  color: #f59e0b;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.05));
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.3);
 }
 
-/* Roles styles - identical to sedes */
+.empresa-sede-add:hover::before {
+  left: 100%;
+}
+
+.empresa-sede-add:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.empresa-sede-add i {
+  font-size: 1.1rem;
+  transition: transform 0.3s ease;
+}
+
+.empresa-sede-add:hover i {
+  transform: rotate(90deg) scale(1.2);
+}
+
+/* ===== ENHANCED ROLES CONTAINER (MATCHING SEDES) ===== */
 .empresa-roles-container {
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 1rem;
-  background: rgba(255, 255, 255, 0.02);
+  border: 2px solid rgba(147, 51, 234, 0.3);
+  border-radius: 16px;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, rgba(147, 51, 234, 0.08), rgba(147, 51, 234, 0.03));
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(147, 51, 234, 0.1);
 }
 
+.empresa-roles-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #9333ea, transparent);
+  transition: left 0.6s ease;
+}
+
+.empresa-roles-container:hover {
+  border-color: rgba(147, 51, 234, 0.5);
+  box-shadow: 0 8px 30px rgba(147, 51, 234, 0.2);
+  transform: translateY(-2px);
+}
+
+.empresa-roles-container:hover::before {
+  left: 100%;
+}
+
+/* Enhanced rol items with animation */
 .empresa-rol-item {
   display: flex;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
   align-items: center;
+  padding: 0.75rem;
+  background: rgba(147, 51, 234, 0.05);
+  border: 1px solid rgba(147, 51, 234, 0.2);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  animation: slideInFromRight 0.4s ease-out;
 }
 
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.empresa-rol-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(180deg, #9333ea, #7c3aed);
+  transition: width 0.3s ease;
+}
+
+.empresa-rol-item:hover {
+  background: rgba(147, 51, 234, 0.1);
+  border-color: rgba(147, 51, 234, 0.4);
+  transform: translateX(-4px);
+  box-shadow: 0 4px 15px rgba(147, 51, 234, 0.2);
+}
+
+.empresa-rol-item:hover::before {
+  width: 8px;
+}
+
+/* Enhanced rol input using ios-blur-input styles */
 .empresa-rol-input {
   flex: 1;
-  padding: 0.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--text-primary, #111827);
-  font-size: 0.875rem;
+  background: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 16px !important;
+  padding: 1rem 1.25rem !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-size: 1rem !important;
+  transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1) !important;
+  font-weight: 500;
+  box-shadow: inset 0 2px 4px rgba(147, 51, 234, 0.1);
+}
+
+.empresa-rol-input::placeholder {
+  color: rgba(255, 255, 255, 0.5) !important;
+  font-style: italic;
+}
+
+.empresa-rol-input:focus {
+  outline: none !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+  border: 1px solid rgba(147, 51, 234, 0.4) !important;
+  box-shadow: 
+    0 0 0 3px rgba(147, 51, 234, 0.2),
+    0 8px 25px rgba(0, 0, 0, 0.1) !important;
+  transform: scale(1.02) !important;
 }
 
 .dark .empresa-rol-input {
-  color: var(--text-primary, #ffffff);
+  background: rgba(31, 41, 55, 0.8) !important;
+  color: var(--text-primary, #ffffff) !important;
+  border-color: rgba(147, 51, 234, 0.3) !important;
 }
 
+.dark .empresa-rol-input:focus {
+  background: rgba(31, 41, 55, 0.9) !important;
+  border-color: #9333ea !important;
+}
+
+/* Enhanced remove button using ios-blur-btn styles */
 .empresa-rol-remove {
-  padding: 0.5rem;
-  border: none;
-  background: rgba(239, 68, 68, 0.2);
-  color: #ef4444;
-  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(12px) saturate(1.3) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(1.3) !important;
+  border: 1px solid rgba(239, 68, 68, 0.3) !important;
+  border-radius: 18px !important;
+  padding: 0.75rem !important;
+  color: #ef4444 !important;
+  transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1) !important;
+  position: relative;
+  overflow: hidden;
   cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.empresa-rol-remove:hover {
-  background: rgba(239, 68, 68, 0.3);
-}
-
-.empresa-rol-add {
-  padding: 0.5rem 1rem;
-  border: 1px dashed rgba(255, 255, 255, 0.3);
-  background: transparent;
-  color: var(--text-secondary, #6b7280);
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  min-width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  font-size: 1rem;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
+}
+
+.empresa-rol-remove::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(239, 68, 68, 0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: all 0.3s ease;
+}
+
+.empresa-rol-remove:hover {
+  background: rgba(239, 68, 68, 0.2) !important;
+  border: 1px solid rgba(239, 68, 68, 0.5) !important;
+  transform: scale(1.1) rotate(-5deg) !important;
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4) !important;
+}
+
+.empresa-rol-remove:hover::before {
   width: 100%;
+  height: 100%;
+}
+
+.empresa-rol-remove:active {
+  transform: scale(0.95) !important;
+}
+
+/* Enhanced add button using ios-blur-btn styles */
+.empresa-rol-add {
+  background: rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(12px) saturate(1.3) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(1.3) !important;
+  border: 2px dashed rgba(147, 51, 234, 0.4) !important;
+  border-radius: 18px !important;
+  padding: 1rem 1.5rem !important;
+  font-weight: 600 !important;
+  font-size: 1rem !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+  transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1) !important;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.empresa-rol-add::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: -100%;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #9333ea, transparent);
+  transition: left 0.6s ease;
+  transform: translateY(-50%);
 }
 
 .empresa-rol-add:hover {
-  border-color: #3b82f6;
-  color: #3b82f6;
-  background: rgba(59, 130, 246, 0.05);
+  background: rgba(147, 51, 234, 0.2) !important;
+  border: 2px solid rgba(147, 51, 234, 0.6) !important;
+  color: #9333ea !important;
+  transform: translateY(-2px) scale(1.02) !important;
+  box-shadow: 
+    0 12px 35px rgba(147, 51, 234, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+}
+
+.empresa-rol-add:hover::before {
+  left: 100%;
+}
+
+.empresa-rol-add:active {
+  transform: translateY(0) scale(0.98) !important;
+  box-shadow: 
+    0 4px 15px rgba(147, 51, 234, 0.2),
+    inset 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.empresa-rol-add i {
+  font-size: 1.1rem;
+  transition: transform 0.3s ease;
+}
+
+.empresa-rol-add:hover i {
+  transform: rotate(-90deg) scale(1.2);
 }
 
 .empresa-modal-footer {

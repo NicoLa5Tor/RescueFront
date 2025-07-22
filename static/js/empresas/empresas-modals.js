@@ -247,8 +247,8 @@ class EmpresasModals {
                   <label class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
                     <i class="fas fa-building text-yellow-400 mr-2"></i>Sedes
                   </label>
-                  <div id="sedesContainer" class="space-y-3">
-                    <div class="flex space-x-2">
+                  <div id="sedesContainer" class="empresa-sedes-container">
+                    <div class="flex space-x-2 mb-3">
                       <button type="button" class="ios-blur-btn ios-blur-btn-primary !p-2 !min-w-0" onclick="empresasModals.addSede()">
                         <i class="fas fa-plus"></i>
                       </button>
@@ -265,8 +265,8 @@ class EmpresasModals {
                   <label class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
                     <i class="fas fa-user-tag text-purple-400 mr-2"></i>Roles
                   </label>
-                  <div id="rolesContainer" class="space-y-3">
-                    <div class="flex space-x-2">
+                  <div id="rolesContainer" class="empresa-roles-container">
+                    <div class="flex space-x-2 mb-3">
                       <button type="button" class="ios-blur-btn ios-blur-btn-primary !p-2 !min-w-0" onclick="empresasModals.addRol()">
                         <i class="fas fa-plus"></i>
                       </button>
@@ -965,10 +965,10 @@ class EmpresasModals {
       const sedeItem = document.createElement('div');
       sedeItem.className = 'empresa-sede-item';
       sedeItem.innerHTML = `
-        <input type="text" class="empresa-sede-input" value="${sede}" 
+        <input type="text" class="ios-blur-input flex-1" value="${sede}" 
                placeholder="Nombre de la sede" 
                onchange="empresasModals.updateSede(${index}, this.value)">
-        <button type="button" class="empresa-sede-remove" onclick="empresasModals.removeSede(${index})">
+        <button type="button" class="ios-blur-btn ios-blur-btn-secondary !p-2 !min-w-0" onclick="empresasModals.removeSede(${index})">
           <i class="fas fa-trash"></i>
         </button>
       `;
@@ -1008,10 +1008,10 @@ class EmpresasModals {
       const rolItem = document.createElement('div');
       rolItem.className = 'empresa-rol-item';
       rolItem.innerHTML = `
-        <input type="text" class="empresa-rol-input" value="${rol}" 
+        <input type="text" class="ios-blur-input flex-1" value="${rol}" 
                placeholder="Nombre del rol" 
                onchange="empresasModals.updateRol(${index}, this.value)">
-        <button type="button" class="empresa-rol-remove" onclick="empresasModals.removeRol(${index})">
+        <button type="button" class="ios-blur-btn ios-blur-btn-secondary !p-2 !min-w-0" onclick="empresasModals.removeRol(${index})">
           <i class="fas fa-trash"></i>
         </button>
       `;
