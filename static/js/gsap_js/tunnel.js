@@ -17,6 +17,7 @@
   };
 
   function initTunnel(container) {
+    
     // Video URLs configuration
     const VIDEO_URLS = {
       step1: 'https://example.com/emergency-activation-demo.mp4',
@@ -167,25 +168,26 @@
     var tubeSegments = isMobile() ? 200 : 300; // Reduce segments on mobile
     var geometry = new THREE.TubeGeometry( path, tubeSegments, 4, 32, false );
 
-    var texture = new THREE.TextureLoader().load( 'static/assets/img/espacio2.png' , function ( texture ) {
-        texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-        texture.offset.set( 0, 0 );
-        texture.repeat.set( 15, 2 );
-    } );
-
-    var mapHeight = new THREE.TextureLoader().load('https://s3-us-west-2.amazonaws.com/s.cdpn.io/68819/waveform-bump3.jpg', function( texture){
+    var texture = new THREE.TextureLoader().load('static/assets/img/espacio2.png', function(texture) {
       texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-        texture.offset.set( 0, 0 );
-        texture.repeat.set( 15, 2 );
+      texture.offset.set(0, 0);
+      texture.repeat.set(15, 2);
+    });
+
+    var mapHeight = new THREE.TextureLoader().load('https://s3-us-west-2.amazonaws.com/s.cdpn.io/68819/waveform-bump3.jpg', function(texture) {
+      texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+      texture.offset.set(0, 0);
+      texture.repeat.set(15, 2);
     });
 
     var material = new THREE.MeshPhongMaterial({
-      side:THREE.BackSide,
+      side: THREE.BackSide,
       map: texture,
       shininess: 20,
       bumpMap: mapHeight,
       bumpScale: -.03,
-      specular: 0x000000
+      specular: 0x000000,
+      color: isMobile() ? 0x4A90E2 : 0xffffff // Azul en móvil, blanco en PC para que la textura se vea
     });
 
     //Create a mesh
@@ -199,11 +201,31 @@
     var mat = new THREE.LineBasicMaterial( {
       linewidth: 2,
       opacity: .2,
-      transparent: 1
+      transparent: 1,
+      color: isMobile() ? 0x4A90E2 : 0xffffff // Azul en móvil, blanco en PC
     } );
 
     var wireframe = new THREE.LineSegments( geo, mat );
     scene.add( wireframe );
+
+    // FORZAR PRE-RENDERIZADO EN MÓVIL para que los colores se carguen inmediatamente
+    if (isMobile()) {
+      console.log('📱 Forzando pre-renderizado para móvil...');
+      
+      // Compilar los shaders y materiales inmediatamente
+      renderer.compile(scene, camera);
+      
+      // Hacer múltiples renders iniciales para asegurar que todo esté cargado
+      for (let i = 0; i < 3; i++) {
+        composer.render();
+      }
+      
+      // Forzar que el material se actualice
+      material.needsUpdate = true;
+      mat.needsUpdate = true;
+      
+      console.log('✅ Pre-renderizado móvil completado');
+    }
 
     //Create a point light
     var light = new THREE.PointLight(0xffffff, .35, 4,0);
@@ -328,7 +350,7 @@
     progressContainer.innerHTML = `
       <div class="bg-black/40 backdrop-blur-md rounded-full p-2 sm:p-3 border border-white/10">
         <div class="bg-gray-800/80 rounded-full h-2 sm:h-3 overflow-hidden relative">
-          <div class="tunnel-progress-bar h-full bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 w-0 transition-all duration-1000 ease-out relative">
+          <div class="tunnel-progress-bar h-full ${isMobile() ? 'bg-blue-500' : 'bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500'} w-0 transition-all duration-1000 ease-out relative">
             <div class="tunnel-progress-shimmer"></div>
           </div>
         </div>
@@ -361,11 +383,11 @@
             <div class="flex flex-col sm:flex-row items-start mb-4 sm:mb-6">
               <div class="text-3xl sm:text-4xl lg:text-5xl mb-3 sm:mb-0 sm:mr-4 lg:mr-6 animate-pulse">${step.icon}</div>
               <div class="flex-1 text-center sm:text-left">
-                <h3 class="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-white bg-gradient-to-r ${step.color} bg-clip-text text-transparent mb-1 sm:mb-2">
+                \u003ch3 class=\"text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-white bg-gradient-to-r ${isMobile() ? 'from-gray-400 via-gray-500 to-gray-600' : step.color} bg-clip-text text-transparent mb-1 sm:mb-2\u003e
                   ${step.title}
                 </h3>
                 <p class="text-sm sm:text-base lg:text-lg text-gray-400 mb-2 sm:mb-3">${step.subtitle}</p>
-                <div class="w-16 sm:w-20 h-1 bg-gradient-to-r ${step.color} rounded-full mx-auto sm:mx-0"></div>
+                <div class="w-16 sm:w-20 h-1 ${isMobile() ? 'bg-gray-500' : 'bg-gradient-to-r ' + step.color} rounded-full mx-auto sm:mx-0"></div>
               </div>
             </div>
             <p class="text-gray-300 leading-relaxed text-sm sm:text-base lg:text-lg mb-4 sm:mb-6 text-center sm:text-left">
