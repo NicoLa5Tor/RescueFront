@@ -21,6 +21,37 @@ document.addEventListener('DOMContentLoaded', function() {
     body.style.overflow = 'hidden';
     body.style.position = 'fixed';
     body.style.width = '100%';
+    body.style.top = '0';
+    body.style.left = '0';
+    
+    // Función para prevenir scroll en móvil
+    function preventMobileScroll(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+    }
+    
+    // Detectar si es móvil
+    function isMobile() {
+        return window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    }
+    
+    // Agregar listeners para prevenir scroll en móvil
+    if (isMobile()) {
+        // Prevenir eventos de touch que causan scroll
+        document.addEventListener('touchstart', preventMobileScroll, { passive: false });
+        document.addEventListener('touchmove', preventMobileScroll, { passive: false });
+        document.addEventListener('touchend', preventMobileScroll, { passive: false });
+        
+        // Prevenir eventos de wheel/scroll
+        document.addEventListener('wheel', preventMobileScroll, { passive: false });
+        document.addEventListener('scroll', preventMobileScroll, { passive: false });
+        
+        // Resetear posición de scroll
+        window.scrollTo(0, 0);
+        
+        console.log('📱 Mobile scroll prevention activated');
+    }
 
     // Change loading messages
     var messageInterval = setInterval(function() {
@@ -55,6 +86,19 @@ document.addEventListener('DOMContentLoaded', function() {
                     body.style.overflow = '';
                     body.style.position = '';
                     body.style.width = '';
+                    body.style.top = '';
+                    body.style.left = '';
+                    
+                    // Remover listeners de prevención de scroll en móvil
+                    if (isMobile()) {
+                        document.removeEventListener('touchstart', preventMobileScroll);
+                        document.removeEventListener('touchmove', preventMobileScroll);
+                        document.removeEventListener('touchend', preventMobileScroll);
+                        document.removeEventListener('wheel', preventMobileScroll);
+                        document.removeEventListener('scroll', preventMobileScroll);
+                        
+                        console.log('✌️ Mobile scroll prevention deactivated');
+                    }
                 }, 1000);
             }, 800);
         }
