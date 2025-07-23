@@ -439,49 +439,70 @@
     // Timeline setup
     var tl;
 
-// Variable to control tunnel activation
-    // Implement the curtain effect using GSAP and ScrollTrigger
+    // Variables para controlar la sincronización del telón y túnel
+    var curtainEndPercent = 300; // El telón termina en 300%
+    var tunnelStartPercent = curtainEndPercent; // El túnel comienza exactamente cuando termina el telón
+    var tunnelTotalDistance = isMobile() ? 800 : isTablet() ? 900 : 1000;
+    var totalScrollDistance = tunnelStartPercent + tunnelTotalDistance;
+
+    // Implementar el efecto telón con ScrollTrigger independiente
     gsap.to(welcomeScreen, {
       y: "-100%", // Move out upwards
       ease: "power1.inOut",
       scrollTrigger: {
         trigger: container,
         start: "top top",
-        end: "+=300%", // Adjust this value as needed
+        end: `+=${curtainEndPercent}%`, // El telón sube durante los primeros 300%
         scrub: true,
         onEnter: () => {
           processOverlay.style.display = 'block';
+        },
+        onComplete: () => {
+          console.log('Telón completamente elevado - El túnel puede comenzar');
         }
       }
     });
 
-    // Create timeline with responsive scroll distances
-    var scrollDistance = isMobile() ? "+=800%" : isTablet() ? "+=900%" : "+=1000%";
-    
+    // Timeline del túnel que comienza DESPUÉS del telón
     tl = gsap.timeline({
       scrollTrigger: {
         trigger: container,
         start: "top top",
-        end: scrollDistance,
-        scrub: isMobile() ? 3 : 5, // Faster scrub on mobile
+        end: `+=${totalScrollDistance}%`, // Scroll total: telón + túnel
+        scrub: isMobile() ? 3 : 5,
         pin: true,
         anticipatePin: 1,
         markers: false,
-                    onUpdate: function(self) {
-          var progress = self.progress;
+        onUpdate: function(self) {
+          var rawProgress = self.progress;
+          
+          // Calcular el progreso del túnel considerando el desfase del telón
+          // El túnel solo debe progresar después de que termine el telón (300%)
+          var curtainPhase = curtainEndPercent / totalScrollDistance; // 300/1300 = ~0.23
+          var tunnelProgress = 0;
+          
+          if (rawProgress > curtainPhase) {
+            // El túnel comienza después de la fase del telón
+            tunnelProgress = (rawProgress - curtainPhase) / (1 - curtainPhase);
+          }
+          
+          // Limitar el progreso entre 0 y 1
+          tunnelProgress = Math.max(0, Math.min(1, tunnelProgress));
 
-          // Update progress bar with GSAP for smoother animation
+          // Update progress bar with GSAP for smoother animation - solo cuando el túnel esté activo
           var progressBar = progressContainer.querySelector('.tunnel-progress-bar');
-          gsap.to(progressBar, {
-            width: (progress * 100) + '%',
-            duration: 0.3,
-            ease: "power2.out"
-          });
+          if (rawProgress > curtainPhase) {
+            gsap.to(progressBar, {
+              width: (tunnelProgress * 100) + '%',
+              duration: 0.3,
+              ease: "power2.out"
+            });
+          }
 
           // Update progress dots with GSAP animations
           var dots = progressContainer.querySelectorAll('.progress-dot');
           processSteps.forEach((step, index) => {
-            if (progress >= step.percent - 0.05) {
+            if (tunnelProgress >= step.percent - 0.05) {
               if (!dots[index].classList.contains('active-dot')) {
                 dots[index].classList.add('active-dot');
                 dots[index].classList.add('bg-gradient-to-r', step.color.split(' ')[0], step.color.split(' ')[2]);
@@ -507,7 +528,7 @@
             var stepElement = stepsContainer.children[index];
             var showRange = isMobile() ? 0.2 : 0.15; // Longer display time on mobile
             
-            if (progress >= step.percent - 0.05 && progress <= step.percent + showRange) {
+            if (tunnelProgress >= step.percent - 0.05 && tunnelProgress <= step.percent + showRange) {
               // Animate IN with GSAP
               if (!stepElement.classList.contains('active')) {
                 stepElement.classList.add('active');
@@ -552,12 +573,12 @@
           });
 
           // Trigger contact module when tunnel animation is near completion
-          if (progress >= 0.85 && !window.tunnelContactTriggered) {
+          if (tunnelProgress >= 0.85 && !window.tunnelContactTriggered) {
             window.tunnelContactTriggered = true;
 
             // Dispatch event to activate contact module
             const tunnelCompleteEvent = new CustomEvent('tunnel:near-complete', {
-              detail: { progress: progress }
+              detail: { progress: tunnelProgress }
             });
             window.dispatchEvent(tunnelCompleteEvent);
 
@@ -570,11 +591,11 @@
           }
 
           // Final completion event
-          if (progress >= 0.95 && !window.tunnelFullyComplete) {
+          if (tunnelProgress >= 0.95 && !window.tunnelFullyComplete) {
             window.tunnelFullyComplete = true;
 
             const tunnelCompleteEvent = new CustomEvent('tunnel:complete', {
-              detail: { progress: progress }
+              detail: { progress: tunnelProgress }
             });
             window.dispatchEvent(tunnelCompleteEvent);
           }
