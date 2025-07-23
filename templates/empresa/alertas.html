@@ -1104,7 +1104,13 @@ async function loadActiveAlerts() {
         
     } catch (error) {
         console.error('💥 ERROR cargando alertas:', error);
+        
+        // Mostrar mensaje de no alertas cuando hay error
         showNoAlerts();
+        
+        // IMPORTANTE: Re-lanzar el error para que refreshAlerts() lo pueda capturar
+        throw error;
+        
     } finally {
         showLoading(false);
     }
@@ -2217,36 +2223,30 @@ async function toggleAlertStatus() {
 async function refreshAlerts() {
     console.log('🔄 REFRESH: Actualizando alertas manualmente...');
     
-    // Limpiar cache para forzar recarga completa
-    clearAlertsCache(false);
-    
-    // Volver a la primera página
-    currentPage = 1;
-    
-    // Cargar alertas con feedback visual
-    await loadActiveAlerts();
-    
-    // Mostrar notificación de éxito
-    if (window.Swal) {
-        const Toast = Swal.mixin({
-            toast: true,
-            position: 'top-end',
-            showConfirmButton: false,
-            timer: 2000,
-            timerProgressBar: true,
-            didOpen: (toast) => {
-                toast.addEventListener('mouseenter', Swal.stopTimer)
-                toast.addEventListener('mouseleave', Swal.resumeTimer)
-            }
-        });
+    try {
+        // Limpiar cache para forzar recarga completa
+        clearAlertsCache(false);
         
-        Toast.fire({
-            icon: 'success',
-            title: 'Alertas actualizadas'
-        });
+        // Volver a la primera página
+        currentPage = 1;
+        
+        // Cargar alertas con feedback visual
+        await loadActiveAlerts();
+        
+        // Mostrar popup de éxito con estilo apropiado
+        showUpdateSuccessPopup();
+        
+        console.log('✅ REFRESH: Actualización completada exitosamente');
+        
+    } catch (error) {
+        console.error('💥 REFRESH ERROR: Error actualizando alertas:', error);
+        
+        // Convertir el error técnico a un mensaje amigable
+        const friendlyMessage = getFriendlyErrorMessage(error);
+        
+        // Mostrar popup de error apropiado con mensaje amigable
+        showUpdateErrorPopup(friendlyMessage);
     }
-    
-    console.log('✅ REFRESH: Actualización completada');
 }
 
 function populateFilters(alerts) {
@@ -2765,6 +2765,325 @@ function extractCoordsFromOSMEmbed(embedUrl) {
         };
     }
     return null;
+}
+
+// ========== FUNCIÓN PARA MAPEAR ERRORES A MENSAJES AMIGABLES ==========
+
+/**
+ * Convierte errores técnicos en mensajes amigables para el usuario
+ * @param {string|Error|Object} error - Error a convertir
+ * @returns {string} - Mensaje amigable para mostrar al usuario
+ */
+function getFriendlyErrorMessage(error) {
+    console.log('🔄 MAPPING ERROR: Convirtiendo error a mensaje amigable:', error);
+    
+    let errorMessage = '';
+    
+    // Si es un objeto Error de JavaScript
+    if (error instanceof Error) {
+        errorMessage = error.message;
+    } 
+    // Si es un string
+    else if (typeof error === 'string') {
+        errorMessage = error;
+    }
+    // Si es un objeto con propiedades de error
+    else if (error && typeof error === 'object') {
+        errorMessage = error.message || error.error || error.statusText || 'Error desconocido';
+    }
+    // Fallback
+    else {
+        errorMessage = 'Error desconocido';
+    }
+    
+    console.log('🔄 ERROR MESSAGE EXTRACTED:', errorMessage);
+    
+    // Mapear errores específicos a mensajes amigables
+    const errorMappings = {
+        // Errores HTTP específicos
+        '401': 'Su sesión ha expirado. Por favor, inicie sesión nuevamente.',
+        '403': 'No tiene permisos para realizar esta acción.',
+        '404': 'No se encontraron alertas para mostrar.',
+        '500': 'Error interno del servidor. Intente más tarde.',
+        '502': 'El servidor no está disponible temporalmente.',
+        '503': 'El servicio no está disponible. Intente más tarde.',
+        '504': 'Tiempo de espera agotado. Intente nuevamente.',
+        
+        // Errores de red
+        'network': 'Problema de conexión a internet. Verifique su red.',
+        'timeout': 'La conexión tardó demasiado. Intente nuevamente.',
+        'offline': 'Sin conexión a internet. Conéctese y reintente.',
+        
+        // Errores específicos de la aplicación
+        'no_empresa': 'No se pudo identificar su empresa. Inicie sesión nuevamente.',
+        'invalid_token': 'Su sesión ha expirado. Por favor, inicie sesión nuevamente.',
+        'session_expired': 'Su sesión ha expirado. Por favor, inicie sesión nuevamente.',
+        
+        // Errores de fetch/CORS
+        'cors': 'Error de seguridad del navegador. Contacte al administrador.',
+        'fetch_failed': 'No se pudo conectar al servidor. Verifique su conexión.'
+    };
+    
+    // Buscar mapeos por código de estado HTTP
+    const httpCodeMatch = errorMessage.match(/\b(\d{3})\b/);
+    if (httpCodeMatch) {
+        const httpCode = httpCodeMatch[1];
+        if (errorMappings[httpCode]) {
+            console.log(`✅ MAPPED HTTP ${httpCode} to friendly message`);
+            return errorMappings[httpCode];
+        }
+    }
+    
+    // Buscar mapeos por palabras clave en el mensaje
+    for (const [key, friendlyMessage] of Object.entries(errorMappings)) {
+        if (errorMessage.toLowerCase().includes(key.toLowerCase())) {
+            console.log(`✅ MAPPED keyword '${key}' to friendly message`);
+            return friendlyMessage;
+        }
+    }
+    
+    // Casos específicos adicionales
+    if (errorMessage.includes('unauthorized') || errorMessage.includes('Unauthorized')) {
+        return 'Su sesión ha expirado. Por favor, inicie sesión nuevamente.';
+    }
+    
+    if (errorMessage.includes('forbidden') || errorMessage.includes('Forbidden')) {
+        return 'No tiene permisos para realizar esta acción.';
+    }
+    
+    if (errorMessage.includes('not found') || errorMessage.includes('Not Found')) {
+        return 'No se encontraron alertas para mostrar.';
+    }
+    
+    if (errorMessage.includes('server error') || errorMessage.includes('Internal Server Error')) {
+        return 'Error interno del servidor. Intente más tarde.';
+    }
+    
+    if (errorMessage.includes('connection') || errorMessage.includes('Connection')) {
+        return 'Problema de conexión. Verifique su red e intente nuevamente.';
+    }
+    
+    if (errorMessage.includes('timeout') || errorMessage.includes('Timeout')) {
+        return 'La conexión tardó demasiado. Intente nuevamente.';
+    }
+    
+    // Si no se pudo mapear, devolver un mensaje genérico pero útil
+    console.log(`⚠️ NO MAPPING FOUND for error: ${errorMessage}`);
+    return `Error de conexión: ${errorMessage.length > 100 ? errorMessage.substring(0, 100) + '...' : errorMessage}`;
+}
+
+// ========== FUNCIÓN PARA MOSTRAR POPUP DE ACTUALIZACIÓN EXITOSA ==========
+
+/**
+ * Muestra un popup de éxito apropiado después de actualizar las alertas
+ */
+function showUpdateSuccessPopup() {
+    // Verificar si tenemos el sistema de alertsPopups personalizado
+    if (window.alertsPopups && typeof window.alertsPopups.showSuccessPopup === 'function') {
+        console.log('✅ UPDATE POPUP: Usando sistema alertsPopups personalizado');
+        window.alertsPopups.showSuccessPopup('Alertas actualizadas correctamente');
+        return;
+    }
+    
+    // Si hay SweetAlert disponible, usar un popup discreto con estilos apropiados
+    if (window.Swal) {
+        console.log('✅ UPDATE POPUP: Usando SweetAlert con estilos apropiados para tema oscuro');
+        Swal.fire({
+            icon: 'success',
+            title: 'Alertas actualizadas',
+            text: 'La información se ha actualizado correctamente',
+            timer: 2500,
+            showConfirmButton: false,
+            toast: true,
+            position: 'top-end',
+            background: 'linear-gradient(135deg, #10b981, #059669)',
+            color: '#ffffff',
+            iconColor: '#ffffff',
+            customClass: {
+                popup: 'swal-dark-theme',
+                title: 'swal-title-white',
+                content: 'swal-content-white'
+            }
+        });
+        return;
+    }
+    
+    // Como último recurso, usar una notificación del sistema si está disponible
+    if ('Notification' in window && Notification.permission === 'granted') {
+        console.log('✅ UPDATE POPUP: Usando notificación del sistema');
+        new Notification('ECOES - Alertas Actualizadas', {
+            body: 'Las alertas se han actualizado correctamente',
+            icon: '/static/images/favicon.ico',
+            tag: 'alerts-update'
+        });
+        return;
+    }
+    
+    // Fallback final: crear un popup temporal personalizado con estilos apropiados
+    console.log('✅ UPDATE POPUP: Usando popup temporal personalizado con tema oscuro');
+    createTemporarySuccessPopup();
+}
+
+/**
+ * Muestra un popup de error apropiado después de fallar en actualizar las alertas
+ * @param {string} errorMessage - Mensaje de error a mostrar
+ */
+function showUpdateErrorPopup(errorMessage) {
+    // Convertir el error en un mensaje más amigable
+    const friendlyMessage = getFriendlyErrorMessage(errorMessage);
+    // Verificar si tenemos el sistema de alertsPopups personalizado
+    if (window.alertsPopups && typeof window.alertsPopups.showErrorPopup === 'function') {
+        console.log('❌ UPDATE ERROR POPUP: Usando sistema alertsPopups personalizado');
+        window.alertsPopups.showErrorPopup('Error al actualizar alertas: ' + errorMessage);
+        return;
+    }
+    
+    // Si hay SweetAlert disponible, usar un popup de error con estilos apropiados
+    if (window.Swal) {
+        console.log('❌ UPDATE ERROR POPUP: Usando SweetAlert con estilos apropiados para tema oscuro');
+        Swal.fire({
+            icon: 'error',
+            title: 'Error al actualizar',
+            text: 'No se pudieron actualizar las alertas: ' + errorMessage,
+            timer: 4000,
+            showConfirmButton: false,
+            toast: true,
+            position: 'top-end',
+            background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
+            color: '#ffffff',
+            iconColor: '#ffffff',
+            customClass: {
+                popup: 'swal-dark-theme',
+                title: 'swal-title-white',
+                content: 'swal-content-white'
+            }
+        });
+        return;
+    }
+    
+    // Como último recurso, usar una notificación del sistema si está disponible
+    if ('Notification' in window && Notification.permission === 'granted') {
+        console.log('❌ UPDATE ERROR POPUP: Usando notificación del sistema');
+        new Notification('ECOES - Error al Actualizar', {
+            body: 'No se pudieron actualizar las alertas: ' + errorMessage,
+            icon: '/static/images/favicon.ico',
+            tag: 'alerts-error'
+        });
+        return;
+    }
+    
+    // Fallback final: crear un popup temporal de error personalizado
+    console.log('❌ UPDATE ERROR POPUP: Usando popup temporal personalizado con tema oscuro');
+    createTemporaryErrorPopup(errorMessage);
+}
+
+/**
+ * Crea un popup temporal de error personalizado con estilos apropiados para tema oscuro
+ * @param {string} errorMessage - Mensaje de error a mostrar
+ */
+function createTemporaryErrorPopup(errorMessage) {
+    // Crear el elemento del popup
+    const popup = document.createElement('div');
+    popup.innerHTML = `
+        <div class="fixed top-4 right-4 z-50 transform transition-all duration-300 ease-in-out">
+            <div class="bg-gradient-to-r from-red-500 to-red-600 text-white px-6 py-4 rounded-xl shadow-2xl border border-red-400/30 backdrop-blur-sm max-w-sm">
+                <div class="flex items-start space-x-3">
+                    <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <i class="fas fa-times text-white text-sm"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="font-bold text-white text-sm">❌ Error al Actualizar</p>
+                        <p class="text-red-100 text-xs mt-1 break-words">${errorMessage || 'Error desconocido'}</p>
+                    </div>
+                    <div class="w-6 h-6 bg-white/10 rounded-full flex items-center justify-center cursor-pointer hover:bg-white/20 transition-colors flex-shrink-0" onclick="this.closest('.fixed').remove()">
+                        <i class="fas fa-times text-white text-xs"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Agregar al body
+    document.body.appendChild(popup);
+    
+    // Animar entrada
+    const popupElement = popup.firstElementChild;
+    popupElement.style.transform = 'translateX(100%) scale(0.8)';
+    popupElement.style.opacity = '0';
+    
+    // Forzar reflow y animar
+    requestAnimationFrame(() => {
+        popupElement.style.transform = 'translateX(0) scale(1)';
+        popupElement.style.opacity = '1';
+    });
+    
+    // Auto-eliminar después de 6 segundos (más tiempo para errores)
+    setTimeout(() => {
+        if (popupElement.parentNode) {
+            popupElement.style.transform = 'translateX(100%) scale(0.8)';
+            popupElement.style.opacity = '0';
+            
+            setTimeout(() => {
+                if (popup.parentNode) {
+                    popup.parentNode.removeChild(popup);
+                }
+            }, 300);
+        }
+    }, 6000);
+}
+
+/**
+ * Crea un popup temporal de éxito personalizado con estilos apropiados para tema oscuro
+ */
+function createTemporarySuccessPopup() {
+    // Crear el elemento del popup
+    const popup = document.createElement('div');
+    popup.innerHTML = `
+        <div class="fixed top-4 right-4 z-50 transform transition-all duration-300 ease-in-out">
+            <div class="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-4 rounded-xl shadow-2xl border border-green-400/30 backdrop-blur-sm">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-check text-white text-sm"></i>
+                    </div>
+                    <div class="flex-1">
+                        <p class="font-bold text-white text-sm">✅ Alertas Actualizadas</p>
+                        <p class="text-green-100 text-xs mt-1">Información actualizada correctamente</p>
+                    </div>
+                    <div class="w-6 h-6 bg-white/10 rounded-full flex items-center justify-center cursor-pointer hover:bg-white/20 transition-colors" onclick="this.closest('.fixed').remove()">
+                        <i class="fas fa-times text-white text-xs"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Agregar al body
+    document.body.appendChild(popup);
+    
+    // Animar entrada
+    const popupElement = popup.firstElementChild;
+    popupElement.style.transform = 'translateX(100%) scale(0.8)';
+    popupElement.style.opacity = '0';
+    
+    // Forzar reflow y animar
+    requestAnimationFrame(() => {
+        popupElement.style.transform = 'translateX(0) scale(1)';
+        popupElement.style.opacity = '1';
+    });
+    
+    // Auto-eliminar después de 4 segundos
+    setTimeout(() => {
+        if (popupElement.parentNode) {
+            popupElement.style.transform = 'translateX(100%) scale(0.8)';
+            popupElement.style.opacity = '0';
+            
+            setTimeout(() => {
+                if (popup.parentNode) {
+                    popup.parentNode.removeChild(popup);
+                }
+            }, 300);
+        }
+    }, 4000);
 }
 
 // ========== FUNCIONES DE CONSOLA PARA DEBUG ==========
