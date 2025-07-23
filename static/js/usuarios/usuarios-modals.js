@@ -1,5 +1,5 @@
 /**
- * ===== USUARIOS MODALS FUNCTIONALITY - CORREGIDO =====
+ * ===== USUARIOS MODALS FUNCTIONALITY - MODALSCROLLMANAGER =====
  * 
  * Este archivo contiene la funcionalidad para todos los modales de usuarios:
  * - Modal de crear usuario
@@ -8,8 +8,236 @@
  * - Modal de confirmar toggle status
  * - Modal de confirmaciones y success
  * 
- * GESTIÓN DE MODALES CORREGIDA Y OPTIMIZADA
+ * IMPLEMENTANDO MODALSCROLLMANAGER PARA APERTURA PERFECTA
  */
+
+// ============================================================================
+// 1. MODAL SCROLL MANAGER - OPTIMIZADO PARA USUARIOS
+// ============================================================================
+class UsuariosModalScrollManager {
+  constructor() {
+    this.openModals = new Set();
+    this.scrollPosition = 0;
+    this.isLocked = false;
+    this.init();
+  }
+
+  init() {
+    this.injectCSS();
+    window.addEventListener('orientationchange', () => setTimeout(() => this.refreshLock(), 100));
+    window.addEventListener('resize', () => this.hasOpenModals() && this.refreshLock());
+  }
+
+  injectCSS() {
+    if (document.getElementById('usuarios-modal-scroll-css')) return;
+    
+    const style = document.createElement('style');
+    style.id = 'usuarios-modal-scroll-css';
+    style.textContent = `
+      .usuarios-modal-scroll-locked { overflow: hidden !important; }
+      .usuarios-modal-scrollable { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+      .usuarios-modal-backdrop {
+        position: fixed !important; top: 0 !important; left: 0 !important; 
+        right: 0 !important; bottom: 0 !important; z-index: 9999999 !important;
+        display: flex; align-items: center; justify-content: center; padding: 1rem;
+        background: rgba(0, 0, 0, 0.8) !important;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  openModal(modalId, options = {}) {
+    console.log(`🔒 Opening usuarios modal: ${modalId}`);
+    
+    if (this.openModals.size === 0) {
+      this.scrollPosition = window.pageYOffset;
+      this.lockScroll();
+    }
+    
+    this.openModals.add(modalId);
+    
+    const modal = document.getElementById(modalId);
+    if (modal) {
+      // Aplicar clases y estilos para centrado perfecto
+      modal.classList.remove('hidden');
+      modal.className = modal.className.replace('hidden', '').trim() + ' usuarios-modal-backdrop';
+      modal.style.display = 'flex';
+    }
+    
+    options.focusTrap && this.setupFocusTrap(modalId);
+  }
+
+  closeModal(modalId) {
+    console.log(`🔓 Closing usuarios modal: ${modalId}`);
+    
+    this.openModals.delete(modalId);
+    
+    const modal = document.getElementById(modalId);
+    if (modal) {
+      modal.classList.add('hidden');
+      modal.classList.remove('usuarios-modal-backdrop');
+      modal.style.display = 'none';
+    }
+    
+    if (this.openModals.size === 0) {
+      this.unlockScroll();
+    }
+  }
+
+  lockScroll() {
+    if (this.isLocked) return;
+    
+    console.log('🔒 Locking scroll effectively without visual jump');
+    
+    const body = document.body;
+    const html = document.documentElement;
+    
+    // MÉTODO HÍBRIDO: Overflow hidden + event listeners agresivos + position fixed SIN salto
+    
+    // 1. Guardar estado actual del scroll
+    const currentScrollY = window.pageYOffset;
+    
+    // 2. Aplicar estilos para bloquear scroll
+    body.style.overflow = 'hidden';
+    html.style.overflow = 'hidden';
+    body.style.position = 'fixed';
+    // NO aplicar top negativo para evitar salto visual
+    // body.style.top = `-${currentScrollY}px`;
+    body.style.left = '0';
+    body.style.right = '0';
+    body.style.width = '100%';
+    
+    // 3. Clase CSS adicional
+    body.classList.add('usuarios-modal-scroll-locked');
+    
+    // 4. Event listeners AGRESIVOS para todos los tipos de scroll
+    document.addEventListener('touchmove', this.preventScroll, { passive: false });
+    document.addEventListener('wheel', this.preventScroll, { passive: false });
+    document.addEventListener('keydown', this.preventScrollKeys, { passive: false });
+    document.addEventListener('scroll', this.preventScrollEvent, { passive: false });
+    document.addEventListener('dragstart', this.preventDrag, { passive: false });
+    
+    this.isLocked = true;
+    console.log('✅ Scroll COMPLETAMENTE bloqueado sin salto visual');
+  }
+
+  unlockScroll() {
+    if (!this.isLocked) return;
+    
+    console.log('🔓 Unlocking scroll and keeping current position');
+    
+    const body = document.body;
+    const html = document.documentElement;
+    
+    // Remover todos los event listeners
+    document.removeEventListener('touchmove', this.preventScroll);
+    document.removeEventListener('wheel', this.preventScroll);
+    document.removeEventListener('keydown', this.preventScrollKeys);
+    document.removeEventListener('scroll', this.preventScrollEvent);
+    document.removeEventListener('dragstart', this.preventDrag);
+    
+    // Restaurar estilos
+    body.style.overflow = '';
+    body.style.paddingRight = '';
+    body.style.position = '';
+    body.style.top = '';
+    body.style.left = '';
+    body.style.right = '';
+    body.style.width = '';
+    html.style.overflow = '';
+    
+    body.classList.remove('usuarios-modal-scroll-locked');
+    
+    // NO restaurar posición de scroll - dejar quieto donde está
+    // window.scrollTo(0, this.scrollPosition); ← ELIMINADO
+    
+    this.isLocked = false;
+    console.log('✅ Scroll unlocked keeping exact current position');
+  }
+
+  preventScrollKeys = (e) => {
+    // Teclas que causan scroll
+    const scrollKeys = [
+      'ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight',
+      'PageDown', 'PageUp', 'Home', 'End', 'Space'
+    ];
+    
+    if (scrollKeys.includes(e.code) || e.key === ' ') {
+      // Permitir solo si está dentro de un elemento scrollable O es un input
+      const target = e.target;
+      const isScrollable = target.closest('.usuarios-modal-scrollable, .scrollable');
+      const isInput = target.matches('input, textarea, select, [contenteditable]');
+      
+      if (!isScrollable && !isInput) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    }
+  }
+
+  preventScrollEvent = (e) => {
+    // Prevenir eventos de scroll directo
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // Forzar que se mantenga en la posición guardada
+    window.scrollTo(0, this.scrollPosition);
+  }
+
+  preventDrag = (e) => {
+    // Prevenir drag que puede causar scroll en móviles
+    if (!e.target.closest('.usuarios-modal-scrollable, .scrollable')) {
+      e.preventDefault();
+    }
+  }
+
+  preventScroll = (e) => {
+    if (!e.target.closest('.usuarios-modal-scrollable, .scrollable')) {
+      e.preventDefault();
+    }
+  }
+
+  setupFocusTrap(modalId) {
+    const modal = document.getElementById(modalId);
+    if (!modal) return;
+    
+    const focusable = modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    
+    const trapFocus = (e) => {
+      if (e.key === 'Tab') {
+        if (e.shiftKey && document.activeElement === first) {
+          last.focus();
+          e.preventDefault();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          first.focus();
+          e.preventDefault();
+        }
+      }
+    };
+    
+    modal.addEventListener('keydown', trapFocus);
+    first?.focus();
+  }
+
+  hasOpenModals() { return this.openModals.size > 0; }
+  
+  closeAllModals() {
+    Array.from(this.openModals).forEach(id => this.closeModal(id));
+  }
+  
+  refreshLock() {
+    if (this.hasOpenModals()) {
+      this.unlockScroll();
+      setTimeout(() => this.lockScroll(), 50);
+    }
+  }
+}
+
+// ============================================================================
+// 2. USUARIOS MODALS CLASS - ACTUALIZADA CON MODALSCROLLMANAGER
+// ============================================================================
 class UsuariosModals {
   constructor() {
     this.currentEditingUser = null;
@@ -24,6 +252,9 @@ class UsuariosModals {
     // International phone input instances
     this.createPhoneInput = null;
     this.editPhoneInput = null;
+    
+    // Inicializar ModalScrollManager
+    this.modalManager = new UsuariosModalScrollManager();
     
     this.initializeModals();
   }
@@ -104,7 +335,6 @@ class UsuariosModals {
       setTimeout(() => this.initIntlTelInput(), 500);
       return;
     }
-
     console.log('🔄 Inicializando intl-tel-input plugin');
     
     const createPhoneInput = document.getElementById('createUserTelefono');
@@ -134,7 +364,6 @@ class UsuariosModals {
         console.error('❌ Error inicializando intl-tel-input para crear:', error);
       }
     }
-
     const editPhoneInput = document.getElementById('editUserTelefono');
     if (editPhoneInput) {
       // Destroy existing instance if any
@@ -184,14 +413,12 @@ class UsuariosModals {
         this.confirmEdit();
       });
     }
-
     // Keyboard events
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         this.closeActiveModal();
       }
     });
-
     // Click outside to close
     this.setupOutsideClickClose();
   }
@@ -214,112 +441,44 @@ class UsuariosModals {
     });
   }
 
-  // ===== GESTIÓN UNIFICADA DE MODALES =====
+  // ===== GESTIÓN UNIFICADA DE MODALES CON MODALSCROLLMANAGER =====
   
   /**
-   * Abrir modal - MÉTODO UNIFICADO
+   * Abrir modal - USANDO MODALSCROLLMANAGER
    */
   openModal(modalId) {
     console.log('🟢 Abriendo modal:', modalId);
     
-    if (window.modalManager) {
-      try {
-        window.modalManager.openModal(modalId);
-        console.log('✅ Modal abierto con modalManager:', modalId);
-        return;
-      } catch (error) {
-        console.error('❌ Error con modalManager, usando fallback:', error);
-      }
-    }
+    // Usar nuestro ModalScrollManager siempre
+    this.modalManager.openModal(modalId, { focusTrap: true });
     
-    // Fallback manual
-    const modal = document.getElementById(modalId);
-    if (!modal) {
-      console.error('❌ Modal no encontrado:', modalId);
-      return;
-    }
-    
-    // Configurar estilos del modal
-    modal.style.cssText = `
-      position: fixed !important;
-      top: 0 !important;
-      left: 0 !important;
-      right: 0 !important;
-      bottom: 0 !important;
-      width: 100vw !important;
-      height: 100vh !important;
-      z-index: 9999 !important;
-      display: flex !important;
-      align-items: flex-start !important;
-      justify-content: center !important;
-      background: rgba(0, 0, 0, 0.8) !important;
-      visibility: visible !important;
-      opacity: 1 !important;
-    `;
-    
-    // Padding específico por tipo de modal
-    if (modalId === 'createUserModal' || modalId === 'editUserModal') {
-      modal.style.paddingTop = '3vh';
-    } else if (modalId === 'toggleUserModal' || modalId === 'userUpdateModal') {
-      modal.style.paddingTop = '8vh';
-    } else {
-      modal.style.paddingTop = '5vh';
-    }
-    
-    // Remover clase hidden
-    modal.classList.remove('hidden');
-    
-    // Prevenir scroll del body
-    document.body.style.overflow = 'hidden';
-    document.body.classList.add('modal-open');
-    
-    // Focus en el primer input
+    // Focus en el primer input después de abrir
     setTimeout(() => {
-      const firstInput = modal.querySelector('input:not([type="hidden"]), textarea, select');
-      if (firstInput && firstInput.focus) {
-        firstInput.focus();
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        const firstInput = modal.querySelector('input:not([type="hidden"]), textarea, select');
+        if (firstInput && firstInput.focus) {
+          firstInput.focus();
+        }
       }
     }, 150);
     
-    console.log('✅ Modal abierto con fallback:', modalId);
+    console.log('✅ Modal abierto con ModalScrollManager:', modalId);
   }
 
   /**
-   * Cerrar modal - MÉTODO UNIFICADO
+   * Cerrar modal - USANDO MODALSCROLLMANAGER
    */
   closeModal(modalId) {
     console.log('🔴 Cerrando modal:', modalId);
     
-    if (window.modalManager) {
-      try {
-        window.modalManager.closeModal(modalId);
-        this.resetModalData(modalId);
-        console.log('✅ Modal cerrado con modalManager:', modalId);
-        return;
-      } catch (error) {
-        console.error('❌ Error con modalManager, usando fallback:', error);
-      }
-    }
-    
-    // Fallback manual
-    const modal = document.getElementById(modalId);
-    if (!modal) {
-      console.warn('⚠️ Modal no encontrado para cerrar:', modalId);
-      return;
-    }
-    
-    // Ocultar modal
-    modal.classList.add('hidden');
-    modal.style.display = 'none';
-    
-    // Restaurar scroll del body
-    document.body.style.overflow = '';
-    document.body.classList.remove('modal-open');
+    // Usar nuestro ModalScrollManager siempre
+    this.modalManager.closeModal(modalId);
     
     // Limpiar datos del modal
     this.resetModalData(modalId);
     
-    console.log('✅ Modal cerrado con fallback:', modalId);
+    console.log('✅ Modal cerrado con ModalScrollManager:', modalId);
   }
 
   /**
@@ -351,14 +510,8 @@ class UsuariosModals {
    * Cerrar modal activo (para tecla Escape)
    */
   closeActiveModal() {
-    const modals = ['viewUserModal', 'editUserModal', 'createUserModal', 'toggleUserModal', 'userUpdateModal'];
-    
-    for (const modalId of modals) {
-      const modal = document.getElementById(modalId);
-      if (modal && !modal.classList.contains('hidden')) {
-        this.closeModal(modalId);
-        break;
-      }
+    if (this.modalManager.hasOpenModals()) {
+      this.modalManager.closeAllModals();
     }
   }
 
@@ -546,7 +699,6 @@ class UsuariosModals {
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Actualizando...';
       }
-
       if (!this.currentUser) {
         this.showNotification('No hay usuario seleccionado', 'error');
         if (submitBtn) {
@@ -555,7 +707,6 @@ class UsuariosModals {
         }
         return;
       }
-
       const telefonoField = document.getElementById('editUserTelefono');
       let telefonoValue = telefonoField.value.trim();
       
@@ -580,7 +731,6 @@ class UsuariosModals {
         tipo_turno: document.getElementById('editUserTipoTurno').value,
         rol: document.getElementById('editUserRol').value
       };
-
       // Validación
       const validationErrors = [];
       if (!formData.nombre || formData.nombre.length < 2) {
@@ -617,7 +767,6 @@ class UsuariosModals {
         }
         return;
       }
-
       const response = await this.apiClient.update_usuario(this.currentUser.empresaId, this.currentUser._id, formData);
       const result = await response.json();
       
@@ -785,31 +934,13 @@ class UsuariosModals {
   }
 
   closeToggleModal() {
-    const modal = document.getElementById('toggleUserModal');
-    const container = modal?.querySelector('.ios-blur-modal-container');
+    this.closeModal('toggleUserModal');
     
-    const resetAndHideToggleModal = () => {
-      this.closeModal('toggleUserModal');
-      
-      // Reset button state
-      const confirmBtn = document.getElementById('toggleUserConfirmBtn');
-      if (confirmBtn) {
-        confirmBtn.disabled = false;
-        confirmBtn.innerHTML = '<i class="fas fa-check" id="toggleConfirmIcon"></i> <span id="toggleConfirmText">Confirmar</span>';
-      }
-    };
-    
-    // Animación GSAP si está disponible
-    if (typeof gsap !== 'undefined' && container) {
-      gsap.to(container, {
-        scale: 0.8,
-        opacity: 0,
-        duration: 0.2,
-        ease: "power2.in",
-        onComplete: resetAndHideToggleModal
-      });
-    } else {
-      resetAndHideToggleModal();
+    // Reset button state
+    const confirmBtn = document.getElementById('toggleUserConfirmBtn');
+    if (confirmBtn) {
+      confirmBtn.disabled = false;
+      confirmBtn.innerHTML = '<i class="fas fa-check" id="toggleConfirmIcon"></i> <span id="toggleConfirmText">Confirmar</span>';
     }
   }
 
@@ -892,7 +1023,6 @@ class UsuariosModals {
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Creando...';
       }
-
       let empresaId = window.usuariosMain?.currentEmpresa?._id;
       
       if (!empresaId && window.userRole === 'empresa' && window.empresaId) {
@@ -932,7 +1062,6 @@ class UsuariosModals {
         tipo_turno: document.getElementById('createUserTipoTurno').value,
         rol: document.getElementById('createUserRol').value
       };
-
       // Validación
       const validationErrors = [];
       if (!formData.nombre || formData.nombre.length < 2) {
@@ -969,7 +1098,6 @@ class UsuariosModals {
         }
         return;
       }
-
       const response = await this.apiClient.create_usuario(empresaId, formData);
       const result = await response.json();
       
@@ -1098,7 +1226,6 @@ class UsuariosModals {
   }
 
   // ===== LOAD DATA =====
-
   loadSedes(selectElement) {
     const empresaId = window.usuariosMain?.currentEmpresa?._id || window.empresaId;
     if (!empresaId || !this.apiClient) return;
@@ -1132,7 +1259,6 @@ class UsuariosModals {
   }
 
   // ===== NOTIFICATIONS =====
-
   showNotification(message, type = 'info') {
     if (window.usuariosMain && window.usuariosMain.showEnhancedNotification) {
       window.usuariosMain.showEnhancedNotification(message, type);
@@ -1192,11 +1318,9 @@ class UsuariosModals {
   viewUser(userId) {
     this.openViewModal(userId);
   }
-
   editUser(userId) {
     this.openEditModal(userId);
   }
-
   toggleUser(userId, currentStatus, userName) {
     this.showToggleModal(userId, currentStatus, userName);
   }
@@ -1204,19 +1328,15 @@ class UsuariosModals {
 
 // Initialize usuarios modals
 const usuariosModals = new UsuariosModals();
-
 // Export for global access
 window.usuariosModals = usuariosModals;
-
 // Backward compatibility functions
 window.openCreateUsuarioModal = () => usuariosModals.openCreateModal();
 window.viewUser = (userId) => usuariosModals.openViewModal(userId);
 window.editUser = (userId) => usuariosModals.openEditModal(userId);
 window.toggleUser = (userId, currentStatus, userName) => usuariosModals.showToggleModal(userId, currentStatus, userName);
-
 // Modal control functions
 window.closeToggleModal = () => usuariosModals.closeToggleModal();
 window.confirmToggle = () => usuariosModals.confirmToggle();
 window.closeUpdateModal = () => usuariosModals.closeUpdateModal();
-
-console.log('👥 Usuarios modals module loaded - FIXED VERSION');
+console.log('👥 Usuarios modals module loaded - MODALSCROLLMANAGER VERSION');

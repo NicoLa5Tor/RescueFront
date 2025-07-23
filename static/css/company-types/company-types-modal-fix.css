@@ -1,7 +1,4 @@
-/* ===== COMPANY TYPES MODAL FIX - SIN INTERFERENCIA CON OTROS MODALES =====
-
-/* FUERZA POSICIONAMIENTO FIJO ABSOLUTO SOLO PARA MODALES DE COMPANY TYPES */
-#companyTypeModal,
+/* #companyTypeModal,
 #detailsModal,
 #toggleCompanyTypeModal,
 #clientUpdateModal {
@@ -13,18 +10,14 @@
   width: 100vw !important;
   height: 100vh !important;
   z-index: 99999 !important;
-  /* ESCAPAR COMPLETAMENTE DE CUALQUIER CONTENEDOR */
   margin: 0 !important;
   padding: 0 !important;
   border: none !important;
   transform: none !important;
   background: none !important;
-  /* CREAR NUEVA CAPA DE STACKING */
   isolation: isolate !important;
   contain: layout style paint !important;
 }
-
-/* APLICAR BACKDROP CUANDO NO ESTÁ HIDDEN - SOLO MODALES DE COMPANY TYPES */
 #companyTypeModal:not(.hidden),
 #detailsModal:not(.hidden),
 #toggleCompanyTypeModal:not(.hidden),
@@ -38,8 +31,6 @@
   padding: 1rem !important;
   padding-top: 10vh !important;
 }
-
-/* ESTADO OCULTO - SOLO MODALES DE COMPANY TYPES */
 #companyTypeModal.hidden,
 #detailsModal.hidden,
 #toggleCompanyTypeModal.hidden,
@@ -49,8 +40,6 @@
   opacity: 0 !important;
   pointer-events: none !important;
 }
-
-/* OVERRIDE CUALQUIER CONTENEDOR PADRE - SOLO MODALES DE COMPANY TYPES */
 * #companyTypeModal,
 * #detailsModal,
 * #toggleCompanyTypeModal,
@@ -61,16 +50,11 @@
   right: 0 !important;
   bottom: 0 !important;
   z-index: 99999 !important;
-  /* ESCAPAR DE CUALQUIER HERENCIA */
   transform: none !important;
   margin: 0 !important;
   padding: 0 !important;
 }
 
-/* NO INTERFERIR CON OTROS MODALES - SOLO APLICAR A COMPANY TYPES */
-/* NOTA: Se removió la regla body.modal-open general que causaba interferencia */
-
-/* FORZAR QUE EL CONTENEDOR DEL MODAL SE CENTRE CORRECTAMENTE - SOLO PARA COMPANY TYPES */
 #companyTypeModal .ios-blur-modal-container,
 #detailsModal .ios-blur-modal-container,
 #toggleCompanyTypeModal .ios-blur-modal-container,
@@ -78,16 +62,12 @@
   position: relative !important;
   margin: 0 !important;
 }
-
-/* PREVENIR SCROLL SOLO CUANDO MODALES DE COMPANY TYPES ESTÁN ABIERTOS */
 body:has(#companyTypeModal:not(.hidden)),
 body:has(#detailsModal:not(.hidden)),
 body:has(#toggleCompanyTypeModal:not(.hidden)),
 body:has(#clientUpdateModal:not(.hidden)) {
   overflow: hidden !important;
 }
-
-/* RESPONSIVE PARA MÓVILES - SOLO MODALES DE COMPANY TYPES */
 @media (max-width: 768px) {
   #companyTypeModal:not(.hidden),
   #detailsModal:not(.hidden),
@@ -97,8 +77,6 @@ body:has(#clientUpdateModal:not(.hidden)) {
     align-items: flex-start !important;
   }
 }
-
-/* REGLA FINAL - SOLO PARA MODALES DE COMPANY TYPES */
 body #companyTypeModal,
 body #detailsModal,
 body #toggleCompanyTypeModal,
@@ -106,4 +84,4 @@ body #clientUpdateModal {
   position: fixed !important;
   inset: 0 !important;
   z-index: 99999 !important;
-}
+} */

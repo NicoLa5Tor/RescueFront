@@ -169,25 +169,9 @@
   color: white;
 }
 
-.refresh-btn {
-  position: fixed;
-  bottom: 2rem;
-  right: 2rem;
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-  color: white;
-  border: none;
-  padding: 1rem;
-  border-radius: 50%;
-  cursor: pointer;
-  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
-  transition: all 0.3s ease;
-  z-index: 1000;
-}
 
-.refresh-btn:hover {
-  transform: scale(1.1) rotate(180deg);
-  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
-}
+
+
 
 /* Custom Scrollbar para el modal */
 .custom-scrollbar {
@@ -570,10 +554,6 @@
   </div>
 </div>
 
-<!-- Botón de actualización flotante -->
-<button class="refresh-btn" onclick="refreshAlerts()" title="Actualizar alertas">
-  <i class="fas fa-sync-alt"></i>
-</button>
 
 <!-- Modal para detalles de alerta -->
 <div id="alertDetailModal" class="ios-modal-backdrop hidden">
@@ -1421,16 +1401,7 @@ function changePage(direction) {
     }
 }
 
-function refreshAlerts() {
-    const refreshBtn = document.querySelector('.refresh-btn');
-    refreshBtn.style.transform = 'scale(1.1) rotate(360deg)';
-    
-    loadActiveAlerts().then(() => {
-        setTimeout(() => {
-            refreshBtn.style.transform = '';
-        }, 500);
-    });
-}
+
 
 function showLoading(show) {
     const skeleton = document.getElementById('loadingSkeleton');

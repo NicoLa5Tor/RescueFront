@@ -1185,7 +1185,7 @@ class EmpresasModals {
     
     const notification = document.createElement('div');
     notification.className = 'fallback-notification fixed top-4 right-4 max-w-sm w-full';
-    notification.style.zIndex = '999999'; // Muy alto para estar siempre adelante
+    notification.style.zIndex = '9999'; // Muy alto para estar siempre adelante
     
     let iconClass, bgClass;
     if (type === 'error') {

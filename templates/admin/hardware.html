@@ -2960,13 +2960,8 @@ function initializeFilterListeners() {
   if (includeInactiveFilter) {
     includeInactiveFilter.addEventListener('change', function() {
       console.log('🔍 TRIGGER: includeInactiveFilter changed to:', includeInactiveFilter.value);
-      // Use hardware-main.js function instead of direct loadHardware
-      if (window.hardwareMain) {
-        window.hardwareMain.loadHardware();
-      } else {
-        console.warn('⚠️ hardwareMain no disponible, usando loadHardware directo');
-        loadHardware();
-      }
+      // Forzar el uso de la función local `loadHardware` de este template
+      loadHardware();
     });
   } else {
     console.error('❌ No se encontró includeInactiveFilter');
