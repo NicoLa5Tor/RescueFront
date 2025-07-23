@@ -46,9 +46,6 @@
         <p class="text-sm sm:text-base md:text-xl lg:text-2xl text-gray-300 mb-6 sm:mb-8 lg:mb-12 leading-relaxed px-2">
           Explora el flujo completo de una alerta de emergencia a través de nuestra red inteligente
         </p>
-        <button class="tunnel-start-btn bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 sm:px-8 lg:px-12 py-3 sm:py-4 rounded-full text-sm sm:text-base lg:text-lg font-semibold hover:from-blue-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-xl">
-          Comenzar Experiencia
-        </button>
         <div class="tunnel-scroll-indicator mt-8 sm:mt-12 lg:mt-16 text-white/50">
           <p class="text-xs sm:text-sm mb-2">Usa el scroll para navegar</p>
           <svg class="w-4 h-4 sm:w-6 sm:h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -349,7 +346,15 @@
 
     processSteps.forEach((step, index) => {
       var stepElement = document.createElement('div');
-      stepElement.className = `tunnel-process-step opacity-0 transform translate-y-16 absolute w-full max-w-7xl`;
+      stepElement.className = `tunnel-process-step absolute w-full max-w-7xl`;
+      
+      // Set initial GSAP states
+      gsap.set(stepElement, {
+        opacity: 0,
+        y: 60,
+        scale: 0.9
+      });
+      
       stepElement.innerHTML = `
         <div class="flex flex-col items-center gap-4 sm:gap-6 lg:gap-8 mx-auto px-2 sm:px-4">
           <div class="tunnel-step-card bg-black/60 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 xl:p-10 border border-white/10 w-full max-w-xs sm:max-w-2xl lg:max-w-4xl">
@@ -434,92 +439,156 @@
     // Timeline setup
     var tl;
 
-    // Welcome screen interaction
-    const startBtn = welcomeScreen.querySelector('.tunnel-start-btn');
-    startBtn.addEventListener('click', function() {
-      welcomeScreen.classList.add('hidden');
-      processOverlay.style.display = 'block';
+// Variable to control tunnel activation
+    // Implement the curtain effect using GSAP and ScrollTrigger
+    gsap.to(welcomeScreen, {
+      y: "-100%", // Move out upwards
+      ease: "power1.inOut",
+      scrollTrigger: {
+        trigger: container,
+        start: "top top",
+        end: "+=300%", // Adjust this value as needed
+        scrub: true,
+        onEnter: () => {
+          processOverlay.style.display = 'block';
+        }
+      }
+    });
 
-      // Create timeline with responsive scroll distances
-      var scrollDistance = isMobile() ? "+=800%" : isTablet() ? "+=900%" : "+=1000%";
+    // Create timeline with responsive scroll distances
+    var scrollDistance = isMobile() ? "+=800%" : isTablet() ? "+=900%" : "+=1000%";
+    
+    tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: container,
+        start: "top top",
+        end: scrollDistance,
+        scrub: isMobile() ? 3 : 5, // Faster scrub on mobile
+        pin: true,
+        anticipatePin: 1,
+        markers: false,
+                    onUpdate: function(self) {
+          var progress = self.progress;
 
-      tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: container,
-          start: "top top",
-          end: scrollDistance,
-          scrub: isMobile() ? 3 : 5, // Faster scrub on mobile
-          pin: true,
-          anticipatePin: 1,
-          markers: false,
-                      onUpdate: function(self) {
-            var progress = self.progress;
+          // Update progress bar with GSAP for smoother animation
+          var progressBar = progressContainer.querySelector('.tunnel-progress-bar');
+          gsap.to(progressBar, {
+            width: (progress * 100) + '%',
+            duration: 0.3,
+            ease: "power2.out"
+          });
 
-            // Update progress bar
-            var progressBar = progressContainer.querySelector('.tunnel-progress-bar');
-            progressBar.style.width = (progress * 100) + '%';
-
-            // Update progress dots
-            var dots = progressContainer.querySelectorAll('.progress-dot');
-            processSteps.forEach((step, index) => {
-              if (progress >= step.percent - 0.05) {
+          // Update progress dots with GSAP animations
+          var dots = progressContainer.querySelectorAll('.progress-dot');
+          processSteps.forEach((step, index) => {
+            if (progress >= step.percent - 0.05) {
+              if (!dots[index].classList.contains('active-dot')) {
+                dots[index].classList.add('active-dot');
                 dots[index].classList.add('bg-gradient-to-r', step.color.split(' ')[0], step.color.split(' ')[2]);
                 dots[index].classList.remove('bg-gray-600');
-              }
-            });
-
-            // Show/hide process steps with enhanced animation
-            processSteps.forEach((step, index) => {
-              var stepElement = stepsContainer.children[index];
-              var showRange = isMobile() ? 0.2 : 0.15; // Longer display time on mobile
-              if (progress >= step.percent - 0.05 && progress <= step.percent + showRange) {
-                stepElement.classList.add('opacity-100', 'translate-y-0', 'active');
-                stepElement.classList.remove('opacity-0', 'translate-y-16');
-              } else {
-                stepElement.classList.remove('opacity-100', 'translate-y-0', 'active');
-                stepElement.classList.add('opacity-0', 'translate-y-16');
-              }
-            });
-
-            // Trigger contact module when tunnel animation is near completion
-            if (progress >= 0.85 && !window.tunnelContactTriggered) {
-              window.tunnelContactTriggered = true;
-
-              // Dispatch event to activate contact module
-              const tunnelCompleteEvent = new CustomEvent('tunnel:near-complete', {
-                detail: { progress: progress }
-              });
-              window.dispatchEvent(tunnelCompleteEvent);
-
-              // Call integration function if available
-              if (typeof integrateContactWithTunnel === 'function') {
-                setTimeout(() => {
-                  integrateContactWithTunnel();
-                }, 1000);
+                
+                // Animate dot activation
+                gsap.fromTo(dots[index], 
+                  { scale: 0.8 },
+                  { 
+                    scale: 1.2, 
+                    duration: 0.3, 
+                    ease: "back.out(1.7)",
+                    yoyo: true,
+                    repeat: 1
+                  }
+                );
               }
             }
+          });
 
-            // Final completion event
-            if (progress >= 0.95 && !window.tunnelFullyComplete) {
-              window.tunnelFullyComplete = true;
+          // Show/hide process steps with enhanced GSAP animation
+          processSteps.forEach((step, index) => {
+            var stepElement = stepsContainer.children[index];
+            var showRange = isMobile() ? 0.2 : 0.15; // Longer display time on mobile
+            
+            if (progress >= step.percent - 0.05 && progress <= step.percent + showRange) {
+              // Animate IN with GSAP
+              if (!stepElement.classList.contains('active')) {
+                stepElement.classList.add('active');
+                
+                gsap.to(stepElement, {
+                  opacity: 1,
+                  y: 0,
+                  scale: 1,
+                  duration: 0.8,
+                  ease: "back.out(1.7)",
+                  clearProps: "transform"
+                });
+                
+                // Animate card elements with stagger
+                const cardElements = stepElement.querySelectorAll('.tunnel-step-card > *');
+                gsap.fromTo(cardElements, 
+                  { opacity: 0, y: 20 },
+                  {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.6,
+                    stagger: 0.1,
+                    delay: 0.3,
+                    ease: "power2.out"
+                  }
+                );
+              }
+            } else {
+              // Animate OUT with GSAP
+              if (stepElement.classList.contains('active')) {
+                stepElement.classList.remove('active');
+                
+                gsap.to(stepElement, {
+                  opacity: 0,
+                  y: 30,
+                  scale: 0.95,
+                  duration: 0.5,
+                  ease: "power2.inOut"
+                });
+              }
+            }
+          });
 
-              const tunnelCompleteEvent = new CustomEvent('tunnel:complete', {
-                detail: { progress: progress }
-              });
-              window.dispatchEvent(tunnelCompleteEvent);
+          // Trigger contact module when tunnel animation is near completion
+          if (progress >= 0.85 && !window.tunnelContactTriggered) {
+            window.tunnelContactTriggered = true;
+
+            // Dispatch event to activate contact module
+            const tunnelCompleteEvent = new CustomEvent('tunnel:near-complete', {
+              detail: { progress: progress }
+            });
+            window.dispatchEvent(tunnelCompleteEvent);
+
+            // Call integration function if available
+            if (typeof integrateContactWithTunnel === 'function') {
+              setTimeout(() => {
+                integrateContactWithTunnel();
+              }, 1000);
             }
           }
-        }
-      });
 
-      tl.to(tubePerc, {
-         percent:.96,
-         ease: Linear.easeNone,
-         duration: 10,
-         onUpdate: function() {
-           cameraTargetPercentage = tubePerc.percent;
-         }
-      });
+          // Final completion event
+          if (progress >= 0.95 && !window.tunnelFullyComplete) {
+            window.tunnelFullyComplete = true;
+
+            const tunnelCompleteEvent = new CustomEvent('tunnel:complete', {
+              detail: { progress: progress }
+            });
+            window.dispatchEvent(tunnelCompleteEvent);
+          }
+        }
+      }
+    });
+
+    tl.to(tubePerc, {
+       percent:.96,
+       ease: Linear.easeNone,
+       duration: 10,
+       onUpdate: function() {
+         cameraTargetPercentage = tubePerc.percent;
+       }
     });
 
     //particle system with responsive particle count

@@ -27,19 +27,17 @@
   background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.3) 100%);
 }
 
-/* Welcome Screen Responsive Styles */
+/* Welcome Screen Responsive Styles - Telón Effect */
 #tunnel .tunnel-welcome-screen {
   backdrop-filter: blur(12px);
-  transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 30;
   position: absolute !important;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   padding: 1rem;
-}
-
-#tunnel .tunnel-welcome-screen.hidden {
-  opacity: 0;
-  pointer-events: none;
-  transform: scale(1.1);
+  /* GSAP se encarga de las transformaciones, eliminamos transiciones CSS */
 }
 
 #tunnel .tunnel-welcome-title {
