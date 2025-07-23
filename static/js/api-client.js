@@ -246,6 +246,25 @@ async get_all_usuarios_including_inactive() {
         return this._request('GET', '/api/dashboard/system-performance');
     }
 
+    // MQTT Alerts endpoints
+    async get_active_alerts_by_empresa(empresaId, limit = 5, offset = 0) {
+        return this._request('GET', `/api/mqtt-alerts/empresa/${empresaId}/active-by-sede?limit=${limit}&offset=${offset}`);
+    }
+
+    async deactivate_user_alert(alertId, desactivadoPorId, desactivadoPorTipo) {
+        return this._request('PUT', '/api/mqtt-alerts/user-alert/deactivate', {
+            data: {
+                alert_id: alertId,
+                desactivado_por_id: desactivadoPorId,
+                desactivado_por_tipo: desactivadoPorTipo
+            }
+        });
+    }
+
+    async toggle_alert_status(alertId) {
+        return this._request('PATCH', `/api/mqtt-alerts/${alertId}/toggle-status`);
+    }
+
     // Utility methods
     set_token(token) {
         // Ya no necesitamos establecer tokens manualmente

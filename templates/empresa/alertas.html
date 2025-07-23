@@ -131,43 +131,6 @@
   font-size: 1.1rem;
 }
 
-.filters-container {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 1rem;
-  padding: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-.filter-group {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-}
-
-.filter-item label {
-  display: block;
-  color: rgba(255, 255, 255, 0.9);
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-}
-
-.filter-item select,
-.filter-item input {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  border-radius: 0.5rem;
-  backdrop-filter: blur(5px);
-}
-
-.filter-item select option {
-  background: #1f2937;
-  color: white;
-}
 
 
 
@@ -400,7 +363,6 @@
 /* Mejoras para las secciones de contenido del modal */
 .modal-section {
   background: rgba(30, 41, 59, 0.4) !important;
-  border: 1px solid rgba(99, 102, 241, 0.2) !important;
   backdrop-filter: blur(15px) !important;
   transition: all 0.3s ease !important;
   position: relative;
@@ -441,6 +403,203 @@
   transform: translateY(-3px) scale(1.02) !important;
   box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4) !important;
 }
+
+/* ========== OPTIMIZACIONES PARA MÓVILES ========== */
+
+/* Modal responsive para móviles */
+@media (max-width: 768px) {
+  .ios-blur-modal-container {
+    max-width: 95vw !important;
+    max-height: 95vh !important;
+    margin: 2.5vh auto !important;
+    border-radius: 16px !important;
+  }
+  
+  .ios-blur-header {
+    padding: 1rem !important;
+    border-radius: 16px 16px 0 0 !important;
+  }
+  
+  .ios-blur-header h3 {
+    font-size: 1.25rem !important;
+  }
+  
+  .ios-blur-header p {
+    font-size: 0.75rem !important;
+  }
+  
+  .ios-blur-body {
+    max-height: calc(95vh - 160px) !important;
+    overflow-y: auto !important;
+    padding: 1rem !important;
+  }
+  
+  .ios-blur-footer {
+    padding: 1rem !important;
+    border-radius: 0 0 16px 16px !important;
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+  }
+  
+  .ios-blur-footer .ios-blur-btn {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+}
+
+/* Ajustes específicos para el modal de alertas en móvil */
+@media (max-width: 768px) {
+  /* Convertir grillas a una sola columna */
+  .grid.grid-cols-1.lg\:grid-cols-3 {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+  
+  .grid.grid-cols-1.xl\:grid-cols-3 {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+  
+  .grid.grid-cols-1.lg\:grid-cols-2 {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+  
+  .grid.grid-cols-2.md\:grid-cols-4 {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.5rem !important;
+  }
+  
+  /* Reducir padding en secciones móviles */
+  .modal-section {
+    padding: 0.75rem !important;
+  }
+  
+  /* Hacer el mapa más pequeño en móvil */
+  .modal-section iframe {
+    height: 200px !important;
+  }
+  
+  /* Ajustar textos para móvil */
+  .modal-section h4 {
+    font-size: 0.875rem !important;
+  }
+  
+  .modal-section .text-lg {
+    font-size: 1rem !important;
+  }
+  
+  .modal-section .text-xl {
+    font-size: 1.125rem !important;
+  }
+  
+  /* Reducir espaciado vertical */
+  .space-y-4 > * + * {
+    margin-top: 0.75rem !important;
+  }
+  
+  .space-y-3 > * + * {
+    margin-top: 0.5rem !important;
+  }
+  
+  /* Hacer los botones de mapas más pequeños */
+  .modal-section .inline-flex {
+    padding: 0.5rem 0.75rem !important;
+    font-size: 0.75rem !important;
+  }
+  
+  /* Ajustar el header del modal de origen */
+  .mb-4.p-3 {
+    padding: 0.75rem !important;
+    margin-bottom: 1rem !important;
+  }
+}
+
+/* Ajustes para pantallas muy pequeñas (móviles pequeños) */
+@media (max-width: 480px) {
+  .ios-blur-modal-container {
+    max-width: 98vw !important;
+    max-height: 98vh !important;
+    margin: 1vh auto !important;
+    border-radius: 12px !important;
+  }
+  
+  .ios-blur-header {
+    border-radius: 12px 12px 0 0 !important;
+  }
+  
+  .ios-blur-footer {
+    border-radius: 0 0 12px 12px !important;
+  }
+  
+  .ios-blur-body {
+    max-height: calc(98vh - 140px) !important;
+    padding: 0.75rem !important;
+  }
+  
+  /* Reducir más el padding en móviles pequeños */
+  .modal-section {
+    padding: 0.5rem !important;
+  }
+  
+  /* Mapa aún más pequeño */
+  .modal-section iframe {
+    height: 160px !important;
+  }
+  
+  /* Textos más pequeños */
+  .modal-section h4 {
+    font-size: 0.75rem !important;
+  }
+  
+  /* Botones de mapa en línea completa */
+  .flex.flex-wrap.gap-2 {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+  }
+  
+  .inline-flex.items-center {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+}
+
+/* Modal de confirmación responsive */
+@media (max-width: 768px) {
+  .ios-blur-modal-container.w-full.max-w-md {
+    max-width: 90vw !important;
+    margin: 10vh auto !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .ios-blur-modal-container.w-full.max-w-md {
+    max-width: 95vw !important;
+    margin: 5vh auto !important;
+  }
+}
+
+/* Mejoras en la experiencia táctil para móviles */
+@media (hover: none) and (pointer: coarse) {
+  .modal-section:hover {
+    transform: none !important;
+  }
+  
+  .modal-section::before {
+    opacity: 0.3 !important;
+  }
+  
+  .ios-blur-btn:hover {
+    transform: none !important;
+  }
+  
+  /* Hacer los botones más grandes para tocar */
+  .ios-blur-btn {
+    min-height: 44px !important;
+    padding: 0.75rem 1rem !important;
+  }
+}
+
 </style>
 {% endblock %}
 
@@ -555,49 +714,126 @@
 </div>
 
 
-<!-- Modal para detalles de alerta -->
+<!-- Modal para detalles de alerta - iOS STYLE LIKE HARDWARE -->
 <div id="alertDetailModal" class="ios-modal-backdrop hidden">
-  <div class="ios-blur-modal-container w-full max-w-6xl max-h-[90vh] flex flex-col">
-    <!-- Modal Header (Fixed) -->
-<div class="ios-blur-header flex-shrink-0">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center space-x-4">
-          <div class="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center shadow-lg">
+  <div class="ios-blur-modal-container w-full max-w-4xl">
+    <!-- Modal Header -->
+    <div class="ios-blur-header">
+      <div class="flex items-center justify-between w-full">
+        <div class="flex items-center space-x-3">
+          <div class="w-12 h-12 bg-gradient-to-br from-red-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg">
             <i class="fas fa-exclamation-triangle text-white text-xl"></i>
           </div>
           <div>
             <h3 class="text-2xl font-bold text-white">Detalles de la Alerta</h3>
-            <p class="text-sm text-gray-300" id="modalAlertSubtitle">Información completa de la alerta seleccionada</p>
+            <p class="text-sm text-white/70" id="modalAlertSubtitle">Información completa de la alerta seleccionada</p>
           </div>
         </div>
-        <button type="button" class="ios-blur-btn ios-blur-btn-secondary !p-3 !min-w-0 hover:bg-red-700 transition-colors" onclick="closeAlertModal()" aria-label="Cerrar modal">
+        <button type="button" class="ios-blur-btn ios-blur-btn-secondary !p-2 !min-w-0" onclick="closeAlertModal()" aria-label="Cerrar modal">
           <i class="fas fa-times text-lg"></i>
         </button>
       </div>
     </div>
     
-    <!-- Modal Body (Scrollable) -->
-    <div class="ios-blur-body flex-1 overflow-y-auto custom-scrollbar">
-      <div id="alertDetailsContent" class="space-y-6 p-1">
+    <!-- Modal Body -->
+    <div class="ios-blur-body">
+      <div id="alertDetailsContent" class="space-y-6">
         <!-- Content will be populated by JavaScript -->
       </div>
     </div>
     
-    <!-- Modal Footer (Fixed) -->
-<div class="ios-blur-footer flex-shrink-0">
-      <div class="flex justify-between items-center">
-        <span class="text-sm text-gray-400">Acciones disponibles</span>
-        <div class="flex space-x-3">
-          <button type="button" class="ios-blur-btn ios-blur-btn-secondary hover:bg-red-700 transition-colors" onclick="closeAlertModal()">
-            <i class="fas fa-times mr-2"></i>
-            Cerrar
-          </button>
-          <button type="button" class="ios-blur-btn ios-blur-btn-primary hover:bg-green-600 transition-colors" onclick="toggleAlertStatus()" id="toggleStatusBtn">
-            <i class="fas fa-toggle-on mr-2"></i>
-            <span id="toggleStatusText">Activar</span>
-          </button>
+    <!-- Modal Footer -->
+    <div class="ios-blur-footer">
+      <button type="button" class="ios-blur-btn ios-blur-btn-secondary" onclick="closeAlertModal()">
+        <i class="fas fa-times mr-2"></i>
+        Cerrar
+      </button>
+      <button type="button" class="ios-blur-btn ios-blur-btn-primary" onclick="showDeactivateConfirmation()" id="toggleStatusBtn">
+        <i class="fas fa-toggle-on mr-2"></i>
+        <span id="toggleStatusText">Activar</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Confirmación para Desactivar Alerta - iOS STYLE LIKE HARDWARE -->
+<div id="deactivateAlertModal" class="ios-modal-backdrop hidden">
+  <div class="ios-blur-modal-container w-full max-w-md">
+    <!-- Modal Header -->
+    <div class="ios-blur-header">
+      <div class="flex items-center justify-between w-full">
+        <div class="flex items-center space-x-3">
+          <div class="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg">
+            <i class="fas fa-power-off text-white text-xl"></i>
+          </div>
+          <div>
+            <h3 class="text-2xl font-bold text-white" id="deactivateModalTitle">Desactivar Alerta</h3>
+            <p class="text-sm text-white/70">Confirme la desactivación de la alerta</p>
+          </div>
         </div>
+        <button type="button" class="ios-blur-btn ios-blur-btn-secondary !p-2 !min-w-0" onclick="closeDeactivateModal()" aria-label="Cerrar modal">
+          <i class="fas fa-times text-lg"></i>
+        </button>
       </div>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="ios-blur-body">
+      <div class="text-center">
+        <p class="text-white/80 text-lg mb-6" id="deactivateModalMessage">
+          ¿Estás seguro de que quieres desactivar esta alerta?
+        </p>
+      </div>
+    </div>
+    
+    <!-- Modal Footer -->
+    <div class="ios-blur-footer">
+      <button type="button" class="ios-blur-btn ios-blur-btn-secondary" onclick="closeDeactivateModal()">
+        <i class="fas fa-times mr-2"></i>
+        Cancelar
+      </button>
+      <button type="button" class="ios-blur-btn ios-blur-btn-primary" id="deactivateConfirmBtn" onclick="confirmDeactivateAlert()">
+        <i class="fas fa-power-off mr-2" id="deactivateConfirmIcon"></i>
+        <span id="deactivateConfirmText">Desactivar</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Resultado/Estado para operaciones de alertas - iOS STYLE LIKE HARDWARE -->
+<div id="alertStatusModal" class="ios-modal-backdrop hidden">
+  <div class="ios-blur-modal-container w-full max-w-2xl">
+    <!-- Modal Header -->
+    <div class="ios-blur-header">
+      <div class="flex items-center justify-between w-full">
+        <div class="flex items-center space-x-3">
+          <div id="alertStatusIcon" class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
+            <i class="fas fa-check text-white text-xl"></i>
+          </div>
+          <div>
+            <h3 id="alertStatusTitle" class="text-2xl font-bold text-white">Operación Exitosa</h3>
+            <p class="text-sm text-white/70">Resultado de la operación realizada</p>
+          </div>
+        </div>
+        <button type="button" class="ios-blur-btn ios-blur-btn-secondary !p-2 !min-w-0" onclick="closeAlertStatusModal()" aria-label="Cerrar modal">
+          <i class="fas fa-times text-lg"></i>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="ios-blur-body">
+      <div id="alertStatusContent" class="space-y-4">
+        <!-- Content will be populated by JavaScript -->
+      </div>
+    </div>
+    
+    <!-- Modal Footer -->
+    <div class="ios-blur-footer">
+      <button type="button" class="ios-blur-btn ios-blur-btn-primary" onclick="closeAlertStatusModal()">
+        <i class="fas fa-check mr-2"></i>
+        Entendido
+      </button>
     </div>
   </div>
 </div>
@@ -605,7 +841,10 @@
 
 {% block page_js %}
 <script src="{{ url_for('static', filename='js/modal-utils.js') }}"></script>
+<script src="{{ url_for('static', filename='js/api-client.js') }}"></script>
 <script>
+// Inicializar cliente API
+const apiClient = new EndpointTestClient();
 // Variables globales para manejo de alertas
 let currentPage = 1;
 let totalPages = 1;
@@ -613,12 +852,132 @@ let currentAlerts = [];
 let selectedAlertId = null;
 let alertsPerPage = 5;
 
-// Variables globales para filtros
-let currentFilters = {
-    priority: '',
-    origin: '',
-    sede: ''
-};
+// Variables para WebSocket
+let websocket = null;
+let websocketUrl = 'ws://localhost:8080'; // URL del WebSocket
+let reconnectAttempts = 0;
+const maxReconnectAttempts = 5;
+const reconnectDelay = 3000; // 3 segundos
+
+// Función para conectar al WebSocket
+function connectWebSocket() {
+    try {
+        websocket = new WebSocket(websocketUrl);
+        
+        websocket.onopen = function(event) {
+            console.log('✅ WebSocket conectado:', websocketUrl);
+            reconnectAttempts = 0;
+        };
+        
+        websocket.onclose = function(event) {
+            console.log('🔌 WebSocket desconectado');
+            websocket = null;
+        };
+        
+        websocket.onerror = function(error) {
+            console.error('❌ Error en WebSocket:', error);
+        };
+        
+    } catch (error) {
+        console.error('💥 Error conectando WebSocket:', error);
+    }
+}
+
+// Función para enviar mensaje WebSocket de desactivación de alerta
+function sendAlertDeactivationMessage(alertData) {
+    return new Promise((resolve, reject) => {
+        try {
+            // Preparar el mensaje con la información de la alerta
+            const message = {
+                type: 'alert_deactivated_by_empresa',
+                timestamp: new Date().toISOString(),
+                alert: {
+                    id: alertData._id,
+                    nombre: alertData.hardware_nombre || 'Alerta de Hardware',
+                    empresa: alertData.empresa_nombre,
+                    sede: alertData.sede,
+                    prioridad: alertData.prioridad,
+                    topic: alertData.topic,
+                    // Lista de usuarios (contactos)
+                    usuarios: (alertData.numeros_telefonicos || []).map(contacto => ({
+                        nombre: contacto.nombre,
+                        telefono: contacto.numero,
+                        tipo: 'contacto_telefono'
+                    })),
+                    // Lista de hardware vinculado
+                    hardware_vinculado: [
+                        {
+                            nombre: alertData.hardware_nombre,
+                            id_origen: alertData.data?.id_origen,
+                            topic: alertData.topic
+                        },
+                        // Otros hardware relacionados
+                        ...(alertData.topics_otros_hardware || []).map(topic => ({
+                            topic: topic,
+                            tipo: 'hardware_relacionado'
+                        }))
+                    ],
+                    fecha_creacion: alertData.fecha_creacion,
+                    fecha_desactivacion: new Date().toISOString(),
+                    desactivado_por: {
+                        tipo: 'empresa',
+                        id: window.currentUser?.empresa_id || window.currentUser?.id,
+                        nombre: window.currentUser?.nombre_empresa || 'Empresa'
+                    }
+                }
+            };
+            
+            console.log('📤 Enviando mensaje de desactivación vía WebSocket:', message);
+            
+            // Si no hay conexión, intentar conectar
+            if (!websocket || websocket.readyState !== WebSocket.OPEN) {
+                console.log('🔌 WebSocket no conectado, intentando conectar...');
+                connectWebSocket();
+                
+                // Esperar un momento para la conexión y luego enviar
+                setTimeout(() => {
+                    if (websocket && websocket.readyState === WebSocket.OPEN) {
+                        websocket.send(JSON.stringify(message));
+                        console.log('✅ Mensaje enviado vía WebSocket');
+                        resolve(true);
+                    } else {
+                        console.warn('⚠️ No se pudo establecer conexión WebSocket');
+                        resolve(false); // No rechazar, solo retornar false
+                    }
+                }, 1000);
+            } else {
+                // Enviar directamente
+                websocket.send(JSON.stringify(message));
+                console.log('✅ Mensaje enviado vía WebSocket');
+                resolve(true);
+            }
+            
+        } catch (error) {
+            console.error('💥 Error enviando mensaje WebSocket:', error);
+            resolve(false); // No rechazar, solo retornar false para no bloquear la desactivación
+        }
+    });
+}
+
+// Función auxiliar para extraer coordenadas de una alerta (para uso interno del modal)
+function extractCoordinatesFromAlert(alert) {
+    if (!alert.ubicacion) return null;
+    
+    // Intentar extraer coordenadas de Google Maps URL
+    if (alert.ubicacion.direccion_url) {
+        const coords = extractCoordsFromGoogleMapsUrl(alert.ubicacion.direccion_url);
+        if (coords) return coords;
+    }
+    
+    // Intentar extraer coordenadas de OpenStreetMaps URL
+    if (alert.ubicacion.direccion_open_maps) {
+        const coords = extractCoordsFromOSMUrl(alert.ubicacion.direccion_open_maps);
+        if (coords) return coords;
+    }
+    
+    return null;
+}
+
 
 // Cache silencioso de alertas por ID
 let alertsCache = new Map(); // Map para guardar alertas por ID
@@ -634,6 +993,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Inicializar sistema de cache silencioso
     initializeCacheSystem();
+    
+    // Inicializar conexión WebSocket
+    connectWebSocket();
     
     // Configurar el modal manager para el modal de alertas
     if (window.modalManager) {
@@ -652,7 +1014,7 @@ document.addEventListener('DOMContentLoaded', function() {
         loadActiveAlerts();
     }, 30000);
     
-    console.log('✅ ALERTAS: Sistema completamente inicializado con cache inteligente');
+    console.log('✅ ALERTAS: Sistema completamente inicializado con cache inteligente y WebSocket');
 });
 
 async function loadActiveAlerts() {
@@ -671,19 +1033,8 @@ async function loadActiveAlerts() {
             return;
         }
         
-        // Construir URL con filtros
+        // Construir URL para obtener alertas
         let url = `/proxy/api/mqtt-alerts/empresa/${empresaId}/active-by-sede?limit=${alertsPerPage}&offset=${(currentPage - 1) * alertsPerPage}`;
-        
-        // Agregar filtros si están definidos
-        if (currentFilters.priority) {
-            url += `&priority=${encodeURIComponent(currentFilters.priority)}`;
-        }
-        if (currentFilters.origin) {
-            url += `&origin=${encodeURIComponent(currentFilters.origin)}`;
-        }
-        if (currentFilters.sede) {
-            url += `&sede=${encodeURIComponent(currentFilters.sede)}`;
-        }
         console.log('🔗 URL a consultar:', url);
         console.log('📊 Parámetros de paginación: limit=', alertsPerPage, 'offset=', (currentPage - 1) * alertsPerPage);
         
@@ -972,7 +1323,7 @@ async function showAlertDetails(alertId) {
     subtitle.textContent = `${displayName} - ${empresaName}`;
     
     content.innerHTML = `
-        <!-- Header con información del origen de la alerta -->
+        <!-- Header compacto con información del origen de la alerta -->
         <div class="mb-4 p-3 rounded-lg ${isUserOrigin ? 'bg-gradient-to-r from-blue-600 to-indigo-700' : 'bg-gradient-to-r from-gray-600 to-gray-700'}">
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
@@ -990,84 +1341,40 @@ async function showAlertDetails(alertId) {
             </div>
         </div>
         
-        <!-- Header con imagen de alerta -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Imagen y tipo de alerta -->
-            <div class="lg:col-span-1">
-                ${alert.data?.tipo_alarma_info?.imagen_base64 ? `
-                    <div class="modal-section bg-gradient-to-br from-red-500 to-orange-600 rounded-xl p-4 text-center">
-                        <img src="${alert.data.tipo_alarma_info.imagen_base64}" 
-                             alt="${alert.data.tipo_alarma_info.nombre || 'Tipo de alerta'}" 
-                             class="w-full h-32 object-cover rounded-lg mb-3">
-                        <h3 class="text-xl font-bold text-white mb-2">
-                            ${alert.data.tipo_alarma_info.nombre || 'Alerta'}
-                        </h3>
-                        <div class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium" 
-                             style="background-color: ${alert.data.tipo_alarma_info.color_alerta}20; color: ${alert.data.tipo_alarma_info.color_alerta};">
-                            ${alert.data.tipo_alarma || alert.tipo_alerta || 'N/A'}
-                        </div>
-                    </div>
-                ` : `
-                    <div class="modal-section bg-gradient-to-br from-gray-600 to-gray-800 rounded-xl p-6 text-center">
-                        <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mx-auto mb-4 flex items-center justify-center">
-                            <i class="fas fa-microchip text-white text-2xl"></i>
-                        </div>
-                        <h3 class="text-xl font-bold text-white">
-                            Alerta de Hardware
-                        </h3>
-                    </div>
-                `}
-                
-                <!-- Información de ubicación -->
-                <div class="modal-section mt-4 bg-gradient-to-r from-indigo-600 to-purple-700 rounded-lg p-4">
-                    <h4 class="text-lg font-semibold text-white mb-3 flex items-center">
-                        <i class="fas fa-map-marker-alt mr-2"></i>Ubicación
-                    </h4>
-                    <div class="space-y-2">
-                        <div>
-                            <span class="text-indigo-200 text-sm">Empresa:</span>
-                            <span class="text-white font-medium ml-2">${alert.empresa_nombre}</span>
-                        </div>
-                        <div>
-                            <span class="text-indigo-200 text-sm">Sede:</span>
-                            <span class="text-white font-medium ml-2">${alert.sede}</span>
-                        </div>
-                        ${alert.data?.botonera_ubicacion?.direccion ? `
-                            <div>
-                                <span class="text-indigo-200 text-sm">Dirección:</span>
-                                <span class="text-white font-medium ml-2">${alert.data.botonera_ubicacion.direccion}</span>
+        <!-- Layout optimizado: Fila principal con imagen/estado + mapa más grande -->
+        <div class="space-y-4">
+            <!-- Fila superior: Imagen/Tipo + Estado y Prioridad + Hardware (más compacta) -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                <!-- Imagen y tipo de alerta -->
+                <div class="lg:col-span-1">
+                    ${alert.data?.tipo_alarma_info?.imagen_base64 ? `
+                        <div class="modal-section bg-gradient-to-br from-red-500 to-orange-600 rounded-lg p-4 text-center h-full">
+                            <img src="${alert.data.tipo_alarma_info.imagen_base64}" 
+                                 alt="${alert.data.tipo_alarma_info.nombre || 'Tipo de alerta'}" 
+                                 class="w-full h-24 object-cover rounded-lg mb-3">
+                            <h3 class="text-lg font-bold text-white mb-2">
+                                ${alert.data.tipo_alarma_info.nombre || 'Alerta'}
+                            </h3>
+                            <div class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium" 
+                                 style="background-color: ${alert.data.tipo_alarma_info.color_alerta}20; color: ${alert.data.tipo_alarma_info.color_alerta};">
+                                ${alert.data.tipo_alarma || alert.tipo_alerta || 'N/A'}
                             </div>
-                            ${alert.data.botonera_ubicacion.direccion_url ? `
-                                <div class="mt-2">
-                                    <a href="${alert.data.botonera_ubicacion.direccion_url}" target="_blank" 
-                                       class="inline-flex items-center px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-lg transition-colors">
-                                        <i class="fas fa-map-marked-alt mr-1"></i>
-                                        Ver en Google Maps
-                                    </a>
-                                    ${alert.data.botonera_ubicacion.direccion_open_maps ? `
-                                        <a href="${alert.data.botonera_ubicacion.direccion_open_maps}" target="_blank" 
-                                           class="ml-2 inline-flex items-center px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-xs rounded-lg transition-colors">
-                                            <i class="fas fa-map mr-1"></i>
-                                            OpenMaps
-                                        </a>
-                                    ` : ''}
-                                </div>
-                            ` : ''}
-                        ` : alert.data?.ubicacion ? `
-                            <div>
-                                <span class="text-indigo-200 text-sm">Ubicación específica:</span>
-                                <span class="text-white font-medium ml-2">${alert.data.ubicacion}</span>
+                        </div>
+                    ` : `
+                        <div class="modal-section bg-gradient-to-br from-gray-600 to-gray-800 rounded-lg p-4 text-center h-full flex flex-col justify-center">
+                            <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mx-auto mb-3 flex items-center justify-center">
+                                <i class="fas fa-microchip text-white text-xl"></i>
                             </div>
-                        ` : ''}
-                    </div>
+                            <h3 class="text-lg font-bold text-white">
+                                Alerta de Hardware
+                            </h3>
+                        </div>
+                    `}
                 </div>
-            </div>
-            
-            <!-- Información principal -->
-            <div class="lg:col-span-2 space-y-4">
-                <!-- Estado y prioridad -->
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="modal-section bg-gradient-to-r from-gray-700 to-gray-800 rounded-lg p-4">
+                
+                <!-- Estado y prioridad en columna -->
+                <div class="lg:col-span-1 space-y-3">
+                    <div class="modal-section bg-gradient-to-r from-gray-700 to-gray-800 rounded-lg p-3">
                         <h4 class="text-sm font-medium text-gray-300 mb-2">Estado</h4>
                         <div class="flex items-center">
                             <div class="w-3 h-3 rounded-full mr-2 ${alert.activo ? 'bg-green-400' : 'bg-red-400'}"></div>
@@ -1076,208 +1383,430 @@ async function showAlertDetails(alertId) {
                             </span>
                         </div>
                     </div>
-                    <div class="modal-section bg-gradient-to-r from-gray-700 to-gray-800 rounded-lg p-4">
+                    <div class="modal-section bg-gradient-to-r from-gray-700 to-gray-800 rounded-lg p-3">
                         <h4 class="text-sm font-medium text-gray-300 mb-2">Prioridad</h4>
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold ${getPriorityClass(alert.prioridad)}">
                             ${alert.prioridad.toUpperCase()}
                         </span>
                     </div>
                 </div>
-                
-                <!-- Información del hardware -->
-                ${alert.hardware_nombre ? `
-                    <div class="modal-section bg-gradient-to-r from-blue-700 to-blue-800 rounded-lg p-4">
-                        <h4 class="text-lg font-semibold text-white mb-3 flex items-center">
-                            <i class="fas fa-microchip mr-2"></i>Hardware Origen
-                        </h4>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            <div>
-                                <span class="text-blue-200 text-sm">Nombre:</span>
-                                <span class="text-white font-medium ml-2">${alert.hardware_nombre}</span>
+
+                <!-- Hardware info compacta -->
+                <div class="lg:col-span-1">
+                    ${alert.hardware_nombre ? `
+                        <div class="modal-section bg-gradient-to-r from-blue-700 to-blue-800 rounded-lg p-3 h-full">
+                            <h4 class="text-sm font-semibold text-white mb-2 flex items-center">
+                                <i class="fas fa-microchip mr-1 text-xs"></i>Hardware Origen
+                            </h4>
+                            <div class="space-y-1 text-xs">
+                                <div class="flex justify-between">
+                                    <span class="text-blue-200">Nombre:</span>
+                                    <span class="text-white font-medium truncate ml-2">${alert.hardware_nombre}</span>
+                                </div>
+                                ${alert.data?.id_origen ? `
+                                    <div class="flex justify-between">
+                                        <span class="text-blue-200">ID:</span>
+                                        <span class="text-white font-medium font-mono text-xs">${alert.data.id_origen}</span>
+                                    </div>
+                                ` : ''}
+                                ${alert.topic ? `
+                                    <div class="pt-1">
+                                        <span class="text-blue-200 block mb-1">Topic MQTT:</span>
+                                        <code class="text-blue-100 font-mono text-xs bg-black/20 px-1 py-1 rounded block break-all">${alert.topic}</code>
+                                    </div>
+                                ` : ''}
                             </div>
-                            ${alert.data?.id_origen ? `
-                                <div>
-                                    <span class="text-blue-200 text-sm">ID Origen:</span>
-                                    <span class="text-white font-medium ml-2">${alert.data.id_origen}</span>
-                                </div>
-                            ` : ''}
-                            ${alert.topic ? `
-                                <div class="md:col-span-2">
-                                    <span class="text-blue-200 text-sm">Topic MQTT:</span>
-                                    <code class="text-blue-100 font-mono text-xs ml-2 bg-black/20 px-2 py-1 rounded">${alert.topic}</code>
-                                </div>
-                            ` : ''}
                         </div>
-                    </div>
-                ` : ''}
-                
-                <!-- Descripción de la alerta -->
-                ${alert.data?.tipo_alarma_info?.descripcion ? `
-                    <div class="modal-section bg-gradient-to-r from-orange-600 to-red-700 rounded-lg p-4">
-                        <h4 class="text-lg font-semibold text-white mb-2 flex items-center">
-                            <i class="fas fa-info-circle mr-2"></i>Descripción
-                        </h4>
-                        <p class="text-orange-100 leading-relaxed">${alert.data.tipo_alarma_info.descripcion}</p>
-                    </div>
-                ` : ''}
-                
-                <!-- Información específica del usuario creador (solo para alertas de usuario) -->
-                ${isUserOrigin && (alert.data?.usuario_email || alert.data?.usuario_telefono) ? `
-                    <div class="modal-section bg-gradient-to-r from-violet-700 to-purple-800 rounded-lg p-4">
+                    ` : `
+                        <div class="modal-section bg-gradient-to-r from-gray-700 to-gray-800 rounded-lg p-3 h-full flex items-center justify-center">
+                            <p class="text-gray-300 text-sm">Hardware no especificado</p>
+                        </div>
+                    `}
+                </div>
+            </div>
+            
+            <!-- Fila principal: Mapa más grande ocupando más espacio -->
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
+                <!-- Mapa y ubicación principal (2/3 del ancho) -->
+                <div class="xl:col-span-2">
+                    <div class="modal-section bg-gradient-to-r from-indigo-600 to-purple-700 rounded-lg p-4">
                         <h4 class="text-lg font-semibold text-white mb-3 flex items-center">
-                            <i class="fas fa-user-circle mr-2"></i>Usuario que Reportó
+                            <i class="fas fa-map-marker-alt mr-2"></i>Ubicación Completa
                         </h4>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            ${alert.data.usuario_email ? `
+                        <div class="space-y-3">
+                            <!-- Empresa y Sede más compactas -->
+                            <div class="grid grid-cols-2 gap-4 pb-3">
                                 <div>
-                                    <span class="text-purple-200 text-sm">Email:</span>
-                                    <span class="text-white font-medium ml-2">${alert.data.usuario_email}</span>
+                                    <span class="text-indigo-200 text-sm block">Empresa:</span>
+                                    <span class="text-white font-medium">${alert.empresa_nombre}</span>
                                 </div>
-                            ` : ''}
-                            ${alert.data.usuario_telefono ? `
                                 <div>
-                                    <span class="text-purple-200 text-sm">Teléfono:</span>
-                                    <span class="text-white font-medium ml-2">${alert.data.usuario_telefono}</span>
+                                    <span class="text-indigo-200 text-sm block">Sede:</span>
+                                    <span class="text-white font-medium">${alert.sede}</span>
                                 </div>
-                            ` : ''}
-                            ${alert.data.metadatos?.plataforma ? `
-                                <div class="md:col-span-2">
-                                    <span class="text-purple-200 text-sm">Reportada desde:</span>
-                                    <span class="inline-flex items-center ml-2 px-2 py-1 bg-purple-600 text-white text-xs rounded-full">
-                                        <i class="fas fa-mobile-alt mr-1"></i>
-                                        ${alert.data.metadatos.plataforma === 'mobile_app' ? 'Aplicación Móvil' : alert.data.metadatos.plataforma}
-                                    </span>
-                                    ${alert.data.metadatos.tipo_procesamiento ? `
-                                        <span class="inline-flex items-center ml-1 px-2 py-1 bg-indigo-600 text-white text-xs rounded-full">
-                                            <i class="fas fa-cogs mr-1"></i>
-                                            ${alert.data.metadatos.tipo_procesamiento === 'manual' ? 'Manual' : 'Automático'}
-                                        </span>
-                                    ` : ''}
+                            </div>
+                            
+                            <!-- Dirección física y mapa más grande -->
+                            ${alert.ubicacion?.direccion ? `
+                                <div>
+                                    <span class="text-indigo-200 text-sm block mb-2">📍 Dirección Física:</span>
+                                    <p class="text-white font-medium mb-3">${alert.ubicacion.direccion}</p>
+                                    
+                                    <!-- Mapa embebido más grande -->
+                                    ${(() => {
+                                        // Extraer coordenadas de los enlaces
+                                        let lat = null, lng = null;
+                                        
+                                        if (alert.ubicacion.direccion_url) {
+                                            const googleMatch = alert.ubicacion.direccion_url.match(/place\/(-?\d+\.\d+),(-?\d+\.\d+)/);
+                                            if (googleMatch) {
+                                                lat = parseFloat(googleMatch[1]);
+                                                lng = parseFloat(googleMatch[2]);
+                                            }
+                                        }
+                                        
+                                        if (!lat && alert.ubicacion.direccion_open_maps) {
+                                            const osmMatch = alert.ubicacion.direccion_open_maps.match(/mlat=(-?\d+\.\d+).*mlon=(-?\d+\.\d+)/);
+                                            if (osmMatch) {
+                                                lat = parseFloat(osmMatch[1]);
+                                                lng = parseFloat(osmMatch[2]);
+                                            }
+                                        }
+                                        
+                                        if (lat && lng) {
+                                            return `
+                                                <div class="mb-4">
+                                                    <div class="bg-black/20 rounded-lg overflow-hidden">
+                                                        <iframe 
+                                                            src="https://www.openstreetmap.org/export/embed.html?bbox=${lng-0.01},${lat-0.01},${lng+0.01},${lat+0.01}&layer=mapnik&marker=${lat},${lng}"
+                                                            width="100%" 
+                                                            height="280" 
+                                                            style="border-radius: 8px;"
+                                                            loading="lazy"
+                                                            title="Mapa de ubicación">
+                                                        </iframe>
+                                                        <div class="p-3 bg-black/40 text-center">
+                                                            <span class="text-white text-sm font-mono">
+                                                                📍 ${lat.toFixed(6)}, ${lng.toFixed(6)}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            `;
+                                        }
+                                        return '';
+                                    })()} 
+                                    
+                                    <!-- Enlaces a mapas -->
+                                    <div class="flex flex-wrap gap-2">
+                                        ${alert.ubicacion.direccion_url ? `
+                                            <a href="${alert.ubicacion.direccion_url}" target="_blank" 
+                                               class="inline-flex items-center px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors">
+                                                <i class="fas fa-map-marked-alt mr-2"></i>Google Maps
+                                            </a>
+                                        ` : ''}
+                                        ${alert.ubicacion.direccion_open_maps ? `
+                                            <a href="${alert.ubicacion.direccion_open_maps}" target="_blank" 
+                                               class="inline-flex items-center px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm rounded-lg transition-colors">
+                                                <i class="fas fa-map mr-2"></i>OpenStreetMaps
+                                            </a>
+                                        ` : ''}
+                                        <!-- Botón para alternar entre mapas -->
+                                        ${alert.ubicacion.direccion_url && alert.ubicacion.direccion_open_maps ? `
+                                            <button onclick="toggleMapProvider(this)" 
+                                                    class="inline-flex items-center px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded-lg transition-colors"
+                                                    data-google-url="${alert.ubicacion.direccion_url}"
+                                                    data-osm-url="${alert.ubicacion.direccion_open_maps}">
+                                                <i class="fas fa-exchange-alt mr-2"></i>Cambiar Mapa
+                                            </button>
+                                        ` : ''}
+                                    </div>
                                 </div>
                             ` : ''}
                         </div>
                     </div>
-                ` : ''}
+                </div>
                 
-                <!-- Fechas importantes -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="modal-section bg-gradient-to-r from-purple-700 to-pink-800 rounded-lg p-4">
-                        <h4 class="text-sm font-medium text-purple-200 mb-2 flex items-center">
-                            <i class="fas fa-calendar-plus mr-2"></i>Fecha de Creación
+                <!-- Información adicional de ubicación (1/3 del ancho) -->
+                <div class="xl:col-span-1 space-y-3">
+                    <!-- Ubicación específica del hardware/botonera -->
+                    ${alert.data?.ubicacion ? `
+                        <div class="modal-section bg-gradient-to-r from-cyan-600 to-blue-700 rounded-lg p-3">
+                            <h4 class="text-sm font-semibold text-white mb-2 flex items-center">
+                                <i class="fas fa-crosshairs mr-1 text-xs"></i>Ubicación Específica
+                            </h4>
+                            <p class="text-cyan-100 text-sm font-medium">${alert.data.ubicacion}</p>
+                            ${alert.data.id_origen && alert.data.id_origen !== alert.data.ubicacion ? `
+                                <p class="text-cyan-200 text-xs mt-1 font-mono">ID: ${alert.data.id_origen}</p>
+                            ` : ''}
+                        </div>
+                    ` : ''}
+                    
+                    <!-- Topic MQTT como ubicación lógica -->
+                    ${alert.topic ? `
+                        <div class="modal-section bg-gradient-to-r from-teal-600 to-green-700 rounded-lg p-3">
+                            <h4 class="text-sm font-semibold text-white mb-2 flex items-center">
+                                <i class="fas fa-code-branch mr-1 text-xs"></i>Ubicación MQTT
+                            </h4>
+                            <code class="text-teal-100 font-mono text-xs bg-black/20 px-2 py-1 rounded block break-all">${alert.topic}</code>
+                            <p class="text-teal-200 text-xs mt-1">Empresa/Sede/Tipo/Hardware</p>
+                        </div>
+                    ` : ''}
+                    
+                    <!-- Hardware relacionado compacto -->
+                    ${alert.topics_otros_hardware && alert.topics_otros_hardware.length > 0 ? `
+                        <div class="modal-section bg-gradient-to-r from-slate-600 to-slate-700 rounded-lg p-3">
+                            <h4 class="text-sm font-semibold text-white mb-2 flex items-center">
+                                <i class="fas fa-network-wired mr-1 text-xs"></i>Otros Dispositivos
+                            </h4>
+                            <div class="space-y-1 max-h-20 overflow-y-auto">
+                                ${alert.topics_otros_hardware.slice(0, 2).map(topic => `
+                                    <div class="bg-black/20 rounded p-1">
+                                        <code class="text-slate-200 font-mono text-xs break-all">${topic}</code>
+                                    </div>
+                                `).join('')}
+                                ${alert.topics_otros_hardware.length > 2 ? `
+                                    <p class="text-slate-300 text-xs text-center pt-1">+${alert.topics_otros_hardware.length - 2} más</p>
+                                ` : ''}
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    <!-- Hardware asociado -->
+                    ${alert.ubicacion?.hardware_nombre ? `
+                        <div class="modal-section bg-gradient-to-r from-amber-600 to-orange-700 rounded-lg p-3">
+                            <h4 class="text-sm font-semibold text-white mb-2 flex items-center">
+                                <i class="fas fa-server mr-1 text-xs"></i>Hardware Asociado
+                            </h4>
+                            <p class="text-amber-100 font-medium text-sm">${alert.ubicacion.hardware_nombre}</p>
+                            ${alert.ubicacion.hardware_id ? `
+                                <p class="text-amber-200 text-xs mt-1 font-mono">ID: ${alert.ubicacion.hardware_id}</p>
+                            ` : ''}
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+        </div>
+            
+            <!-- Información principal (3 columnas) -->
+            <div class="xl:col-span-3 space-y-3">
+                <!-- Estado, prioridad y fechas en una fila -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div class="modal-section bg-gradient-to-r from-gray-700 to-gray-800 rounded-lg p-2">
+                        <h4 class="text-xs font-medium text-gray-300 mb-1">Estado</h4>
+                        <div class="flex items-center">
+                            <div class="w-2 h-2 rounded-full mr-1 ${alert.activo ? 'bg-green-400' : 'bg-red-400'}"></div>
+                            <span class="text-sm font-bold ${alert.activo ? 'text-green-400' : 'text-red-400'}">
+                                ${alert.activo ? 'ACTIVA' : 'INACTIVA'}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="modal-section bg-gradient-to-r from-gray-700 to-gray-800 rounded-lg p-2">
+                        <h4 class="text-xs font-medium text-gray-300 mb-1">Prioridad</h4>
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold ${getPriorityClass(alert.prioridad)}">
+                            ${alert.prioridad.toUpperCase()}
+                        </span>
+                    </div>
+                    <div class="modal-section bg-gradient-to-r from-purple-700 to-pink-800 rounded-lg p-2">
+                        <h4 class="text-xs font-medium text-purple-200 mb-1 flex items-center">
+                            <i class="fas fa-calendar-plus mr-1 text-xs"></i>Creación
                         </h4>
-                        <p class="text-white font-semibold">${new Date(alert.fecha_creacion).toLocaleString()}</p>
-                        <p class="text-purple-200 text-sm mt-1">${formatDate(alert.fecha_creacion)}</p>
+                        <p class="text-white text-xs font-semibold">${new Date(alert.fecha_creacion).toLocaleDateString()}</p>
+                        <p class="text-purple-200 text-xs opacity-80">${formatDate(alert.fecha_creacion)}</p>
                     </div>
                     ${alert.fecha_actualizacion && alert.fecha_actualizacion !== alert.fecha_creacion ? `
-                        <div class="modal-section bg-gradient-to-r from-purple-700 to-pink-800 rounded-lg p-4">
-                            <h4 class="text-sm font-medium text-purple-200 mb-2 flex items-center">
-                                <i class="fas fa-calendar-check mr-2"></i>Última Actualización
+                        <div class="modal-section bg-gradient-to-r from-purple-700 to-pink-800 rounded-lg p-2">
+                            <h4 class="text-xs font-medium text-purple-200 mb-1 flex items-center">
+                                <i class="fas fa-calendar-check mr-1 text-xs"></i>Actualización
                             </h4>
-                            <p class="text-white font-semibold">${new Date(alert.fecha_actualizacion).toLocaleString()}</p>
-                            <p class="text-purple-200 text-sm mt-1">${formatDate(alert.fecha_actualizacion)}</p>
+                            <p class="text-white text-xs font-semibold">${new Date(alert.fecha_actualizacion).toLocaleDateString()}</p>
+                            <p class="text-purple-200 text-xs opacity-80">${formatDate(alert.fecha_actualizacion)}</p>
                         </div>
                     ` : ''}
                 </div>
                 
-                <!-- Información de desactivación (si la alerta está inactiva) -->
-                ${!alert.activo && alert.desactivado_por ? `
-                    <div class="modal-section bg-gradient-to-r from-gray-700 to-red-800 rounded-lg p-4">
-                        <h4 class="text-lg font-semibold text-white mb-3 flex items-center">
-                            <i class="fas fa-power-off mr-2"></i>Información de Desactivación
-                        </h4>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            <div>
-                                <span class="text-gray-200 text-sm">Desactivada por:</span>
-                                <span class="text-white font-medium ml-2">
-                                    ${alert.desactivado_por.tipo === 'usuario' ? 'Usuario' : 'Sistema'}
-                                </span>
-                            </div>
-                            <div>
-                                <span class="text-gray-200 text-sm">Fecha de desactivación:</span>
-                                <span class="text-white font-medium ml-2">
-                                    ${new Date(alert.desactivado_por.fecha_desactivacion).toLocaleString()}
-                                </span>
+                <!-- Información del hardware y descripción en la misma fila -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                    ${alert.hardware_nombre ? `
+                        <div class="modal-section bg-gradient-to-r from-blue-700 to-blue-800 rounded-lg p-3">
+                            <h4 class="text-sm font-semibold text-white mb-2 flex items-center">
+                                <i class="fas fa-microchip mr-1 text-xs"></i>Hardware Origen
+                            </h4>
+                            <div class="space-y-1 text-xs">
+                                <div class="flex justify-between">
+                                    <span class="text-blue-200">Nombre:</span>
+                                    <span class="text-white font-medium">${alert.hardware_nombre}</span>
+                                </div>
+                                ${alert.data?.id_origen ? `
+                                    <div class="flex justify-between">
+                                        <span class="text-blue-200">ID Origen:</span>
+                                        <span class="text-white font-medium">${alert.data.id_origen}</span>
+                                    </div>
+                                ` : ''}
+                                ${alert.topic ? `
+                                    <div class="pt-1">
+                                        <span class="text-blue-200 block">Topic MQTT:</span>
+                                        <code class="text-blue-100 font-mono text-xs bg-black/20 px-1 py-0.5 rounded block mt-1 break-all">${alert.topic}</code>
+                                    </div>
+                                ` : ''}
                             </div>
                         </div>
-                    </div>
-                ` : ''}
+                    ` : ''}
+                    
+                    <!-- Descripción de la alerta -->
+                    ${alert.data?.tipo_alarma_info?.descripcion ? `
+                        <div class="modal-section bg-gradient-to-r from-orange-600 to-red-700 rounded-lg p-3">
+                            <h4 class="text-sm font-semibold text-white mb-2 flex items-center">
+                                <i class="fas fa-info-circle mr-1 text-xs"></i>Descripción
+                            </h4>
+                            <p class="text-orange-100 text-xs leading-relaxed">${alert.data.tipo_alarma_info.descripcion}</p>
+                        </div>
+                    ` : ''}
+                </div>
+                
+                <!-- Información del usuario y desactivación en la misma fila -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                    <!-- Información específica del usuario creador (solo para alertas de usuario) -->
+                    ${isUserOrigin && (alert.data?.usuario_email || alert.data?.usuario_telefono) ? `
+                        <div class="modal-section bg-gradient-to-r from-violet-700 to-purple-800 rounded-lg p-3">
+                            <h4 class="text-sm font-semibold text-white mb-2 flex items-center">
+                                <i class="fas fa-user-circle mr-1 text-xs"></i>Usuario Reportante
+                            </h4>
+                            <div class="space-y-1 text-xs">
+                                ${alert.data.usuario_email ? `
+                                    <div class="flex justify-between">
+                                        <span class="text-purple-200">Email:</span>
+                                        <span class="text-white font-medium">${alert.data.usuario_email}</span>
+                                    </div>
+                                ` : ''}
+                                ${alert.data.usuario_telefono ? `
+                                    <div class="flex justify-between">
+                                        <span class="text-purple-200">Teléfono:</span>
+                                        <span class="text-white font-medium">${alert.data.usuario_telefono}</span>
+                                    </div>
+                                ` : ''}
+                                ${alert.data.metadatos?.plataforma ? `
+                                    <div class="pt-1 flex flex-wrap gap-1">
+                                        <span class="inline-flex items-center px-2 py-1 bg-purple-600 text-white text-xs rounded-full">
+                                            <i class="fas fa-mobile-alt mr-1"></i>
+                                            ${alert.data.metadatos.plataforma === 'mobile_app' ? 'App Móvil' : alert.data.metadatos.plataforma}
+                                        </span>
+                                        ${alert.data.metadatos.tipo_procesamiento ? `
+                                            <span class="inline-flex items-center px-2 py-1 bg-indigo-600 text-white text-xs rounded-full">
+                                                <i class="fas fa-cogs mr-1"></i>
+                                                ${alert.data.metadatos.tipo_procesamiento === 'manual' ? 'Manual' : 'Automático'}
+                                            </span>
+                                        ` : ''}
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    <!-- Información de desactivación (si la alerta está inactiva) -->
+                    ${!alert.activo && alert.desactivado_por ? `
+                        <div class="modal-section bg-gradient-to-r from-gray-700 to-red-800 rounded-lg p-3">
+                            <h4 class="text-sm font-semibold text-white mb-2 flex items-center">
+                                <i class="fas fa-power-off mr-1 text-xs"></i>Desactivación
+                            </h4>
+                            <div class="space-y-1 text-xs">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-200">Por:</span>
+                                    <span class="text-white font-medium">
+                                        ${alert.desactivado_por.tipo === 'usuario' ? 'Usuario' : 'Sistema'}
+                                    </span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-200">Fecha:</span>
+                                    <span class="text-white font-medium">
+                                        ${new Date(alert.desactivado_por.fecha_desactivacion).toLocaleDateString()}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
             </div>
         </div>
-        
-        <!-- Recomendaciones e implementos -->
-        ${alert.data?.tipo_alarma_info?.recomendaciones || alert.data?.tipo_alarma_info?.implementos_necesarios ? `
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-                ${alert.data.tipo_alarma_info.recomendaciones?.length > 0 ? `
-                    <div class="bg-gradient-to-br from-green-700 to-emerald-800 rounded-lg p-5">
-                        <h4 class="text-lg font-semibold text-white mb-4 flex items-center">
-                            <i class="fas fa-lightbulb mr-2"></i>Recomendaciones
-                        </h4>
-                        <ul class="space-y-2">
-                            ${alert.data.tipo_alarma_info.recomendaciones.map(rec => `
-                                <li class="flex items-start text-green-100">
-                                    <i class="fas fa-check-circle text-green-300 mr-2 mt-1 flex-shrink-0"></i>
-                                    <span class="text-sm">${rec}</span>
-                                </li>
-                            `).join('')}
-                        </ul>
-                    </div>
-                ` : ''}
                 
-                ${alert.data.tipo_alarma_info.implementos_necesarios?.length > 0 ? `
-                    <div class="bg-gradient-to-br from-cyan-700 to-blue-800 rounded-lg p-5">
-                        <h4 class="text-lg font-semibold text-white mb-4 flex items-center">
-                            <i class="fas fa-tools mr-2"></i>Implementos Necesarios
-                        </h4>
-                        <ul class="space-y-2">
-                            ${alert.data.tipo_alarma_info.implementos_necesarios.map(impl => `
-                                <li class="flex items-start text-cyan-100">
-                                    <i class="fas fa-wrench text-cyan-300 mr-2 mt-1 flex-shrink-0"></i>
-                                    <span class="text-sm">${impl}</span>
-                                </li>
-                            `).join('')}
-                        </ul>
+                <!-- Recomendaciones e implementos (optimizados) -->
+                ${alert.data?.tipo_alarma_info?.recomendaciones || alert.data?.tipo_alarma_info?.implementos_necesarios ? `
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                        ${alert.data.tipo_alarma_info.recomendaciones?.length > 0 ? `
+                            <div class="bg-gradient-to-br from-green-700 to-emerald-800 rounded-lg p-3">
+                                <h4 class="text-sm font-semibold text-white mb-2 flex items-center">
+                                    <i class="fas fa-lightbulb mr-1 text-xs"></i>Recomendaciones
+                                </h4>
+                                <ul class="space-y-1">
+                                    ${alert.data.tipo_alarma_info.recomendaciones.map(rec => `
+                                        <li class="flex items-start text-green-100">
+                                            <i class="fas fa-check-circle text-green-300 mr-1 mt-0.5 flex-shrink-0 text-xs"></i>
+                                            <span class="text-xs">${rec}</span>
+                                        </li>
+                                    `).join('')}
+                                </ul>
+                            </div>
+                        ` : ''}
+                        
+                        ${alert.data.tipo_alarma_info.implementos_necesarios?.length > 0 ? `
+                            <div class="bg-gradient-to-br from-cyan-700 to-blue-800 rounded-lg p-3">
+                                <h4 class="text-sm font-semibold text-white mb-2 flex items-center">
+                                    <i class="fas fa-tools mr-1 text-xs"></i>Implementos Necesarios
+                                </h4>
+                                <ul class="space-y-1">
+                                    ${alert.data.tipo_alarma_info.implementos_necesarios.map(impl => `
+                                        <li class="flex items-start text-cyan-100">
+                                            <i class="fas fa-wrench text-cyan-300 mr-1 mt-0.5 flex-shrink-0 text-xs"></i>
+                                            <span class="text-xs">${impl}</span>
+                                        </li>
+                                    `).join('')}
+                                </ul>
+                            </div>
+                        ` : ''}
                     </div>
                 ` : ''}
             </div>
-        ` : ''}
         
-        <!-- Contactos notificados -->
-        ${alert.numeros_telefonicos && alert.numeros_telefonicos.length > 0 ? `
-            <div class="mt-6 bg-gradient-to-r from-teal-700 to-green-800 rounded-lg p-5">
-                <h4 class="text-lg font-semibold text-white mb-4 flex items-center">
-                    <i class="fas fa-phone mr-2"></i>Contactos Notificados (${alert.numeros_telefonicos.length})
-                </h4>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                    ${alert.numeros_telefonicos.map(contacto => `
-                        <div class="bg-black/20 rounded-lg p-3 flex items-center space-x-3">
-                            <div class="w-8 h-8 bg-teal-500 rounded-full flex items-center justify-center flex-shrink-0">
-                                <i class="fas fa-user text-white text-sm"></i>
+        <!-- Sección final: Contactos y Hardware relacionado -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 mt-3">
+            <!-- Contactos notificados -->
+            ${alert.numeros_telefonicos && alert.numeros_telefonicos.length > 0 ? `
+                <div class="bg-gradient-to-r from-teal-700 to-green-800 rounded-lg p-3">
+                    <h4 class="text-sm font-semibold text-white mb-2 flex items-center">
+                        <i class="fas fa-phone mr-1 text-xs"></i>Contactos (${alert.numeros_telefonicos.length})
+                    </h4>
+                    <div class="space-y-2 max-h-32 overflow-y-auto">
+                        ${alert.numeros_telefonicos.map(contacto => `
+                            <div class="bg-black/20 rounded p-2 flex items-center space-x-2">
+                                <div class="w-6 h-6 bg-teal-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-user text-white text-xs"></i>
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <p class="text-white font-medium text-xs truncate">${contacto.nombre}</p>
+                                    <p class="text-teal-200 text-xs">${contacto.numero}</p>
+                                </div>
                             </div>
-                            <div class="min-w-0">
-                                <p class="text-white font-medium truncate">${contacto.nombre}</p>
-                                <p class="text-teal-200 text-sm">${contacto.numero}</p>
+                        `).join('')}
+                    </div>
+                </div>
+            ` : ''}
+            
+            <!-- Hardware relacionado -->
+            ${alert.topics_otros_hardware && alert.topics_otros_hardware.length > 0 ? `
+                <div class="bg-gradient-to-r from-slate-700 to-slate-800 rounded-lg p-3">
+                    <h4 class="text-sm font-semibold text-white mb-2 flex items-center">
+                        <i class="fas fa-network-wired mr-1 text-xs"></i>Hardware Relacionado
+                    </h4>
+                    <div class="space-y-1 max-h-32 overflow-y-auto">
+                        ${alert.topics_otros_hardware.map(topic => `
+                            <div class="bg-black/20 rounded p-1">
+                                <code class="text-slate-200 font-mono text-xs break-all">${topic}</code>
                             </div>
-                        </div>
-                    `).join('')}
+                        `).join('')}
+                    </div>
                 </div>
-            </div>
-        ` : ''}
-        
-        <!-- Hardware relacionado -->
-        ${alert.topics_otros_hardware && alert.topics_otros_hardware.length > 0 ? `
-            <div class="mt-6 bg-gradient-to-r from-slate-700 to-slate-800 rounded-lg p-5">
-                <h4 class="text-lg font-semibold text-white mb-4 flex items-center">
-                    <i class="fas fa-network-wired mr-2"></i>Hardware Relacionado
-                </h4>
-                <div class="space-y-2">
-                    ${alert.topics_otros_hardware.map(topic => `
-                        <div class="bg-black/20 rounded p-2">
-                            <code class="text-slate-200 font-mono text-sm">${topic}</code>
-                        </div>
-                    `).join('')}
-                </div>
-            </div>
-        ` : ''}
+            ` : ''}
+        </div>
     `;
     
     // Configurar botón de toggle - el texto se maneja dentro del botón
@@ -1298,40 +1827,426 @@ function closeAlertModal() {
     selectedAlertId = null;
 }
 
-async function toggleAlertStatus() {
-    if (!selectedAlertId) return;
+// ========== FUNCIONES PARA MANEJO DE DESACTIVACIÓN DE ALERTAS ==========
+
+/**
+ * Muestra el modal de confirmación para desactivar alerta
+ */
+function showDeactivateConfirmation() {
+    if (!selectedAlertId) {
+        console.error('❌ No hay alerta seleccionada');
+        return;
+    }
+    
+    // Buscar la alerta actual para mostrar información contextual
+    const alert = getAlertById(selectedAlertId);
+    if (!alert) {
+        console.error('❌ No se encontró información de la alerta');
+        return;
+    }
+    
+    // Solo mostrar confirmación si la alerta está activa
+    if (!alert.activo) {
+        showAlertStatusModal({
+            success: false,
+            error: 'Alerta ya desactivada',
+            message: 'Esta alerta ya fue desactivada previamente'
+        });
+        return;
+    }
+    
+    console.log('🔄 Mostrando modal de confirmación para desactivar alerta:', selectedAlertId);
+    
+    // Actualizar contenido del modal
+    const modalMessage = document.getElementById('deactivateModalMessage');
+    if (modalMessage) {
+        modalMessage.innerHTML = `
+            <p class="text-white/90 text-base mb-3">
+                ¿Estás seguro de que quieres desactivar esta alerta?
+            </p>
+            <div class="bg-black/20 rounded-lg p-3 mb-4">
+                <p class="text-yellow-200 font-semibold text-sm">${alert.hardware_nombre || 'Hardware'}</p>
+                <p class="text-white/70 text-xs">${alert.empresa_nombre} - ${alert.sede}</p>
+                <p class="text-orange-300 text-xs mt-1">
+                    <i class="fas fa-exclamation-triangle mr-1"></i>
+                    Prioridad: ${alert.prioridad.toUpperCase()}
+                </p>
+            </div>
+            <p class="text-red-200 text-sm">
+                <i class="fas fa-info-circle mr-1"></i>
+                Esta acción desactivará la alerta y notificará a los contactos.
+            </p>
+        `;
+    }
+    
+    // Abrir modal usando modalManager si está disponible
+    if (window.modalManager) {
+        window.modalManager.openModal('deactivateAlertModal');
+    } else {
+        // Fallback manual
+        const modal = document.getElementById('deactivateAlertModal');
+        if (modal) {
+            modal.classList.remove('hidden');
+        }
+    }
+}
+
+/**
+ * Cierra el modal de confirmación
+ */
+function closeDeactivateModal() {
+    if (window.modalManager) {
+        window.modalManager.closeModal('deactivateAlertModal');
+    } else {
+        // Fallback manual
+        const modal = document.getElementById('deactivateAlertModal');
+        if (modal) {
+            modal.classList.add('hidden');
+        }
+    }
+}
+
+/**
+ * Ejecuta la desactivación de la alerta tras confirmación
+ */
+async function confirmDeactivateAlert() {
+    if (!selectedAlertId) {
+        console.error('❌ No hay alerta seleccionada');
+        return;
+    }
+    
+    console.log('🔄 Iniciando desactivación de alerta:', selectedAlertId);
+    
+    // Deshabilitar botón para evitar doble click
+    const confirmBtn = document.getElementById('deactivateConfirmBtn');
+    if (confirmBtn) {
+        confirmBtn.disabled = true;
+        confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Desactivando...';
+    }
     
     try {
-        const response = await fetch(`/api/mqtt-alerts/${selectedAlertId}/toggle-status`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + (localStorage.getItem('auth_token') || '')
+        // Obtener empresa_id del usuario actual
+        const empresaId = window.currentUser?.empresa_id || window.currentUser?.id;
+        
+        if (!empresaId) {
+            throw new Error('No se pudo obtener el ID de empresa del usuario actual');
+        }
+        
+        console.log('📤 Enviando petición de desactivación:', {
+            alert_id: selectedAlertId,
+            desactivado_por_id: empresaId,
+            desactivado_por_tipo: 'empresa'
+        });
+        
+        const response = await apiClient.deactivate_user_alert(
+            selectedAlertId,
+            empresaId,
+            'empresa'
+        );
+        
+        console.log('📡 Respuesta del servidor:', response.status, response.ok);
+        
+        const data = await response.json();
+        console.log('📊 Datos de respuesta:', data);
+        
+        if (data.success) {
+            console.log('✅ Alerta desactivada exitosamente');
+            
+            // Obtener datos de la alerta para el WebSocket
+            const alertData = await findAlertById(selectedAlertId);
+            if (alertData) {
+                // Agregar datos de respuesta del servidor
+                alertData.numeros_telefonicos = data.numeros_telefonicos || [];
+                alertData.topics_otros_hardware = data.topics || [];
+                
+                // Enviar mensaje vía WebSocket de forma asíncrona
+                sendAlertDeactivationMessage(alertData).then(sent => {
+                    if (sent) {
+                        console.log('✅ Notificación WebSocket enviada correctamente');
+                    } else {
+                        console.warn('⚠️ No se pudo enviar notificación WebSocket (servidor no disponible)');
+                    }
+                }).catch(error => {
+                    console.error('💥 Error enviando notificación WebSocket:', error);
+                });
+            }
+            
+            // Cerrar modales
+            closeDeactivateModal();
+            closeAlertModal();
+            
+            // Limpiar cache para forzar recarga
+            clearAlertsCache(false);
+            
+            // Recargar alertas
+            await loadActiveAlerts();
+            
+            // Mostrar modal de éxito con detalles
+            showAlertStatusModal({
+                success: true,
+                message: data.message,
+                data: {
+                    topics: data.topics,
+                    numeros_telefonicos: data.numeros_telefonicos,
+                    desactivado_por: data.desactivado_por,
+                    prioridad: data.prioridad
+                }
+            });
+            
+        } else {
+            console.error('❌ Error en la respuesta:', data);
+            throw new Error(data.error || 'Error desconocido al desactivar alerta');
+        }
+        
+    } catch (error) {
+        console.error('💥 Error desactivando alerta:', error);
+        
+        // Cerrar modal de confirmación
+        closeDeactivateModal();
+        
+        // Determinar tipo de error y mostrar mensaje apropiado
+        let errorData = { success: false };
+        
+        if (error.message.includes('ID de la alerta es obligatorio')) {
+            errorData.error = 'El ID de la alerta es obligatorio';
+        } else if (error.message.includes('no está autorizada')) {
+            errorData.error = 'La empresa no está autorizada para desactivar esta alerta';
+            errorData.message = 'Esta alerta pertenece a otra empresa y no puede ser desactivada';
+        } else if (error.message.includes('no encontrada')) {
+            errorData.error = 'Alerta no encontrada';
+        } else if (error.message.includes('ya desactivada')) {
+            errorData.error = 'Alerta ya desactivada';
+            errorData.message = 'Esta alerta ya fue desactivada previamente';
+        } else {
+            errorData.error = 'Error al desactivar alerta';
+            errorData.message = error.message || 'Ocurrió un error inesperado';
+        }
+        
+        showAlertStatusModal(errorData);
+        
+    } finally {
+        // Rehabilitar botón
+        if (confirmBtn) {
+            confirmBtn.disabled = false;
+            confirmBtn.innerHTML = '<i class="fas fa-power-off mr-2"></i>Desactivar';
+        }
+    }
+}
+
+/**
+ * Muestra modal de resultado (éxito o error) para operaciones de alerta
+ * @param {Object} result - Resultado de la operación
+ * @param {boolean} result.success - Si fue exitosa
+ * @param {string} result.message - Mensaje principal
+ * @param {string} result.error - Mensaje de error (si aplica)
+ * @param {Object} result.data - Datos adicionales (si aplica)
+ */
+function showAlertStatusModal(result) {
+    console.log('📢 Mostrando modal de resultado:', result);
+    
+    const isSuccess = result.success;
+    const title = isSuccess ? 'Alerta Desactivada' : 'Error en la Operación';
+    const message = result.message || result.error || 'Operación completada';
+    
+    // Configurar elementos del modal
+    const modal = document.getElementById('alertStatusModal');
+    const iconElement = document.getElementById('alertStatusIcon');
+    const titleElement = document.getElementById('alertStatusTitle');
+    const contentElement = document.getElementById('alertStatusContent');
+    
+    if (!modal || !iconElement || !titleElement || !contentElement) {
+        console.error('❌ Elementos del modal de estado no encontrados');
+        return;
+    }
+    
+    // Configurar icono y colores según el resultado
+    if (isSuccess) {
+        iconElement.className = 'w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg';
+        iconElement.innerHTML = '<i class="fas fa-check text-white text-xl"></i>';
+    } else {
+        iconElement.className = 'w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg';
+        iconElement.innerHTML = '<i class="fas fa-times text-white text-xl"></i>';
+    }
+    
+    // Configurar título
+    titleElement.textContent = title;
+    
+    // Construir contenido
+    let contentHtml = `
+        <div class="modal-section bg-gradient-to-r from-slate-700 to-slate-800 rounded-lg p-4">
+            <div class="flex items-start space-x-3">
+                <div class="w-8 h-8 ${isSuccess ? 'bg-green-500' : 'bg-red-500'} rounded-full flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-${isSuccess ? 'info' : 'exclamation-triangle'} text-white text-sm"></i>
+                </div>
+                <div class="flex-1">
+                    <h4 class="text-lg font-semibold text-white mb-2">Resultado de la Operación</h4>
+                    <p class="text-gray-200">${message}</p>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Agregar detalles si es exitoso
+    if (isSuccess && result.data) {
+        const data = result.data;
+        
+        contentHtml += `
+            <div class="modal-section bg-gradient-to-r from-green-700 to-emerald-800 rounded-lg p-4">
+                <h4 class="text-lg font-semibold text-white mb-4 flex items-center">
+                    <i class="fas fa-info-circle mr-2"></i>
+                    Detalles de la Desactivación
+                </h4>
+                
+                <div class="space-y-4">
+                    ${data.desactivado_por ? `
+                        <div class="bg-black/20 rounded-lg p-3">
+                            <div class="flex items-center mb-2">
+                                <i class="fas fa-user text-green-300 mr-2"></i>
+                                <span class="text-green-100 font-medium">Desactivado por Empresa</span>
+                            </div>
+                            <p class="text-green-200 text-sm ml-6">
+                                Fecha: ${new Date(data.desactivado_por.fecha_desactivacion).toLocaleString('es-ES', {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                })}
+                            </p>
+                        </div>
+                    ` : ''}
+                    
+                    ${data.prioridad ? `
+                        <div class="bg-black/20 rounded-lg p-3">
+                            <div class="flex items-center">
+                                <i class="fas fa-exclamation-triangle text-yellow-300 mr-2"></i>
+                                <span class="text-green-100 font-medium">Prioridad:</span>
+                                <span class="ml-2 px-2 py-1 rounded-full text-xs font-bold ${getPriorityClass(data.prioridad)}">
+                                    ${data.prioridad.toUpperCase()}
+                                </span>
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    ${data.numeros_telefonicos && data.numeros_telefonicos.length > 0 ? `
+                        <div class="bg-black/20 rounded-lg p-3">
+                            <div class="flex items-center mb-3">
+                                <i class="fas fa-phone text-blue-300 mr-2"></i>
+                                <span class="text-green-100 font-medium">Contactos Notificados (${data.numeros_telefonicos.length})</span>
+                            </div>
+                            <div class="grid gap-2">
+                                ${data.numeros_telefonicos.map(contacto => `
+                                    <div class="flex items-center space-x-3 bg-black/30 rounded p-2">
+                                        <div class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                            <i class="fas fa-user text-white text-xs"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-white font-medium text-sm">${contacto.nombre}</p>
+                                            <p class="text-green-200 text-xs">${contacto.numero}</p>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    ${data.topics && data.topics.length > 0 ? `
+                        <div class="bg-black/20 rounded-lg p-3">
+                            <div class="flex items-center mb-3">
+                                <i class="fas fa-code-branch text-purple-300 mr-2"></i>
+                                <span class="text-green-100 font-medium">Topics MQTT Afectados</span>
+                            </div>
+                            <div class="space-y-2 max-h-32 overflow-y-auto">
+                                ${data.topics.map(topic => `
+                                    <div class="bg-black/30 rounded p-2">
+                                        <code class="text-purple-200 font-mono text-xs break-all">${topic}</code>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    }
+    
+    // Establecer el contenido
+    contentElement.innerHTML = contentHtml;
+    
+    // Configurar el modal manager si está disponible
+    if (window.modalManager) {
+        window.modalManager.setupModal('alertStatusModal');
+        window.modalManager.openModal('alertStatusModal');
+    } else {
+        // Fallback manual
+        modal.classList.remove('hidden');
+    }
+    
+    // Auto-cerrar en caso de éxito después de 10 segundos
+    if (isSuccess) {
+        setTimeout(() => {
+            closeAlertStatusModal();
+        }, 10000);
+    }
+}
+
+/**
+ * Cierra el modal de estado/resultado
+ */
+function closeAlertStatusModal() {
+    if (window.modalManager) {
+        window.modalManager.closeModal('alertStatusModal');
+    } else {
+        // Fallback manual
+        const modal = document.getElementById('alertStatusModal');
+        if (modal) {
+            modal.classList.add('hidden');
+        }
+    }
+}
+
+// Función legacy mantenida para compatibilidad (deprecada)
+async function toggleAlertStatus() {
+    console.warn('⚠️ DEPRECADO: toggleAlertStatus() está deprecada. Use showDeactivateConfirmation() en su lugar.');
+    showDeactivateConfirmation();
+}
+
+/**
+ * Refresca manualmente las alertas (llamada desde el botón Actualizar)
+ */
+async function refreshAlerts() {
+    console.log('🔄 REFRESH: Actualizando alertas manualmente...');
+    
+    // Limpiar cache para forzar recarga completa
+    clearAlertsCache(false);
+    
+    // Volver a la primera página
+    currentPage = 1;
+    
+    // Cargar alertas con feedback visual
+    await loadActiveAlerts();
+    
+    // Mostrar notificación de éxito
+    if (window.Swal) {
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
             }
         });
         
-        if (response.ok) {
-            closeAlertModal();
-            await loadActiveAlerts(); // Recargar alertas
-            
-            Swal.fire({
-                icon: 'success',
-                title: 'Estado actualizado',
-                text: 'El estado de la alerta ha sido cambiado exitosamente',
-                timer: 2000,
-                showConfirmButton: false
-            });
-        } else {
-            throw new Error('Error al cambiar estado');
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'No se pudo cambiar el estado de la alerta'
+        Toast.fire({
+            icon: 'success',
+            title: 'Alertas actualizadas'
         });
     }
+    
+    console.log('✅ REFRESH: Actualización completada');
 }
 
 function populateFilters(alerts) {
@@ -1574,6 +2489,7 @@ async function findAlertById(alertId) {
                 usuario_id: data.alert.usuario_id,
                 desactivado_por: data.alert.desactivado_por,
                 tipo_alerta: data.alert.tipo_alerta,
+                ubicacion: data.alert.ubicacion || {}, // Agregar ubicación con enlaces de mapas
                 cached_at: new Date().toISOString(),
                 fetched_from_backend: true,
                 is_full_data: true // Marcar que tiene datos completos
@@ -1716,6 +2632,139 @@ function initializeCacheSystem() {
     }, 5 * 60 * 1000); // 5 minutos
     
     console.log('✅ CACHE SYSTEM: Sistema inicializado correctamente');
+}
+
+// ========== FUNCIÓN PARA ALTERNAR PROVEEDORES DE MAPA ==========
+
+/**
+ * Alterna entre Google Maps y OpenStreetMaps en el iframe embebido
+ * @param {HTMLElement} button - El botón que activó la función
+ */
+function toggleMapProvider(button) {
+    const googleUrl = button.dataset.googleUrl;
+    const osmUrl = button.dataset.osmUrl;
+    
+    if (!googleUrl || !osmUrl) {
+        console.warn('⚠️ TOGGLE MAP: URLs no disponibles');
+        return;
+    }
+    
+    // Buscar el iframe en la misma sección
+    const iframe = button.closest('.modal-section').querySelector('iframe');
+    if (!iframe) {
+        console.warn('⚠️ TOGGLE MAP: iframe no encontrado');
+        return;
+    }
+    
+    const currentSrc = iframe.src;
+    let newSrc, newProvider;
+    
+    // Determinar qué mapa mostrar
+    if (currentSrc.includes('openstreetmap.org')) {
+        // Cambiar a Google Maps
+        // Extraer coordenadas del OSM URL actual
+        const coords = extractCoordsFromOSMEmbed(currentSrc);
+        if (coords) {
+            newSrc = `https://maps.google.com/maps?q=${coords.lat},${coords.lng}&z=15&output=embed`;
+            newProvider = 'Google Maps';
+        } else {
+            console.warn('⚠️ TOGGLE MAP: No se pudieron extraer coordenadas de OSM');
+            return;
+        }
+    } else {
+        // Cambiar a OpenStreetMaps
+        // Extraer coordenadas del Google Maps URL
+        const coords = extractCoordsFromGoogleMapsUrl(googleUrl);
+        if (coords) {
+            newSrc = `https://www.openstreetmap.org/export/embed.html?bbox=${coords.lng-0.01},${coords.lat-0.01},${coords.lng+0.01},${coords.lat+0.01}&layer=mapnik&marker=${coords.lat},${coords.lng}`;
+            newProvider = 'OpenStreetMaps';
+        } else {
+            console.warn('⚠️ TOGGLE MAP: No se pudieron extraer coordenadas de Google Maps');
+            return;
+        }
+    }
+    
+    // Cambiar el iframe y actualizar el botón
+    iframe.src = newSrc;
+    button.innerHTML = `<i class="fas fa-exchange-alt mr-1"></i>Cambiar a ${newProvider === 'Google Maps' ? 'OSM' : 'Google'}`;
+    
+    // Actualizar las coordenadas mostradas
+    const coords = newProvider === 'Google Maps' ? 
+        extractCoordsFromGoogleMapsUrl(googleUrl) : 
+        extractCoordsFromOSMUrl(osmUrl);
+    
+    if (coords) {
+        const coordsDisplay = button.closest('.modal-section').querySelector('.font-mono');
+        if (coordsDisplay) {
+            coordsDisplay.textContent = `📍 ${coords.lat.toFixed(6)}, ${coords.lng.toFixed(6)}`;
+        }
+    }
+    
+    console.log(`🗺️ MAP TOGGLE: Cambiado a ${newProvider}`);
+}
+
+/**
+ * Extrae coordenadas de un URL de Google Maps
+ * Formato esperado: https://www.google.com/maps/place/4.7113151,-74.2269883
+ * @param {string} url - URL de Google Maps
+ * @returns {Object|null} - Objeto con lat y lng o null
+ */
+function extractCoordsFromGoogleMapsUrl(url) {
+    console.log('🔍 COORDS: Extrayendo coordenadas de Google Maps URL:', url);
+    
+    // Patrón para URLs como: https://www.google.com/maps/place/4.7113151,-74.2269883
+    const match = url.match(/place\/(-?\d+\.\d+),(-?\d+\.\d+)/);
+    if (match) {
+        const coords = {
+            lat: parseFloat(match[1]),
+            lng: parseFloat(match[2])
+        };
+        console.log('✅ COORDS: Google Maps coordenadas extraídas:', coords);
+        return coords;
+    }
+    
+    console.warn('⚠️ COORDS: No se pudieron extraer coordenadas de Google Maps URL');
+    return null;
+}
+
+/**
+ * Extrae coordenadas de un URL de OpenStreetMaps
+ * Formato esperado: https://www.openstreetmap.org/?mlat=4.7113151&mlon=-74.2269883&zoom=15
+ * @param {string} url - URL de OpenStreetMaps
+ * @returns {Object|null} - Objeto con lat y lng o null
+ */
+function extractCoordsFromOSMUrl(url) {
+    console.log('🔍 COORDS: Extrayendo coordenadas de OSM URL:', url);
+    
+    // Patrón para URLs como: https://www.openstreetmap.org/?mlat=4.7113151&mlon=-74.2269883&zoom=15
+    const match = url.match(/mlat=(-?\d+\.\d+).*mlon=(-?\d+\.\d+)/);
+    if (match) {
+        const coords = {
+            lat: parseFloat(match[1]),
+            lng: parseFloat(match[2])
+        };
+        console.log('✅ COORDS: OSM coordenadas extraídas:', coords);
+        return coords;
+    }
+    
+    console.warn('⚠️ COORDS: No se pudieron extraer coordenadas de OSM URL');
+    return null;
+}
+
+/**
+ * Extrae coordenadas de un URL embed de OpenStreetMaps
+ * @param {string} embedUrl - URL embed de OSM
+ * @returns {Object|null} - Objeto con lat y lng o null
+ */
+function extractCoordsFromOSMEmbed(embedUrl) {
+    const match = embedUrl.match(/marker=(-?\d+\.\d+),(-?\d+\.\d+)/);
+    if (match) {
+        return {
+            lat: parseFloat(match[1]),
+            lng: parseFloat(match[2])
+        };
+    }
+    return null;
 }
 
 // ========== FUNCIONES DE CONSOLA PARA DEBUG ==========
