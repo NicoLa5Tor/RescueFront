@@ -37,8 +37,226 @@
     <link href="{{ url_for('static', filename='css/animations.css') }}" rel="stylesheet">
     
     {% block extra_css %}{% endblock %}
+    
+    <!-- RESCUE Loader Styles -->
+    <style>
+        /* Particles Animation */
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: radial-gradient(circle, #60a5fa, #3b82f6);
+            border-radius: 50%;
+            animation: float var(--duration) infinite linear;
+            animation-delay: var(--delay);
+            left: var(--x);
+            top: var(--y);
+            opacity: 0.6;
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px) scale(1);
+                opacity: 0.6;
+            }
+            50% {
+                transform: translateY(-20px) scale(1.2);
+                opacity: 1;
+            }
+        }
+        
+        /* RESCUE Letters */
+        .rescue-letter {
+            font-size: 4rem;
+            font-weight: 900;
+            color: transparent;
+            background: linear-gradient(45deg, #60a5fa, #06b6d4, #3b82f6);
+            background-clip: text;
+            -webkit-background-clip: text;
+            margin: 0 0.1em;
+            opacity: 0;
+            transform: translateY(100px) rotateX(90deg);
+            animation: letterDrop 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+            animation-delay: var(--delay);
+            text-shadow: 0 0 30px rgba(96, 165, 250, 0.5);
+        }
+        
+        @keyframes letterDrop {
+            0% {
+                opacity: 0;
+                transform: translateY(100px) rotateX(90deg) scale(0.3);
+            }
+            50% {
+                opacity: 0.8;
+                transform: translateY(-10px) rotateX(0deg) scale(1.1);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) rotateX(0deg) scale(1);
+            }
+        }
+        
+        /* Subtitle Animation */
+        .rescue-subtitle {
+            animation: subtitleFade 1s ease-out 1.2s forwards;
+        }
+        
+        @keyframes subtitleFade {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Progress Bar Glow */
+        .progress-fill {
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 20px rgba(96, 165, 250, 0.6);
+        }
+        
+        .progress-glow {
+            animation: progressGlow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes progressGlow {
+            from {
+                opacity: 0.3;
+                transform: scaleX(1);
+            }
+            to {
+                opacity: 0.8;
+                transform: scaleX(1.05);
+            }
+        }
+        
+        /* Loading Dots */
+        .loading-dots .dot {
+            animation: dotPulse 1.5s infinite;
+        }
+        
+        .loading-dots .dot:nth-child(1) { animation-delay: 0s; }
+        .loading-dots .dot:nth-child(2) { animation-delay: 0.3s; }
+        .loading-dots .dot:nth-child(3) { animation-delay: 0.6s; }
+        
+        @keyframes dotPulse {
+            0%, 60%, 100% {
+                opacity: 0.3;
+                transform: scale(1);
+            }
+            30% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+        }
+        
+        /* Loading Text */
+        .loading-text {
+            animation: textPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes textPulse {
+            0%, 100% {
+                opacity: 0.7;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .rescue-letter {
+                font-size: 2.5rem;
+                margin: 0 0.05em;
+            }
+            
+            .progress-bar {
+                width: 16rem !important;
+            }
+        }
+        
+        /* Loader Hide Animation */
+        #rescue-loader {
+            transition: opacity 1s ease-out, transform 1s ease-out;
+        }
+        
+        #rescue-loader.hiding {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        
+        /* Disable scroll during loading */
+        body.loading {
+            overflow: hidden !important;
+            height: 100vh !important;
+        }
+    </style>
 </head>
 <body>
+    <!-- RESCUE Loading Screen -->
+    <div id="rescue-loader" class="fixed inset-0 bg-gradient-to-br from-gray-900 via-blue-900 to-black z-[9999] flex items-center justify-center overflow-hidden">
+        <!-- Background particles -->
+        <div class="absolute inset-0">
+            <div class="particle" style="--delay: 0s; --duration: 8s; --x: 10%; --y: 20%;"></div>
+            <div class="particle" style="--delay: 1s; --duration: 6s; --x: 80%; --y: 10%;"></div>
+            <div class="particle" style="--delay: 2s; --duration: 7s; --x: 15%; --y: 70%;"></div>
+            <div class="particle" style="--delay: 0.5s; --duration: 9s; --x: 90%; --y: 80%;"></div>
+            <div class="particle" style="--delay: 1.5s; --duration: 5s; --x: 50%; --y: 90%;"></div>
+        </div>
+        
+        <!-- Firma personal en esquina inferior derecha -->
+        <div class="absolute bottom-4 right-4 z-20">
+            <div class="developer-signature opacity-60 hover:opacity-100 transition-opacity duration-300">
+                <p class="text-white/50 text-xs font-mono tracking-wide">
+                    <span class="text-blue-300">By</span> 
+                    <span class="text-white font-semibold">NicoLa5Tor</span>
+                </p>
+            </div>
+        </div>
+        
+        <div class="text-center relative z-10">
+            <!-- RESCUE Letters Animation (EDITABLES AQUÍ) -->
+            <div class="rescue-letters flex justify-center items-center mb-8">
+                <span class="rescue-letter" data-letter="R" style="--delay: 0.1s;">R</span>
+                <span class="rescue-letter" data-letter="E" style="--delay: 0.2s;">E</span>
+                <span class="rescue-letter" data-letter="S" style="--delay: 0.3s;">S</span>
+                <span class="rescue-letter" data-letter="C" style="--delay: 0.4s;">C</span>
+                <span class="rescue-letter" data-letter="U" style="--delay: 0.5s;">U</span>
+                <span class="rescue-letter" data-letter="E" style="--delay: 0.6s;">E</span>
+            </div>
+            
+            <!-- Subtitle -->
+            <div class="rescue-subtitle mb-6 opacity-0">
+                <p class="text-blue-300 text-lg font-light tracking-widest">SISTEMA DE EMERGENCIAS</p>
+                <p class="text-white/60 text-sm mt-1">Tecnología IoT • Inteligencia Artificial</p>
+            </div>
+            
+            <!-- Loading Progress -->
+            <div class="loading-progress mb-4">
+                <div class="progress-container relative">
+                    <div class="progress-bar bg-gray-800/50 h-2 w-80 mx-auto rounded-full overflow-hidden backdrop-blur-sm border border-blue-500/20">
+                        <div class="progress-fill bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 h-full w-0 rounded-full relative">
+                            <div class="progress-glow absolute inset-0 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full blur-sm opacity-50"></div>
+                        </div>
+                    </div>
+                    <div class="progress-percentage text-white/70 text-xs mt-2 font-mono">0%</div>
+                </div>
+                <p class="loading-text text-white/70 text-sm mt-4 transition-all duration-500">Inicializando sistema de emergencias...</p>
+            </div>
+            
+            <!-- Loading dots -->
+            <div class="loading-dots flex justify-center space-x-1 mt-4">
+                <div class="dot w-2 h-2 bg-blue-400 rounded-full opacity-30"></div>
+                <div class="dot w-2 h-2 bg-blue-400 rounded-full opacity-30"></div>
+                <div class="dot w-2 h-2 bg-blue-400 rounded-full opacity-30"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- GSAP ScrollSmoother Wrapper -->
     <div id="gsap-smoother-wrapper">
         <div id="gsap-smoother-content">

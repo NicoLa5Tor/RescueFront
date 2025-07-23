@@ -1,3 +1,92 @@
+document.addEventListener('DOMContentLoaded', function() {
+    var loader = document.getElementById('rescue-loader');
+    var progressBar = document.querySelector('.progress-fill');
+    var progressPercentage = document.querySelector('.progress-percentage');
+    var loadingText = document.querySelector('.loading-text');
+    var body = document.body;
+    var progress = 0;
+    
+    var loadingMessages = [
+        'Inicializando sistema de emergencias...',
+        'Cargando módulos de seguridad...',
+        'Conectando con la base de datos...',
+        'Conectando con red IoT...',
+        'Preparando interfaz GSAP...',
+        'Finalizando carga...'
+    ];
+    var messageIndex = 0;
+
+    // Disable scrolling completely
+    body.classList.add('loading');
+    body.style.overflow = 'hidden';
+    body.style.position = 'fixed';
+    body.style.width = '100%';
+
+    // Change loading messages
+    var messageInterval = setInterval(function() {
+        if (messageIndex < loadingMessages.length - 1 && progress < 90) {
+            messageIndex++;
+            loadingText.innerText = loadingMessages[messageIndex];
+        }
+    }, 1000);
+
+    // Simulated loading progress
+    var loadingInterval = setInterval(function() {
+        progress += Math.random() * 8 + 2; // More consistent progress
+        if (progress >= 100) progress = 100;
+
+        // Update visual progress
+        progressBar.style.width = progress + '%';
+        progressPercentage.innerText = Math.floor(progress) + '%';
+
+        if (progress === 100) {
+            clearInterval(loadingInterval);
+            clearInterval(messageInterval);
+            loadingText.innerText = 'Carga completada!';
+            
+            setTimeout(function() {
+                // Hide loader
+                loader.classList.add('hiding');
+                
+                // Enable scrolling after animation
+                setTimeout(function() {
+                    loader.style.display = 'none';
+                    body.classList.remove('loading');
+                    body.style.overflow = '';
+                    body.style.position = '';
+                    body.style.width = '';
+                }, 1000);
+            }, 800);
+        }
+    }, 250);
+});
+
+// Animate RESCUE letters on load
+window.onload = function() {
+    var letters = document.querySelectorAll('.rescue-letter');
+    letters.forEach(function(letter, index) {
+        setTimeout(function() {
+            letter.classList.add('active');
+        }, index * 400); // Stagger timing for letters
+    });
+};
+
+/* CSS (In case you need to put it in CSS file instead of inline)
+.rescue-letter {
+    font-size: 2rem;
+    font-weight: bold;
+    color: white;
+    opacity: 0;
+    transform: translateY(100px);
+    transition: transform 0.6s ease-out, opacity 0.6s ease-out;
+}
+
+.rescue-letter.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+*/
+
 // GSAP Main Controller - Instancia Global
 (function() {
     'use strict';
