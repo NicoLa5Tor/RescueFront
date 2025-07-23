@@ -5,7 +5,6 @@
 <link href="{{ url_for('static', filename='css/gsap_css/clamp.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/gsap_css/hero.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/gsap_css/tunnel.css') }}" rel="stylesheet">
-<link href="{{ url_for('static', filename='css/gsap_css/contact.css') }}" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
@@ -25,8 +24,7 @@
 
 <!-- Contact Section -->
 <section id="contact-us" class="relative min-h-screen">
-{% include 'GSAP_Templates/contact.html' %}
-
+{% include 'contact/contact-main.html' %}
 </section>
 {% endblock %}
 
@@ -43,6 +41,9 @@
 <script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/68819/UnrealBloomPass.js"></script>
 
 <script type="module" src="{{ url_for('static', filename='js/gsap_js/tunnel.js') }}"></script>
+
+<!-- Contact Module CSS -->
+<link href="{{ url_for('static', filename='css/gsap_css/contact.css') }}" rel="stylesheet">
 <script type="module" src="{{ url_for('static', filename='js/gsap_js/contact.js') }}"></script>
 
 <script>
