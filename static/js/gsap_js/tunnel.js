@@ -187,7 +187,7 @@
       bumpMap: mapHeight,
       bumpScale: -.03,
       specular: 0x000000,
-      color: isMobile() ? 0x4A90E2 : 0xffffff // Azul en móvil, blanco en PC para que la textura se vea
+      color: 0xffffff // Color uniforme tanto en móvil como en PC
     });
 
     //Create a mesh
@@ -202,7 +202,7 @@
       linewidth: 2,
       opacity: .2,
       transparent: 1,
-      color: isMobile() ? 0x4A90E2 : 0xffffff // Azul en móvil, blanco en PC
+      color: 0xffffff // Color uniforme tanto en móvil como en PC
     } );
 
     var wireframe = new THREE.LineSegments( geo, mat );
