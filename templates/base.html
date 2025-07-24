@@ -284,6 +284,11 @@
             opacity: 0;
         }
         
+        #simple-preloader.fade-out .progress-container {
+            transform: translateY(15px);
+            opacity: 0;
+        }
+        
         /* Mejora en la transición de las letras RESCUE durante el fade-out */
         .rescue-letters {
             transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -291,6 +296,28 @@
         
         .rescue-subtitle {
             transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s;
+        }
+        
+        .progress-container {
+            transition: all 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.1s;
+        }
+        
+        /* Animación de aparición de la barra de progreso */
+        .progress-container {
+            animation: progressFadeIn 0.8s ease-out 1.5s forwards;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        
+        @keyframes progressFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
         /* Disable scroll during loading */
@@ -436,6 +463,17 @@
             <div class="rescue-subtitle mb-6">
                 <p class="text-blue-300 text-lg font-light tracking-widest">SISTEMA DE EMERGENCIAS</p>
                 <p class="text-white/60 text-sm mt-1">Tecnología IoT • Inteligencia Artificial</p>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div class="progress-container mb-4">
+                <div class="progress-bar bg-white/10 rounded-full h-2 w-80 mx-auto overflow-hidden backdrop-blur-sm">
+                    <div class="progress-fill bg-gradient-to-r from-blue-400 to-cyan-400 h-full rounded-full transition-all duration-300 ease-out" style="width: 0%;"></div>
+                </div>
+                <div class="progress-text mt-3">
+                    <p class="text-white/70 text-sm text-center loading-message">Inicializando sistema...</p>
+                    <p class="text-blue-300 text-xs text-center mt-1 progress-percentage">0%</p>
+                </div>
             </div>
         </div>
     </div>

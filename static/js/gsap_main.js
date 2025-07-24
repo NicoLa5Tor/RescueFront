@@ -200,10 +200,49 @@ function waitForStylesAndHidePreloader() {
         return;
     }
     
-    console.log('🎬 SIMPLE PRELOADER: Iniciado en página principal - Con letras RESCUE');
+    console.log('🎬 SIMPLE PRELOADER: Iniciado en página principal - Con letras RESCUE y barra de progreso');
+    
+    // ============ SISTEMA DE BARRA DE PROGRESO ============
+    const progressBar = simplePreloader.querySelector('.progress-fill');
+    const progressText = simplePreloader.querySelector('.loading-message');
+    const progressPercentage = simplePreloader.querySelector('.progress-percentage');
+    
+    let currentProgress = 0;
+    
+    const progressMessages = [
+        'Inicializando sistema...',
+        'Cargando estilos CSS...',
+        'Cargando scripts JavaScript...',
+        'Inicializando GSAP...',
+        'Preparando interfaz...',
+        'Finalizando carga...'
+    ];
+    
+    function updateProgress(progress, message) {
+        currentProgress = Math.min(progress, 100);
+        
+        if (progressBar) {
+            progressBar.style.width = currentProgress + '%';
+        }
+        
+        if (progressPercentage) {
+            progressPercentage.textContent = Math.floor(currentProgress) + '%';
+        }
+        
+        if (progressText && message) {
+            progressText.textContent = message;
+        }
+        
+        console.log(`📊 PROGRESO: ${Math.floor(currentProgress)}% - ${message || 'Cargando...'}`);
+    }
+    
+    // Progreso inicial
+    updateProgress(5, progressMessages[0]);
     
     // Función para verificar si todos los estilos CSS se han cargado
     function checkStylesLoaded() {
+        updateProgress(15, progressMessages[1]); // "Cargando estilos CSS..."
+        
         const links = document.querySelectorAll('link[rel="stylesheet"]');
         let loadedCount = 0;
         let totalLinks = links.length;
@@ -211,6 +250,7 @@ function waitForStylesAndHidePreloader() {
         // Si no hay links CSS, continuar inmediatamente
         if (totalLinks === 0) {
             console.log('🎨 ESTILOS: No hay enlaces CSS externos detectados');
+            updateProgress(35, 'Estilos CSS listos');
             return Promise.resolve();
         }
         
@@ -220,6 +260,7 @@ function waitForStylesAndHidePreloader() {
             function checkComplete() {
                 if (loadedCount >= totalLinks) {
                     console.log('✅ ESTILOS: Todos los archivos CSS cargados correctamente');
+                    updateProgress(35, 'Estilos CSS cargados');
                     resolve();
                 }
             }
@@ -229,12 +270,22 @@ function waitForStylesAndHidePreloader() {
                 if (link.sheet) {
                     loadedCount++;
                     console.log(`✅ CSS ${index + 1}/${totalLinks}: ${link.href.split('/').pop()} ya estaba cargado`);
+                    
+                    // Actualizar progreso por cada archivo CSS cargado
+                    const cssProgress = 15 + (loadedCount / totalLinks) * 20; // 15% a 35%
+                    updateProgress(cssProgress);
+                    
                     checkComplete();
                 } else {
                     // Esperar a que el link se cargue
                     link.addEventListener('load', function() {
                         loadedCount++;
                         console.log(`✅ CSS ${loadedCount}/${totalLinks}: ${this.href.split('/').pop()} cargado`);
+                        
+                        // Actualizar progreso por cada archivo CSS cargado
+                        const cssProgress = 15 + (loadedCount / totalLinks) * 20; // 15% a 35%
+                        updateProgress(cssProgress);
+                        
                         checkComplete();
                     });
                     
@@ -242,6 +293,11 @@ function waitForStylesAndHidePreloader() {
                     link.addEventListener('error', function() {
                         loadedCount++; // Contar como "cargado" para no bloquear
                         console.warn(`⚠️ CSS ${loadedCount}/${totalLinks}: Error cargando ${this.href.split('/').pop()}`);
+                        
+                        // Actualizar progreso incluso en caso de error
+                        const cssProgress = 15 + (loadedCount / totalLinks) * 20; // 15% a 35%
+                        updateProgress(cssProgress);
+                        
                         checkComplete();
                     });
                 }
@@ -251,6 +307,7 @@ function waitForStylesAndHidePreloader() {
             setTimeout(() => {
                 if (loadedCount < totalLinks) {
                     console.warn(`⚠️ ESTILOS: Timeout - Solo ${loadedCount}/${totalLinks} archivos CSS cargados`);
+                    updateProgress(35, 'Estilos CSS listos (timeout)');
                     resolve();
                 }
             }, 3000);
@@ -259,65 +316,28 @@ function waitForStylesAndHidePreloader() {
     
     // Función para verificar si todos los archivos JavaScript se han cargado
     function checkScriptsLoaded() {
-        const scripts = document.querySelectorAll('script[src]');
-        let loadedCount = 0;
-        let totalScripts = scripts.length;
-        
-        // Si no hay scripts externos, continuar inmediatamente
-        if (totalScripts === 0) {
-            console.log('📜 SCRIPTS: No hay scripts externos detectados');
-            return Promise.resolve();
-        }
-        
-        console.log(`📜 SCRIPTS: Verificando carga de ${totalScripts} archivos JavaScript...`);
+        updateProgress(40, progressMessages[2]); // "Cargando scripts JavaScript..."
         
         return new Promise((resolve) => {
-            function checkComplete() {
-                if (loadedCount >= totalScripts) {
-                    console.log('✅ SCRIPTS: Todos los archivos JavaScript cargados correctamente');
-                    resolve();
-                }
-            }
-            
-            scripts.forEach((script, index) => {
-                // Verificar si el script ya está cargado
-                if (script.readyState === 'complete' || script.readyState === 'loaded') {
-                    loadedCount++;
-                    console.log(`✅ JS ${index + 1}/${totalScripts}: ${script.src.split('/').pop()} ya estaba cargado`);
-                    checkComplete();
-                } else {
-                    // Esperar a que el script se cargue
-                    script.addEventListener('load', function() {
-                        loadedCount++;
-                        console.log(`✅ JS ${loadedCount}/${totalScripts}: ${this.src.split('/').pop()} cargado`);
-                        checkComplete();
-                    });
-                    
-                    // Manejar errores de carga
-                    script.addEventListener('error', function() {
-                        loadedCount++; // Contar como "cargado" para no bloquear
-                        console.warn(`⚠️ JS ${loadedCount}/${totalScripts}: Error cargando ${this.src.split('/').pop()}`);
-                        checkComplete();
-                    });
-                }
-            });
-            
-            // Timeout de seguridad (5 segundos máximo para JS)
+            // Usar un enfoque más simple - simplemente esperar un tiempo fijo
+            // ya que la mayoría de scripts ya están cargados cuando el DOM está listo
             setTimeout(() => {
-                if (loadedCount < totalScripts) {
-                    console.warn(`⚠️ SCRIPTS: Timeout - Solo ${loadedCount}/${totalScripts} archivos JS cargados`);
-                    resolve();
-                }
-            }, 5000);
+                updateProgress(70, 'Scripts JavaScript cargados');
+                console.log('✅ SCRIPTS: Verificación completada');
+                resolve();
+            }, 500);
         });
     }
     
     // Función para esperar a que GSAP esté completamente inicializado
     function checkGSAPReady() {
+        updateProgress(75, progressMessages[3]); // "Inicializando GSAP..."
+        
         return new Promise((resolve) => {
             // Si GSAP ya está disponible
             if (window.gsap && window.ScrollTrigger && window.GSAPMain) {
                 console.log('✅ GSAP: Ya está completamente inicializado');
+                updateProgress(90, 'GSAP inicializado');
                 resolve();
                 return;
             }
@@ -327,12 +347,14 @@ function waitForStylesAndHidePreloader() {
             // Listener para cuando GSAP se inicialice
             window.addEventListener('gsap:initialized', function() {
                 console.log('✅ GSAP: Inicialización completa detectada');
+                updateProgress(90, 'GSAP inicializado');
                 resolve();
             }, { once: true });
             
             // Timeout de seguridad (3 segundos)
             setTimeout(() => {
                 console.warn('⚠️ GSAP: Timeout en inicialización, continuando...');
+                updateProgress(90, 'GSAP listo (timeout)');
                 resolve();
             }, 3000);
         });
@@ -345,6 +367,8 @@ function waitForStylesAndHidePreloader() {
         checkGSAPReady()
     ]).then(() => {
         console.log('🎆 PRELOADER: Todos los recursos cargados (CSS + JS + GSAP)');
+        
+        updateProgress(100, progressMessages[5]); // "Finalizando carga..."
         
         // Esperar un tick adicional para que los event listeners se registren
         setTimeout(() => {
