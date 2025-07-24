@@ -111,25 +111,34 @@
                     }
                 };
                 
+                // Variable para controlar si ya se ejecutó el reveal
+                let revealExecuted = false;
+                
                 // Ejecutar reveal después del preloader o inmediatamente si ya está en viewport
                 const checkAndExecuteReveal = () => {
+                    if (revealExecuted) return; // Evitar ejecuciones múltiples
+                    
                     const imagesContainer = document.querySelector('.images');
                     if (!imagesContainer) return;
                     
                     const rect = imagesContainer.getBoundingClientRect();
                     const isInViewport = rect.top < window.innerHeight && rect.bottom > 0;
                     
-                    if (isInViewport) {
-                        // Si ya está en viewport, ejecutar inmediatamente
-                        setTimeout(executeReveal, 1200);
+                    if (isInViewport || isMobile) {
+                        // En móvil siempre ejecutar inmediatamente para evitar bugs de scroll
+                        revealExecuted = true;
+                        setTimeout(executeReveal, isMobile ? 800 : 1200);
                     } else {
-                        // Si no está en viewport, usar ScrollTrigger
+                        // Solo usar ScrollTrigger en desktop
                         ScrollTrigger.create({
                             trigger: '.images',
                             start: "top 90%",
                             once: true,
                             onEnter: () => {
-                                executeReveal();
+                                if (!revealExecuted) {
+                                    revealExecuted = true;
+                                    executeReveal();
+                                }
                             }
                         });
                     }
@@ -215,29 +224,32 @@
                 
                 
                 
-                // Efecto parallax adicional en el heading
-                gsap.to('.heading', {
-                    yPercent: -50,
-                    ease: "none",
-                    scrollTrigger: {
-                        trigger: '.hero-clamp',
-                        start: "top top",
-                        end: "bottom top",
-                        scrub: 1
-                    }
-                });
-                
-                // Rotación sutil del SVG al hacer scroll
-                gsap.to('.clamp svg', {
-                    rotation: 5,
-                    ease: "none",
-                    scrollTrigger: {
-                        trigger: '.heading',
-                        start: "top center",
-                        end: "bottom center",
-                        scrub: 2
-                    }
-                });
+                // Efectos de parallax solo para desktop (evitar bugs en móvil)
+                if (!isMobile) {
+                    // Efecto parallax adicional en el heading
+                    gsap.to('.heading', {
+                        yPercent: -50,
+                        ease: "none",
+                        scrollTrigger: {
+                            trigger: '.hero-clamp',
+                            start: "top top",
+                            end: "bottom top",
+                            scrub: 1
+                        }
+                    });
+                    
+                    // Rotación sutil del SVG al hacer scroll
+                    gsap.to('.clamp svg', {
+                        rotation: 5,
+                        ease: "none",
+                        scrollTrigger: {
+                            trigger: '.heading',
+                            start: "top center",
+                            end: "bottom center",
+                            scrub: 2
+                        }
+                    });
+                }
                 
                 // Asegurar que el logo SVG sea visible si existe
                 if (document.querySelector('.logo svg')) {
