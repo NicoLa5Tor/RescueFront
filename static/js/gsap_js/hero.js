@@ -67,7 +67,7 @@
             
             // Ocultar elementos que se van a animar INMEDIATAMENTE
             gsap.set(['.title-word'], {
-                y: 100,
+                y: 30, // Reducido a 30px para coherencia con el espaciado aumentado
                 opacity: 0
             });
             
@@ -81,10 +81,11 @@
                 opacity: 0
             });
             
-            gsap.set(['.hero-buttons button'], {
-                y: 30,
-                opacity: 0
-            });
+            // BOTONES CTA COMENTADOS - No animar elementos que no existen
+            // gsap.set(['.hero-buttons button'], {
+            //     y: 30,
+            //     opacity: 0
+            // });
             
             gsap.set(['.hero-stats'], {
                 y: 20,
@@ -219,14 +220,14 @@
                 ease: "power2.out"
             }, "-=0.2")
             
-            // Botones CTA
-            .to('.hero-buttons button', {
-                y: 0,
-                opacity: 1,
-                duration: 0.6,
-                stagger: 0.1,
-                ease: "power2.out"
-            }, "-=0.3")
+            // Botones CTA - COMENTADO (botones removidos del HTML)
+            // .to('.hero-buttons button', {
+            //     y: 0,
+            //     opacity: 1,
+            //     duration: 0.6,
+            //     stagger: 0.1,
+            //     ease: "power2.out"
+            // }, "-=0.3")
             
             // Estadísticas
             .to('.hero-stats', {

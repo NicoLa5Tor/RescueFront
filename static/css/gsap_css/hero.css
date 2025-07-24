@@ -71,13 +71,71 @@
 
 /* Hero Title */
 .hero-title {
-    line-height: 1.1;
+    line-height: 1.45; /* Aumentado agresivamente a 1.45 */
+    overflow: visible; /* Asegurar que no se corte el contenido */
+    padding-bottom: 1.2rem; /* Mucho más espacio para descendentes */
+    margin-bottom: 0.8rem; /* Más separación del siguiente elemento */
 }
 
 .title-word {
     display: inline-block;
-    transform: translateY(100%);
-    opacity: 0;
+    /* Estados iniciales removidos - controlados por GSAP JavaScript */
+    overflow: visible; /* Permitir que las descendentes sean visibles */
+    padding-bottom: 0.6rem; /* Mucho más espacio individual */
+    margin-bottom: 6px; /* Más pixelitos para descendentes */
+    vertical-align: top; /* Alineación superior para evitar cortes */
+}
+
+/* Contenedor del título con más espacio */
+.hero-title .block {
+    overflow: visible;
+    padding-bottom: 0.8rem; /* Mucho más padding */
+    margin-bottom: 8px; /* Más espacio para bloques */
+}
+
+/* Contenedor específico para palabras con descendentes */
+.hero-title span {
+    overflow: visible !important;
+    padding-bottom: 0.5rem;
+    margin-bottom: 4px;
+    display: inline-block;
+}
+
+/* Espaciado responsivo para el título */
+@media (max-width: 1024px) {
+    .hero-title {
+        line-height: 1.5; /* Más espacio en tablet */
+        padding-bottom: 1.4rem;
+    }
+    
+    .title-word {
+        padding-bottom: 0.7rem;
+        margin-bottom: 8px;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-title {
+        line-height: 1.55; /* Aún más espacio en móvil */
+        padding-bottom: 1.6rem;
+    }
+    
+    .title-word {
+        padding-bottom: 0.8rem;
+        margin-bottom: 10px;
+    }
+}
+
+@media (max-width: 640px) {
+    .hero-title {
+        line-height: 1.6; /* Máximo espacio en móviles pequeños */
+        padding-bottom: 2rem;
+    }
+    
+    .title-word {
+        padding-bottom: 1rem;
+        margin-bottom: 12px;
+    }
 }
 
 .gradient-text {
