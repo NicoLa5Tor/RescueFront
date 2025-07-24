@@ -66,8 +66,21 @@
         })();
         */
         
-        // Log simple para confirmar que el preloader está deshabilitado
-        console.log('🌐 PRELOADER: Completamente deshabilitado - Solo spinner interno disponible');
+        // ============ DETECCIÓN TEMPRANA PARA EL PRELOADER SIMPLE ============
+        // Solo mostrar en la página principal, ocultar en todas las demás
+        (function() {
+            const currentPath = window.location.pathname;
+            const isHomePage = currentPath === '/' || currentPath === '';
+            
+            if (isHomePage) {
+                // Estamos en la página principal, añadir clase para mostrar preloader
+                document.documentElement.classList.add('show-simple-preloader');
+                console.log('🎬 PRELOADER: Habilitado para página principal');
+            } else {
+                // No estamos en página principal, asegurar que esté oculto
+                console.log(`🚫 PRELOADER: Deshabilitado para ruta: ${currentPath}`);
+            }
+        })();
     </script>
     
     <!-- Bootstrap CSS -->
@@ -240,6 +253,16 @@
         #rescue-loader.hiding {
             opacity: 0;
             transform: scale(0.95);
+        }
+        
+        /* PRELOADER SIMPLE - OCULTO POR DEFECTO EN TODAS LAS RUTAS */
+        #simple-preloader {
+            display: none !important;
+        }
+        
+        /* SOLO MOSTRAR preloader simple cuando el HTML tenga la clase 'show-simple-preloader' */
+        html.show-simple-preloader #simple-preloader {
+            display: flex !important;
         }
         
         /* Disable scroll during loading */

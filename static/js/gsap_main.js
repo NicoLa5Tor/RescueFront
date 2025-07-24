@@ -188,15 +188,16 @@
 }
 */
 
-// ============ PRELOADER SIMPLE - SOLO FONDO ============
-// Preloader minimalista que solo muestra el fondo y se oculta después de un tiempo
+// ============ PRELOADER SIMPLE - SOLO EN PÁGINA PRINCIPAL ============
+// Preloader minimalista que solo aparece en la ruta principal (/)
+// La visibilidad se controla por CSS mediante la clase 'show-simple-preloader'
 document.addEventListener('DOMContentLoaded', function() {
     const simplePreloader = document.getElementById('simple-preloader');
     
-    if (simplePreloader) {
-        console.log('🎬 SIMPLE PRELOADER: Iniciado - Solo fondo');
+    if (simplePreloader && document.documentElement.classList.contains('show-simple-preloader')) {
+        console.log('🎬 SIMPLE PRELOADER: Iniciado en página principal - Con letras RESCUE');
         
-        // Ocultar el preloader después de 1.5 segundos
+        // El preloader ya está visible por CSS, solo necesitamos ocultarlo después de 1.5 segundos
         setTimeout(function() {
             simplePreloader.style.opacity = '0';
             
