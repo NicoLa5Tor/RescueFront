@@ -104,8 +104,9 @@ a {
 }
 
 .img-clamp:hover {
-  transform: translateY(-5px) scale(1.02);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  /* Hover manejado por GSAP - no CSS */
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
 }
 
 

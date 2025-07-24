@@ -53,15 +53,15 @@
                     ease: "power3.out"
                 });
                 
-                // Animación reveal para las imágenes del clamp
+                // Animación reveal para las imágenes del clamp (más lenta y con delay)
                 gsap.fromTo('.img-clamp', 
                     {
                         opacity: 0,
-                        y: 80,
-                        scale: 0.8,
-                        rotationX: 25,
-                        rotationY: 10,
-                        filter: "blur(5px) brightness(0.7)"
+                        y: 120,
+                        scale: 0.7,
+                        rotationX: 35,
+                        rotationY: 15,
+                        filter: "blur(8px) brightness(0.5)"
                     },
                     {
                         opacity: 1,
@@ -70,17 +70,18 @@
                         rotationX: 0,
                         rotationY: 0,
                         filter: "blur(0px) brightness(1)",
-                        duration: 1.5,
-                        ease: "power4.out",
+                        duration: 2.5,
+                        ease: "power3.out",
+                        delay: 1.2, // Delay inicial para esperar después del preloader
                         stagger: {
-                            amount: 0.8,
+                            amount: 1.5, // Más tiempo entre cada imagen
                             from: "start",
                             grid: "auto"
                         },
                         scrollTrigger: {
                             trigger: '.images',
-                            start: "top 85%",
-                            end: "bottom 15%",
+                            start: "top 90%", // Trigger más temprano
+                            end: "bottom 10%",
                             toggleActions: "play none none reverse",
                             markers: false
                         }
@@ -90,15 +91,44 @@
                 // Animación de flotación sutil para las imágenes
                 gsap.to('.img-clamp', {
                     y: -10,
-                    duration: 2,
+                    duration: 3,
                     ease: "power2.inOut",
                     yoyo: true,
                     repeat: -1,
                     stagger: {
-                        amount: 0.5,
+                        amount: 0.8,
                         from: "random"
                     },
-                    delay: 1.5
+                    delay: 4 // Delay más largo para que se vea después del reveal
+                });
+                
+                // Animación de hover individual para cada imagen
+                gsap.utils.toArray('.img-clamp').forEach((img, index) => {
+                    let hoverTween;
+                    
+                    img.addEventListener('mouseenter', () => {
+                        hoverTween = gsap.to(img, {
+                            scale: 1.08,
+                            rotationY: 8,
+                            rotationX: -3,
+                            z: 50,
+                            duration: 0.6,
+                            ease: "power2.out",
+                            transformOrigin: "center center"
+                        });
+                    });
+                    
+                    img.addEventListener('mouseleave', () => {
+                        if (hoverTween) hoverTween.kill();
+                        gsap.to(img, {
+                            scale: 1,
+                            rotationY: 0,
+                            rotationX: 0,
+                            z: 0,
+                            duration: 0.4,
+                            ease: "power2.out"
+                        });
+                    });
                 });
                 
                 
