@@ -193,6 +193,35 @@
 // La visibilidad se controla por CSS mediante la clase 'show-simple-preloader'
 // Espera a que todos los estilos CSS se carguen antes de ocultarse
 
+// ============ FUNCIÓN PARA SCROLL AL INICIO ============
+// Esta función lleva el scroll suavemente a la posición (0,0) al finalizar el preloader
+function scrollToTop() {
+    console.log('📍 SCROLL: Iniciando scroll suave al inicio de la página (0,0)');
+    
+    // Usar diferentes métodos según disponibilidad
+    if (window.GSAPMain && window.GSAPMain.smoother) {
+        // Si ScrollSmoother está disponible, usarlo para scroll suave
+        window.GSAPMain.smoother.scrollTo(0, true);
+        console.log('✅ SCROLL: Usando ScrollSmoother para posición (0,0)');
+    } else if (window.gsap && window.gsap.to) {
+        // Si GSAP está disponible pero no ScrollSmoother, usar ScrollToPlugin
+        window.gsap.to(window, {
+            duration: 0.8,
+            scrollTo: { y: 0, x: 0 },
+            ease: "power2.out"
+        });
+        console.log('✅ SCROLL: Usando GSAP ScrollToPlugin para posición (0,0)');
+    } else {
+        // Fallback nativo del navegador
+        window.scrollTo({
+            top: 0,
+            left: 0,
+            behavior: 'smooth'
+        });
+        console.log('✅ SCROLL: Usando scrollTo nativo para posición (0,0)');
+    }
+}
+
 function waitForStylesAndHidePreloader() {
     const simplePreloader = document.getElementById('simple-preloader');
     
@@ -397,6 +426,11 @@ function waitForStylesAndHidePreloader() {
                     simplePreloader.classList.remove('fade-out');
                     // Remover la clase del HTML también
                     document.documentElement.classList.remove('show-simple-preloader');
+                    
+                    // ============ SCROLL AL INICIO AL TERMINAR EL PRELOADER ============
+                    // Llamar a la función scrollToTop para llevar la página al inicio
+                    scrollToTop();
+                    
                     console.log('✅ SIMPLE PRELOADER: Ocultado completamente con animación suave - Interfaz completamente funcional');
                 }, 1500); // 1.5 segundos para asegurar que la animación termine
                 
@@ -440,8 +474,13 @@ window.addEventListener('load', function() {
                 simplePreloader.classList.remove('fade-out');
                 // Remover la clase del HTML también
                 document.documentElement.classList.remove('show-simple-preloader');
+                
+                // ============ SCROLL AL INICIO TAMBIÉN EN EL RESPALDO ============
+                // Asegurar scroll al inicio también en el preloader de respaldo
+                scrollToTop();
+                
                 console.log('✅ PRELOADER RESPALDO: Ocultado completamente con animación suave');
-            }, 1500); // 1.5 segundos para asegurar que la animación termine
+            }, 1500); // 1.5 segundos pour asegurar que la animación termine
         }, 500);
     }
 });
