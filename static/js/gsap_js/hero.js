@@ -17,6 +17,9 @@
                 return;
             }
             
+            // IMPORTANTE: Establecer estados iniciales INMEDIATAMENTE para evitar flash
+            this.setInitialStates();
+            
             // Crear partículas solo si la pantalla es lo suficientemente grande
             if (window.innerWidth > 768) {
                 this.createParticles();
@@ -58,20 +61,65 @@
             }
         },
         
+        // Establecer estados iniciales inmediatamente
+        setInitialStates: function() {
+            console.log('🎭 HERO: Estableciendo estados iniciales');
+            
+            // Ocultar elementos que se van a animar INMEDIATAMENTE
+            gsap.set(['.title-word'], {
+                y: 100,
+                opacity: 0
+            });
+            
+            gsap.set(['.status-badge'], {
+                scale: 0,
+                opacity: 0
+            });
+            
+            gsap.set(['.hero-description'], {
+                y: 30,
+                opacity: 0
+            });
+            
+            gsap.set(['.hero-buttons button'], {
+                y: 30,
+                opacity: 0
+            });
+            
+            gsap.set(['.hero-stats'], {
+                y: 20,
+                opacity: 0
+            });
+            
+            gsap.set(['.hero-visual'], {
+                scale: 0.8,
+                opacity: 0
+            });
+            
+            // También ocultar el botón de login inicialmente
+            const loginButton = document.querySelector('a.status-badge[href="/login"]');
+            if (loginButton) {
+                gsap.set(loginButton, {
+                    scale: 0.8,
+                    opacity: 0
+                });
+            }
+            
+            console.log('✅ HERO: Estados iniciales establecidos');
+        },
+        
         // Configurar animaciones que se activan con scroll
         setupScrollTriggeredAnimations: function() {
             // Timeline principal que se activa cuando el hero es visible
-            const mainTl = this.gsapMain.createTimeline({
-                scrollTrigger: {
-                    trigger: '#hero',
-                    start: 'top 80%', // Empieza cuando el top del hero está al 80% del viewport
-                    end: 'center center',
-                    once: true, // Solo se ejecuta una vez
-                    onEnter: () => {
-                        if (!this.hasAnimated) {
-                            this.animateContent();
-                            this.hasAnimated = true;
-                        }
+            ScrollTrigger.create({
+                trigger: '#hero',
+                start: 'top 80%', // Empieza cuando el top del hero está al 80% del viewport
+                once: true, // Solo se ejecuta una vez
+                onEnter: () => {
+                    if (!this.hasAnimated) {
+                        console.log('🎬 HERO: Iniciando animaciones de entrada');
+                        this.animateContent();
+                        this.hasAnimated = true;
                     }
                 }
             });
@@ -131,74 +179,88 @@
         
         // Animar contenido
         animateContent: function() {
+            console.log('🎨 HERO: Creando timeline de animaciones');
+            
             // Timeline para las animaciones de entrada
-            const tl = this.gsapMain.createTimeline();
+            const tl = gsap.timeline();
             
-            // Resetear estados iniciales
-            gsap.set(['.title-word', '.status-badge', '.login-button-badge', '.hero-description', '.hero-buttons button', '.hero-stats', '.hero-visual'], {
-                clearProps: "all"
-            });
+            // NO resetear propiedades - usar los estados ya establecidos
             
+            // Animar títulos palabra por palabra
             tl.to('.title-word', {
                 y: 0,
                 opacity: 1,
                 duration: 0.8,
-                stagger: 0.1,
+                stagger: 0.15,
                 ease: "power3.out"
             })
-            .from('.status-badge', {
-                scale: 0,
-                opacity: 0,
+            
+            // Status badge
+            .to('.status-badge', {
+                scale: 1,
+                opacity: 1,
                 duration: 0.6,
                 ease: "back.out(1.7)"
-            }, "-=0.5")
-            .from('.login-button-badge', {
-                scale: 0.8,
-                opacity: 0,
-                duration: 0.6,
-                ease: "back.out(1.7)",
-                transformOrigin: "right top"
             }, "-=0.4")
-            .from('.hero-description', {
-                y: 20,
-                opacity: 0,
+            
+            // Botón de login
+            .to('a.status-badge[href="/login"]', {
+                scale: 1,
+                opacity: 1,
+                duration: 0.6,
+                ease: "back.out(1.7)"
+            }, "-=0.3")
+            
+            // Descripción
+            .to('.hero-description', {
+                y: 0,
+                opacity: 1,
                 duration: 0.8,
                 ease: "power2.out"
-            }, "-=0.3")
-            .from('.hero-buttons button', {
-                y: 20,
-                opacity: 0,
+            }, "-=0.2")
+            
+            // Botones CTA
+            .to('.hero-buttons button', {
+                y: 0,
+                opacity: 1,
                 duration: 0.6,
                 stagger: 0.1,
                 ease: "power2.out"
-            }, "-=0.4")
+            }, "-=0.3")
+            
+            // Estadísticas
             .to('.hero-stats', {
                 y: 0,
                 opacity: 1,
                 duration: 0.8,
                 ease: "power2.out"
             }, "-=0.2")
+            
+            // Visualización final
             .to('.hero-visual', {
                 scale: 1,
                 opacity: 1,
                 duration: 1,
                 ease: "back.out(1.7)"
-            }, "-=0.8");
+            }, "-=0.6");
             
             this.animations.push(tl);
             
-            // Animación continua del hub solo en desktop
+            // Animación continua del hub solo en desktop (con delay)
             if (window.innerWidth > 768) {
                 const hubAnim = gsap.to('.hub-core', {
                     boxShadow: '0 0 80px rgba(239, 68, 68, 0.5), inset 0 0 40px rgba(239, 68, 68, 0.2)',
                     duration: 2,
                     repeat: -1,
                     yoyo: true,
-                    ease: "power1.inOut"
+                    ease: "power1.inOut",
+                    delay: 1 // Esperar a que termine la animación principal
                 });
                 
                 this.animations.push(hubAnim);
             }
+            
+            console.log('✅ HERO: Timeline de animaciones creado');
         },
         
         // Setup interacciones mejoradas para táctil

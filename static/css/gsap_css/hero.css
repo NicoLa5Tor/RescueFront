@@ -391,13 +391,12 @@
     animation-delay: 2s;
 }
 
-/* Loading States */
+/* Loading States - Estados iniciales controlados por GSAP JavaScript */
+/* Los estados iniciales se establecen en hero.js para evitar flash */
 .hero-content > * {
-    opacity: 0;
-    transform: translateY(20px);
+    /* Estados iniciales removidos - controlados por GSAP */
 }
 
 .hero-visual {
-    opacity: 0;
-    transform: scale(0.8);
+    /* Estados iniciales removidos - controlados por GSAP */
 }
