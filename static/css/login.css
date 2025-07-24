@@ -433,7 +433,79 @@ body {
   }
 }
 
-/* Para pantallas muy pequeñas */
+/* Para tablets y móviles */
+@media (max-width: 768px) {
+  .lg\:grid-cols-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .glass-card {
+    margin-top: 2rem;
+    padding: 1rem 1.5rem;
+  }
+
+  .plane-wrapper {
+    width: 100px;
+    height: 32px;
+    margin-bottom: 1rem;
+  }
+
+  /* Mejoras para el header */
+  header {
+    padding: 0.75rem 0;
+  }
+
+  /* Ajustes de tamaños de texto para móvil */
+  .text-gradient {
+    font-size: 1.5rem;
+    line-height: 1.4;
+  }
+
+  /* Botón más grande en móvil */
+  #submitBtn {
+    padding: 0.875rem 1rem;
+    font-size: 0.9rem;
+    min-height: 48px;
+  }
+
+  /* Inputs más espaciosos */
+  .input-glass {
+    padding: 0.875rem 0.75rem 0.875rem 2.5rem;
+    font-size: 1rem;
+  }
+
+  /* Notificaciones más pequeñas */
+  .notification {
+    top: 1rem;
+    right: 1rem;
+    left: 1rem;
+    max-width: none;
+    font-size: 0.8rem;
+  }
+}
+
+/* Para móviles pequeños */
+@media (max-width: 480px) {
+  .glass-card {
+    padding: 1rem;
+    margin: 1rem 0.5rem;
+  }
+
+  .brand-logo {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .input-glass {
+    padding: 0.75rem 0.5rem 0.75rem 2.25rem;
+  }
+
+  #submitBtn {
+    padding: 0.75rem;
+    min-height: 44px;
+  }
+}
+
 @media (max-height: 600px) {
   .login-background {
     padding-bottom: 4rem;

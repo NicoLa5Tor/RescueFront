@@ -35,30 +35,30 @@
   </div>
 
   <!-- Contenedor principal -->
-  <div class="relative z-10 min-h-screen flex items-center justify-center px-3 sm:px-4 lg:px-6 pt-20 pb-16">
+  <div class="relative z-10 min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 pb-8 sm:pb-16">
     <div class="w-full max-w-6xl mx-auto">
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-center">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
         
         <!-- Panel de información -->
-        <div id="loginInfo" class="flex flex-col items-center lg:items-start text-center lg:text-left space-y-4 fade-in-up">
+        <div id="loginInfo" class="flex flex-col items-center lg:items-start text-center lg:text-left space-y-4 lg:space-y-6 fade-in-up order-2 lg:order-1">
           <div class="plane-wrapper">
-            <svg id="planeSvg" viewBox="0 0 180 60" class="w-32 h-12 lg:w-40 lg:h-16">
+            <svg id="planeSvg" viewBox="0 0 180 60" class="w-36 h-14 lg:w-40 lg:h-16">
               <path id="planePath" d="M10,50 Q90,0 170,50" />
             </svg>
-            <i id="planeIcon" class="fas fa-paper-plane plane-icon text-base lg:text-lg"></i>
+            <i id="planeIcon" class="fas fa-paper-plane plane-icon text-lg lg:text-xl"></i>
           </div>
-          <div class="space-y-3 max-w-lg lg:max-w-2xl">
-            <h2 class="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-gradient">
+          <div class="space-y-4 max-w-lg lg:max-w-2xl">
+            <h2 class="text-3xl lg:text-4xl xl:text-5xl font-bold text-gradient leading-tight">
               Bienvenido a <span id="infoHighlight" class="text-secondary-gradient">Rescue</span>
             </h2>
-            <p class="text-sm sm:text-base lg:text-lg xl:text-xl text-white/80 leading-relaxed">
+            <p class="text-base lg:text-lg xl:text-xl text-white/80 leading-relaxed">
               Accede para gestionar de forma segura tus recursos y empresas con la máxima confiabilidad.
             </p>
           </div>
         </div>
 
         <!-- Formulario de login -->
-        <div class="w-full max-w-sm mx-auto lg:max-w-md">
+        <div class="w-full max-w-sm mx-auto lg:max-w-md order-1 lg:order-2">
           <div id="loginCard" class="glass-card rounded-xl lg:rounded-2xl p-4 sm:p-6 lg:p-7 fade-in-up">
             
             <!-- Header del formulario -->
@@ -158,7 +158,7 @@
 </div>
 
 <!-- Contenedor de notificaciones -->
-<div id="notificationContainer" class="fixed top-4 right-4 z-50 space-y-2"></div>
+<div id="notificationContainer" class="fixed top-4 right-4 z-50 space-y-2 lg:right-4 max-w-xs lg:max-w-sm"></div>
 {% endblock %}
 {% block extra_js %}
 <script src="{{ url_for('static', filename='js/api-client.js') }}"></script>

@@ -109,18 +109,20 @@
     var cameraRotationProxyX = 3.14159;
     var cameraRotationProxyY = 0;
 
-    var fov = isMobile() ? 50 : 45; // Slightly wider FOV on mobile
+    // Ajustar FOV para alejar la vista en móvil
+    var fov = isMobile() ? 65 : 45; // FOV más amplio en móvil para alejar vista
     var camera = new THREE.PerspectiveCamera(fov, ww / wh, 0.001, 200);
     camera.rotation.y = cameraRotationProxyX;
     camera.rotation.z = cameraRotationProxyY;
 
     var c = new THREE.Group();
-    c.position.z = 400;
+    // Alejar más la cámara del túnel en móvil
+    c.position.z = isMobile() ? 420 : 400;
 
-    // Adjust camera position for mobile to center it in the tunnel
+    // Adjust camera position for mobile to give better perspective
     if (isMobile()) {
-      camera.position.y = -1; // Lower the camera slightly
-      camera.position.z = 2;  // Move camera forward a bit
+      camera.position.y = -0.5; // Posición vertical más centrada
+      camera.position.z = -3;   // Alejar la cámara hacia atrás para mejor perspectiva
     }
 
     c.add(camera);

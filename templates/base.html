@@ -182,6 +182,13 @@
         /* Loader Hide Animation */
         #rescue-loader {
             transition: opacity 1s ease-out, transform 1s ease-out;
+            /* OCULTO POR DEFECTO - solo se muestra si JavaScript lo determina */
+            display: none !important;
+        }
+        
+        /* Solo mostrar cuando JavaScript añada la clase 'show' */
+        #rescue-loader.show {
+            display: flex !important;
         }
         
         #rescue-loader.hiding {
@@ -215,6 +222,102 @@
         /* Prevenir pull-to-refresh en móvil */
         body.loading {
             overscroll-behavior-y: contain !important;
+        }
+        
+        /* ============ SPINNER INTERNO (Para navegación interna) ============ */
+        #internal-spinner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 8888; /* Menor que el preloader principal */
+            display: none;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.3s ease-in-out;
+        }
+        
+        #internal-spinner.show {
+            display: flex;
+            animation: spinnerFadeIn 0.3s ease-out;
+        }
+        
+        @keyframes spinnerFadeIn {
+            from {
+                opacity: 0;
+                backdrop-filter: blur(0px);
+            }
+            to {
+                opacity: 1;
+                backdrop-filter: blur(8px);
+            }
+        }
+        
+        /* Spinner principal */
+        .internal-spinner-ring {
+            display: inline-block;
+            position: relative;
+            width: 80px;
+            height: 80px;
+        }
+        
+        .internal-spinner-ring div {
+            box-sizing: border-box;
+            display: block;
+            position: absolute;
+            width: 64px;
+            height: 64px;
+            margin: 8px;
+            border: 6px solid rgba(96, 165, 250, 0.9);
+            border-radius: 50%;
+            animation: spinnerRotate 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+            border-color: rgba(96, 165, 250, 0.9) transparent transparent transparent;
+        }
+        
+        .internal-spinner-ring div:nth-child(1) { animation-delay: -0.45s; }
+        .internal-spinner-ring div:nth-child(2) { animation-delay: -0.3s; }
+        .internal-spinner-ring div:nth-child(3) { animation-delay: -0.15s; }
+        
+        @keyframes spinnerRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Texto del spinner */
+        .spinner-text {
+            margin-top: 20px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Container del spinner - Sin fondo, solo contenedor flex */
+        .spinner-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Responsive spinner */
+        @media (max-width: 768px) {
+            .internal-spinner-ring {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .internal-spinner-ring div {
+                width: 48px;
+                height: 48px;
+                margin: 6px;
+                border-width: 4px;
+            }
         }
     </style>
 </head>
@@ -276,6 +379,18 @@
                 <div class="dot w-2 h-2 bg-blue-400 rounded-full opacity-30"></div>
                 <div class="dot w-2 h-2 bg-blue-400 rounded-full opacity-30"></div>
             </div>
+        </div>
+    </div>
+
+    <!-- Internal Spinner (Para navegación interna/refresh) -->
+    <div id="internal-spinner">
+        <div class="spinner-container">
+            <div class="internal-spinner-ring">
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+            <div class="spinner-text">Cargando...</div>
         </div>
     </div>
 
@@ -510,6 +625,7 @@
         }, 1000);
         
         console.log('🔧 GLOBAL: Sistema completo de visibilidad de tarjetas inicializado');
+        
     });
     
     </script>

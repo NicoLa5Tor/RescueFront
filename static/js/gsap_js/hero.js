@@ -99,6 +99,34 @@
             });
             
             this.animations.push(fadeOutAnim);
+            
+            // Hacer que el botón de login se pegue a la parte superior al hacer scroll
+            const loginButton = document.querySelector('a.status-badge[href="/login"]');
+            if (loginButton) {
+                ScrollTrigger.create({
+                    trigger: '#hero',
+                    start: 'bottom top',
+                    end: '+=99999',
+                    onEnter: () => {
+                        // Cuando salimos del hero, hacer el botón fixed
+                        gsap.set(loginButton, {
+                            position: 'fixed',
+                            top: '1rem',
+                            right: '1rem',
+                            zIndex: 50
+                        });
+                    },
+                    onLeaveBack: () => {
+                        // Cuando volvemos al hero, restaurar posición absoluta
+                        gsap.set(loginButton, {
+                            position: 'absolute',
+                            top: '1rem',
+                            right: '1rem',
+                            zIndex: 50
+                        });
+                    }
+                });
+            }
         },
         
         // Animar contenido
@@ -107,7 +135,7 @@
             const tl = this.gsapMain.createTimeline();
             
             // Resetear estados iniciales
-            gsap.set(['.title-word', '.status-badge', '.hero-description', '.hero-buttons button', '.hero-stats', '.hero-visual'], {
+            gsap.set(['.title-word', '.status-badge', '.login-button-badge', '.hero-description', '.hero-buttons button', '.hero-stats', '.hero-visual'], {
                 clearProps: "all"
             });
             
@@ -124,6 +152,13 @@
                 duration: 0.6,
                 ease: "back.out(1.7)"
             }, "-=0.5")
+            .from('.login-button-badge', {
+                scale: 0.8,
+                opacity: 0,
+                duration: 0.6,
+                ease: "back.out(1.7)",
+                transformOrigin: "right top"
+            }, "-=0.4")
             .from('.hero-description', {
                 y: 20,
                 opacity: 0,

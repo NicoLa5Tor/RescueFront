@@ -6,6 +6,77 @@ document.addEventListener('DOMContentLoaded', function() {
     var body = document.body;
     var progress = 0;
     
+    // ============ SISTEMA DE DETECCIÓN DE PRIMERA CARGA ============
+    function shouldShowPreloader() {
+        try {
+            // 1. Verificar si ya se cargó en esta sesión
+            const sessionLoaded = sessionStorage.getItem('rescue_app_loaded');
+            if (sessionLoaded) {
+                console.log('🚫 PRELOADER: Ya cargado en esta sesión - omitiendo');
+                return false;
+            }
+            
+            // 2. Detectar tipo de navegación usando Performance API
+            const navigation = performance.getEntriesByType('navigation')[0];
+            if (navigation) {
+                const navType = navigation.type;
+                console.log(`🔍 PRELOADER: Tipo de navegación detectado: ${navType}`);
+                
+                // Solo mostrar en navegación inicial, no en refresh/back/forward
+                if (navType === 'reload' || navType === 'back_forward') {
+                    console.log('🚫 PRELOADER: Refresh o navegación hacia atrás - omitiendo');
+                    return false;
+                }
+            }
+            
+            // 3. Verificar rutas donde debe aparecer el preloader
+            const currentPath = window.location.pathname;
+            const preloaderRoutes = [
+                '/',
+                '/login',
+                '/dashboard',
+                '/admin/dashboard',
+                '/admin/super_admin_dashboard',
+                '/empresa/dashboard'
+            ];
+            
+            const shouldShow = preloaderRoutes.some(route => 
+                currentPath === route || currentPath.startsWith(route)
+            );
+            
+            if (!shouldShow) {
+                console.log(`🚫 PRELOADER: Ruta ${currentPath} no requiere preloader`);
+                return false;
+            }
+            
+            // 4. Si llegamos aquí, mostrar preloader y marcar sesión
+            sessionStorage.setItem('rescue_app_loaded', 'true');
+            console.log('✅ PRELOADER: Primera carga detectada - iniciando secuencia');
+            return true;
+            
+        } catch (error) {
+            console.error('❌ PRELOADER: Error en detección:', error);
+            // En caso de error, mostrar preloader por seguridad
+            return true;
+        }
+    }
+    
+    // Verificar si debe mostrar el preloader
+    if (!shouldShowPreloader()) {
+        // NO mostrar spinner aquí - ya se maneja por el interceptor
+        // Solo registrar que no necesitamos preloader completo
+        console.log('⚡ PRELOADER: Permanece oculto - navegación controlada por interceptor');
+        return; // Salir de la función completamente
+    }
+    
+    // ============ MOSTRAR PRELOADER SOLO EN PRIMERA CARGA ============
+    console.log('🎬 PRELOADER: Mostrando para primera carga');
+    
+    // Añadir clase 'show' para hacer visible el preloader
+    loader.classList.add('show');
+    
+    // ============ CONTINÚA CON LA LÓGICA NORMAL DEL PRELOADER ============
+    
     var loadingMessages = [
         'Inicializando sistema de emergencias...',
         'Cargando módulos de seguridad...',
@@ -75,6 +146,8 @@ document.addEventListener('DOMContentLoaded', function() {
             clearInterval(messageInterval);
             loadingText.innerText = 'Carga completada!';
             
+            console.log('🎯 PRELOADER: Secuencia completa finalizada - iniciando ocultación');
+            
             setTimeout(function() {
                 // Hide loader
                 loader.classList.add('hiding');
@@ -99,6 +172,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                         console.log('✌️ Mobile scroll prevention deactivated');
                     }
+                    
+                    console.log('✅ Preloader ocultado - página lista');
                 }, 1000);
             }, 800);
         }
@@ -378,3 +453,228 @@ window.onload = function() {
         GSAPMain.init();
     }
 })();
+
+// ============ FUNCIONES GLOBALES DE CONTROL DEL PRELOADER ============
+// Estas funciones permiten control manual del preloader desde cualquier parte de la app
+
+// Forzar reset del flag de sesión (útil para testing)
+window.resetPreloaderSession = function() {
+    sessionStorage.removeItem('rescue_app_loaded');
+    console.log('🔄 PRELOADER: Flag de sesión reseteado - próxima carga mostrará preloader');
+};
+
+// Verificar estado actual del preloader
+window.getPreloaderStatus = function() {
+    const sessionLoaded = sessionStorage.getItem('rescue_app_loaded');
+    const navigation = performance.getEntriesByType('navigation')[0];
+    const navType = navigation ? navigation.type : 'unknown';
+    
+    return {
+        sessionLoaded: !!sessionLoaded,
+        navigationType: navType,
+        currentPath: window.location.pathname,
+        shouldShow: !sessionLoaded && navType !== 'reload' && navType !== 'back_forward'
+    };
+};
+
+// Forzar ocultación inmediata del preloader (emergencia)
+window.forceHidePreloader = function() {
+    const loader = document.getElementById('rescue-loader');
+    const body = document.body;
+    
+    if (loader) {
+        loader.style.display = 'none';
+        body.classList.remove('loading');
+        body.style.overflow = '';
+        body.style.position = '';
+        body.style.width = '';
+        body.style.top = '';
+        body.style.left = '';
+        
+        console.log('⚡ PRELOADER: Ocultación forzada aplicada');
+        return true;
+    }
+    return false;
+};
+
+// Mostrar información de debug del preloader
+window.debugPreloader = function() {
+    const status = window.getPreloaderStatus();
+    console.log('🔍 PRELOADER DEBUG:', {
+        ...status,
+        loaderElement: !!document.getElementById('rescue-loader'),
+        bodyHasLoadingClass: document.body.classList.contains('loading'),
+        timestamp: new Date().toISOString()
+    });
+    return status;
+};
+
+// ============ FUNCIONES DE CONTROL DEL SPINNER INTERNO ============
+
+// Variable global para controlar el estado del spinner
+let spinnerState = {
+    isVisible: false,
+    currentTimeout: null
+};
+
+// Mostrar spinner interno (para navegación/refresh)
+function showInternalSpinner(message = 'Cargando...', duration = 1200) {
+    const spinner = document.getElementById('internal-spinner');
+    const spinnerText = spinner.querySelector('.spinner-text');
+    
+    if (!spinner || !spinnerText) return false;
+    
+    // Si ya está visible, solo actualizar el mensaje
+    if (spinnerState.isVisible) {
+        spinnerText.textContent = message;
+        console.log(`🔄 SPINNER: Mensaje actualizado a "${message}"`);
+        
+        // Limpiar timeout anterior y establecer uno nuevo
+        if (spinnerState.currentTimeout) {
+            clearTimeout(spinnerState.currentTimeout);
+        }
+        
+        spinnerState.currentTimeout = setTimeout(() => {
+            hideInternalSpinner();
+        }, duration);
+        
+        return true;
+    }
+    
+    // Mostrar spinner por primera vez
+    spinnerText.textContent = message;
+    spinner.classList.add('show');
+    spinnerState.isVisible = true;
+    
+    console.log(`🌀 SPINNER: Mostrado con mensaje "${message}"`);
+    
+    // Establecer timeout para ocultar
+    spinnerState.currentTimeout = setTimeout(() => {
+        hideInternalSpinner();
+    }, duration);
+    
+    return true;
+}
+
+// Ocultar spinner interno
+function hideInternalSpinner() {
+    const spinner = document.getElementById('internal-spinner');
+    
+    if (!spinner || !spinnerState.isVisible) return false;
+    
+    // Limpiar timeout si existe
+    if (spinnerState.currentTimeout) {
+        clearTimeout(spinnerState.currentTimeout);
+        spinnerState.currentTimeout = null;
+    }
+    
+    // Ocultar spinner
+    spinner.classList.remove('show');
+    spinnerState.isVisible = false;
+    
+    console.log('✅ SPINNER: Ocultado');
+    return true;
+}
+
+// Funciones globales para uso externo
+window.showInternalSpinner = showInternalSpinner;
+window.hideInternalSpinner = hideInternalSpinner;
+
+// Mostrar spinner con diferentes mensajes personalizados
+window.showSpinnerWithMessage = function(message, duration = 1200) {
+    return showInternalSpinner(message, duration);
+};
+
+// Para uso rápido en navegación
+window.showNavigationSpinner = function() {
+    return showInternalSpinner('Navegando...', 800);
+};
+
+window.showLoadingSpinner = function() {
+    return showInternalSpinner('Cargando datos...', 1500);
+};
+
+window.showSavingSpinner = function() {
+    return showInternalSpinner('Guardando...', 1000);
+};
+
+// ============ INTERCEPTOR DE NAVEGACIÓN ============
+// Mostrar spinner antes de navegar a enlaces internos
+
+function setupNavigationInterceptor() {
+    // Interceptar clics en enlaces
+    document.addEventListener('click', function(e) {
+        const link = e.target.closest('a');
+        
+        if (!link) return;
+        
+        const href = link.getAttribute('href');
+        
+        // Solo interceptar enlaces internos (no externos, no JavaScript, no descargas)
+        if (href && 
+            !href.startsWith('http') && 
+            !href.startsWith('mailto:') && 
+            !href.startsWith('tel:') && 
+            !href.startsWith('#') && 
+            !href.startsWith('javascript:') &&
+            href !== '' &&
+            !link.hasAttribute('download') &&
+            !link.hasAttribute('target')) {
+            
+            // Mostrar spinner inmediatamente
+            showInternalSpinner('Navegando...', 5000); // 5 segundos máximo
+            
+            console.log(`🔗 NAVEGACIÓN: Link interceptado -> ${href}`);
+        }
+    });
+    
+    // Interceptar formularios
+    document.addEventListener('submit', function(e) {
+        const form = e.target;
+        
+        if (form && form.tagName === 'FORM') {
+            // Verificar si es un formulario interno (no externo)
+            const action = form.getAttribute('action');
+            const method = form.getAttribute('method');
+            
+            if (!action || !action.startsWith('http')) {
+                const message = method && method.toLowerCase() === 'post' ? 'Enviando...' : 'Cargando...';
+                showInternalSpinner(message, 5000);
+                
+                console.log(`📝 FORMULARIO: Envío interceptado -> ${action || 'misma página'}`);
+            }
+        }
+    });
+    
+    // Interceptar navegación del navegador (back/forward)
+    window.addEventListener('popstate', function(e) {
+        showInternalSpinner('Navegando...', 3000);
+        console.log('←→ NAVEGACIÓN: Histórico del navegador');
+    });
+    
+    // Ocultar spinner cuando la página termine de cargar
+    window.addEventListener('load', function() {
+        setTimeout(() => {
+            hideInternalSpinner();
+        }, 100);
+    });
+    
+    // También ocultar en caso de error
+    window.addEventListener('error', function() {
+        setTimeout(() => {
+            hideInternalSpinner();
+        }, 100);
+    });
+    
+    console.log('🔗 INTERCEPTOR: Sistema de navegación configurado');
+}
+
+// Configurar interceptor cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', function() {
+    // Pequeño delay para asegurar que todo esté cargado
+    setTimeout(setupNavigationInterceptor, 100);
+});
+
+console.log('🚀 PRELOADER: Sistema de control global inicializado');
+console.log('💡 Comandos disponibles: resetPreloaderSession(), getPreloaderStatus(), forceHidePreloader(), debugPreloader()');
+console.log('🌀 SPINNER: showInternalSpinner(), hideInternalSpinner(), showNavigationSpinner(), showLoadingSpinner(), showSavingSpinner()');
