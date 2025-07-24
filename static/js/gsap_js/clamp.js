@@ -53,17 +53,19 @@
                     ease: "power3.out"
                 });
                 
-                // Animación reveal para las imágenes del clamp (más lenta y con delay)
-                gsap.fromTo('.img-clamp', 
-                    {
-                        opacity: 0,
-                        y: 120,
-                        scale: 0.7,
-                        rotationX: 35,
-                        rotationY: 15,
-                        filter: "blur(8px) brightness(0.5)"
-                    },
-                    {
+                // Configurar estado inicial de las imágenes
+                gsap.set('.img-clamp', {
+                    opacity: 0,
+                    y: 120,
+                    scale: 0.7,
+                    rotationX: 35,
+                    rotationY: 15,
+                    filter: "blur(8px) brightness(0.5)"
+                });
+                
+                // Función para ejecutar el reveal
+                const executeReveal = () => {
+                    gsap.to('.img-clamp', {
                         opacity: 1,
                         y: 0,
                         scale: 1,
@@ -72,34 +74,82 @@
                         filter: "blur(0px) brightness(1)",
                         duration: 2.5,
                         ease: "power3.out",
-                        delay: 1.2, // Delay inicial para esperar después del preloader
                         stagger: {
-                            amount: 1.5, // Más tiempo entre cada imagen
+                            amount: 1.5,
                             from: "start",
                             grid: "auto"
-                        },
-                        scrollTrigger: {
-                            trigger: '.images',
-                            start: "top 90%", // Trigger más temprano
-                            end: "bottom 10%",
-                            toggleActions: "play none none reverse",
-                            markers: false
                         }
-                    }
-                );
+                    });
+                };
                 
-                // Animación de flotación sutil para las imágenes
+                // Ejecutar reveal después del preloader o inmediatamente si ya está en viewport
+                const checkAndExecuteReveal = () => {
+                    const imagesContainer = document.querySelector('.images');
+                    if (!imagesContainer) return;
+                    
+                    const rect = imagesContainer.getBoundingClientRect();
+                    const isInViewport = rect.top < window.innerHeight && rect.bottom > 0;
+                    
+                    if (isInViewport) {
+                        // Si ya está en viewport, ejecutar inmediatamente
+                        setTimeout(executeReveal, 1200);
+                    } else {
+                        // Si no está en viewport, usar ScrollTrigger
+                        ScrollTrigger.create({
+                            trigger: '.images',
+                            start: "top 90%",
+                            once: true,
+                            onEnter: () => {
+                                executeReveal();
+                            }
+                        });
+                    }
+                };
+                
+                // Ejecutar después de un pequeño delay para asegurar que todo esté listo
+                setTimeout(checkAndExecuteReveal, 500);
+                
+                // También escuchar eventos del preloader si existen
+                window.addEventListener('preloader:complete', () => {
+                    setTimeout(checkAndExecuteReveal, 800);
+                });
+                
+                // Escuchar cuando la página esté completamente cargada
+                if (document.readyState === 'complete') {
+                    setTimeout(checkAndExecuteReveal, 300);
+                } else {
+                    window.addEventListener('load', () => {
+                        setTimeout(checkAndExecuteReveal, 300);
+                    });
+                }
+                
+                // Animación de flotación sutil para las imágenes (usando transform para evitar conflictos)
                 gsap.to('.img-clamp', {
-                    y: -10,
-                    duration: 3,
+                    rotationZ: 2,
+                    transformOrigin: "center center",
+                    duration: 4,
                     ease: "power2.inOut",
                     yoyo: true,
                     repeat: -1,
                     stagger: {
-                        amount: 0.8,
+                        amount: 1.2,
                         from: "random"
                     },
-                    delay: 4 // Delay más largo para que se vea después del reveal
+                    delay: 4
+                });
+                
+                // Animación de escala respiratoria muy sutil
+                gsap.to('.img-clamp', {
+                    scale: 1.02,
+                    duration: 5,
+                    ease: "sine.inOut",
+                    yoyo: true,
+                    repeat: -1,
+                    stagger: {
+                        amount: 1.5,
+                        from: "center"
+                    },
+                    delay: 5
                 });
                 
                 // Animación de hover individual para cada imagen
