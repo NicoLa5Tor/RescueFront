@@ -91,6 +91,9 @@
     <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/animations.css') }}" rel="stylesheet">
     
+    <!-- Sticky Header CSS -->
+    <link href="{{ url_for('static', filename='css/gsap_css/sticky-header.css') }}" rel="stylesheet">
+    
     {% block extra_css %}{% endblock %}
     
     <!-- RESCUE Loader Styles -->
@@ -493,6 +496,20 @@
     <!-- GSAP ScrollSmoother Wrapper -->
     <div id="gsap-smoother-wrapper">
         <div id="gsap-smoother-content">
+            <!-- Sticky Header Global -->
+            <header class="sticky-header" id="globalStickyHeader">
+                <div class="sticky-header-content">
+                    <div class="header-logo">
+                        <span class="rescue-brand">RESCUE</span>
+                        <span class="system-text">SYSTEM</span>
+                    </div>
+                    <nav class="header-nav">
+                        <a href="#hero" class="nav-link">Inicio</a>
+                        <a href="#contact-us" class="nav-link">Contacto</a>
+                    </nav>
+                </div>
+            </header>
+            
             {% block navbar %}{% endblock %}
             
             <!-- Main Content Area -->
