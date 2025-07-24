@@ -53,6 +53,54 @@
                     ease: "power3.out"
                 });
                 
+                // Animación reveal para las imágenes del clamp
+                gsap.fromTo('.img-clamp', 
+                    {
+                        opacity: 0,
+                        y: 80,
+                        scale: 0.8,
+                        rotationX: 25,
+                        rotationY: 10,
+                        filter: "blur(5px) brightness(0.7)"
+                    },
+                    {
+                        opacity: 1,
+                        y: 0,
+                        scale: 1,
+                        rotationX: 0,
+                        rotationY: 0,
+                        filter: "blur(0px) brightness(1)",
+                        duration: 1.5,
+                        ease: "power4.out",
+                        stagger: {
+                            amount: 0.8,
+                            from: "start",
+                            grid: "auto"
+                        },
+                        scrollTrigger: {
+                            trigger: '.images',
+                            start: "top 85%",
+                            end: "bottom 15%",
+                            toggleActions: "play none none reverse",
+                            markers: false
+                        }
+                    }
+                );
+                
+                // Animación de flotación sutil para las imágenes
+                gsap.to('.img-clamp', {
+                    y: -10,
+                    duration: 2,
+                    ease: "power2.inOut",
+                    yoyo: true,
+                    repeat: -1,
+                    stagger: {
+                        amount: 0.5,
+                        from: "random"
+                    },
+                    delay: 1.5
+                });
+                
                 
                 
                 // Efecto parallax adicional en el heading
