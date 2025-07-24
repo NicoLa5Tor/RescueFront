@@ -109,6 +109,27 @@ a {
   cursor: pointer;
 }
 
+/* Optimizaciones específicas para móvil */
+@media (max-width: 768px) {
+  .img-clamp {
+    will-change: transform, opacity;
+    /* Simplificar transformaciones en móvil */
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    /* Reducir sombras en móvil para mejor performance */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  }
+  
+  .img-clamp:hover {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  }
+  
+  .images {
+    /* Simplificar perspective en móvil */
+    perspective: 800px;
+  }
+}
+
 
 .clamp {
   position: relative;

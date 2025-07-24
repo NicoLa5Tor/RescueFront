@@ -53,33 +53,62 @@
                     ease: "power3.out"
                 });
                 
-                // Configurar estado inicial de las imágenes
-                gsap.set('.img-clamp', {
-                    opacity: 0,
-                    y: 120,
-                    scale: 0.7,
-                    rotationX: 35,
-                    rotationY: 15,
-                    filter: "blur(8px) brightness(0.5)"
-                });
+                // Detectar si es móvil
+                const isMobile = window.innerWidth <= 768 || /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                
+                // Configurar estado inicial de las imágenes (simplificado para móvil)
+                if (isMobile) {
+                    gsap.set('.img-clamp', {
+                        opacity: 0,
+                        y: 60,
+                        scale: 0.9,
+                        filter: "brightness(0.8)"
+                    });
+                } else {
+                    gsap.set('.img-clamp', {
+                        opacity: 0,
+                        y: 120,
+                        scale: 0.7,
+                        rotationX: 35,
+                        rotationY: 15,
+                        filter: "blur(8px) brightness(0.5)"
+                    });
+                }
                 
                 // Función para ejecutar el reveal
                 const executeReveal = () => {
-                    gsap.to('.img-clamp', {
-                        opacity: 1,
-                        y: 0,
-                        scale: 1,
-                        rotationX: 0,
-                        rotationY: 0,
-                        filter: "blur(0px) brightness(1)",
-                        duration: 2.5,
-                        ease: "power3.out",
-                        stagger: {
-                            amount: 1.5,
-                            from: "start",
-                            grid: "auto"
-                        }
-                    });
+                    if (isMobile) {
+                        // Animación simplificada para móvil
+                        gsap.to('.img-clamp', {
+                            opacity: 1,
+                            y: 0,
+                            scale: 1,
+                            filter: "brightness(1)",
+                            duration: 1.8,
+                            ease: "power2.out",
+                            stagger: {
+                                amount: 1,
+                                from: "start"
+                            }
+                        });
+                    } else {
+                        // Animación completa para desktop
+                        gsap.to('.img-clamp', {
+                            opacity: 1,
+                            y: 0,
+                            scale: 1,
+                            rotationX: 0,
+                            rotationY: 0,
+                            filter: "blur(0px) brightness(1)",
+                            duration: 2.5,
+                            ease: "power3.out",
+                            stagger: {
+                                amount: 1.5,
+                                from: "start",
+                                grid: "auto"
+                            }
+                        });
+                    }
                 };
                 
                 // Ejecutar reveal después del preloader o inmediatamente si ya está en viewport
@@ -123,34 +152,37 @@
                     });
                 }
                 
-                // Animación de flotación sutil para las imágenes (usando transform para evitar conflictos)
-                gsap.to('.img-clamp', {
-                    rotationZ: 2,
-                    transformOrigin: "center center",
-                    duration: 4,
-                    ease: "power2.inOut",
-                    yoyo: true,
-                    repeat: -1,
-                    stagger: {
-                        amount: 1.2,
-                        from: "random"
-                    },
-                    delay: 4
-                });
-                
-                // Animación de escala respiratoria muy sutil
-                gsap.to('.img-clamp', {
-                    scale: 1.02,
-                    duration: 5,
-                    ease: "sine.inOut",
-                    yoyo: true,
-                    repeat: -1,
-                    stagger: {
-                        amount: 1.5,
-                        from: "center"
-                    },
-                    delay: 5
-                });
+                // Animaciones continuas solo para desktop (evitar problemas en móvil)
+                if (!isMobile) {
+                    // Animación de flotación sutil para las imágenes
+                    gsap.to('.img-clamp', {
+                        rotationZ: 2,
+                        transformOrigin: "center center",
+                        duration: 4,
+                        ease: "power2.inOut",
+                        yoyo: true,
+                        repeat: -1,
+                        stagger: {
+                            amount: 1.2,
+                            from: "random"
+                        },
+                        delay: 4
+                    });
+                    
+                    // Animación de escala respiratoria muy sutil
+                    gsap.to('.img-clamp', {
+                        scale: 1.02,
+                        duration: 5,
+                        ease: "sine.inOut",
+                        yoyo: true,
+                        repeat: -1,
+                        stagger: {
+                            amount: 1.5,
+                            from: "center"
+                        },
+                        delay: 5
+                    });
+                }
                 
                 // Animación de hover individual para cada imagen
                 gsap.utils.toArray('.img-clamp').forEach((img, index) => {
