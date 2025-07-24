@@ -258,11 +258,39 @@
         /* PRELOADER SIMPLE - OCULTO POR DEFECTO EN TODAS LAS RUTAS */
         #simple-preloader {
             display: none !important;
+            transition: all 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
         
         /* SOLO MOSTRAR preloader simple cuando el HTML tenga la clase 'show-simple-preloader' */
         html.show-simple-preloader #simple-preloader {
             display: flex !important;
+        }
+        
+        /* Estados de animación del preloader simple */
+        #simple-preloader.fade-out {
+            opacity: 0;
+            transform: scale(0.98) translateY(-10px);
+            backdrop-filter: blur(0px);
+            -webkit-backdrop-filter: blur(0px);
+        }
+        
+        #simple-preloader.fade-out .rescue-letters {
+            transform: translateY(-30px);
+            opacity: 0;
+        }
+        
+        #simple-preloader.fade-out .rescue-subtitle {
+            transform: translateY(20px);
+            opacity: 0;
+        }
+        
+        /* Mejora en la transición de las letras RESCUE durante el fade-out */
+        .rescue-letters {
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        .rescue-subtitle {
+            transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s;
         }
         
         /* Disable scroll during loading */

@@ -356,17 +356,25 @@ function waitForStylesAndHidePreloader() {
             
             // Dar tiempo adicional para que se registren todos los event listeners
             setTimeout(function() {
+                console.log('🎬 PRELOADER: Iniciando cierre suave con animación mejorada');
+                
                 // CLAVE: Desactivar pointer events INMEDIATAMENTE
                 simplePreloader.style.pointerEvents = 'none';
-                simplePreloader.style.opacity = '0';
                 simplePreloader.style.zIndex = '-1';
-                console.log('🌫️ PRELOADER: Transición iniciada - Clicks desbloqueados AHORA');
                 
-                // Remover completamente después de la transición
+                // Añadir clase para activar la animación CSS suave
+                simplePreloader.classList.add('fade-out');
+                console.log('🌫️ PRELOADER: Transición suave iniciada - Clicks desbloqueados AHORA');
+                
+                // Remover completamente después de la transición (1.2s + 0.3s buffer)
                 setTimeout(function() {
                     simplePreloader.style.display = 'none';
-                    console.log('✅ SIMPLE PRELOADER: Ocultado completamente - Interfaz completamente funcional');
-                }, 1000); // Tiempo de la transición CSS
+                    // Remover la clase para limpiar
+                    simplePreloader.classList.remove('fade-out');
+                    // Remover la clase del HTML también
+                    document.documentElement.classList.remove('show-simple-preloader');
+                    console.log('✅ SIMPLE PRELOADER: Ocultado completamente con animación suave - Interfaz completamente funcional');
+                }, 1500); // 1.5 segundos para asegurar que la animación termine
                 
             }, 1500); // 1.5 segundos de duración mínima
         }, 100); // 100ms adicionales para event listeners
@@ -392,13 +400,24 @@ window.addEventListener('load', function() {
     if (simplePreloader && simplePreloader.style.display !== 'none' && simplePreloader.style.opacity !== '0') {
         console.log('🔄 PRELOADER: Forzando ocultación en window.load (respaldo)');
         setTimeout(() => {
+            console.log('🎬 PRELOADER RESPALDO: Iniciando cierre suave con animación mejorada');
+            
             // CLAVE: Desactivar pointer events inmediatamente también en el respaldo
             simplePreloader.style.pointerEvents = 'none';
-            simplePreloader.style.opacity = '0';
             simplePreloader.style.zIndex = '-1';
+            
+            // Añadir clase para activar la animación CSS suave
+            simplePreloader.classList.add('fade-out');
+            console.log('🌫️ PRELOADER RESPALDO: Transición suave iniciada');
+            
             setTimeout(() => {
                 simplePreloader.style.display = 'none';
-            }, 1000);
+                // Remover la clase para limpiar
+                simplePreloader.classList.remove('fade-out');
+                // Remover la clase del HTML también
+                document.documentElement.classList.remove('show-simple-preloader');
+                console.log('✅ PRELOADER RESPALDO: Ocultado completamente con animación suave');
+            }, 1500); // 1.5 segundos para asegurar que la animación termine
         }, 500);
     }
 });
