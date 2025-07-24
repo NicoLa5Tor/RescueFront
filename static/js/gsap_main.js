@@ -191,23 +191,106 @@
 // ============ PRELOADER SIMPLE - SOLO EN PÁGINA PRINCIPAL ============
 // Preloader minimalista que solo aparece en la ruta principal (/)
 // La visibilidad se controla por CSS mediante la clase 'show-simple-preloader'
-document.addEventListener('DOMContentLoaded', function() {
+// Espera a que todos los estilos CSS se carguen antes de ocultarse
+
+function waitForStylesAndHidePreloader() {
     const simplePreloader = document.getElementById('simple-preloader');
     
-    if (simplePreloader && document.documentElement.classList.contains('show-simple-preloader')) {
-        console.log('🎬 SIMPLE PRELOADER: Iniciado en página principal - Con letras RESCUE');
+    if (!simplePreloader || !document.documentElement.classList.contains('show-simple-preloader')) {
+        return;
+    }
+    
+    console.log('🎬 SIMPLE PRELOADER: Iniciado en página principal - Con letras RESCUE');
+    
+    // Función para verificar si todos los estilos CSS se han cargado
+    function checkStylesLoaded() {
+        const links = document.querySelectorAll('link[rel="stylesheet"]');
+        let loadedCount = 0;
+        let totalLinks = links.length;
         
-        // El preloader ya está visible por CSS, solo necesitamos ocultarlo después de 1.5 segundos
+        // Si no hay links CSS, continuar inmediatamente
+        if (totalLinks === 0) {
+            console.log('🎨 ESTILOS: No hay enlaces CSS externos detectados');
+            return Promise.resolve();
+        }
+        
+        console.log(`🎨 ESTILOS: Verificando carga de ${totalLinks} archivos CSS...`);
+        
+        return new Promise((resolve) => {
+            function checkComplete() {
+                if (loadedCount >= totalLinks) {
+                    console.log('✅ ESTILOS: Todos los archivos CSS cargados correctamente');
+                    resolve();
+                }
+            }
+            
+            links.forEach((link, index) => {
+                // Si el link ya está cargado
+                if (link.sheet) {
+                    loadedCount++;
+                    console.log(`✅ CSS ${index + 1}/${totalLinks}: ${link.href.split('/').pop()} ya estaba cargado`);
+                    checkComplete();
+                } else {
+                    // Esperar a que el link se cargue
+                    link.addEventListener('load', function() {
+                        loadedCount++;
+                        console.log(`✅ CSS ${loadedCount}/${totalLinks}: ${this.href.split('/').pop()} cargado`);
+                        checkComplete();
+                    });
+                    
+                    // Manejar errores de carga
+                    link.addEventListener('error', function() {
+                        loadedCount++; // Contar como "cargado" para no bloquear
+                        console.warn(`⚠️ CSS ${loadedCount}/${totalLinks}: Error cargando ${this.href.split('/').pop()}`);
+                        checkComplete();
+                    });
+                }
+            });
+            
+            // Timeout de seguridad (3 segundos máximo)
+            setTimeout(() => {
+                if (loadedCount < totalLinks) {
+                    console.warn(`⚠️ ESTILOS: Timeout - Solo ${loadedCount}/${totalLinks} archivos CSS cargados`);
+                    resolve();
+                }
+            }, 3000);
+        });
+    }
+    
+    // Esperar a que los estilos se carguen
+    checkStylesLoaded().then(() => {
+        console.log('🎆 PRELOADER: Todos los estilos cargados, iniciando temporizador de ocultación');
+        
+        // Esperar un poco más para que las animaciones de las letras terminen (1.5 segundos)
         setTimeout(function() {
             simplePreloader.style.opacity = '0';
+            console.log('🌫️ PRELOADER: Iniciando transición de salida');
             
             // Remover completamente después de la transición
             setTimeout(function() {
                 simplePreloader.style.display = 'none';
-                console.log('✅ SIMPLE PRELOADER: Ocultado');
+                console.log('✅ SIMPLE PRELOADER: Ocultado completamente');
             }, 1000); // Tiempo de la transición CSS
             
-        }, 1500); // 1.5 segundos de duración
+        }, 1500); // 1.5 segundos de duración mínima
+    });
+}
+
+// Ejecutar cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', waitForStylesAndHidePreloader);
+
+// También ejecutar en window.load como respaldo
+window.addEventListener('load', function() {
+    // Si el preloader aún está visible después de window.load, forzar ocultación
+    const simplePreloader = document.getElementById('simple-preloader');
+    if (simplePreloader && simplePreloader.style.display !== 'none' && simplePreloader.style.opacity !== '0') {
+        console.log('🔄 PRELOADER: Forzando ocultación en window.load (respaldo)');
+        setTimeout(() => {
+            simplePreloader.style.opacity = '0';
+            setTimeout(() => {
+                simplePreloader.style.display = 'none';
+            }, 1000);
+        }, 500);
     }
 });
 
