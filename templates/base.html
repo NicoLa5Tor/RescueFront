@@ -26,6 +26,43 @@
                 }
             });
         })();
+        
+        // ============ DETECCIÓN DE PRELOADER TEMPRANA ============
+        (function() {
+            function shouldShowPreloaderEarly() {
+                try {
+                    // 1. Verificar sesión
+                    const sessionLoaded = sessionStorage.getItem('rescue_app_loaded');
+                    if (sessionLoaded) return false;
+                    
+                    // 2. Verificar tipo de navegación
+                    const navigation = performance.getEntriesByType('navigation')[0];
+                    if (navigation) {
+                        const navType = navigation.type;
+                        if (navType === 'reload' || navType === 'back_forward') {
+                            return false;
+                        }
+                    }
+                    
+                    // 3. Verificar rutas
+                    const currentPath = window.location.pathname;
+                    const preloaderRoutes = ['/', '/login', '/dashboard', '/admin/dashboard', '/admin/super_admin_dashboard', '/empresa/dashboard'];
+                    const shouldShow = preloaderRoutes.some(route => currentPath === route || currentPath.startsWith(route));
+                    
+                    return shouldShow;
+                } catch (error) {
+                    return true; // En caso de error, mostrar por seguridad
+                }
+            }
+            
+            // Si debe mostrar preloader, añadir clase al documento
+            if (shouldShowPreloaderEarly()) {
+                document.documentElement.classList.add('show-preloader');
+                console.log('🎬 PRELOADER: Habilitado desde head script');
+            } else {
+                console.log('⚡ PRELOADER: Deshabilitado desde head script');
+            }
+        })();
     </script>
     
     <!-- Bootstrap CSS -->
@@ -179,16 +216,20 @@
             }
         }
         
-        /* Loader Hide Animation */
+        /* Loader Hide Animation - OCULTO POR DEFECTO */
         #rescue-loader {
             transition: opacity 1s ease-out, transform 1s ease-out;
-            /* OCULTO POR DEFECTO - solo se muestra si JavaScript lo determina */
             display: none !important;
         }
         
-        /* Solo mostrar cuando JavaScript añada la clase 'show' */
-        #rescue-loader.show {
+        /* SOLO MOSTRAR cuando el HTML tenga la clase 'show-preloader' */
+        html.show-preloader #rescue-loader {
             display: flex !important;
+        }
+        
+        /* Ocultar cuando JavaScript añada la clase 'hide-immediately' */
+        #rescue-loader.hide-immediately {
+            display: none !important;
         }
         
         #rescue-loader.hiding {

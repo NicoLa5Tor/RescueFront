@@ -63,17 +63,23 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Verificar si debe mostrar el preloader
     if (!shouldShowPreloader()) {
-        // NO mostrar spinner aquí - ya se maneja por el interceptor
-        // Solo registrar que no necesitamos preloader completo
-        console.log('⚡ PRELOADER: Permanece oculto - navegación controlada por interceptor');
+        // Ocultar inmediatamente el preloader que está visible por defecto
+        loader.classList.add('hide-immediately');
+        body.classList.remove('loading');
+        body.style.overflow = '';
+        body.style.position = '';
+        body.style.width = '';
+        body.style.top = '';
+        body.style.left = '';
+        
+        console.log('⚡ PRELOADER: Ocultado inmediatamente - navegación controlada por interceptor');
         return; // Salir de la función completamente
     }
     
     // ============ MOSTRAR PRELOADER SOLO EN PRIMERA CARGA ============
-    console.log('🎬 PRELOADER: Mostrando para primera carga');
+    console.log('🎬 PRELOADER: Ejecutando secuencia completa para primera carga');
     
-    // Añadir clase 'show' para hacer visible el preloader
-    loader.classList.add('show');
+    // El preloader ya está visible por CSS, solo necesitamos ejecutar la lógica
     
     // ============ CONTINÚA CON LA LÓGICA NORMAL DEL PRELOADER ============
     
