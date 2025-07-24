@@ -257,22 +257,128 @@ function waitForStylesAndHidePreloader() {
         });
     }
     
-    // Esperar a que los estilos se carguen
-    checkStylesLoaded().then(() => {
-        console.log('🎆 PRELOADER: Todos los estilos cargados, iniciando temporizador de ocultación');
+    // Función para verificar si todos los archivos JavaScript se han cargado
+    function checkScriptsLoaded() {
+        const scripts = document.querySelectorAll('script[src]');
+        let loadedCount = 0;
+        let totalScripts = scripts.length;
         
-        // Esperar un poco más para que las animaciones de las letras terminen (1.5 segundos)
-        setTimeout(function() {
-            simplePreloader.style.opacity = '0';
-            console.log('🌫️ PRELOADER: Iniciando transición de salida');
+        // Si no hay scripts externos, continuar inmediatamente
+        if (totalScripts === 0) {
+            console.log('📜 SCRIPTS: No hay scripts externos detectados');
+            return Promise.resolve();
+        }
+        
+        console.log(`📜 SCRIPTS: Verificando carga de ${totalScripts} archivos JavaScript...`);
+        
+        return new Promise((resolve) => {
+            function checkComplete() {
+                if (loadedCount >= totalScripts) {
+                    console.log('✅ SCRIPTS: Todos los archivos JavaScript cargados correctamente');
+                    resolve();
+                }
+            }
             
-            // Remover completamente después de la transición
+            scripts.forEach((script, index) => {
+                // Verificar si el script ya está cargado
+                if (script.readyState === 'complete' || script.readyState === 'loaded') {
+                    loadedCount++;
+                    console.log(`✅ JS ${index + 1}/${totalScripts}: ${script.src.split('/').pop()} ya estaba cargado`);
+                    checkComplete();
+                } else {
+                    // Esperar a que el script se cargue
+                    script.addEventListener('load', function() {
+                        loadedCount++;
+                        console.log(`✅ JS ${loadedCount}/${totalScripts}: ${this.src.split('/').pop()} cargado`);
+                        checkComplete();
+                    });
+                    
+                    // Manejar errores de carga
+                    script.addEventListener('error', function() {
+                        loadedCount++; // Contar como "cargado" para no bloquear
+                        console.warn(`⚠️ JS ${loadedCount}/${totalScripts}: Error cargando ${this.src.split('/').pop()}`);
+                        checkComplete();
+                    });
+                }
+            });
+            
+            // Timeout de seguridad (5 segundos máximo para JS)
+            setTimeout(() => {
+                if (loadedCount < totalScripts) {
+                    console.warn(`⚠️ SCRIPTS: Timeout - Solo ${loadedCount}/${totalScripts} archivos JS cargados`);
+                    resolve();
+                }
+            }, 5000);
+        });
+    }
+    
+    // Función para esperar a que GSAP esté completamente inicializado
+    function checkGSAPReady() {
+        return new Promise((resolve) => {
+            // Si GSAP ya está disponible
+            if (window.gsap && window.ScrollTrigger && window.GSAPMain) {
+                console.log('✅ GSAP: Ya está completamente inicializado');
+                resolve();
+                return;
+            }
+            
+            console.log('⏳ GSAP: Esperando inicialización completa...');
+            
+            // Listener para cuando GSAP se inicialice
+            window.addEventListener('gsap:initialized', function() {
+                console.log('✅ GSAP: Inicialización completa detectada');
+                resolve();
+            }, { once: true });
+            
+            // Timeout de seguridad (3 segundos)
+            setTimeout(() => {
+                console.warn('⚠️ GSAP: Timeout en inicialización, continuando...');
+                resolve();
+            }, 3000);
+        });
+    }
+    
+    // Esperar a que TODOS los recursos se carguen (CSS, JS, GSAP)
+    Promise.all([
+        checkStylesLoaded(),
+        checkScriptsLoaded(),
+        checkGSAPReady()
+    ]).then(() => {
+        console.log('🎆 PRELOADER: Todos los recursos cargados (CSS + JS + GSAP)');
+        
+        // Esperar un tick adicional para que los event listeners se registren
+        setTimeout(() => {
+            console.log('🔧 PRELOADER: Verificando que los botones funcionen...');
+            
+            // Verificación adicional: comprobar que los botones tienen eventos
+            const buttons = document.querySelectorAll('button, .btn, [role="button"], a[href]');
+            console.log(`🔘 PRELOADER: ${buttons.length} botones detectados en la página`);
+            
+            // Dar tiempo adicional para que se registren todos los event listeners
             setTimeout(function() {
+                // CLAVE: Desactivar pointer events INMEDIATAMENTE
+                simplePreloader.style.pointerEvents = 'none';
+                simplePreloader.style.opacity = '0';
+                simplePreloader.style.zIndex = '-1';
+                console.log('🌫️ PRELOADER: Transición iniciada - Clicks desbloqueados AHORA');
+                
+                // Remover completamente después de la transición
+                setTimeout(function() {
+                    simplePreloader.style.display = 'none';
+                    console.log('✅ SIMPLE PRELOADER: Ocultado completamente - Interfaz completamente funcional');
+                }, 1000); // Tiempo de la transición CSS
+                
+            }, 1500); // 1.5 segundos de duración mínima
+        }, 100); // 100ms adicionales para event listeners
+    }).catch((error) => {
+        console.error('❌ PRELOADER: Error en carga de recursos:', error);
+        // En caso de error, ocultar preloader de todos modos
+        setTimeout(() => {
+            simplePreloader.style.opacity = '0';
+            setTimeout(() => {
                 simplePreloader.style.display = 'none';
-                console.log('✅ SIMPLE PRELOADER: Ocultado completamente');
-            }, 1000); // Tiempo de la transición CSS
-            
-        }, 1500); // 1.5 segundos de duración mínima
+            }, 1000);
+        }, 2000);
     });
 }
 
@@ -286,7 +392,10 @@ window.addEventListener('load', function() {
     if (simplePreloader && simplePreloader.style.display !== 'none' && simplePreloader.style.opacity !== '0') {
         console.log('🔄 PRELOADER: Forzando ocultación en window.load (respaldo)');
         setTimeout(() => {
+            // CLAVE: Desactivar pointer events inmediatamente también en el respaldo
+            simplePreloader.style.pointerEvents = 'none';
             simplePreloader.style.opacity = '0';
+            simplePreloader.style.zIndex = '-1';
             setTimeout(() => {
                 simplePreloader.style.display = 'none';
             }, 1000);
