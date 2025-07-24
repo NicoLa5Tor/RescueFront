@@ -369,8 +369,24 @@
 </head>
 <body>
     <!-- Simple Background Preloader -->
-    <div id="simple-preloader" class="fixed inset-0 bg-gradient-to-br from-gray-900 via-blue-900 to-black z-[9999] transition-opacity duration-1000">
-        <!-- Solo el fondo, sin animaciones complejas -->
+    <div id="simple-preloader" class="fixed inset-0 bg-gradient-to-br from-gray-900 via-blue-900 to-black z-[9999] flex items-center justify-center transition-opacity duration-1000">
+        <div class="text-center relative z-10">
+            <!-- RESCUE Letters -->
+            <div class="rescue-letters flex justify-center items-center mb-8">
+                <span class="rescue-letter" data-letter="R" style="--delay: 0.1s;">R</span>
+                <span class="rescue-letter" data-letter="E" style="--delay: 0.2s;">E</span>
+                <span class="rescue-letter" data-letter="S" style="--delay: 0.3s;">S</span>
+                <span class="rescue-letter" data-letter="C" style="--delay: 0.4s;">C</span>
+                <span class="rescue-letter" data-letter="U" style="--delay: 0.5s;">U</span>
+                <span class="rescue-letter" data-letter="E" style="--delay: 0.6s;">E</span>
+            </div>
+            
+            <!-- Subtitle -->
+            <div class="rescue-subtitle mb-6">
+                <p class="text-blue-300 text-lg font-light tracking-widest">SISTEMA DE EMERGENCIAS</p>
+                <p class="text-white/60 text-sm mt-1">Tecnología IoT • Inteligencia Artificial</p>
+            </div>
+        </div>
     </div>
 
     <!-- Internal Spinner (Para navegación interna/refresh) -->
