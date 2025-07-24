@@ -231,6 +231,48 @@ function waitForStylesAndHidePreloader() {
     
     console.log('🎬 SIMPLE PRELOADER: Iniciado en página principal - Con letras RESCUE y barra de progreso');
     
+    // ============ FIJAR SCROLL EN POSICIÓN 0,0 DESDE EL INICIO ============
+    // Mantener el scroll fijo en la posición superior hasta que el preloader termine
+    console.log('📍 SCROLL: Fijando posición en (0,0) desde el inicio del preloader');
+    
+    // Fijar posición de scroll inmediatamente
+    window.scrollTo(0, 0);
+    
+    // Prevenir cualquier tipo de scroll
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.top = '0';
+    document.body.style.left = '0';
+    document.body.style.width = '100%';
+    
+    // Función para mantener la posición fija
+    function maintainScrollPosition() {
+        window.scrollTo(0, 0);
+    }
+    
+    // Listeners para prevenir cualquier cambio de scroll
+    const preventScroll = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        window.scrollTo(0, 0);
+        return false;
+    };
+    
+    // Agregar listeners para mantener posición fija
+    window.addEventListener('scroll', maintainScrollPosition, { passive: false });
+    window.addEventListener('wheel', preventScroll, { passive: false });
+    window.addEventListener('touchmove', preventScroll, { passive: false });
+    window.addEventListener('keydown', (e) => {
+        // Prevenir teclas que causan scroll (flechas, página arriba/abajo, etc.)
+        if ([32, 33, 34, 35, 36, 37, 38, 39, 40].includes(e.keyCode)) {
+            e.preventDefault();
+            window.scrollTo(0, 0);
+        }
+    });
+    
+    console.log('🔒 SCROLL: Posición fijada en (0,0) - Todos los eventos de scroll bloqueados');
+    
     // ============ SISTEMA DE BARRA DE PROGRESO ============
     const progressBar = simplePreloader.querySelector('.progress-fill');
     const progressText = simplePreloader.querySelector('.loading-message');
@@ -399,6 +441,20 @@ function waitForStylesAndHidePreloader() {
         
         updateProgress(100, progressMessages[5]); // "Finalizando carga..."
         
+        // ============ OCULTAR SCROLL INSTANTÁNEAMENTE AL 100% ============
+        // Desactivar scroll inmediatamente cuando la barra llega al 100%
+        console.log('🚫 SCROLL: Ocultando scroll instantáneamente al 100%');
+        
+        // Ocultar scroll del body inmediatamente
+        document.body.style.overflow = 'hidden';
+        document.documentElement.style.overflow = 'hidden';
+        
+        // Desactivar pointer events del preloader inmediatamente
+        simplePreloader.style.pointerEvents = 'none';
+        simplePreloader.style.zIndex = '-1';
+        
+        console.log('✅ SCROLL: Desactivado instantáneamente - Clicks desbloqueados');
+        
         // Esperar un tick adicional para que los event listeners se registren
         setTimeout(() => {
             console.log('🔧 PRELOADER: Verificando que los botones funcionen...');
@@ -409,15 +465,11 @@ function waitForStylesAndHidePreloader() {
             
             // Dar tiempo adicional para que se registren todos los event listeners
             setTimeout(function() {
-                console.log('🎬 PRELOADER: Iniciando cierre suave con animación mejorada');
+                console.log('🎬 PRELOADER: Iniciando cierre con animación');
                 
-                // CLAVE: Desactivar pointer events INMEDIATAMENTE
-                simplePreloader.style.pointerEvents = 'none';
-                simplePreloader.style.zIndex = '-1';
-                
-                // Añadir clase para activar la animación CSS suave
+                // Añadir clase para activar la animación CSS suave del preloader
                 simplePreloader.classList.add('fade-out');
-                console.log('🌫️ PRELOADER: Transición suave iniciada - Clicks desbloqueados AHORA');
+                console.log('🌫️ PRELOADER: Transición visual iniciada');
                 
                 // Remover completamente después de la transición (1.2s + 0.3s buffer)
                 setTimeout(function() {
@@ -427,11 +479,27 @@ function waitForStylesAndHidePreloader() {
                     // Remover la clase del HTML también
                     document.documentElement.classList.remove('show-simple-preloader');
                     
-                    // ============ SCROLL AL INICIO AL TERMINAR EL PRELOADER ============
+                    // ============ LIMPIAR EVENT LISTENERS DE SCROLL ============
+                    // Remover todos los listeners que mantienen el scroll fijo
+                    window.removeEventListener('scroll', maintainScrollPosition);
+                    window.removeEventListener('wheel', preventScroll);
+                    window.removeEventListener('touchmove', preventScroll);
+                    
+                    console.log('🧹 SCROLL: Event listeners de bloqueo removidos');
+                    
+                    // ============ RESTAURAR SCROLL AL TERMINAR EL PRELOADER ============
+                    // Restaurar el scroll normal del body
+                    document.body.style.overflow = '';
+                    document.documentElement.style.overflow = '';
+                    document.body.style.position = '';
+                    document.body.style.top = '';
+                    document.body.style.left = '';
+                    document.body.style.width = '';
+                    
                     // Llamar a la función scrollToTop para llevar la página al inicio
                     scrollToTop();
                     
-                    console.log('✅ SIMPLE PRELOADER: Ocultado completamente con animación suave - Interfaz completamente funcional');
+                    console.log('✅ SIMPLE PRELOADER: Ocultado completamente - Scroll restaurado - Event listeners limpiados - Interfaz completamente funcional');
                 }, 1500); // 1.5 segundos para asegurar que la animación termine
                 
             }, 1500); // 1.5 segundos de duración mínima
@@ -458,15 +526,22 @@ window.addEventListener('load', function() {
     if (simplePreloader && simplePreloader.style.display !== 'none' && simplePreloader.style.opacity !== '0') {
         console.log('🔄 PRELOADER: Forzando ocultación en window.load (respaldo)');
         setTimeout(() => {
-            console.log('🎬 PRELOADER RESPALDO: Iniciando cierre suave con animación mejorada');
+            console.log('🎬 PRELOADER RESPALDO: Iniciando cierre con ocultación instantánea de scroll');
+            
+            // ============ OCULTAR SCROLL INSTANTÁNEAMENTE TAMBIÉN EN RESPALDO ============
+            // Ocultar scroll del body inmediatamente
+            document.body.style.overflow = 'hidden';
+            document.documentElement.style.overflow = 'hidden';
             
             // CLAVE: Desactivar pointer events inmediatamente también en el respaldo
             simplePreloader.style.pointerEvents = 'none';
             simplePreloader.style.zIndex = '-1';
             
+            console.log('🚫 SCROLL RESPALDO: Desactivado instantáneamente');
+            
             // Añadir clase para activar la animación CSS suave
             simplePreloader.classList.add('fade-out');
-            console.log('🌫️ PRELOADER RESPALDO: Transición suave iniciada');
+            console.log('🌫️ PRELOADER RESPALDO: Transición visual iniciada');
             
             setTimeout(() => {
                 simplePreloader.style.display = 'none';
@@ -475,11 +550,15 @@ window.addEventListener('load', function() {
                 // Remover la clase del HTML también
                 document.documentElement.classList.remove('show-simple-preloader');
                 
-                // ============ SCROLL AL INICIO TAMBIÉN EN EL RESPALDO ============
+                // ============ RESTAURAR SCROLL EN RESPALDO ============
+                // Restaurar el scroll normal del body
+                document.body.style.overflow = '';
+                document.documentElement.style.overflow = '';
+                
                 // Asegurar scroll al inicio también en el preloader de respaldo
                 scrollToTop();
                 
-                console.log('✅ PRELOADER RESPALDO: Ocultado completamente con animación suave');
+                console.log('✅ PRELOADER RESPALDO: Ocultado completamente - Scroll restaurado');
             }, 1500); // 1.5 segundos pour asegurar que la animación termine
         }, 500);
     }
