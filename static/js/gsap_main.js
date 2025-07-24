@@ -1,10 +1,11 @@
-document.addEventListener('DOMContentLoaded', function() {
-    var loader = document.getElementById('rescue-loader');
-    var progressBar = document.querySelector('.progress-fill');
-    var progressPercentage = document.querySelector('.progress-percentage');
-    var loadingText = document.querySelector('.loading-text');
-    var body = document.body;
-    var progress = 0;
+/* document.addEventListener('DOMContentLoaded', function() {
+    // Comentado por problemas identificados
+    // var loader = document.getElementById('rescue-loader');
+    // var progressBar = document.querySelector('.progress-fill');
+    // var progressPercentage = document.querySelector('.progress-percentage');
+    // var loadingText = document.querySelector('.loading-text');
+    // var body = document.body;
+    // var progress = 0;
     
     // ============ SISTEMA DE DETECCIÓN DE PRIMERA CARGA ============
     function shouldShowPreloader() {
@@ -184,85 +185,95 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 800);
         }
     }, 250);
-});
-
-// Animate RESCUE letters on load
-window.onload = function() {
-    var letters = document.querySelectorAll('.rescue-letter');
-    letters.forEach(function(letter, index) {
-        setTimeout(function() {
-            letter.classList.add('active');
-        }, index * 400); // Stagger timing for letters
-    });
-};
-
-/* CSS (In case you need to put it in CSS file instead of inline)
-.rescue-letter {
-    font-size: 2rem;
-    font-weight: bold;
-    color: white;
-    opacity: 0;
-    transform: translateY(100px);
-    transition: transform 0.6s ease-out, opacity 0.6s ease-out;
-}
-
-.rescue-letter.active {
-    opacity: 1;
-    transform: translateY(0);
 }
 */
 
-// GSAP Main Controller - Instancia Global
+// ============ PRELOADER SIMPLE - SOLO FONDO ============
+// Preloader minimalista que solo muestra el fondo y se oculta después de un tiempo
+document.addEventListener('DOMContentLoaded', function() {
+    const simplePreloader = document.getElementById('simple-preloader');
+    
+    if (simplePreloader) {
+        console.log('🎬 SIMPLE PRELOADER: Iniciado - Solo fondo');
+        
+        // Ocultar el preloader después de 1.5 segundos
+        setTimeout(function() {
+            simplePreloader.style.opacity = '0';
+            
+            // Remover completamente después de la transición
+            setTimeout(function() {
+                simplePreloader.style.display = 'none';
+                console.log('✅ SIMPLE PRELOADER: Ocultado');
+            }, 1000); // Tiempo de la transición CSS
+            
+        }, 1500); // 1.5 segundos de duración
+    }
+});
+
+// ============ GSAP MAIN CONTROLLER - CONTROLADOR PRINCIPAL DE RENDERIZADO ============
+// Este es el controlador principal que maneja todo el sistema de animaciones GSAP
+// Se ejecuta después del preloader para inicializar las animaciones de la aplicación
 (function() {
     'use strict';
-    // Namespace global para GSAP
+    
+    // ============ NAMESPACE GLOBAL PARA GSAP ============
+    // Crea un objeto global que contiene todas las funcionalidades de GSAP
     window.GSAPMain = {
-        smoother: null,
-        modules: new Map(),
-        initialized: false,
+        smoother: null,         // Instancia de ScrollSmoother para scroll suave
+        modules: new Map(),     // Mapa para almacenar módulos de animación
+        initialized: false,     // Flag para evitar doble inicialización
         
-        // Inicializar GSAP y ScrollSmoother
+        // ============ FUNCIÓN DE INICIALIZACIÓN PRINCIPAL ============
+        // Esta función se ejecuta una vez que el DOM está listo
+        // Inicializa todos los plugins de GSAP y configura el sistema de animaciones
         init: function() {
+            // Prevenir doble inicialización
             if (this.initialized) return;
             
-            // Registrar todos los plugins
+            // ============ REGISTRAR PLUGINS DE GSAP ============
+            // Registra todos los plugins necesarios para las animaciones
             gsap.registerPlugin(
-                ScrollTrigger,
-                ScrollSmoother,
-                TextPlugin,
-                DrawSVGPlugin,
-                MotionPathPlugin,
-                CustomEase,
-                ScrollToPlugin
+                ScrollTrigger,    // Para animaciones basadas en scroll
+                ScrollSmoother,   // Para scroll suave y efectos de parallax
+                TextPlugin,       // Para animaciones de texto
+                DrawSVGPlugin,    // Para animaciones de SVG (dibujo de líneas)
+                MotionPathPlugin, // Para animaciones siguiendo trayectorias
+                CustomEase,       // Para curvas de aceleración personalizadas
+                ScrollToPlugin    // Para navegación suave a elementos
             );
             
-            // Configuración global de GSAP
+            // ============ CONFIGURACIÓN GLOBAL DE GSAP ============
+            // Configuraciones que afectan a todas las animaciones
             gsap.config({
-                nullTargetWarn: false,
-                trialWarn: false
+                nullTargetWarn: false,  // No mostrar warnings si un elemento no existe
+                trialWarn: false        // No mostrar warnings de versión trial
             });
             
-            // Crear ScrollSmoother global
-           // En la función init(), actualizar la configuración de ScrollSmoother:
+            // ============ CREAR SCROLLSMOOTHER GLOBAL ============
+            // ScrollSmoother proporciona scroll suave en toda la aplicación
+            // Busca elementos con IDs específicos para crear el contenedor de scroll
             this.smoother = ScrollSmoother.create({
-                wrapper: '#gsap-smoother-wrapper',
-                content: '#gsap-smoother-content',
-                smooth: 2,  // Cambiado de 1.5 a 2
-                effects: true,
-                smoothTouch: 0.1,
-                normalizeScroll: true
+                wrapper: '#gsap-smoother-wrapper',   // Contenedor exterior (fijo)
+                content: '#gsap-smoother-content',   // Contenido que se mueve
+                smooth: 2,                           // Intensidad del suavizado (2 = medio)
+                effects: true,                       // Habilitar efectos de parallax
+                smoothTouch: 0.1,                   // Suavizado en dispositivos táctiles
+                normalizeScroll: true               // Normalizar comportamiento entre navegadores
             });
-            // Event listeners globales
+            
+            // ============ CONFIGURAR LISTENERS GLOBALES ============
             this.setupGlobalListeners();
-            // Marcar como inicializado
+            
+            // ============ MARCAR COMO INICIALIZADO ============
             this.initialized = true;
             
-            // Disparar evento custom
+            // ============ DISPARAR EVENTO DE INICIALIZACIÓN ============
+            // Notifica a otros módulos que GSAP está listo
             window.dispatchEvent(new CustomEvent('gsap:initialized', {
                 detail: { smoother: this.smoother }
             }));
             
-            console.log('GSAP Main Controller inicializado');
+            console.log('✅ GSAP Main Controller inicializado - Sistema de renderizado listo');
         },
         
         // Registrar un módulo

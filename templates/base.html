@@ -27,7 +27,8 @@
             });
         })();
         
-        // ============ DETECCIÓN DE PRELOADER TEMPRANA ============
+        // ============ DETECCIÓN DE PRELOADER TEMPRANA (COMENTADO) ============
+        /* Comentado porque el preloader fue deshabilitado
         (function() {
             function shouldShowPreloaderEarly() {
                 try {
@@ -63,6 +64,10 @@
                 console.log('⚡ PRELOADER: Deshabilitado desde head script');
             }
         })();
+        */
+        
+        // Log simple para confirmar que el preloader está deshabilitado
+        console.log('🌐 PRELOADER: Completamente deshabilitado - Solo spinner interno disponible');
     </script>
     
     <!-- Bootstrap CSS -->
@@ -363,64 +368,9 @@
     </style>
 </head>
 <body>
-    <!-- RESCUE Loading Screen -->
-    <div id="rescue-loader" class="fixed inset-0 bg-gradient-to-br from-gray-900 via-blue-900 to-black z-[9999] flex items-center justify-center overflow-hidden">
-        <!-- Background particles -->
-        <div class="absolute inset-0">
-            <div class="particle" style="--delay: 0s; --duration: 8s; --x: 10%; --y: 20%;"></div>
-            <div class="particle" style="--delay: 1s; --duration: 6s; --x: 80%; --y: 10%;"></div>
-            <div class="particle" style="--delay: 2s; --duration: 7s; --x: 15%; --y: 70%;"></div>
-            <div class="particle" style="--delay: 0.5s; --duration: 9s; --x: 90%; --y: 80%;"></div>
-            <div class="particle" style="--delay: 1.5s; --duration: 5s; --x: 50%; --y: 90%;"></div>
-        </div>
-        
-        <!-- Firma personal en esquina inferior derecha -->
-        <div class="absolute bottom-4 right-4 z-20">
-            <div class="developer-signature opacity-60 hover:opacity-100 transition-opacity duration-300">
-                <p class="text-white/50 text-xs font-mono tracking-wide">
-                    <span class="text-blue-300">By</span> 
-                    <span class="text-white font-semibold">NicoLa5Tor</span>
-                </p>
-            </div>
-        </div>
-        
-        <div class="text-center relative z-10">
-            <!-- RESCUE Letters Animation (EDITABLES AQUÍ) -->
-            <div class="rescue-letters flex justify-center items-center mb-8">
-                <span class="rescue-letter" data-letter="R" style="--delay: 0.1s;">R</span>
-                <span class="rescue-letter" data-letter="E" style="--delay: 0.2s;">E</span>
-                <span class="rescue-letter" data-letter="S" style="--delay: 0.3s;">S</span>
-                <span class="rescue-letter" data-letter="C" style="--delay: 0.4s;">C</span>
-                <span class="rescue-letter" data-letter="U" style="--delay: 0.5s;">U</span>
-                <span class="rescue-letter" data-letter="E" style="--delay: 0.6s;">E</span>
-            </div>
-            
-            <!-- Subtitle -->
-            <div class="rescue-subtitle mb-6 opacity-0">
-                <p class="text-blue-300 text-lg font-light tracking-widest">SISTEMA DE EMERGENCIAS</p>
-                <p class="text-white/60 text-sm mt-1">Tecnología IoT • Inteligencia Artificial</p>
-            </div>
-            
-            <!-- Loading Progress -->
-            <div class="loading-progress mb-4">
-                <div class="progress-container relative">
-                    <div class="progress-bar bg-gray-800/50 h-2 w-80 mx-auto rounded-full overflow-hidden backdrop-blur-sm border border-blue-500/20">
-                        <div class="progress-fill bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 h-full w-0 rounded-full relative">
-                            <div class="progress-glow absolute inset-0 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full blur-sm opacity-50"></div>
-                        </div>
-                    </div>
-                    <div class="progress-percentage text-white/70 text-xs mt-2 font-mono">0%</div>
-                </div>
-                <p class="loading-text text-white/70 text-sm mt-4 transition-all duration-500">Inicializando sistema de emergencias...</p>
-            </div>
-            
-            <!-- Loading dots -->
-            <div class="loading-dots flex justify-center space-x-1 mt-4">
-                <div class="dot w-2 h-2 bg-blue-400 rounded-full opacity-30"></div>
-                <div class="dot w-2 h-2 bg-blue-400 rounded-full opacity-30"></div>
-                <div class="dot w-2 h-2 bg-blue-400 rounded-full opacity-30"></div>
-            </div>
-        </div>
+    <!-- Simple Background Preloader -->
+    <div id="simple-preloader" class="fixed inset-0 bg-gradient-to-br from-gray-900 via-blue-900 to-black z-[9999] transition-opacity duration-1000">
+        <!-- Solo el fondo, sin animaciones complejas -->
     </div>
 
     <!-- Internal Spinner (Para navegación interna/refresh) -->
