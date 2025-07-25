@@ -39,6 +39,21 @@ CORS_ORIGINS = os.getenv('CORS_ORIGINS', '*').split(',')
 # ========== CONFIGURACIÓN DE BASE DE DATOS (si se necesita en el futuro) ==========
 DATABASE_URL = os.getenv('DATABASE_URL', 'sqlite:///app.db')
 
+# ========== CONFIGURACIÓN DE CONTACTO (PRIVADAS) ==========
+# Estas variables son privadas - solo para uso del backend
+RESEND_API_KEY = os.getenv('RESEND_API_KEY')
+RESEND_API_URL = os.getenv('RESEND_API_URL', 'https://api.resend.com/emails')
+
+# ========== CONFIGURACIÓN PÚBLICA DE CONTACTO ==========
+# Solo estas variables son seguras para exponer al frontend
+PUBLIC_CONTACT_CONFIG = {
+    'recipientEmail': os.getenv('RECIPIENT_EMAIL'),
+    'companyPhone': os.getenv('COMPANY_PHONE'),
+    'emailSubject': os.getenv('EMAIL_SUBJECT'),
+    'whatsappMessage': os.getenv('WHATSAPP_MESSAGE'),
+    'emailBodyMessage': os.getenv('EMAIL_BODY_MESSAGE')
+}
+
 # ========== ENDPOINTS DE HARDWARE ==========
 class HardwareEndpoints:
     """Endpoints específicos para hardware"""
@@ -70,6 +85,38 @@ class AuthEndpoints:
     LOGIN = "/auth/login"
     LOGOUT = "/auth/logout"
     HEALTH = "/health"
+
+# ========== FUNCIONES DE SEGURIDAD PARA CONFIGURACIÓN PÚBLICA ==========
+def get_public_config():
+    """Devuelve solo la configuración pública validada y segura para el frontend"""
+    import json
+    
+    # Validar que todas las variables públicas estén configuradas
+    missing_vars = []
+    validated_config = {}
+    
+    for key, value in PUBLIC_CONTACT_CONFIG.items():
+        if not value:
+            missing_vars.append(key)
+        else:
+            # Sanitizar valor para prevenir XSS
+            sanitized_value = str(value).replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;')
+            validated_config[key] = sanitized_value
+    
+    if missing_vars:
+        raise ValueError(f"Variables públicas faltantes en .env: {', '.join(missing_vars)}")
+    
+    return validated_config
+
+def validate_contact_config():
+    """Valida que la configuración de contacto esté completa"""
+    try:
+        config = get_public_config()
+        print(f"✅ Configuración pública válida: {list(config.keys())}")
+        return True
+    except ValueError as e:
+        print(f"❌ Error en configuración pública: {e}")
+        return False
 
 # ========== VALIDACIÓN DE CONFIGURACIÓN ==========
 def validate_config():
