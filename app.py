@@ -237,12 +237,13 @@ def sync_session():
 # Proxy de todas las peticiones hacia el backend
 @app.route(f'{PROXY_PREFIX}/<path:endpoint>', methods=['GET', 'POST', 'PUT', 'DELETE', 'PATCH'])
 def proxy_api(endpoint):
-    # Permitir login sin sesión (es necesario para establecer la sesión)
-    if endpoint == 'auth/login':
-        pass  # Permitir login sin verificar sesión
-    # Verificar que tengamos una sesión válida O cookie de autenticación para otros endpoints
-    elif 'user' not in session and not request.cookies.get('auth_token'):
-        return jsonify({'error': 'No autenticado'}), 401
+    # Endpoints públicos que no requieren autenticación
+    public_endpoints = ['auth/login', 'api/contact/send']
+    
+    if endpoint not in public_endpoints:
+        # Verificar que tengamos una sesión válida O cookie de autenticación para endpoints protegidos
+        if 'user' not in session and not request.cookies.get('auth_token'):
+            return jsonify({'error': 'No autenticado'}), 401
 
     print(f"PROXY: {request.method} /{endpoint} - Session valid: {bool(session.get('user'))}")
     print(f"PROXY: Request cookies: {dict(request.cookies)}")
@@ -268,7 +269,12 @@ def proxy_api(endpoint):
         headers = {'Content-Type': 'application/json'}
         cookies = dict(request.cookies)
         
+        # Agregar User-Agent específico para endpoint de contacto
+        if endpoint == 'api/contact/send':
+            headers['User-Agent'] = 'RESCUE-Frontend/1.0'
+        
         print(f"PROXY: Enviando cookies al backend: {cookies}")
+        print(f"PROXY: Headers enviados: {headers}")
         
         resp = requests.request(
             request.method,
