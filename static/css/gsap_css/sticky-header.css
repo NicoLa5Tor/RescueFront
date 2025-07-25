@@ -1,190 +1,25 @@
 /* ============ STICKY HEADER GLOBAL ============ */
 .sticky-header {
-    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 80px;
-    background: rgba(17, 17, 17, 0.85);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    z-index: 1000;
+    z-index: 10000000;
     font-family: 'Unbounded', sans-serif;
-    /* Remover transformaciones conflictivas */
 }
 
-.sticky-header-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 2rem;
-}
 
-.header-logo {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
 
-.rescue-brand {
-    font-size: 1.8rem;
-    font-weight: 900;
-    color: transparent;
-    background: linear-gradient(45deg, #60a5fa, #06b6d4, #3b82f6);
-    background-clip: text;
-    -webkit-background-clip: text;
-    text-shadow: 0 0 30px rgba(96, 165, 250, 0.3);
-    letter-spacing: 0.1em;
-}
 
-.system-text {
-    font-size: 1rem;
-    font-weight: 600;
-    color: rgba(255, 255, 255, 0.8);
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-}
 
-.header-nav {
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-}
 
-.nav-link {
-    color: rgba(255, 255, 255, 0.8);
-    text-decoration: none;
-    font-size: 0.9rem;
-    font-weight: 500;
-    letter-spacing: 0.05em;
-    padding: 0.5rem 1rem;
-    border-radius: 50px;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-}
 
-.nav-link:hover {
-    color: #60a5fa;
-    background: rgba(96, 165, 250, 0.1);
-    transform: translateY(-2px);
-}
 
-.nav-link::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(96, 165, 250, 0.2), transparent);
-    transition: left 0.5s;
-}
 
-.nav-link:hover::before {
-    left: 100%;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .sticky-header {
-        height: 60px;
-    }
-    
-    .sticky-header-content {
-        padding: 0 1rem;
-    }
-    
-    .rescue-brand {
-        font-size: 1.4rem;
-    }
-    
-    .system-text {
-        font-size: 0.8rem;
-    }
-    
-    .header-nav {
-        gap: 1rem;
-    }
-    
-    .nav-link {
-        font-size: 0.8rem;
-        padding: 0.4rem 0.8rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .header-nav {
-        gap: 0.5rem;
-    }
-    
-    .nav-link {
-        font-size: 0.7rem;
-        padding: 0.3rem 0.6rem;
-    }
-}
-
-/* Animaciones adicionales */
-@keyframes headerSlideIn {
-    from {
-        opacity: 0;
-        transform: translateY(-100%);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes headerSlideOut {
-    from {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    to {
-        opacity: 0;
-        transform: translateY(-100%);
-    }
-}
-
-.sticky-header.slide-in {
-    animation: headerSlideIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-}
-
-.sticky-header.slide-out {
-    animation: headerSlideOut 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-}
-
-/* Efecto de glassmorphism mejorado */
-.sticky-header::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    z-index: -1;
-}
-
-/* Indicador de scroll (opcional) */
-.scroll-indicator {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    height: 2px;
-    background: linear-gradient(90deg, #60a5fa, #06b6d4, #3b82f6);
-    transform-origin: left;
-    transform: scaleX(0);
-    transition: transform 0.3s ease;
-}
 
 .sticky-header.with-indicator .scroll-indicator {
     transform: scaleX(1);
+}
+#loginbotton{
+    pointer-events: painted;
 }
