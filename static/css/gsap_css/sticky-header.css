@@ -6,20 +6,66 @@
     height: 80px;
     z-index: 10000000;
     font-family: 'Unbounded', sans-serif;
+    display: block;
 }
-
-
-
-
-
-
-
-
-
-
 .sticky-header.with-indicator .scroll-indicator {
     transform: scaleX(1);
 }
-#loginbotton{
-    pointer-events: painted;
+
+/* Botón de login - posicionamiento flexible */
+#loginbutton {
+    position: fixed; /* o absolute si prefieres */
+    top: 1rem;
+    right: 5rem; /* Puedes cambiar este valor libremente */
+    z-index: 10000001;
+    cursor: pointer;
+    /* Quitar las clases de Tailwind y controlar desde aquí */
+    opacity: 0;
+    transform: scale(0.95);
+    transition: all 0.3s ease-out;
+    background: transparent;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+}
+
+/* Estados del botón */
+#loginbutton.opacity-100 {
+    opacity: 1;
+}
+
+#loginbutton.scale-100 {
+    transform: scale(1);
+}
+
+#loginbutton.opacity-0 {
+    opacity: 0;
+}
+
+#loginbutton.scale-95 {
+    transform: scale(0.95);
+}
+
+/* Hover */
+#loginbutton:hover {
+    transform: scale(1.1);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    #loginbutton {
+        top: 1rem;
+        right: 2rem; /* Ajusta libremente */
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    #loginbutton {
+        top: auto;
+        right: auto;
+        bottom: 2rem; /* Ajusta libremente */
+        left: 1.5rem; /* Ajusta libremente */
+    }
 }
