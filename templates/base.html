@@ -744,31 +744,178 @@
     
     </script>
     <script>
-const hero = document.getElementById('clamp');
-const loginbutton = document.getElementById('loginbutton');
-
-function checkButtonVisibility() {
-    const rect = hero.getBoundingClientRect();
-    const visible = rect.top < window.innerHeight && rect.bottom > 0;
-    const isAtOrigin = rect.top === 0 && rect.left === 0;
+// Mejorado sistema de visibilidad del botón de login
+(function() {
+    'use strict';
     
-    if (visible || isAtOrigin) {
-        loginbutton.classList.remove('opacity-100', 'scale-100');
-        loginbutton.classList.add('opacity-0', 'scale-95');
-    } else {
-        loginbutton.classList.remove('opacity-0', 'scale-95');
-        loginbutton.classList.add('opacity-100', 'scale-100');
+    let clampElement, loginButton, tunnelElement;
+    let lastVisibilityState = null;
+    let isAnimating = false;
+    let checkInterval;
+    
+    // Inicializar cuando el DOM esté listo
+    function init() {
+        clampElement = document.getElementById('clamp');
+        loginButton = document.getElementById('loginbutton');
+        tunnelElement = document.getElementById('tunnel');
+        
+        if (!clampElement || !loginButton) {
+            console.warn('Elementos necesarios no encontrados para el botón de login');
+            return;
+        }
+        
+        console.log('✅ Sistema de visibilidad del botón de login inicializado');
+        
+        // Configurar estado inicial
+        setupInitialState();
+        
+        // Configurar eventos
+        setupEventListeners();
+        
+        // Iniciar verificación
+        startVisibilityCheck();
     }
-}
-
-// Ejecutar al cargar la página
-checkButtonVisibility();
-
-// Ejecutar en scroll
-window.addEventListener('scroll', checkButtonVisibility);
-
-// Ejecutar constantemente para ser más exigente
-setInterval(checkButtonVisibility, 100);
+    
+    function setupInitialState() {
+        // Estado inicial oculto
+        loginButton.style.opacity = '0';
+        loginButton.style.transform = 'scale(0.95)';
+        loginButton.style.pointerEvents = 'none';
+    }
+    
+    function setupEventListeners() {
+        // Scroll optimizado con throttle
+        let scrollTimeout;
+        window.addEventListener('scroll', function() {
+            if (scrollTimeout) return;
+            scrollTimeout = setTimeout(() => {
+                checkButtonVisibility();
+                scrollTimeout = null;
+            }, 16); // ~60fps
+        }, { passive: true });
+        
+        // Resize
+        window.addEventListener('resize', checkButtonVisibility, { passive: true });
+        
+        // Escuchar eventos de GSAP si están disponibles
+        document.addEventListener('gsap:clamp:visible', hideButton);
+        document.addEventListener('gsap:clamp:hidden', showButton);
+        document.addEventListener('gsap:tunnel:start', hideButton);
+        document.addEventListener('gsap:tunnel:end', showButton);
+    }
+    
+    function checkButtonVisibility() {
+        if (isAnimating) return;
+        
+        const clampRect = clampElement.getBoundingClientRect();
+        const tunnelRect = tunnelElement ? tunnelElement.getBoundingClientRect() : null;
+        
+        // Verificar si clamp está visible
+        const clampVisible = clampRect.top < window.innerHeight && clampRect.bottom > 0;
+        const clampAtOrigin = Math.abs(clampRect.top) < 50 && Math.abs(clampRect.left) < 50;
+        
+        // Verificar si túnel está activo
+        const tunnelActive = tunnelRect ? (
+            tunnelRect.top < window.innerHeight && 
+            tunnelRect.bottom > 0 &&
+            tunnelRect.top <= 100
+        ) : false;
+        
+        // Detectar animaciones activas mediante clases CSS o atributos
+        const hasActiveAnimation = clampElement.classList.contains('gsap-animating') ||
+                                 clampElement.style.transform !== '' ||
+                                 (tunnelElement && tunnelElement.classList.contains('active'));
+        
+        // Decidir visibilidad
+        const shouldHide = clampVisible || clampAtOrigin || tunnelActive || hasActiveAnimation;
+        
+        // Solo actualizar si el estado cambió
+        if (lastVisibilityState !== shouldHide) {
+            lastVisibilityState = shouldHide;
+            
+            if (shouldHide) {
+                hideButton();
+            } else {
+                showButton();
+            }
+        }
+    }
+    
+    function showButton() {
+        if (loginButton.style.opacity === '1') return;
+        
+        isAnimating = true;
+        
+        // Animación suave de entrada
+        loginButton.style.transition = 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
+        loginButton.style.opacity = '1';
+        loginButton.style.transform = 'scale(1)';
+        loginButton.style.pointerEvents = 'auto';
+        
+        // Agregar clase de animación de entrada
+        loginButton.classList.add('animate-entrance');
+        
+        setTimeout(() => {
+            isAnimating = false;
+            loginButton.classList.remove('animate-entrance');
+        }, 400);
+        
+        console.log('🔵 Botón de login mostrado');
+    }
+    
+    function hideButton() {
+        if (loginButton.style.opacity === '0') return;
+        
+        isAnimating = true;
+        
+        // Animación suave de salida
+        loginButton.style.transition = 'all 0.3s ease-out';
+        loginButton.style.opacity = '0';
+        loginButton.style.transform = 'scale(0.95)';
+        loginButton.style.pointerEvents = 'none';
+        
+        setTimeout(() => {
+            isAnimating = false;
+        }, 300);
+        
+        console.log('🔴 Botón de login ocultado');
+    }
+    
+    function startVisibilityCheck() {
+        // Verificación inicial
+        setTimeout(checkButtonVisibility, 100);
+        
+        // Verificación periódica menos agresiva
+        checkInterval = setInterval(checkButtonVisibility, 200);
+    }
+    
+    // API pública para control manual
+    window.LoginButtonController = {
+        show: showButton,
+        hide: hideButton,
+        check: checkButtonVisibility,
+        destroy() {
+            if (checkInterval) {
+                clearInterval(checkInterval);
+            }
+        }
+    };
+    
+    // Inicializar cuando el DOM esté listo
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+    
+    // Cleanup al descargar la página
+    window.addEventListener('beforeunload', () => {
+        if (window.LoginButtonController) {
+            window.LoginButtonController.destroy();
+        }
+    });
+    
+})();
 </script>
     {% block extra_js %}{% endblock %}
 </body>

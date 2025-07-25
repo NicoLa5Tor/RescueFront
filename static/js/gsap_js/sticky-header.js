@@ -81,60 +81,74 @@
         },
         
         setupLoginButton: function() {
-            if (!this.loginButton || !this.clampElement) {
-                console.warn('Botón de login o elemento clamp no encontrado');
+            if (!this.loginButton) {
+                console.warn('Botón de login no encontrado en sticky-header');
                 return;
             }
             
-            // Estado inicial del botón (oculto)
-            gsap.set(this.loginButton, {
-                opacity: 0,
-                scale: 0.95,
-                pointerEvents: 'none'
-            });
+            console.log('📌 STICKY-HEADER: Botón de login encontrado, delegando control al sistema global');
             
-            // Función para verificar visibilidad (tu lógica original)
-            const checkButtonVisibility = () => {
-                const rect = this.clampElement.getBoundingClientRect();
-                const visible = rect.top < window.innerHeight && rect.bottom > 0;
-                const isAtOrigin = rect.top === 0 && rect.left === 0;
-                
-                if (visible || isAtOrigin) {
-                    // clamp está visible → OCULTAR botón
-                    gsap.to(this.loginButton, {
-                        opacity: 0,
-                        scale: 0.95,
-                        duration: 0.3,
-                        ease: "power2.out",
-                        onComplete: () => {
-                            gsap.set(this.loginButton, { pointerEvents: 'none' });
-                        }
-                    });
-                } else {
-                    // clamp NO está visible → MOSTRAR botón
-                    gsap.to(this.loginButton, {
-                        opacity: 1,
-                        scale: 1,
-                        duration: 0.4,
-                        ease: "back.out(1.7)",
-                        onStart: () => {
-                            gsap.set(this.loginButton, { pointerEvents: 'auto' });
-                        }
-                    });
-                }
-            };
+            // Delegar el control de visibilidad al sistema global
+            // El sistema en base.html ya maneja la visibilidad
             
-            // Ejecutar al cargar
-            checkButtonVisibility();
-            
-            // Ejecutar en scroll
-            window.addEventListener('scroll', checkButtonVisibility);
-            
-            // Ejecutar cada 100ms para ser exigente
-            this.buttonInterval = setInterval(checkButtonVisibility, 100);
-            
-            // Agregar evento click al botón
+            // Solo configurar el evento click
             this.loginButton.addEventListener('click', this.handleLoginClick.bind(this));
+            
+            // Emitir eventos GSAP para integración con el sistema global
+            this.setupGSAPEvents();
+        },
+        
+        setupGSAPEvents: function() {
+            // Emitir eventos cuando detectemos cambios en las animaciones
+            if (this.clampElement) {
+                // Observer para detectar cambios en clamp
+                const observer = new MutationObserver((mutations) => {
+                    mutations.forEach((mutation) => {
+                        if (mutation.type === 'attributes' && 
+                            (mutation.attributeName === 'style' || mutation.attributeName === 'class')) {
+                            
+                            const rect = this.clampElement.getBoundingClientRect();
+                            const visible = rect.top < window.innerHeight && rect.bottom > 0;
+                            
+                            if (visible) {
+                                document.dispatchEvent(new CustomEvent('gsap:clamp:visible'));
+                            } else {
+                                document.dispatchEvent(new CustomEvent('gsap:clamp:hidden'));
+                            }
+                        }
+                    });
+                });
+                
+                observer.observe(this.clampElement, {
+                    attributes: true,
+                    attributeFilter: ['style', 'class']
+                });
+                
+                this.clampObserver = observer;
+            }
+            
+            // Observer para detectar animaciones del túnel
+            const tunnelElement = document.getElementById('tunnel');
+            if (tunnelElement) {
+                const tunnelObserver = new MutationObserver((mutations) => {
+                    mutations.forEach((mutation) => {
+                        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                            if (tunnelElement.classList.contains('active')) {
+                                document.dispatchEvent(new CustomEvent('gsap:tunnel:start'));
+                            } else {
+                                document.dispatchEvent(new CustomEvent('gsap:tunnel:end'));
+                            }
+                        }
+                    });
+                });
+                
+                tunnelObserver.observe(tunnelElement, {
+                    attributes: true,
+                    attributeFilter: ['class']
+                });
+                
+                this.tunnelObserver = tunnelObserver;
+            }
         },
         
         handleLoginClick: function() {
