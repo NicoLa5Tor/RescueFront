@@ -280,5 +280,8 @@
 <!-- Cargar configuración desde Flask (debe ir ANTES del JavaScript principal) -->
 <script src="{{ url_for('contact_config_js') }}"></script>
 
+<!-- Cargar el módulo de animaciones GSAP para contacto -->
+<script src="{{ url_for('static', filename='js/gsap_js/contact.js') }}"></script>
+
 <!-- Cargar el JavaScript del formulario -->
 <script src="{{ url_for('static', filename='js/contact/contact.js') }}"></script>
