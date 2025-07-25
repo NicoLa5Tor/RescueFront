@@ -22,19 +22,58 @@
     opacity: 0;
     transform: scale(0.95);
     transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     padding: 0.75rem;
     border-radius: 1rem;
     font-weight: 500;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(255, 255, 255, 0.1);
     width: 60px;
     height: 60px;
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+/* Indicador de que hay que hacer scroll - solo visible al inicio */
+#loginbutton::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, rgba(96, 165, 250, 0.3), rgba(59, 130, 246, 0.3));
+    border-radius: 1.2rem;
+    z-index: -1;
+    opacity: 0;
+    animation: pulseGlow 2s ease-in-out infinite;
+}
+
+/* Animación de pulso para indicar interactividad */
+@keyframes pulseGlow {
+    0%, 100% {
+        opacity: 0;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.6;
+        transform: scale(1.05);
+    }
+}
+
+/* Cuando el botón está activo, mostrar el glow */
+#loginbutton.active::before {
+    opacity: 0.4;
+}
+
+/* Estado mejorado cuando está visible */
+#loginbutton.visible {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(96, 165, 250, 0.2);
 }
 
 /* Icono SVG dentro del botón */

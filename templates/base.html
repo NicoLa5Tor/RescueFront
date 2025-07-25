@@ -807,36 +807,37 @@
     function checkButtonVisibility() {
         if (isAnimating) return;
         
-        const clampRect = clampElement.getBoundingClientRect();
+        const scrollY = window.scrollY;
         const tunnelRect = tunnelElement ? tunnelElement.getBoundingClientRect() : null;
         
-        // Verificar si clamp está visible
-        const clampVisible = clampRect.top < window.innerHeight && clampRect.bottom > 0;
-        const clampAtOrigin = Math.abs(clampRect.top) < 50 && Math.abs(clampRect.left) < 50;
+        // El botón se muestra después de hacer scroll (más de 100px)
+        const hasScrolled = scrollY > 100;
         
-        // Verificar si túnel está activo
+        // Verificar si el túnel está visible/activo
         const tunnelActive = tunnelRect ? (
             tunnelRect.top < window.innerHeight && 
             tunnelRect.bottom > 0 &&
-            tunnelRect.top <= 100
+            tunnelRect.top <= 200 // Margen más generoso para detectar el túnel
         ) : false;
         
-        // Detectar animaciones activas mediante clases CSS o atributos
-        const hasActiveAnimation = clampElement.classList.contains('gsap-animating') ||
-                                 clampElement.style.transform !== '' ||
-                                 (tunnelElement && tunnelElement.classList.contains('active'));
+        // Detectar si estamos específicamente en la sección del túnel
+        const inTunnelSection = tunnelElement && (
+            tunnelElement.classList.contains('active') ||
+            tunnelElement.classList.contains('gsap-animating') ||
+            (tunnelRect && tunnelRect.top <= 0 && tunnelRect.bottom >= window.innerHeight * 0.5)
+        );
         
-        // Decidir visibilidad
-        const shouldHide = clampVisible || clampAtOrigin || tunnelActive || hasActiveAnimation;
+        // Lógica simple: mostrar si hay scroll, ocultar solo en túnel
+        const shouldShow = hasScrolled && !tunnelActive && !inTunnelSection;
         
         // Solo actualizar si el estado cambió
-        if (lastVisibilityState !== shouldHide) {
-            lastVisibilityState = shouldHide;
+        if (lastVisibilityState !== shouldShow) {
+            lastVisibilityState = shouldShow;
             
-            if (shouldHide) {
-                hideButton();
-            } else {
+            if (shouldShow) {
                 showButton();
+            } else {
+                hideButton();
             }
         }
     }
@@ -852,15 +853,15 @@
         loginButton.style.transform = 'scale(1)';
         loginButton.style.pointerEvents = 'auto';
         
-        // Agregar clase de animación de entrada
-        loginButton.classList.add('animate-entrance');
+        // Agregar clases para mejor apariencia
+        loginButton.classList.add('animate-entrance', 'visible', 'active');
         
         setTimeout(() => {
             isAnimating = false;
             loginButton.classList.remove('animate-entrance');
         }, 400);
         
-        console.log('🔵 Botón de login mostrado');
+        console.log('🔵 Botón de login mostrado (con scroll)');
     }
     
     function hideButton() {
@@ -873,6 +874,9 @@
         loginButton.style.opacity = '0';
         loginButton.style.transform = 'scale(0.95)';
         loginButton.style.pointerEvents = 'none';
+        
+        // Remover clases de estado activo
+        loginButton.classList.remove('visible', 'active');
         
         setTimeout(() => {
             isAnimating = false;
