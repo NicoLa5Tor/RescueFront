@@ -263,16 +263,94 @@
     gsap.registerPlugin(ScrollTrigger);
 
     // Enhanced process steps data with responsive adjustments
+    // var processSteps = [
+    //   {
+    //     title: "Activación de Emergencia",
+    //     subtitle: "Inicio del protocolo de seguridad",
+    //     description: "El usuario inicia el proceso presionando un botón de emergencia o si un usuario autorizado la activa mediante whatsapp.",
+    //     details: [
+    //       "Activación instantánea < 100ms",
+    //       "Registro de quien la activo",
+    //       "Alertar a los demas usuarios por mensaje en whatsapp",
+    //       "Registro de ubicación GPS"
+    //     ],
+    //     icon: "🚨",
+    //     color: "from-red-500 to-red-700",
+    //     percent: 0.15,
+    //     videoUrl: VIDEO_URLS.step1
+    //   },
+    //   {
+    //     title: "Transmisión TI",
+    //     subtitle: "Comunicación en tiempo real",
+    //     description: "La alerta se transmite instantáneamente a la nube mediante protocolo TI, garantizando que la señal llegue con latencia mínima y alta fiabilidad.",
+    //     details: [
+    //       "Protocolo TI de alta velocidad",
+    //       "Alerta aceptada y leida bajo estrictas credenciales",
+    //       "Latencia < 50ms promedio"
+    //     ],
+    //     icon: "📡",
+    //     color: "from-blue-500 to-blue-700",
+    //     percent: 0.35,
+    //     videoUrl: VIDEO_URLS.step2
+    //   },
+    //   {
+    //     title: "Procesamiento Central",
+    //     subtitle: "Servicio de porcesmiento de alertas",
+    //     description: "Un sistema central desarrollado en python procesa las alertas generadas para activarlas o descartarlas.",
+    //     details: [
+    //       "Análisis en < 200ms",
+    //       "Priorización inteligente",
+    //       "Detección de patrones",
+    //       "Coordinación multiplataforma"
+    //     ],
+    //     icon: "🧠",
+    //     color: "from-purple-500 to-purple-700",
+    //     percent: 0.55,
+    //     videoUrl: VIDEO_URLS.step3
+    //   },
+    //   {
+    //     title: "Activación de Dispositivos",
+    //     subtitle: "Red IoT sincronizada",
+    //     description: "El sistema activa automáticamente una red de dispositivos físicos, como semáforos y pantallas LED, que informan y coordinan acciones visuales.",
+    //     details: [
+    //       "Activación simultánea",
+    //       "Sincronización < 1 segundo",
+    //       "Redundancia del 99.9%"
+    //     ],
+    //     icon: "💡",
+    //     color: "from-yellow-500 to-yellow-700",
+    //     percent: 0.75,
+    //     videoUrl: VIDEO_URLS.step4
+    //   },
+    //   {
+    //     title: "Confirmación y Registro",
+    //     subtitle: "Verificación completa del ciclo",
+    //     description: "El proceso finaliza con una verificación integral del ciclo, registrando los eventos y enviando notificaciones en tiempo real.",
+    //     details: [
+    //       "Registro de la actividad en base de datos",
+    //       "Notificaciones multicanal",
+    //       "Analytics en tiempo real",
+    //       "Cumplimiento GDPR"
+    //     ],
+    //     icon: "✅",
+    //     color: "from-green-500 to-green-700",
+    //     percent: 0.95,
+    //     videoUrl: VIDEO_URLS.step5
+    //   }
+    // ];
+
+
     var processSteps = [
       {
         title: "Activación de Emergencia",
         subtitle: "Inicio del protocolo de seguridad",
-        description: "El usuario inicia el proceso presionando un botón de emergencia, recibiendo una confirmación táctil y visual inmediata para asegurar que la alerta fue generada.",
+        description:
+          "El proceso comienza cuando un usuario autorizado activa la emergencia, ya sea presionando un botón físico (botonera) o enviando un mensaje específico por WhatsApp.",
         details: [
-          "Activación instantánea < 100ms",
-          "Confirmación táctil mediante vibración",
-          "LED de estado multicolor",
-          "Registro de ubicación GPS"
+          "Activación inmediata < 100ms",
+          "Verificación de identidad según el canal (botonera o WhatsApp)",
+          "Solicitud de ubicación al usuario si aplica",
+          "Registro inicial del evento con metadatos"
         ],
         icon: "🚨",
         color: "from-red-500 to-red-700",
@@ -280,14 +358,15 @@
         videoUrl: VIDEO_URLS.step1
       },
       {
-        title: "Transmisión MQTT",
-        subtitle: "Comunicación en tiempo real",
-        description: "La alerta se transmite instantáneamente a la nube mediante el protocolo MQTT, garantizando que la señal llegue con latencia mínima y alta fiabilidad.",
+        title: "Validación y Transmisión",
+        subtitle: "Autenticación y envío seguro",
+        description:
+          "Se valida que la activación provenga de una fuente legítima mediante credenciales o identificación. Si se aprueba, la alerta se transmite en tiempo real a la nube.",
         details: [
-          "Protocolo MQTT v5.0",
-          "Encriptación TLS 1.3",
-          "QoS nivel 2 garantizado",
-          "Latencia < 50ms promedio"
+          "Autenticación del emisor",
+          "Transmisión segura con protocolo TI",
+          "Latencia promedio < 50ms",
+          "Trazabilidad completa del origen"
         ],
         icon: "📡",
         color: "from-blue-500 to-blue-700",
@@ -296,13 +375,14 @@
       },
       {
         title: "Procesamiento Central",
-        subtitle: "Inteligencia artificial en acción",
-        description: "Un sistema central con inteligencia artificial recibe la alerta, analiza los datos, prioriza eventos y coordina la respuesta adecuada en tiempo real.",
+        subtitle: "Análisis automatizado de la alerta",
+        description:
+          "El sistema central, desarrollado en Python, recibe la alerta, la analiza, y toma decisiones: prioriza, clasifica y detecta posibles patrones de eventos.",
         details: [
-          "Análisis con ML en < 200ms",
-          "Priorización inteligente",
-          "Detección de patrones",
-          "Coordinación multi-agente"
+          "Procesamiento en < 200ms",
+          "Priorización basada en reglas y contexto",
+          "Detección automática de alertas similares",
+          "Interoperabilidad con múltiples plataformas"
         ],
         icon: "🧠",
         color: "from-purple-500 to-purple-700",
@@ -311,13 +391,14 @@
       },
       {
         title: "Activación de Dispositivos",
-        subtitle: "Red IoT sincronizada",
-        description: "El sistema activa automáticamente una red de dispositivos físicos, como semáforos y displays LED, que informan y coordinan acciones visuales.",
+        subtitle: "Respuesta física y visual",
+        description:
+          "Una vez validada, la alerta activa una red de dispositivos físicos como semáforos, sirenas y pantallas LED para informar y coordinar acciones en la zona afectada.",
         details: [
-          "Activación simultánea",
-          "Sincronización < 1 segundo",
-          "Cobertura de 5km radio",
-          "Redundancia del 99.9%"
+          "Activación sincronizada",
+          "Tiempo de respuesta < 1 segundo",
+          "Redundancia asegurada (99.9%)",
+          "Adaptación por ubicación geográfica"
         ],
         icon: "💡",
         color: "from-yellow-500 to-yellow-700",
@@ -325,14 +406,15 @@
         videoUrl: VIDEO_URLS.step4
       },
       {
-        title: "Confirmación y Registro",
-        subtitle: "Verificación completa del ciclo",
-        description: "El proceso finaliza con una verificación integral del ciclo, registrando los eventos y enviando notificaciones en tiempo real.",
+        title: "Notificación y Cierre",
+        subtitle: "Confirmación y trazabilidad completa",
+        description:
+          "Se notifica a todos los usuarios relacionados con la ubicación. La alerta puede ser desactivada manualmente desde la central o por un usuario autorizado.",
         details: [
-          "Registro blockchain inmutable",
-          "Notificaciones multicanal",
-          "Analytics en tiempo real",
-          "Cumplimiento GDPR"
+          "Notificaciones por múltiples canales (WhatsApp, WebApp, etc.)",
+          "Registro detallado en base de datos",
+          "Análisis en tiempo real (analytics y métricas)",
+          "Cumplimiento de normativas como GDPR"
         ],
         icon: "✅",
         color: "from-green-500 to-green-700",
