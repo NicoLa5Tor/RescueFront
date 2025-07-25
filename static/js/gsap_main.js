@@ -522,8 +522,7 @@ function waitForStylesAndHidePreloader() {
                     document.body.style.left = '';
                     document.body.style.width = '';
                     
-                    // Llamar a la función scrollToTop para llevar la página al inicio
-                    scrollToTop();
+                    // NO llamar a scrollToTop automáticamente - mantener posición actual
                     
                     console.log('✅ SIMPLE PRELOADER: Ocultado completamente - Scroll restaurado - Event listeners limpiados - Interfaz completamente funcional');
                 }, 1500); // 1.5 segundos para asegurar que la animación termine
@@ -581,8 +580,7 @@ window.addEventListener('load', function() {
                 document.body.style.overflow = '';
                 document.documentElement.style.overflow = '';
                 
-                // Asegurar scroll al inicio también en el preloader de respaldo
-                scrollToTop();
+                // NO llamar a scrollToTop en respaldo - mantener posición actual
                 
                 console.log('✅ PRELOADER RESPALDO: Ocultado completamente - Scroll restaurado');
             }, 1500); // 1.5 segundos pour asegurar que la animación termine
