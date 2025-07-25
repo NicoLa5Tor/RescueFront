@@ -39,11 +39,6 @@ CORS_ORIGINS = os.getenv('CORS_ORIGINS', '*').split(',')
 # ========== CONFIGURACIÓN DE BASE DE DATOS (si se necesita en el futuro) ==========
 DATABASE_URL = os.getenv('DATABASE_URL', 'sqlite:///app.db')
 
-# ========== CONFIGURACIÓN DE CONTACTO (PRIVADAS) ==========
-# Estas variables son privadas - solo para uso del backend
-RESEND_API_KEY = os.getenv('RESEND_API_KEY')
-RESEND_API_URL = os.getenv('RESEND_API_URL', 'https://api.resend.com/emails')
-
 # ========== CONFIGURACIÓN PÚBLICA DE CONTACTO ==========
 # Solo estas variables son seguras para exponer al frontend
 PUBLIC_CONTACT_CONFIG = {
@@ -51,7 +46,8 @@ PUBLIC_CONTACT_CONFIG = {
     'companyPhone': os.getenv('COMPANY_PHONE'),
     'emailSubject': os.getenv('EMAIL_SUBJECT'),
     'whatsappMessage': os.getenv('WHATSAPP_MESSAGE'),
-    'emailBodyMessage': os.getenv('EMAIL_BODY_MESSAGE')
+    'emailBodyMessage': os.getenv('EMAIL_BODY_MESSAGE'),
+    'apiUrl': '/proxy/api/contact/send'  # Endpoint para envío de emails
 }
 
 # ========== ENDPOINTS DE HARDWARE ==========

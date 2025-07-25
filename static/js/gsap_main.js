@@ -263,13 +263,32 @@ function waitForStylesAndHidePreloader() {
     window.addEventListener('scroll', maintainScrollPosition, { passive: false });
     window.addEventListener('wheel', preventScroll, { passive: false });
     window.addEventListener('touchmove', preventScroll, { passive: false });
-    window.addEventListener('keydown', (e) => {
-        // Prevenir teclas que causan scroll (flechas, página arriba/abajo, etc.)
+    
+    // Variable para controlar si el preloader está activo
+    let preloaderKeyListenerActive = true;
+    
+    const keydownHandler = (e) => {
+        // Solo prevenir teclas si el preloader está activo Y no estamos en un input/textarea
+        if (!preloaderKeyListenerActive) return;
+        
+        const activeElement = document.activeElement;
+        const isInputActive = activeElement && (
+            activeElement.tagName === 'INPUT' || 
+            activeElement.tagName === 'TEXTAREA' || 
+            activeElement.contentEditable === 'true'
+        );
+        
+        // Si hay un input activo, no bloquear las teclas
+        if (isInputActive) return;
+        
+        // Prevenir teclas que causan scroll (flechas, página arriba/abajo, espacio)
         if ([32, 33, 34, 35, 36, 37, 38, 39, 40].includes(e.keyCode)) {
             e.preventDefault();
             window.scrollTo(0, 0);
         }
-    });
+    };
+    
+    window.addEventListener('keydown', keydownHandler);
     
     console.log('🔒 SCROLL: Posición fijada en (0,0) - Todos los eventos de scroll bloqueados');
     
@@ -484,6 +503,13 @@ function waitForStylesAndHidePreloader() {
                     window.removeEventListener('scroll', maintainScrollPosition);
                     window.removeEventListener('wheel', preventScroll);
                     window.removeEventListener('touchmove', preventScroll);
+                    
+                    // ============ DESACTIVAR LISTENER DE TECLADO ============
+                    // Desactivar el bloqueo de teclas para que funcionen normalmente
+                    preloaderKeyListenerActive = false;
+                    window.removeEventListener('keydown', keydownHandler);
+                    
+                    console.log('⌨️ TECLADO: Event listener de bloqueo removido - Teclas funcionan normalmente');
                     
                     console.log('🧹 SCROLL: Event listeners de bloqueo removidos');
                     

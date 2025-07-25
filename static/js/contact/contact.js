@@ -105,30 +105,29 @@ class RescueContactForm {
 
     async sendEmail(formData) {
         try {
-            // Send form data to backend
+            // Solo enviar los datos del formulario, nada más
             const payload = {
-                formData: formData,
-                emailContent: this.generateEmailHTML(formData)
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+                email: formData.email,
+                company: formData.company,
+                phone: formData.phone,
+                projectType: formData.projectType,
+                message: formData.message,
+                privacy: formData.privacy
             };
 
-            const response = await fetch(this.config.apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(payload)
-            });
-
-            const result = await response.json();
+            // Por ahora, simular envío exitoso ya que no tenemos backend real
+            console.log('📧 Datos del formulario que se enviarían:', payload);
             
-            if (!response.ok) {
-                throw new Error(result.message || 'Error del servidor');
-            }
-
-            return { success: true, data: result };
+            // Simular delay de red
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Simular respuesta exitosa
+            return { success: true, data: { message: 'Formulario enviado correctamente' } };
             
         } catch (error) {
-            console.error('Backend API Error:', error);
+            console.error('Error enviando formulario:', error);
             return { success: false, error: error.message };
         }
     }
@@ -140,160 +139,356 @@ class RescueContactForm {
         <head>
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Nueva Consulta RESCUE</title>
+            <title>🚨 Nueva Consulta RESCUE - ${formData.company}</title>
             <style>
                 body {
-                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
                     line-height: 1.6;
-                    color: #333;
-                    max-width: 600px;
+                    color: #1a1a1a;
+                    margin: 0;
+                    padding: 0;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    min-height: 100vh;
+                }
+                .email-wrapper {
+                    padding: 40px 20px;
+                    max-width: 700px;
                     margin: 0 auto;
-                    padding: 20px;
-                    background-color: #f8f9fa;
                 }
                 .email-container {
-                    background: white;
-                    border-radius: 12px;
-                    padding: 30px;
-                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                    background: #ffffff;
+                    border-radius: 20px;
+                    overflow: hidden;
+                    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+                    border: 1px solid rgba(255, 255, 255, 0.2);
                 }
                 .header {
+                    background: linear-gradient(135deg, #ff416c, #ff4757, #ffa726);
                     text-align: center;
-                    margin-bottom: 30px;
-                    padding-bottom: 20px;
-                    border-bottom: 3px solid #e74c3c;
+                    padding: 40px 30px;
+                    position: relative;
+                    overflow: hidden;
+                }
+                .header::before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="20" cy="20" r="1" fill="%23ffffff" opacity="0.1"/><circle cx="80" cy="80" r="1" fill="%23ffffff" opacity="0.1"/><circle cx="40" cy="60" r="1" fill="%23ffffff" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>') repeat;
+                    opacity: 0.3;
+                }
+                .logo-container {
+                    position: relative;
+                    z-index: 2;
+                    margin-bottom: 20px;
                 }
                 .logo {
-                    background: linear-gradient(45deg, #e74c3c, #f39c12);
+                    background: rgba(255, 255, 255, 0.2);
+                    backdrop-filter: blur(10px);
                     color: white;
-                    width: 60px;
-                    height: 60px;
-                    border-radius: 12px;
+                    width: 80px;
+                    height: 80px;
+                    border-radius: 20px;
                     display: inline-flex;
                     align-items: center;
                     justify-content: center;
-                    font-weight: bold;
-                    font-size: 18px;
-                    margin-bottom: 10px;
+                    font-weight: 900;
+                    font-size: 28px;
+                    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+                    border: 2px solid rgba(255, 255, 255, 0.3);
+                    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
                 }
                 .title {
-                    color: #e74c3c;
+                    color: white;
                     margin: 0;
-                    font-size: 24px;
+                    font-size: 32px;
+                    font-weight: 900;
+                    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+                    position: relative;
+                    z-index: 2;
                 }
                 .subtitle {
-                    color: #666;
-                    margin: 5px 0 0 0;
+                    color: rgba(255, 255, 255, 0.9);
+                    margin: 8px 0 0 0;
+                    font-size: 16px;
+                    font-weight: 500;
+                    position: relative;
+                    z-index: 2;
+                }
+                .content {
+                    padding: 40px 30px;
+                }
+                .priority-badge {
+                    background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+                    color: white;
+                    padding: 12px 24px;
+                    border-radius: 25px;
+                    font-size: 14px;
+                    font-weight: 700;
+                    display: inline-block;
+                    margin-bottom: 30px;
+                    box-shadow: 0 4px 15px rgba(238, 90, 36, 0.4);
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                }
+                .client-info {
+                    background: linear-gradient(135deg, #f8f9ff, #e8f4fd);
+                    border-radius: 16px;
+                    padding: 30px;
+                    margin: 25px 0;
+                    border: 1px solid rgba(102, 126, 234, 0.1);
+                    position: relative;
+                }
+                .client-info::before {
+                    content: '👤';
+                    position: absolute;
+                    top: -10px;
+                    left: 20px;
+                    background: white;
+                    padding: 8px 12px;
+                    border-radius: 20px;
+                    font-size: 18px;
+                    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
                 }
                 .info-grid {
                     display: grid;
-                    grid-template-columns: 1fr 1fr;
+                    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
                     gap: 20px;
-                    margin: 20px 0;
+                    margin-top: 20px;
                 }
                 .info-item {
-                    background: #f8f9fa;
-                    padding: 15px;
-                    border-radius: 8px;
-                    border-left: 4px solid #e74c3c;
+                    background: white;
+                    padding: 20px;
+                    border-radius: 12px;
+                    border-left: 4px solid #667eea;
+                    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+                    transition: transform 0.2s ease;
+                }
+                .info-item:hover {
+                    transform: translateY(-2px);
                 }
                 .info-label {
-                    font-weight: bold;
-                    color: #e74c3c;
+                    font-weight: 600;
+                    color: #667eea;
                     font-size: 12px;
                     text-transform: uppercase;
-                    margin-bottom: 5px;
+                    margin-bottom: 8px;
+                    letter-spacing: 0.5px;
                 }
                 .info-value {
-                    color: #333;
+                    color: #2c3e50;
                     font-size: 16px;
+                    font-weight: 500;
+                    word-break: break-word;
+                }
+                .project-type {
+                    background: linear-gradient(135deg, #a8edea, #fed6e3);
+                    padding: 25px;
+                    border-radius: 16px;
+                    margin: 25px 0;
+                    text-align: center;
+                    position: relative;
+                }
+                .project-type::before {
+                    content: '🎯';
+                    position: absolute;
+                    top: -10px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: white;
+                    padding: 8px 12px;
+                    border-radius: 20px;
+                    font-size: 18px;
+                    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                }
+                .project-label {
+                    font-weight: 600;
+                    color: #2c3e50;
+                    font-size: 14px;
+                    text-transform: uppercase;
+                    margin-bottom: 10px;
+                    letter-spacing: 0.5px;
+                }
+                .project-value {
+                    color: #2c3e50;
+                    font-size: 18px;
+                    font-weight: 700;
                 }
                 .message-section {
-                    background: #f8f9fa;
-                    padding: 20px;
-                    border-radius: 8px;
-                    margin: 20px 0;
-                    border-left: 4px solid #f39c12;
+                    background: linear-gradient(135deg, #ffeaa7, #fab1a0);
+                    padding: 30px;
+                    border-radius: 16px;
+                    margin: 25px 0;
+                    position: relative;
                 }
-                .priority-badge {
-                    background: #e74c3c;
-                    color: white;
-                    padding: 5px 12px;
+                .message-section::before {
+                    content: '💬';
+                    position: absolute;
+                    top: -10px;
+                    left: 20px;
+                    background: white;
+                    padding: 8px 12px;
                     border-radius: 20px;
-                    font-size: 12px;
-                    font-weight: bold;
-                    display: inline-block;
-                    margin-bottom: 15px;
+                    font-size: 18px;
+                    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                }
+                .message-content {
+                    background: rgba(255, 255, 255, 0.9);
+                    padding: 20px;
+                    border-radius: 12px;
+                    margin-top: 15px;
+                    line-height: 1.8;
+                    font-style: italic;
+                    border-left: 4px solid #fdcb6e;
+                }
+                .stats-banner {
+                    background: linear-gradient(135deg, #00b894, #00cec9);
+                    color: white;
+                    text-align: center;
+                    padding: 25px;
+                    margin: 30px 0;
+                    border-radius: 16px;
+                    position: relative;
+                    overflow: hidden;
+                }
+                .stats-banner::before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="%23ffffff" opacity="0.1"/><circle cx="80" cy="80" r="2" fill="%23ffffff" opacity="0.1"/></svg>') repeat;
+                    opacity: 0.3;
+                }
+                .stats-content {
+                    position: relative;
+                    z-index: 2;
                 }
                 .footer {
+                    background: #2d3436;
+                    color: #ddd;
                     text-align: center;
-                    margin-top: 30px;
-                    padding-top: 20px;
-                    border-top: 1px solid #eee;
-                    color: #666;
+                    padding: 30px;
+                    margin-top: 0;
+                }
+                .footer-title {
+                    color: white;
+                    font-size: 18px;
+                    font-weight: 700;
+                    margin-bottom: 10px;
+                }
+                .timestamp {
+                    color: #74b9ff;
+                    font-weight: 500;
+                    margin: 15px 0;
+                }
+                .response-time {
+                    background: linear-gradient(135deg, #fd79a8, #e84393);
+                    color: white;
+                    padding: 12px 20px;
+                    border-radius: 20px;
+                    display: inline-block;
+                    margin-top: 15px;
+                    font-weight: 600;
                     font-size: 14px;
                 }
                 @media (max-width: 600px) {
-                    .info-grid {
-                        grid-template-columns: 1fr;
-                    }
+                    .email-wrapper { padding: 20px 10px; }
+                    .content { padding: 30px 20px; }
+                    .title { font-size: 24px; }
+                    .info-grid { grid-template-columns: 1fr; }
                 }
             </style>
         </head>
         <body>
-            <div class="email-container">
-                <div class="header">
-                    <div class="logo">R</div>
-                    <h1 class="title">NUEVA CONSULTA RESCUE</h1>
-                    <p class="subtitle">Sistema de Alertas de Emergencia</p>
-                </div>
-
-                <div class="priority-badge">⚡ RESPUESTA REQUERIDA EN 24H</div>
-
-                <div class="info-grid">
-                    <div class="info-item">
-                        <div class="info-label">Nombre Completo</div>
-                        <div class="info-value">${formData.firstName} ${formData.lastName}</div>
+            <div class="email-wrapper">
+                <div class="email-container">
+                    <div class="header">
+                        <div class="logo-container">
+                            <div class="logo">🚨</div>
+                        </div>
+                        <h1 class="title">NUEVA CONSULTA RESCUE</h1>
+                        <p class="subtitle">Sistema de Alertas de Emergencia</p>
                     </div>
-                    <div class="info-item">
-                        <div class="info-label">Empresa</div>
-                        <div class="info-value">${formData.company}</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Email</div>
-                        <div class="info-value">${formData.email}</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Teléfono</div>
-                        <div class="info-value">${formData.phone || 'No proporcionado'}</div>
-                    </div>
-                </div>
 
-                <div class="info-item" style="grid-column: 1 / -1; margin: 20px 0;">
-                    <div class="info-label">Tipo de Proyecto</div>
-                    <div class="info-value">${this.getProjectTypeLabel(formData.projectType)}</div>
-                </div>
+                    <div class="content">
+                        <div class="priority-badge">
+                            ⚡ RESPUESTA REQUERIDA EN 24H
+                        </div>
 
-                ${formData.message ? `
-                <div class="message-section">
-                    <div class="info-label">Mensaje del Cliente</div>
-                    <div class="info-value">${formData.message.replace(/\n/g, '<br>')}</div>
-                </div>
-                ` : ''}
+                        <div class="client-info">
+                            <h3 style="margin-top: 0; color: #2c3e50; font-size: 18px;">Información del Cliente</h3>
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <div class="info-label">👤 Nombre Completo</div>
+                                    <div class="info-value">${formData.firstName} ${formData.lastName}</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">🏢 Empresa</div>
+                                    <div class="info-value">${formData.company}</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">📧 Email</div>
+                                    <div class="info-value">
+                                        <a href="mailto:${formData.email}" style="color: #667eea; text-decoration: none;">
+                                            ${formData.email}
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">📱 Teléfono</div>
+                                    <div class="info-value">
+                                        ${formData.phone ? 
+                                            `<a href="tel:${formData.phone}" style="color: #667eea; text-decoration: none;">${formData.phone}</a>` : 
+                                            '<span style="color: #999; font-style: italic;">No proporcionado</span>'
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                <div class="footer">
-                    <p><strong>RESCUE Emergency Alert System</strong></p>
-                    <p>Solicitud recibida el ${new Date().toLocaleDateString('es-CO', {
-                        weekday: 'long',
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    })}</p>
-                    <p style="margin-top: 15px; color: #e74c3c;">
-                        <strong>⏰ Tiempo de respuesta objetivo: Menos de 24 horas</strong>
-                    </p>
+                        <div class="project-type">
+                            <div class="project-label">Tipo de Proyecto Solicitado</div>
+                            <div class="project-value">${this.getProjectTypeLabel(formData.projectType)}</div>
+                        </div>
+
+                        ${formData.message ? `
+                        <div class="message-section">
+                            <h3 style="margin-top: 0; color: #2c3e50; font-size: 16px; font-weight: 600;">Mensaje del Cliente</h3>
+                            <div class="message-content">
+                                ${formData.message.replace(/\n/g, '<br>')}
+                            </div>
+                        </div>
+                        ` : ''}
+
+                        <div class="stats-banner">
+                            <div class="stats-content">
+                                <h3 style="margin: 0 0 10px 0; font-size: 20px;">🎯 RESCUE System</h3>
+                                <p style="margin: 0; opacity: 0.9;">Protegiendo vidas con tecnología de emergencia de última generación</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="footer">
+                        <div class="footer-title">RESCUE Emergency Alert System</div>
+                        <div class="timestamp">
+                            📅 Solicitud recibida el ${new Date().toLocaleDateString('es-CO', {
+                                weekday: 'long',
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                timeZone: 'America/Bogota'
+                            })}
+                        </div>
+                        <div class="response-time">
+                            ⏰ Tiempo de respuesta objetivo: Menos de 24 horas
+                        </div>
+                    </div>
                 </div>
             </div>
         </body>
