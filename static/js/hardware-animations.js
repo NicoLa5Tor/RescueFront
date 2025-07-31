@@ -27,66 +27,117 @@ window.HardwareAnimations = {
     console.log('✅ Animaciones de hardware inicializadas');
   },
 
-  // Animar tarjetas de estadísticas
+  // Animar tarjetas de estadísticas (optimizado)
   animateStatsCards: function() {
     const statCards = document.querySelectorAll('.ios-stat-card:not(.gsap-animated)');
     
     if (statCards.length === 0) return;
     
-    gsap.fromTo(statCards, 
+    // Verificar si el usuario prefiere animaciones reducidas
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      statCards.forEach(card => {
+        card.style.opacity = '1';
+        card.classList.add('gsap-animated');
+      });
+      return;
+    }
+    
+    // Animar solo las primeras 4 tarjetas inmediatamente, el resto con delay
+    const visibleCards = Array.from(statCards).slice(0, 4);
+    const deferredCards = Array.from(statCards).slice(4);
+    
+    gsap.fromTo(visibleCards, 
       {
         opacity: 0,
-        y: 20,
-        scale: 0.9
-      },
-      {
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        duration: 0.6,
-        ease: "back.out(1.7)",
-        stagger: 0.1,
-        onComplete: function() {
-          // Marcar como animadas
-          statCards.forEach(card => {
-            card.classList.add('gsap-animated');
-          });
-        }
-      }
-    );
-    
-    console.log(`📊 Animando ${statCards.length} tarjetas de estadísticas`);
-  },
-
-  // Animar tarjetas de hardware
-  animateHardwareCards: function() {
-    const hardwareCards = document.querySelectorAll('.ios-hardware-card:not(.gsap-animated)');
-    
-    if (hardwareCards.length === 0) return;
-    
-    gsap.fromTo(hardwareCards, 
-      {
-        opacity: 0,
-        y: 30,
+        y: 15,
         scale: 0.95
       },
       {
         opacity: 1,
         y: 0,
         scale: 1,
-        duration: 0.8,
+        duration: 0.4,
         ease: "power2.out",
-        stagger: 0.15,
+        stagger: 0.08,
         onComplete: function() {
-          // Marcar como animadas
-          hardwareCards.forEach(card => {
-            card.classList.add('gsap-animated');
-          });
+          visibleCards.forEach(card => card.classList.add('gsap-animated'));
         }
       }
     );
     
-    console.log(`🔧 Animando ${hardwareCards.length} tarjetas de hardware`);
+    // Animar las tarjetas diferidas con delay
+    if (deferredCards.length > 0) {
+      gsap.fromTo(deferredCards, 
+        {
+          opacity: 0,
+          y: 15,
+          scale: 0.95
+        },
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.3,
+          ease: "power2.out",
+          stagger: 0.06,
+          delay: 0.5,
+          onComplete: function() {
+            deferredCards.forEach(card => card.classList.add('gsap-animated'));
+          }
+        }
+      );
+    }
+    
+    console.log(`📊 Animando ${statCards.length} tarjetas de estadísticas (optimizado)`);
+  },
+
+  // Animar tarjetas de hardware (optimizado)
+  animateHardwareCards: function() {
+    const hardwareCards = document.querySelectorAll('.ios-hardware-card:not(.gsap-animated)');
+    
+    if (hardwareCards.length === 0) return;
+    
+    // Verificar si el usuario prefiere animaciones reducidas
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      hardwareCards.forEach(card => {
+        card.style.opacity = '1';
+        card.classList.add('gsap-animated');
+      });
+      return;
+    }
+    
+    // Dividir en lotes para evitar sobrecargar el renderizado
+    const batchSize = 6;
+    const batches = [];
+    
+    for (let i = 0; i < hardwareCards.length; i += batchSize) {
+      batches.push(Array.from(hardwareCards).slice(i, i + batchSize));
+    }
+    
+    // Animar cada lote con delay progresivo
+    batches.forEach((batch, batchIndex) => {
+      gsap.fromTo(batch, 
+        {
+          opacity: 0,
+          y: 20,
+          scale: 0.96
+        },
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.5,
+          ease: "power2.out",
+          stagger: 0.08,
+          delay: batchIndex * 0.2,
+          onComplete: function() {
+            batch.forEach(card => card.classList.add('gsap-animated'));
+          }
+        }
+      );
+    });
+    
+    console.log(`🔧 Animando ${hardwareCards.length} tarjetas de hardware en ${batches.length} lotes`);
   },
 
   // Animar header

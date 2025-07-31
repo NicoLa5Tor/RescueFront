@@ -95,7 +95,7 @@ class AdminDashboard {
             );
             gsap.to(overlay, { opacity: 1, duration: 0.3 });
         }
-        document.body.style.overflow = 'hidden';
+        document.body.classList.add('sidebar-open');
     }
 
     closeSidebar() {
@@ -120,7 +120,7 @@ class AdminDashboard {
             overlay.classList.add('invisible');
             overlay.style.opacity = '0';
         }
-        document.body.style.overflow = '';
+        document.body.classList.remove('sidebar-open');
     }
 
     destroy() {

@@ -546,8 +546,9 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
 }
 
-/* ===== CARD SHIMMER EFFECT ===== */
+/* ===== CARD SHIMMER EFFECT - COMMENTED OUT FOR PERFORMANCE ===== */
 
+/*
 .ios-card-shimmer {
   position: absolute;
   top: -50%;
@@ -575,6 +576,7 @@
   0%, 100% { transform: translateX(-100%) rotate(45deg); opacity: 0; }
   50% { transform: translateX(100%) rotate(45deg); opacity: 1; }
 }
+*/
 
 /* ===== RESPONSIVE DESIGN ===== */
 

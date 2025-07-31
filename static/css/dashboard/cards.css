@@ -35,7 +35,8 @@
   }
 }
 
-/* Enhanced background decoration */
+/* Enhanced background decoration - COMMENTED OUT FOR PERFORMANCE */
+/*
 .stats-card::before {
   content: '';
   position: absolute;
@@ -55,6 +56,7 @@
       height: 120px;
   }
 }
+*/
 
 /* Interactive hover effects */
 .stats-card:hover {
@@ -62,10 +64,13 @@
   box-shadow: var(--shadow-floating);
 }
 
+/* SHIMMER HOVER EFFECT COMMENTED OUT FOR PERFORMANCE */
+/*
 .stats-card:hover::before {
   transform: translate(20%, -20%) scale(1.2);
   opacity: 0.15;
 }
+*/
 
 .stats-card:active {
   transform: translateY(-2px) scale(1.01);
@@ -99,9 +104,12 @@
   color: var(--primary-900);
 }
 
+/* SHIMMER EFFECTS IN VARIANTS COMMENTED OUT FOR PERFORMANCE */
+/*
 .stats-card.primary::before {
   background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 70%);
 }
+*/
 
 .stats-card.success {
   background: linear-gradient(135deg, var(--success-50) 0%, #ecfdf5 100%);
@@ -109,9 +117,11 @@
   color: var(--success-900);
 }
 
+/*
 .stats-card.success::before {
   background: radial-gradient(circle, rgba(5, 150, 105, 0.15) 0%, transparent 70%);
 }
+*/
 
 .stats-card.warning {
   background: linear-gradient(135deg, var(--warning-50) 0%, #fef3c7 100%);
@@ -119,9 +129,11 @@
   color: var(--warning-900);
 }
 
+/*
 .stats-card.warning::before {
   background: radial-gradient(circle, rgba(217, 119, 6, 0.15) 0%, transparent 70%);
 }
+*/
 
 .stats-card.secondary {
   background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
@@ -129,9 +141,11 @@
   color: #831843;
 }
 
+/*
 .stats-card.secondary::before {
   background: radial-gradient(circle, rgba(236, 72, 153, 0.15) 0%, transparent 70%);
 }
+*/
 
 /* ===== STATS CARD LAYOUT ===== */
 
@@ -243,7 +257,8 @@
   }
 }
 
-/* Icon shine effect */
+/* Icon shine effect - COMMENTED OUT FOR PERFORMANCE */
+/*
 .stats-icon::before {
   content: '';
   position: absolute;
@@ -258,6 +273,7 @@
 .stats-card:hover .stats-icon::before {
   left: 100%;
 }
+*/
 
 .stats-card:hover .stats-icon {
   transform: rotate(10deg) scale(1.1);
@@ -317,7 +333,8 @@
   }
 }
 
-/* Enhanced hover effect */
+/* Enhanced hover effect - COMMENTED OUT FOR PERFORMANCE */
+/*
 .activity-item::before {
   content: '';
   position: absolute;
@@ -333,6 +350,7 @@
 .activity-item:hover::before {
   left: 0;
 }
+*/
 
 .activity-item:hover {
   background: var(--primary-50);
@@ -389,7 +407,8 @@
   }
 }
 
-/* Avatar shine effect */
+/* Avatar shine effect - COMMENTED OUT FOR PERFORMANCE */
+/*
 .activity-item .avatar::before {
   content: '';
   position: absolute;
@@ -405,6 +424,7 @@
 .activity-item:hover .avatar::before {
   transform: translateX(100%);
 }
+*/
 
 .activity-item:hover .avatar {
   transform: scale(1.05);

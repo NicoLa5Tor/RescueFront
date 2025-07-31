@@ -1064,7 +1064,7 @@ class EmpresasModals {
       const modal = document.getElementById(modalId);
       if (modal) {
         modal.classList.add('hidden');
-        document.body.style.overflow = '';
+        // No manipular overflow directamente - usar modalManager
       }
     }
     

@@ -118,12 +118,12 @@ class ModalManager {
      */
     preventBodyScroll(modalId = '', options = {}) {
         if (this.openModals.size === 0) {
-            // Solo aplicar overflow hidden - sin position fixed para evitar scroll jump
-            document.body.style.overflow = 'hidden';
-            
             // Aplicar clase específica si se proporciona, sino usar la genérica
             const modalClass = options.modalClass || this.getModalSpecificClass(modalId) || 'modal-open';
             document.body.classList.add(modalClass);
+            
+            // PREVENIR BORDES BLANCOS EN SCROLL - No manipular style.overflow directamente
+            // El CSS ya tiene las reglas necesarias con overscroll-behavior
             
             console.log(`Body scroll disabled with class: ${modalClass}`);
         }

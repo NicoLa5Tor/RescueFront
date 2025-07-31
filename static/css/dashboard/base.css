@@ -13,6 +13,10 @@ html {
   font-family: var(--font-family-sans);
   line-height: 1.6;
   scroll-behavior: smooth;
+  /* DISABLE OVERSCROLL EFFECTS THAT CAUSE WHITE BORDERS */
+  overscroll-behavior: none;
+  overscroll-behavior-x: none;
+  overscroll-behavior-y: none;
 }
 
 body {
@@ -22,6 +26,11 @@ body {
   transition: background-color var(--transition-normal), color var(--transition-normal);
   min-height: 100vh;
   overflow-x: hidden;
+  /* DISABLE OVERSCROLL EFFECTS THAT CAUSE WHITE BORDERS */
+  overscroll-behavior: none;
+  overscroll-behavior-x: none;
+  overscroll-behavior-y: none;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Scrollbar Styles */
@@ -307,6 +316,26 @@ button:disabled {
 .body-no-scroll {
   overflow: hidden;
   height: 100vh;
+}
+
+/* Sidebar State - PREVENT WHITE BORDERS ON SCROLL */
+.sidebar-open {
+  overflow: hidden;
+  /* MANTENER OVERSCROLL BEHAVIOR PARA EVITAR BORDES BLANCOS */
+  overscroll-behavior: none;
+  overscroll-behavior-x: none;
+  overscroll-behavior-y: none;
+}
+
+/* Modal States - PREVENT WHITE BORDERS ON SCROLL */
+.modal-open,
+.company-types-modal-open,
+.usuarios-modal-open {
+  overflow: hidden;
+  /* MANTENER OVERSCROLL BEHAVIOR PARA EVITAR BORDES BLANCOS */
+  overscroll-behavior: none;
+  overscroll-behavior-x: none;
+  overscroll-behavior-y: none;
 }
 
 /* Grid System */

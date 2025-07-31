@@ -4,6 +4,7 @@
 
 {% block extra_css %}
 {{ super() }}
+<script src="{{ url_for('static', filename='js/disable-scroll-effects.js') }}"></script>
 <!-- SISTEMA UNIFICADO - TODO EN UNO -->
 <link href="{{ url_for('static', filename='css/hardware/hardware-main.css') }}" rel="stylesheet">
 <style>

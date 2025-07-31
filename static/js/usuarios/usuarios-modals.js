@@ -87,72 +87,29 @@ class UsuariosModalScrollManager {
   lockScroll() {
     if (this.isLocked) return;
     
-    console.log('🔒 Locking scroll effectively without visual jump');
+    console.log('🔒 Using CSS-only scroll lock to prevent white borders');
     
     const body = document.body;
-    const html = document.documentElement;
     
-    // MÉTODO HÍBRIDO: Overflow hidden + event listeners agresivos + position fixed SIN salto
-    
-    // 1. Guardar estado actual del scroll
-    const currentScrollY = window.pageYOffset;
-    
-    // 2. Aplicar estilos para bloquear scroll
-    body.style.overflow = 'hidden';
-    html.style.overflow = 'hidden';
-    body.style.position = 'fixed';
-    // NO aplicar top negativo para evitar salto visual
-    // body.style.top = `-${currentScrollY}px`;
-    body.style.left = '0';
-    body.style.right = '0';
-    body.style.width = '100%';
-    
-    // 3. Clase CSS adicional
-    body.classList.add('usuarios-modal-scroll-locked');
-    
-    // 4. Event listeners AGRESIVOS para todos los tipos de scroll
-    document.addEventListener('touchmove', this.preventScroll, { passive: false });
-    document.addEventListener('wheel', this.preventScroll, { passive: false });
-    document.addEventListener('keydown', this.preventScrollKeys, { passive: false });
-    document.addEventListener('scroll', this.preventScrollEvent, { passive: false });
-    document.addEventListener('dragstart', this.preventDrag, { passive: false });
+    // USAR SOLO CLASE CSS CON OVERSCROLL-BEHAVIOR PARA EVITAR BORDES BLANCOS
+    body.classList.add('usuarios-modal-open');
     
     this.isLocked = true;
-    console.log('✅ Scroll COMPLETAMENTE bloqueado sin salto visual');
+    console.log('✅ CSS-only scroll lock applied');
   }
 
   unlockScroll() {
     if (!this.isLocked) return;
     
-    console.log('🔓 Unlocking scroll and keeping current position');
+    console.log('🔓 Using CSS-only scroll unlock to prevent white borders');
     
     const body = document.body;
-    const html = document.documentElement;
     
-    // Remover todos los event listeners
-    document.removeEventListener('touchmove', this.preventScroll);
-    document.removeEventListener('wheel', this.preventScroll);
-    document.removeEventListener('keydown', this.preventScrollKeys);
-    document.removeEventListener('scroll', this.preventScrollEvent);
-    document.removeEventListener('dragstart', this.preventDrag);
-    
-    // Restaurar estilos
-    body.style.overflow = '';
-    body.style.paddingRight = '';
-    body.style.position = '';
-    body.style.top = '';
-    body.style.left = '';
-    body.style.right = '';
-    body.style.width = '';
-    html.style.overflow = '';
-    
-    body.classList.remove('usuarios-modal-scroll-locked');
-    
-    // NO restaurar posición de scroll - dejar quieto donde está
-    // window.scrollTo(0, this.scrollPosition); ← ELIMINADO
+    // USAR SOLO CLASE CSS - NO MANIPULAR ESTILOS DIRECTAMENTE
+    body.classList.remove('usuarios-modal-open');
     
     this.isLocked = false;
-    console.log('✅ Scroll unlocked keeping exact current position');
+    console.log('✅ CSS-only scroll unlock applied');
   }
 
   preventScrollKeys = (e) => {
