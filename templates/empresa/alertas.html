@@ -1457,7 +1457,7 @@ async function showAlertDetails(alertId) {
         
         <!-- Layout optimizado: Fila principal con imagen/estado + mapa más grande -->
         <div class="space-y-4">
-            <!-- Fila superior: Imagen/Tipo + Estado y Prioridad + Hardware (más compacta) -->
+            <!-- Fila superior: Imagen/Tipo + Estado y Prioridad + Información del origen (3 columnas) -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
                 <!-- Imagen y tipo de alerta con diferenciación por origen -->
                 <div class="lg:col-span-1">
@@ -1865,8 +1865,8 @@ async function showAlertDetails(alertId) {
                     ` : ''}
                 </div>
                 
-                <!-- Información del usuario y desactivación en la misma fila -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                <!-- Información del usuario, desactivación y hardware relacionado en la misma fila -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
                     <!-- Información específica según el tipo de origen -->
                     ${isUserOrigin ? `
                         <div class="modal-section bg-gradient-to-r from-violet-700 to-purple-800 rounded-lg p-3">
@@ -1976,6 +1976,36 @@ async function showAlertDetails(alertId) {
                             </div>
                         </div>
                     ` : ''}
+                    
+                    <!-- Hardware Relacionado -->
+                    <div class="lg:col-span-1">
+                        ${alert.topics_otros_hardware && alert.topics_otros_hardware.length > 0 ? `
+                            <div class="modal-section bg-gradient-to-r from-slate-700 to-slate-800 rounded-lg p-3 h-full">
+                                <h4 class="text-sm font-semibold text-white mb-2 flex items-center">
+                                    <i class="fas fa-network-wired mr-1 text-xs"></i>Hardware Relacionado (${alert.topics_otros_hardware.length})
+                                </h4>
+                                <div class="space-y-1 max-h-32 overflow-y-auto text-xs">
+                                    ${alert.topics_otros_hardware.slice(0, 3).map(topic => `
+                                        <div class="bg-black/20 rounded p-1">
+                                            <code class="text-slate-200 font-mono text-xs break-all">${topic}</code>
+                                        </div>
+                                    `).join('')}
+                                    ${alert.topics_otros_hardware.length > 3 ? `
+                                        <div class="text-center text-slate-400 text-xs pt-1">
+                                            +${alert.topics_otros_hardware.length - 3} más
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        ` : `
+                            <div class="modal-section bg-gradient-to-r from-gray-700 to-gray-800 rounded-lg p-3 h-full flex items-center justify-center">
+                                <div class="text-center">
+                                    <i class="fas fa-server text-gray-400 text-2xl mb-2"></i>
+                                    <p class="text-gray-300 text-sm">Sin hardware relacionado</p>
+                                </div>
+                            </div>
+                        `}
+                    </div>
                 </div>
             </div>
         </div>
@@ -2018,57 +2048,40 @@ async function showAlertDetails(alertId) {
                 ` : ''}
             </div>
         
-        <!-- Sección final: Contactos y Hardware relacionado -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 mt-3">
-            <!-- Contactos notificados -->
-            ${alert.numeros_telefonicos && alert.numeros_telefonicos.length > 0 ? `
-                <div class="bg-gradient-to-r from-teal-700 to-green-800 rounded-lg p-3">
-                    <h4 class="text-sm font-semibold text-white mb-2 flex items-center">
-                        <i class="fas fa-phone mr-1 text-xs"></i>Contactos (${alert.numeros_telefonicos.length})
-                    </h4>
-                    <div class="space-y-2 max-h-32 overflow-y-auto">
-                        ${alert.numeros_telefonicos.map(contacto => `
-                            <div class="bg-black/20 rounded p-2 flex items-center space-x-2">
-                                <div class="w-6 h-6 ${contacto.disponible ? 'bg-teal-500' : 'bg-red-500'} rounded-full flex items-center justify-center flex-shrink-0">
-                                    <i class="fas fa-user text-white text-xs"></i>
+        <!-- Sección final: Contactos notificados (ancho completo) -->
+        ${alert.numeros_telefonicos && alert.numeros_telefonicos.length > 0 ? `
+            <div class="bg-gradient-to-r from-teal-700 to-green-800 rounded-lg p-4 mt-3">
+                <h4 class="text-lg font-semibold text-white mb-3 flex items-center">
+                    <i class="fas fa-phone mr-2"></i>Contactos Notificados (${alert.numeros_telefonicos.length})
+                </h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-48 overflow-y-auto">
+                    ${alert.numeros_telefonicos.map(contacto => `
+                        <div class="bg-black/20 rounded-lg p-3 flex items-center space-x-3 hover:bg-black/30 transition-colors">
+                            <div class="w-8 h-8 ${contacto.disponible ? 'bg-teal-500' : 'bg-red-500'} rounded-full flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-user text-white text-sm"></i>
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <p class="text-white font-medium text-sm truncate">${contacto.nombre}</p>
+                                <p class="text-teal-200 text-xs">${contacto.numero}</p>
+                                <div class="flex items-center space-x-2 mt-1">
+                                    <span class="w-2 h-2 rounded-full ${contacto.disponible ? 'bg-green-400' : 'bg-red-400'}"></span>
+                                    <span class="text-xs ${contacto.disponible ? 'text-green-300' : 'text-red-300'}">
+                                        ${contacto.disponible ? 'Disponible' : 'No disponible'}
+                                    </span>
                                 </div>
-                                <div class="min-w-0 flex-1">
-                                    <p class="text-white font-medium text-xs truncate">${contacto.nombre}</p>
-                                    <p class="text-teal-200 text-xs">${contacto.numero}</p>
-                                    <div class="flex items-center space-x-2 mt-1">
-                                        <span class="w-2 h-2 rounded-full ${contacto.disponible ? 'bg-green-400' : 'bg-red-400'}"></span>
-                                        <span class="text-xs ${contacto.disponible ? 'text-green-300' : 'text-red-300'}">
-                                            ${contacto.disponible ? 'Disponible' : 'No disponible'}
+                                ${contacto.embarcado ? `
+                                    <div class="mt-1">
+                                        <span class="px-2 py-1 bg-blue-500 text-white text-xs rounded-full font-medium">
+                                            ⛵ Embarcado
                                         </span>
-                                        ${contacto.embarcado ? `
-                                            <span class="px-1 py-0.5 bg-blue-500 text-white text-xs rounded">
-                                                Embarcado
-                                            </span>
-                                        ` : ''}
                                     </div>
-                                </div>
+                                ` : ''}
                             </div>
-                        `).join('')}
-                    </div>
+                        </div>
+                    `).join('')}
                 </div>
-            ` : ''}
-            
-            <!-- Hardware relacionado -->
-            ${alert.topics_otros_hardware && alert.topics_otros_hardware.length > 0 ? `
-                <div class="bg-gradient-to-r from-slate-700 to-slate-800 rounded-lg p-3">
-                    <h4 class="text-sm font-semibold text-white mb-2 flex items-center">
-                        <i class="fas fa-network-wired mr-1 text-xs"></i>Hardware Relacionado
-                    </h4>
-                    <div class="space-y-1 max-h-32 overflow-y-auto">
-                        ${alert.topics_otros_hardware.map(topic => `
-                            <div class="bg-black/20 rounded p-1">
-                                <code class="text-slate-200 font-mono text-xs break-all">${topic}</code>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-            ` : ''}
-        </div>
+            </div>
+        ` : ''}
     `;
     
     // Configurar botón de toggle - el texto se maneja dentro del botón
