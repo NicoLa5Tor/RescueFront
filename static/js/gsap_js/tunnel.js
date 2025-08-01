@@ -342,6 +342,22 @@
 
     var processSteps = [
       {
+        title: "EVENTOS CRÍTICOS",
+        subtitle: "Cobertura integral de emergencias",
+        description:
+          "CUBRIMOS UNA AMPLIA GAMA DE EVENTOS CRÍTICOS COMO:",
+        details: [
+          "Seguridad: en zonas urbanas y rurales",
+          "Emergencias: incendios y desastres naturales",
+          "Accidentes: alertas urbanas, rurales e industriales",
+          "Alertas tempranas: con sensores remotos"
+        ],
+        icon: "🛡️",
+        color: "from-orange-500 to-orange-700",
+        percent: 0.05,
+        videoUrl: VIDEO_URLS.step1
+      },
+      {
         title: "Activación de Emergencia",
         subtitle: "Inicio del protocolo de seguridad",
         description:
@@ -354,7 +370,7 @@
         ],
         icon: "🚨",
         color: "from-red-500 to-red-700",
-        percent: 0.15,
+        percent: 0.2,
         videoUrl: VIDEO_URLS.step1
       },
       {
@@ -370,7 +386,7 @@
         ],
         icon: "📡",
         color: "from-blue-500 to-blue-700",
-        percent: 0.35,
+        percent: 0.4,
         videoUrl: VIDEO_URLS.step2
       },
       {
@@ -386,7 +402,7 @@
         ],
         icon: "🧠",
         color: "from-purple-500 to-purple-700",
-        percent: 0.55,
+        percent: 0.6,
         videoUrl: VIDEO_URLS.step3
       },
       {
@@ -402,7 +418,7 @@
         ],
         icon: "💡",
         color: "from-yellow-500 to-yellow-700",
-        percent: 0.75,
+        percent: 0.8,
         videoUrl: VIDEO_URLS.step4
       },
       {
