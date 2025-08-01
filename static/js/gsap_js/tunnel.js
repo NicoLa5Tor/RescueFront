@@ -391,14 +391,14 @@
       },
       {
         title: "Procesamiento Central",
-        subtitle: "Análisis automatizado de la alerta",
+        subtitle: "Software en la nube - Central de Coordinación",
         description:
-          "El sistema central, desarrollado en Python, recibe la alerta, la analiza, y toma decisiones: prioriza, clasifica y detecta posibles patrones de eventos.",
+          "Desde aquí se gestiona todo el desarrollo de la emergencia: recopila información en tiempo real tan valiosa como:",
         details: [
-          "Procesamiento en < 200ms",
-          "Priorización basada en reglas y contexto",
-          "Detección automática de alertas similares",
-          "Interoperabilidad con múltiples plataformas"
+          "Fecha, hora y lugar de la alerta con información georreferenciada",
+          "Persona o dispositivo que la emitió",
+          "Formación del equipo de reacción: del personal que ha recibido la alerta, establece quienes se han declarado 'enterado y disponible' y cuáles de ellos se encuentran rumbo al lugar de la emergencia 'embarcado'",
+          "SU EQUIPO LISTO SU EMERGENCIA BAJO CONTROL"
         ],
         icon: "🧠",
         color: "from-purple-500 to-purple-700",
