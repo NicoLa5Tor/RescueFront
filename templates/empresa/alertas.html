@@ -1737,39 +1737,85 @@ async function showAlertDetails(alertId) {
                 </div>
                 
                 <!-- Información adicional de ubicación reorganizada debajo del mapa -->
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                    <!-- Ubicación específica del hardware/botonera -->
-                    ${(() => {
-                        // Determinar ubicación específica según el tipo de alerta
-                        let ubicacionEspecifica = '';
-                        let idOrigen = '';
-                        
-                        // Para alertas de usuario móvil
-                        if (alert.data?.botonera_ubicacion) {
-                            ubicacionEspecifica = alert.data.botonera_ubicacion.direccion || '';
-                            idOrigen = alert.data.botonera_ubicacion.hardware_id || '';
-                        }
-                        // Para alertas de hardware
-                        else if (alert.data?.ubicacion) {
-                            ubicacionEspecifica = alert.data.ubicacion;
-                            idOrigen = alert.data.id_origen || '';
-                        }
-                        
-                        if (ubicacionEspecifica) {
-                            return `
-                                <div class="modal-section bg-gradient-to-r from-cyan-600 to-blue-700 rounded-lg p-3">
-                                    <h4 class="text-sm font-semibold text-white mb-2 flex items-center">
-                                        <i class="fas fa-crosshairs mr-1 text-xs"></i>Ubicación Específica
-                                    </h4>
-                                    <p class="text-cyan-100 text-sm font-medium">${ubicacionEspecifica}</p>
-                                    ${idOrigen && idOrigen !== ubicacionEspecifica ? `
-                                        <p class="text-cyan-200 text-xs mt-1 font-mono">ID: ${idOrigen}</p>
-                                    ` : ''}
-                                </div>
-                            `;
-                        }
-                        return '';
-                    })()} 
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <!-- Ubicación específica y Hardware asociado combinados -->
+                    <div class="modal-section bg-gradient-to-r from-cyan-600 to-amber-700 rounded-lg p-3">
+                        <h4 class="text-sm font-semibold text-white mb-3 flex items-center">
+                            <i class="fas fa-crosshairs mr-2 text-xs"></i>Ubicación y Hardware
+                        </h4>
+                        <div class="space-y-3">
+                            ${(() => {
+                                // Determinar ubicación específica según el tipo de alerta
+                                let ubicacionEspecifica = '';
+                                let idOrigen = '';
+                                
+                                // Para alertas de usuario móvil
+                                if (alert.data?.botonera_ubicacion) {
+                                    ubicacionEspecifica = alert.data.botonera_ubicacion.direccion || '';
+                                    idOrigen = alert.data.botonera_ubicacion.hardware_id || '';
+                                }
+                                // Para alertas de hardware
+                                else if (alert.data?.ubicacion) {
+                                    ubicacionEspecifica = alert.data.ubicacion;
+                                    idOrigen = alert.data.id_origen || '';
+                                }
+                                
+                                if (ubicacionEspecifica) {
+                                    return `
+                                        <div class="bg-black/20 rounded p-2">
+                                            <div class="flex items-center mb-1">
+                                                <i class="fas fa-map-pin text-cyan-300 mr-2 text-xs"></i>
+                                                <span class="text-cyan-100 font-medium text-xs">Ubicación Específica:</span>
+                                            </div>
+                                            <p class="text-white text-sm font-medium ml-4">${ubicacionEspecifica}</p>
+                                            ${idOrigen && idOrigen !== ubicacionEspecifica ? `
+                                                <p class="text-cyan-200 text-xs mt-1 font-mono ml-4">ID: ${idOrigen}</p>
+                                            ` : ''}
+                                        </div>
+                                    `;
+                                }
+                                return '';
+                            })()}
+                            
+                            ${(() => {
+                                // Determinar hardware asociado según el tipo de alerta
+                                let hardwareName = '';
+                                let hardwareId = '';
+                                
+                                // Para alertas de usuario móvil
+                                if (alert.data?.botonera_ubicacion?.hardware_nombre) {
+                                    hardwareName = alert.data.botonera_ubicacion.hardware_nombre;
+                                    hardwareId = alert.data.botonera_ubicacion.hardware_id || '';
+                                }
+                                // Para alertas de hardware
+                                else if (alert.ubicacion?.hardware_nombre) {
+                                    hardwareName = alert.ubicacion.hardware_nombre;
+                                    hardwareId = alert.ubicacion.hardware_id || '';
+                                }
+                                // Fallback con hardware_nombre del nivel superior
+                                else if (alert.hardware_nombre) {
+                                    hardwareName = alert.hardware_nombre;
+                                    hardwareId = alert.data?.id_origen || '';
+                                }
+                                
+                                if (hardwareName) {
+                                    return `
+                                        <div class="bg-black/20 rounded p-2">
+                                            <div class="flex items-center mb-1">
+                                                <i class="fas fa-server text-amber-300 mr-2 text-xs"></i>
+                                                <span class="text-amber-100 font-medium text-xs">Hardware Asociado:</span>
+                                            </div>
+                                            <p class="text-white text-sm font-medium ml-4">${hardwareName}</p>
+                                            ${hardwareId ? `
+                                                <p class="text-amber-200 text-xs mt-1 font-mono ml-4">ID: ${hardwareId}</p>
+                                            ` : ''}
+                                        </div>
+                                    `;
+                                }
+                                return '<div class="bg-black/20 rounded p-2 text-center"><p class="text-gray-300 text-xs">Sin hardware asociado específico</p></div>';
+                            })()}
+                        </div>
+                    </div>
                     
                     <!-- Topic MQTT como ubicación lógica -->
                     ${alert.topic ? `
@@ -1781,44 +1827,6 @@ async function showAlertDetails(alertId) {
                             <p class="text-teal-200 text-xs mt-1">Empresa/Sede/Tipo/Hardware</p>
                         </div>
                     ` : ''}
-                    
-                    <!-- Hardware asociado -->
-                    ${(() => {
-                        // Determinar hardware asociado según el tipo de alerta
-                        let hardwareName = '';
-                        let hardwareId = '';
-                        
-                        // Para alertas de usuario móvil
-                        if (alert.data?.botonera_ubicacion?.hardware_nombre) {
-                            hardwareName = alert.data.botonera_ubicacion.hardware_nombre;
-                            hardwareId = alert.data.botonera_ubicacion.hardware_id || '';
-                        }
-                        // Para alertas de hardware
-                        else if (alert.ubicacion?.hardware_nombre) {
-                            hardwareName = alert.ubicacion.hardware_nombre;
-                            hardwareId = alert.ubicacion.hardware_id || '';
-                        }
-                        // Fallback con hardware_nombre del nivel superior
-                        else if (alert.hardware_nombre) {
-                            hardwareName = alert.hardware_nombre;
-                            hardwareId = alert.data?.id_origen || '';
-                        }
-                        
-                        if (hardwareName) {
-                            return `
-                                <div class="modal-section bg-gradient-to-r from-amber-600 to-orange-700 rounded-lg p-3">
-                                    <h4 class="text-sm font-semibold text-white mb-2 flex items-center">
-                                        <i class="fas fa-server mr-1 text-xs"></i>Hardware Asociado
-                                    </h4>
-                                    <p class="text-amber-100 font-medium text-sm">${hardwareName}</p>
-                                    ${hardwareId ? `
-                                        <p class="text-amber-200 text-xs mt-1 font-mono">ID: ${hardwareId}</p>
-                                    ` : ''}
-                                </div>
-                            `;
-                        }
-                        return '';
-                    })()} 
                 </div>
             </div>
         </div>
