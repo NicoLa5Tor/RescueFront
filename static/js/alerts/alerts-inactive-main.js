@@ -355,6 +355,7 @@ async function findInactiveAlertById(alertId) {
                 origen_id: data.alert.origen_id,
                 usuario_id: data.alert.usuario_id,
                 desactivado_por: data.alert.desactivado_por,
+                mensaje_desactivacion: data.alert.mensaje_desactivacion,
                 tipo_alerta: data.alert.tipo_alerta,
                 nombre_alerta: data.alert.nombre_alerta,
                 descripcion: data.alert.descripcion,
@@ -556,6 +557,14 @@ function generateInactiveModalContent(alert, isUserOrigin, isHardwareOrigin) {
                                       alert.desactivado_por.tipo === 'usuario' ? ' Un usuario autorizado desactivó manualmente esta alerta.' : 
                                       ' La alerta fue desactivada automáticamente por el sistema.'}
                                 </p>
+                                ${alert.mensaje_desactivacion && alert.mensaje_desactivacion.trim() !== '' ? `
+                                    <div class="mt-3 p-2 bg-red-800/20 border border-red-400/20 rounded-md">
+                                        <h6 class="text-red-200 font-medium text-xs mb-1 flex items-center">
+                                            <i class="fas fa-comment-alt mr-1"></i>Mensaje de desactivación:
+                                        </h6>
+                                        <p class="text-red-100 text-xs leading-relaxed italic">"${alert.mensaje_desactivacion}"</p>
+                                    </div>
+                                ` : ''}
                             </div>
                         </div>
                     </div>
