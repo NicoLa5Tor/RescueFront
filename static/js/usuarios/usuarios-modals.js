@@ -41,6 +41,34 @@ class UsuariosModalScrollManager {
         right: 0 !important; bottom: 0 !important; z-index: 9999999 !important;
         display: flex; align-items: center; justify-content: center; padding: 1rem;
         background: rgba(0, 0, 0, 0.8) !important;
+        /* Animaciones como empresas */
+        transition: opacity 0.3s ease, backdrop-filter 0.3s ease;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        opacity: 1;
+        visibility: visible;
+      }
+      /* Estado oculto para usuarios modal backdrop */
+      .usuarios-modal-backdrop.hidden {
+        opacity: 0 !important;
+        pointer-events: none !important;
+        backdrop-filter: blur(0px) !important;
+        -webkit-backdrop-filter: blur(0px) !important;
+        visibility: hidden !important;
+        transition: opacity 0.3s ease, backdrop-filter 0.3s ease, visibility 0s 0.3s;
+      }
+      /* Animaciones para contenedores de modales de usuarios */
+      .usuarios-modal-backdrop .ios-blur-modal-container {
+        transform: scale(0.8) !important;
+        opacity: 0 !important;
+        transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+        transition-delay: 0.1s !important;
+      }
+      /* Estado visible para contenedores de modales de usuarios */
+      .usuarios-modal-backdrop:not(.hidden) .ios-blur-modal-container {
+        transform: scale(1) !important;
+        opacity: 1 !important;
+        transition-delay: 0.2s !important;
       }
     `;
     document.head.appendChild(style);
@@ -474,10 +502,17 @@ class UsuariosModals {
 
   // ===== VIEW USER MODAL =====
   
+  /**
+   * Open view modal - MISMA LÓGICA QUE EMPRESAS
+   */
   async openViewModal(userId) {
     try {
       console.log('👁️ Abriendo modal de vista para usuario:', userId);
       
+      // Set viewing state
+      this.currentViewingUser = userId;
+      
+      // Validate empresa context
       let empresaId = window.usuariosMain?.currentEmpresa?._id;
       
       if (!empresaId && window.userRole === 'empresa' && window.empresaId) {
@@ -489,20 +524,24 @@ class UsuariosModals {
         return;
       }
       
+      // Load user data
       const response = await this.apiClient.get_usuario(empresaId, userId);
       const result = await response.json();
       
       if (response.ok && result.success && result.data) {
         this.currentViewingUser = result.data;
         this.populateViewModal(result.data);
+        
+        // Open modal - MISMA LÓGICA QUE EMPRESAS
         this.openModal('viewUserModal');
       } else {
         const errorMessage = result.errors ? result.errors.join(', ') : (result.message || 'Error al cargar datos del usuario');
-        this.showNotification(errorMessage, 'error');
+        throw new Error(errorMessage);
       }
+      
     } catch (error) {
-      console.error('💥 Error al abrir modal de vista:', error);
-      this.showNotification(`Error al cargar usuario: ${error.message}`, 'error');
+      console.error('💥 Error al cargar detalles de usuario:', error);
+      this.showNotification('Error al cargar los detalles del usuario', 'error');
     }
   }
 
@@ -570,10 +609,18 @@ class UsuariosModals {
 
   // ===== EDIT USER MODAL =====
   
+  /**
+   * Open edit modal - MISMA LÓGICA QUE EMPRESAS
+   */
   async openEditModal(userId) {
     try {
       console.log('✏️ Abriendo modal de edición para usuario:', userId);
       
+      // Set editing state
+      this.currentEditingUser = userId;
+      this.isUpdating = false;
+      
+      // Validate empresa context
       let empresaId = window.usuariosMain?.currentEmpresa?._id;
       
       if (!empresaId && window.userRole === 'empresa' && window.empresaId) {
@@ -585,22 +632,65 @@ class UsuariosModals {
         return;
       }
       
+      // Load user data BEFORE opening modal - MISMA LÓGICA QUE EMPRESAS
+      await this.loadUserDataForEdit(empresaId, userId);
+      
+      // Open modal - MISMA LÓGICA QUE EMPRESAS
+      this.openModal('editUserModal');
+      
+    } catch (error) {
+      console.error('💥 Error al abrir modal de edición:', error);
+      this.showNotification('Error al cargar datos del usuario', 'error');
+    }
+  }
+  
+  /**
+   * Load user data for editing - SEPARADA COMO EN EMPRESAS
+   */
+  async loadUserDataForEdit(empresaId, userId) {
+    try {
+      console.log('🔄 Cargando datos de usuario para edición:', userId);
+      
       const response = await this.apiClient.get_usuario(empresaId, userId);
       const result = await response.json();
       
-      if (response.ok && result.success) {
+      console.log('📡 Respuesta del backend:', {
+        status: response.status,
+        statusText: response.statusText,
+        ok: response.ok
+      });
+      console.log('📦 Datos recibidos del backend:', result);
+      
+      if (response.ok && result.success && result.data) {
+        console.log('✅ Datos de usuario válidos, populando formulario...');
         this.currentUser = result.data;
         this.currentUser.empresaId = empresaId;
         this.populateEditModal(result.data);
-        this.openModal('editUserModal');
       } else {
+        console.error('❌ Respuesta del backend no válida:', result);
         const errorMessage = result.errors ? result.errors.join(', ') : 'Error al cargar datos del usuario';
-        this.showNotification(errorMessage, 'error');
+        throw new Error(errorMessage);
       }
+      
     } catch (error) {
-      console.error('Error al abrir modal de edición:', error);
-      this.showNotification('Error al cargar usuario', 'error');
+      console.error('💥 Error al cargar datos de usuario:', error);
+      this.showNotification('Error al cargar los datos del usuario desde el servidor', 'error');
+      this.loadDummyUserDataIntoForm();
     }
+  }
+  
+  /**
+   * Load dummy data into form (fallback) - COMO EN EMPRESAS
+   */
+  loadDummyUserDataIntoForm() {
+    document.getElementById('editUsername').value = 'Usuario sin nombre';
+    document.getElementById('editUserEmail').value = 'usuario@empresa.com';
+    document.getElementById('editUserCedula').value = '1234567890';
+    document.getElementById('editUserTelefono').value = '3001234567';
+    document.getElementById('editUserTipoTurno').value = 'medio_dia';
+    
+    this.especialidades = [];
+    this.renderEspecialidades('edit');
   }
 
   populateEditModal(user) {
@@ -903,10 +993,18 @@ class UsuariosModals {
 
   // ===== CREATE USER MODAL =====
   
+  /**
+   * Open create modal - MISMA LÓGICA QUE EMPRESAS
+   */
   openCreateModal() {
     try {
       console.log('➕ Abriendo modal de creación de usuario');
       
+      // Reset editing state
+      this.currentEditingUser = null;
+      this.isCreating = false;
+      
+      // Validate empresa context
       let empresaId = window.usuariosMain?.currentEmpresa?._id;
       
       if (!empresaId && window.userRole === 'empresa' && window.empresaId) {
@@ -924,7 +1022,10 @@ class UsuariosModals {
         return;
       }
       
+      // Clear and prepare form
       this.clearCreateForm();
+      
+      // Open modal - MISMA LÓGICA QUE EMPRESAS
       this.openModal('createUserModal');
       
       // Initialize intl-tel-input after opening modal
@@ -933,7 +1034,7 @@ class UsuariosModals {
       }, 200);
       
     } catch (error) {
-      console.error('Error al abrir modal de creación:', error);
+      console.error('💥 Error al abrir modal de creación:', error);
       this.showNotification('Error al abrir modal de creación', 'error');
     }
   }

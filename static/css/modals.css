@@ -42,6 +42,26 @@ body.ios-modal-open {
   /* NO aplicar position, top, left, right para evitar salto de scroll */
 }
 
+/* Prevent body scroll when usuarios modal is open */
+body.usuarios-modal-open {
+  overflow: hidden !important;
+  width: 100% !important;
+  height: 100vh !important;
+  /* Bloqueo de scroll CSS-only sin position fixed para evitar saltos */
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent body scroll when empresas modal is open */
+body.empresas-modal-open {
+  overflow: hidden !important;
+  width: 100% !important;
+  height: 100vh !important;
+  /* Bloqueo de scroll CSS-only sin position fixed para evitar saltos */
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+}
+
 /* Modal Container */
 .modal-container {
   position: relative;

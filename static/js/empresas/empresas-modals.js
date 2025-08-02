@@ -9,13 +9,159 @@
  * - Modal de confirmaciones y success
  */
 
+// ============================================================================
+// 1. EMPRESAS MODAL SCROLL MANAGER - OPTIMIZADO PARA EMPRESAS
+// ============================================================================
+class EmpresasModalScrollManager {
+  constructor() {
+    this.openModals = new Set();
+    this.scrollPosition = 0;
+    this.isLocked = false;
+    this.init();
+  }
+
+  init() {
+    this.injectCSS();
+    window.addEventListener('orientationchange', () => setTimeout(() => this.refreshLock(), 100));
+    window.addEventListener('resize', () => this.hasOpenModals() && this.refreshLock());
+  }
+
+  injectCSS() {
+    if (document.getElementById('empresas-modal-scroll-css')) return;
+    
+    const style = document.createElement('style');
+    style.id = 'empresas-modal-scroll-css';
+    style.textContent = `
+      .empresas-modal-scroll-locked { overflow: hidden !important; }
+      .empresas-modal-scrollable { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+      .empresas-modal-backdrop {
+        position: fixed !important; top: 0 !important; left: 0 !important; 
+        right: 0 !important; bottom: 0 !important; z-index: 9999999 !important;
+        display: flex; align-items: center; justify-content: center; padding: 1rem;
+        background: rgba(0, 0, 0, 0.8) !important;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  openModal(modalId, options = {}) {
+    console.log(`🔒 Opening empresas modal: ${modalId}`);
+    
+    if (this.openModals.size === 0) {
+      this.scrollPosition = window.pageYOffset;
+      this.lockScroll();
+    }
+    
+    this.openModals.add(modalId);
+    
+    const modal = document.getElementById(modalId);
+    if (modal) {
+      // Aplicar clases y estilos para centrado perfecto
+      modal.classList.remove('hidden');
+      modal.className = modal.className.replace('hidden', '').trim() + ' empresas-modal-backdrop';
+      modal.style.display = 'flex';
+    }
+    
+    options.focusTrap && this.setupFocusTrap(modalId);
+  }
+
+  closeModal(modalId) {
+    console.log(`🔓 Closing empresas modal: ${modalId}`);
+    
+    this.openModals.delete(modalId);
+    
+    const modal = document.getElementById(modalId);
+    if (modal) {
+      modal.classList.add('hidden');
+      modal.classList.remove('empresas-modal-backdrop');
+      modal.style.display = 'none';
+    }
+    
+    if (this.openModals.size === 0) {
+      this.unlockScroll();
+    }
+  }
+
+  lockScroll() {
+    if (this.isLocked) return;
+    
+    console.log('🔒 Using CSS-only scroll lock to prevent white borders');
+    
+    const body = document.body;
+    
+    // USAR SOLO CLASE CSS CON OVERSCROLL-BEHAVIOR PARA EVITAR BORDES BLANCOS
+    body.classList.add('empresas-modal-open');
+    
+    this.isLocked = true;
+    console.log('✅ CSS-only scroll lock applied');
+  }
+
+  unlockScroll() {
+    if (!this.isLocked) return;
+    
+    console.log('🔓 Using CSS-only scroll unlock to prevent white borders');
+    
+    const body = document.body;
+    
+    // USAR SOLO CLASE CSS - NO MANIPULAR ESTILOS DIRECTAMENTE
+    body.classList.remove('empresas-modal-open');
+    
+    this.isLocked = false;
+    console.log('✅ CSS-only scroll unlock applied');
+  }
+
+  setupFocusTrap(modalId) {
+    const modal = document.getElementById(modalId);
+    if (!modal) return;
+    
+    const focusable = modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    
+    const trapFocus = (e) => {
+      if (e.key === 'Tab') {
+        if (e.shiftKey && document.activeElement === first) {
+          last.focus();
+          e.preventDefault();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          first.focus();
+          e.preventDefault();
+        }
+      }
+    };
+    
+    modal.addEventListener('keydown', trapFocus);
+    first?.focus();
+  }
+
+  hasOpenModals() { return this.openModals.size > 0; }
+  
+  closeAllModals() {
+    Array.from(this.openModals).forEach(id => this.closeModal(id));
+  }
+  
+  refreshLock() {
+    if (this.hasOpenModals()) {
+      this.unlockScroll();
+      setTimeout(() => this.lockScroll(), 50);
+    }
+  }
+}
+
+// ============================================================================
+// 2. EMPRESAS MODALS CLASS - ACTUALIZADA CON MODALSCROLLMANAGER
+// ============================================================================
 class EmpresasModals {
   constructor() {
     this.currentEditingEmpresa = null;
     this.currentViewingEmpresa = null;
+    this.currentToggleEmpresa = null;
     this.apiClient = null;
     this.sedes = [];
     this.roles = [];
+    
+    // Inicializar ModalScrollManager
+    this.modalManager = new EmpresasModalScrollManager();
     
     this.initializeModals();
   }
@@ -449,7 +595,7 @@ class EmpresasModals {
         message.textContent = '¿Estás seguro de que quieres desactivar esta empresa? No podrá acceder al sistema.';
       }
       
-      this.openModal(modal);
+      this.openModal('toggleEmpresaModal');
       
     } catch (error) {
       console.error('💥 Error al mostrar modal de toggle:', error);
@@ -511,8 +657,7 @@ class EmpresasModals {
       this.loadTiposEmpresa();
       
       // Open modal
-      const modal = document.getElementById('empresaModal');
-      this.openModal(modal);
+      this.openModal('empresaModal');
       
     } catch (error) {
       console.error('💥 Error al abrir modal de creación:', error);
@@ -542,8 +687,7 @@ class EmpresasModals {
       await this.loadEmpresaDataForEdit(empresaId);
       
       // Open modal
-      const modal = document.getElementById('empresaModal');
-      this.openModal(modal);
+      this.openModal('empresaModal');
       
     } catch (error) {
       console.error('💥 Error al abrir modal de edición:', error);
@@ -685,8 +829,7 @@ class EmpresasModals {
       if (data.success && data.data) {
         this.populateViewModal(data.data);
         
-        const modal = document.getElementById('viewEmpresaModal');
-        this.openModal(modal);
+        this.openModal('viewEmpresaModal');
       } else {
         throw new Error(data.errors?.[0] || 'Error al cargar datos');
       }
@@ -1019,82 +1162,91 @@ class EmpresasModals {
     });
   }
 
+  // ===== GESTIÓN UNIFICADA DE MODALES CON MODALSCROLLMANAGER =====
+  
   /**
-   * Modal management
+   * Abrir modal - USANDO MODALSCROLLMANAGER
    */
-  openModal(modal) {
-    // Use modalManager to handle modals consistently with other sections
-    if (window.modalManager) {
-      modalManager.openModal(modal.id);
-      modalManager.setupModal(modal.id);
-    } else {
-      // Fallback
-      modal.classList.remove('hidden');
-    }
+  openModal(modalId) {
+    console.log('🟢 Abriendo modal empresa:', modalId);
     
-    // Focus first input
+    // Usar nuestro ModalScrollManager siempre
+    this.modalManager.openModal(modalId, { focusTrap: true });
+    
+    // Focus en el primer input después de abrir
     setTimeout(() => {
-      const firstInput = modal.querySelector('input, textarea, select');
-      if (firstInput) firstInput.focus();
-    }, 100);
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        const firstInput = modal.querySelector('input:not([type="hidden"]), textarea, select');
+        if (firstInput && firstInput.focus) {
+          firstInput.focus();
+        }
+      }
+    }, 150);
+    
+    console.log('✅ Modal empresa abierto con ModalScrollManager:', modalId);
+  }
+
+  /**
+   * Cerrar modal - USANDO MODALSCROLLMANAGER
+   */
+  closeModal(modalId) {
+    console.log('🔴 Cerrando modal empresa:', modalId);
+    
+    // Usar nuestro ModalScrollManager siempre
+    this.modalManager.closeModal(modalId);
+    
+    // Limpiar datos del modal
+    this.resetModalData(modalId);
+    
+    console.log('✅ Modal empresa cerrado con ModalScrollManager:', modalId);
+  }
+
+  /**
+   * Resetear datos del modal
+   */
+  resetModalData(modalId) {
+    switch(modalId) {
+      case 'empresaModal':
+        this.currentEditingEmpresa = null;
+        this.resetForm();
+        break;
+      case 'viewEmpresaModal':
+        this.currentViewingEmpresa = null;
+        break;
+      case 'toggleEmpresaModal':
+        this.currentToggleEmpresa = null;
+        break;
+      case 'clientUpdateModal':
+        // No specific data to reset for success modal
+        break;
+    }
   }
 
   closeActiveModal() {
-    const modals = ['toggleEmpresaModal', 'empresaModal', 'viewEmpresaModal', 'clientUpdateModal'];
-    
-    for (const modalId of modals) {
-      const modal = document.getElementById(modalId);
-      if (modal && !modal.classList.contains('hidden')) {
-        if (window.modalManager) {
-          modalManager.closeModal(modalId);
-        } else {
-          this.closeModalById(modalId);
-        }
-        break;
-      }
+    if (this.modalManager.hasOpenModals()) {
+      this.modalManager.closeAllModals();
     }
   }
 
   closeModalById(modalId) {
-    // Use modalManager for consistent modal handling
-    if (window.modalManager) {
-      modalManager.closeModal(modalId);
-    } else {
-      // Fallback
-      const modal = document.getElementById(modalId);
-      if (modal) {
-        modal.classList.add('hidden');
-        // No manipular overflow directamente - usar modalManager
-      }
-    }
-    
-    // Reset current data
-    if (modalId === 'empresaModal') {
-      this.currentEditingEmpresa = null;
-    } else if (modalId === 'viewEmpresaModal') {
-      this.currentViewingEmpresa = null;
-    } else if (modalId === 'toggleEmpresaModal') {
-      this.currentToggleEmpresa = null;
-    } else if (modalId === 'clientUpdateModal') {
-      // No specific data to reset for success modal
-    }
+    this.closeModal(modalId);
   }
 
   closeCrudModal() {
-    this.closeModalById('empresaModal');
-    this.resetForm();
+    this.closeModal('empresaModal');
   }
 
   closeViewModal() {
-    this.closeModalById('viewEmpresaModal');
+    this.closeModal('viewEmpresaModal');
   }
 
   closeToggleModal() {
-    this.closeModalById('toggleEmpresaModal');
+    this.closeModal('toggleEmpresaModal');
   }
 
   closeSuccessModal() {
-    this.closeModalById('clientUpdateModal');
+    this.closeModal('clientUpdateModal');
   }
 
   /**
@@ -1118,8 +1270,7 @@ class EmpresasModals {
     }
     
     messageEl.textContent = message;
-    const modal = document.getElementById('clientUpdateModal');
-    this.openModal(modal);
+    this.openModal('clientUpdateModal');
   }
 
   /**
