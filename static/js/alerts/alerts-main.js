@@ -1612,21 +1612,14 @@ function initializeCacheSystem() {
 // ========== FUNCIONES AUXILIARES PARA EL MODAL ==========
 
 function generateLocationContent(alert) {
-    // Determinar la estructura de ubicación según el tipo de alerta
+    // Los datos de ubicación siempre están en la llave 'ubicacion' del nivel raíz
     let ubicacionData = null;
     let direccion = '';
     let googleUrl = '';
     let osmUrl = '';
     
-    // Verificar si es alerta de usuario móvil (data.botonera_ubicacion)
-    if (alert.data?.botonera_ubicacion) {
-        direccion = alert.data.botonera_ubicacion.direccion || '';
-        googleUrl = alert.data.botonera_ubicacion.direccion_url || '';
-        osmUrl = alert.data.botonera_ubicacion.direccion_open_maps || '';
-        ubicacionData = alert.data.botonera_ubicacion;
-    }
-    // Verificar si es alerta de hardware (ubicacion)
-    else if (alert.ubicacion) {
+    // Verificar si existe la llave ubicacion en el nivel raíz
+    if (alert.ubicacion) {
         direccion = alert.ubicacion.direccion || '';
         googleUrl = alert.ubicacion.url_maps || '';
         osmUrl = alert.ubicacion.url_open_maps || '';

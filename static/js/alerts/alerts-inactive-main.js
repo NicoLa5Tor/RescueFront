@@ -487,27 +487,79 @@ function generateInactiveModalContent(alert, isUserOrigin, isHardwareOrigin) {
 
         <!-- GRILLA 2: INFORMACIÓN DE DESACTIVACIÓN -->
         <div class="mb-6">
-            <div class="modal-section bg-white/5 rounded-xl p-4">
-                <h4 class="text-white font-semibold mb-4 flex items-center">
+            <div class="modal-section bg-red-600/10 border border-red-500/20 rounded-xl p-4">
+                <h4 class="text-red-300 font-semibold mb-4 flex items-center">
                     <i class="fas fa-power-off mr-2"></i>Información de Desactivación
                 </h4>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="bg-black/20 rounded-lg p-3">
-                        <span class="text-gray-400 text-sm block mb-1">Fecha de Desactivación:</span>
+                        <span class="text-red-200 text-sm block mb-1">Fecha de Desactivación:</span>
                         <span class="text-white font-medium">${alert.fecha_desactivacion ? formatDate(alert.fecha_desactivacion) : 'No disponible'}</span>
+                        ${alert.desactivado_por?.fecha_desactivacion ? `
+                            <p class="text-red-300 text-xs mt-1 font-mono">${new Date(alert.desactivado_por.fecha_desactivacion).toLocaleString()}</p>
+                        ` : ''}
                     </div>
                     <div class="bg-black/20 rounded-lg p-3">
-                        <span class="text-gray-400 text-sm block mb-1">Desactivado por:</span>
-                        <span class="text-white font-medium">${alert.desactivado_por || 'Sistema'}</span>
+                        <span class="text-red-200 text-sm block mb-1">Desactivado por:</span>
+                        ${(() => {
+                            if (alert.desactivado_por?.tipo) {
+                                const tipo = alert.desactivado_por.tipo;
+                                const isEmpresa = tipo === 'empresa';
+                                const isUsuario = tipo === 'usuario';
+                                
+                                return `
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-6 h-6 ${isEmpresa ? 'bg-blue-500' : isUsuario ? 'bg-purple-500' : 'bg-gray-500'} rounded-full flex items-center justify-center">
+                                            <i class="fas fa-${isEmpresa ? 'building' : isUsuario ? 'user' : 'cog'} text-white text-xs"></i>
+                                        </div>
+                                        <div>
+                                            <span class="text-white font-medium capitalize">${tipo}</span>
+                                            ${alert.desactivado_por.id ? `
+                                                <p class="text-red-300 text-xs font-mono">ID: ${alert.desactivado_por.id}</p>
+                                            ` : ''}
+                                        </div>
+                                    </div>
+                                `;
+                            } else {
+                                return '<span class="text-white font-medium">Sistema</span>';
+                            }
+                        })()}
                     </div>
                     <div class="bg-black/20 rounded-lg p-3">
-                        <span class="text-gray-400 text-sm block mb-1">Estado Actual:</span>
+                        <span class="text-red-200 text-sm block mb-1">Estado Actual:</span>
                         <div class="flex items-center">
-                            <span class="w-2 h-2 rounded-full bg-gray-400 mr-2"></span>
-                            <span class="text-gray-300 font-medium">INACTIVA</span>
+                            <span class="w-2 h-2 rounded-full bg-red-400 mr-2"></span>
+                            <span class="text-red-300 font-medium">INACTIVA</span>
+                        </div>
+                        <div class="mt-2">
+                            <span class="inline-flex items-center px-2 py-1 bg-red-600/30 text-red-200 text-xs rounded-full">
+                                <i class="fas fa-clock mr-1"></i>
+                                Desactivada ${alert.fecha_desactivacion ? formatDate(alert.fecha_desactivacion) : ''}
+                            </span>
                         </div>
                     </div>
                 </div>
+                
+                <!-- Información adicional de desactivación si existe -->
+                ${alert.desactivado_por?.tipo ? `
+                    <div class="mt-4 p-3 bg-red-900/20 border border-red-500/10 rounded-lg">
+                        <div class="flex items-start space-x-3">
+                            <div class="w-8 h-8 bg-red-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-info-circle text-red-300 text-sm"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h5 class="text-red-200 font-medium text-sm mb-1">Detalles de Desactivación</h5>
+                                <p class="text-red-300 text-xs leading-relaxed">
+                                    Esta alerta fue desactivada por <strong>${alert.desactivado_por.tipo === 'empresa' ? 'la empresa' : alert.desactivado_por.tipo === 'usuario' ? 'un usuario' : 'el sistema'}</strong>
+                                    ${alert.fecha_desactivacion ? ` el ${new Date(alert.fecha_desactivacion).toLocaleDateString()} a las ${new Date(alert.fecha_desactivacion).toLocaleTimeString()}` : ''}.
+                                    ${alert.desactivado_por.tipo === 'empresa' ? ' La desactivación fue realizada desde el panel de administración de la empresa.' : 
+                                      alert.desactivado_por.tipo === 'usuario' ? ' Un usuario autorizado desactivó manualmente esta alerta.' : 
+                                      ' La alerta fue desactivada automáticamente por el sistema.'}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                ` : ''}
             </div>
         </div>
 
@@ -1076,21 +1128,14 @@ function generateContactsContent(alert) {
 
 // ========== FUNCIONES AUXILIARES ADICIONALES ==========
 function generateLocationContent(alert) {
-    // Determinar la estructura de ubicación según el tipo de alerta
+    // Los datos de ubicación siempre están en la llave 'ubicacion' del nivel raíz
     let ubicacionData = null;
     let direccion = '';
     let googleUrl = '';
     let osmUrl = '';
     
-    // Verificar si es alerta de usuario móvil (data.botonera_ubicacion)
-    if (alert.data?.botonera_ubicacion) {
-        direccion = alert.data.botonera_ubicacion.direccion || '';
-        googleUrl = alert.data.botonera_ubicacion.direccion_url || '';
-        osmUrl = alert.data.botonera_ubicacion.direccion_open_maps || '';
-        ubicacionData = alert.data.botonera_ubicacion;
-    }
-    // Verificar si es alerta de hardware (ubicacion)
-    else if (alert.ubicacion) {
+    // Verificar si existe la llave ubicacion en el nivel raíz
+    if (alert.ubicacion) {
         direccion = alert.ubicacion.direccion || '';
         googleUrl = alert.ubicacion.url_maps || '';
         osmUrl = alert.ubicacion.url_open_maps || '';
