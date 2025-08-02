@@ -450,9 +450,8 @@ async function showInactiveAlertDetails(alertId) {
         content.innerHTML = generateInactiveModalContent(alert, isUserOrigin, isHardwareOrigin);
     }
     
-    // Para alertas inactivas, el botón podría ser "Reactivar" o estar deshabilitado
-    toggleBtn.innerHTML = `<i class="fas fa-toggle-on mr-2"></i><span id="toggleStatusText">Reactivar</span>`;
-    toggleBtn.disabled = true; // Por ahora deshabilitado para alertas inactivas
+    // Para alertas inactivas, ocultar el botón de reactivar
+    toggleBtn.style.display = 'none';
     
     // Abrir modal
     setTimeout(() => {
@@ -460,229 +459,277 @@ async function showInactiveAlertDetails(alertId) {
         console.log('✅ Modal de alerta inactiva abierto correctamente');
     }, 50);
 }
-
 function generateInactiveModalContent(alert, isUserOrigin, isHardwareOrigin) {
     return `
-        <!-- Header para alerta inactiva -->
-        <div class="mb-4 p-4 rounded-lg ${
-        isUserOrigin ? 'bg-gradient-to-r from-purple-600 to-indigo-700' : 
-        isHardwareOrigin ? 'bg-gradient-to-r from-blue-600 to-cyan-700' : 
-        'bg-gradient-to-r from-gray-600 to-gray-700'}">
+        <!-- GRILLA 1: HEADER DE ALERTA INACTIVA -->
+        <div class="mb-6 p-4 rounded-xl ${
+            isUserOrigin ? 'bg-gradient-to-r from-purple-600 to-indigo-700' : 
+            isHardwareOrigin ? 'bg-gradient-to-r from-blue-600 to-cyan-700' : 
+            'bg-gradient-to-r from-gray-600 to-gray-700'
+        }">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">
                     <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
                         <i class="fas fa-power-off text-white text-lg"></i>
                     </div>
                     <div>
-                        <h3 class="text-white font-bold text-lg">
-                            🚫 Alerta Inactiva
-                        </h3>
-                        <p class="text-white/80 text-sm">
-                            Esta alerta ha sido desactivada
-                        </p>
+                        <h3 class="text-white font-bold text-lg">🚫 Alerta Inactiva</h3>
+                        <p class="text-white/80 text-sm">Esta alerta ha sido desactivada</p>
                     </div>
                 </div>
-                <div class="text-right">
-                    <div class="flex items-center space-x-2 mt-2">
-                        <span class="px-2 py-1 rounded-full text-xs font-bold ${
-                            isUserOrigin ? 'bg-purple-500/30 text-purple-200' : 
-                            isHardwareOrigin ? 'bg-blue-500/30 text-blue-200' : 
-                            'bg-gray-500/30 text-gray-200'}">
-                            ${isUserOrigin ? 'MÓVIL' : isHardwareOrigin ? 'AUTO' : 'SYS'}
-                        </span>
+                <div class="flex flex-wrap gap-2">
+                    <span class="px-3 py-1 rounded-full text-xs font-bold ${getPriorityClass(alert.prioridad)}">
+                        ${alert.prioridad.toUpperCase()}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- GRILLA 2: INFORMACIÓN DE DESACTIVACIÓN -->
+        <div class="mb-6">
+            <div class="modal-section bg-white/5 rounded-xl p-4">
+                <h4 class="text-white font-semibold mb-4 flex items-center">
+                    <i class="fas fa-power-off mr-2"></i>Información de Desactivación
+                </h4>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-black/20 rounded-lg p-3">
+                        <span class="text-gray-400 text-sm block mb-1">Fecha de Desactivación:</span>
+                        <span class="text-white font-medium">${alert.fecha_desactivacion ? formatDate(alert.fecha_desactivacion) : 'No disponible'}</span>
+                    </div>
+                    <div class="bg-black/20 rounded-lg p-3">
+                        <span class="text-gray-400 text-sm block mb-1">Desactivado por:</span>
+                        <span class="text-white font-medium">${alert.desactivado_por || 'Sistema'}</span>
+                    </div>
+                    <div class="bg-black/20 rounded-lg p-3">
+                        <span class="text-gray-400 text-sm block mb-1">Estado Actual:</span>
+                        <div class="flex items-center">
+                            <span class="w-2 h-2 rounded-full bg-gray-400 mr-2"></span>
+                            <span class="text-gray-300 font-medium">INACTIVA</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GRILLA 3: PRINCIPAL (3 COLUMNAS) -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            
+            <!-- Columna 1: Imagen/Tipo -->
+            <div class="modal-section ${
+                isUserOrigin ? 'bg-gradient-to-br from-purple-500 to-pink-600' : 
+                isHardwareOrigin ? 'bg-gradient-to-br from-blue-500 to-cyan-600' : 
+                'bg-gradient-to-br from-gray-500 to-gray-600'
+            } rounded-xl p-4 text-center">
+                ${alert.image_alert ? `
+                    <img src="${alert.image_alert}" alt="${alert.nombre_alerta}" 
+                         class="w-full h-32 object-cover rounded-lg mb-3 border-2 border-white/20">
+                ` : `
+                    <div class="w-16 h-16 bg-gradient-to-br ${
+                        isUserOrigin ? 'from-purple-400 to-pink-500' : 
+                        isHardwareOrigin ? 'from-blue-400 to-cyan-500' : 
+                        'from-gray-400 to-gray-500'
+                    } rounded-full mx-auto mb-3 flex items-center justify-center">
+                        <i class="fas fa-${isUserOrigin ? 'user-shield' : isHardwareOrigin ? 'microchip' : 'exclamation-triangle'} text-white text-2xl"></i>
+                    </div>
+                `}
+                <h3 class="text-lg font-bold text-white">${alert.nombre_alerta || 'Alerta'}</h3>
+                ${alert.tipo_alerta ? `
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold" 
+                         style="background-color: ${getAlertTypeColor(alert.tipo_alerta)}40; color: ${getAlertTypeColor(alert.tipo_alerta)};">
+                        ${alert.tipo_alerta}
+                    </span>
+                ` : ''}
+            </div>
+
+            <!-- Columna 2: Info básica -->
+            <div class="modal-section bg-white/5 rounded-xl p-4">
+                <h4 class="text-white font-semibold mb-4">
+                    <i class="fas fa-info-circle mr-2"></i>Información
+                </h4>
+                <div class="space-y-3 text-sm">
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Empresa:</span>
+                        <span class="text-white">${alert.empresa_nombre || 'N/A'}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Sede:</span>
+                        <span class="text-white">${alert.sede || 'N/A'}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Tipo:</span>
+                        <span class="text-white">${alert.tipo_alerta || 'N/A'}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Prioridad:</span>
                         <span class="px-2 py-1 rounded-full text-xs font-bold ${getPriorityClass(alert.prioridad)}">
                             ${alert.prioridad.toUpperCase()}
                         </span>
-                        ${alert.fecha_desactivacion ? `
-                            <span class="px-2 py-1 rounded-full text-xs font-bold bg-red-500/30 text-red-200">
-                                ${formatDate(alert.fecha_desactivacion)}
-                            </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna 3: Origen -->
+            <div class="modal-section ${
+                isUserOrigin ? 'bg-gradient-to-br from-purple-600 to-indigo-700' : 
+                isHardwareOrigin ? 'bg-gradient-to-br from-blue-600 to-cyan-700' : 
+                'bg-gradient-to-br from-gray-600 to-gray-700'
+            } rounded-xl p-4">
+                <div class="flex items-center mb-3">
+                    <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center mr-3">
+                        <i class="fas fa-${isUserOrigin ? 'user-shield' : isHardwareOrigin ? 'microchip' : 'question-circle'} text-white"></i>
+                    </div>
+                    <h4 class="text-white font-bold">
+                        ${isUserOrigin ? 'Usuario Origen' : isHardwareOrigin ? 'Hardware Origen' : 'Sistema'}
+                    </h4>
+                </div>
+                <div class="space-y-2 text-sm">
+                    <div class="bg-black/20 rounded-lg p-3">
+                        <p class="text-white font-medium">${alert.activacion_alerta?.nombre || alert.hardware_nombre || 'No especificado'}</p>
+                        ${alert.activacion_alerta?.id || alert.data?.id_origen ? `
+                            <code class="text-white/80 font-mono text-xs">${alert.activacion_alerta?.id || alert.data?.id_origen}</code>
                         ` : ''}
                     </div>
                 </div>
             </div>
         </div>
-        
-        <!-- Layout optimizado: Fila principal con imagen/estado + mapa más grande -->
-        <div class="space-y-4">
-            <!-- Fila superior: Imagen/Tipo + Estado y Prioridad + Información del origen (3 columnas) -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                ${alert.image_alert || alert.data?.tipo_alarma_info?.imagen_base64 ? `
-                    <div class="modal-section bg-gradient-to-br ${
-                        isUserOrigin ? 'from-purple-500 to-pink-600' : 
-                        isHardwareOrigin ? 'from-blue-500 to-cyan-600' : 
-                        'from-gray-500 to-gray-600'} rounded-lg p-4 text-center">
-                        <img src="${alert.image_alert || alert.data.tipo_alarma_info.imagen_base64}" 
-                             alt="${alert.nombre_alerta || 'Tipo de alerta'}" 
-                             class="w-full h-24 object-cover rounded-lg mb-3 border-2 border-white/20 modal-image">
-                        <h3 class="text-lg font-bold text-white">
-                            ${alert.nombre_alerta || 'Alerta'}
-                        </h3>
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold" 
-                             style="background-color: ${getAlertTypeColor(alert.tipo_alerta)}40; color: ${getAlertTypeColor(alert.tipo_alerta)};">
-                            ${alert.tipo_alerta || 'N/A'}
-                        </span>
+
+        <!-- Ubicación: Ancho completo -->
+        <div class="modal-section bg-gradient-to-r from-indigo-600 to-purple-700 rounded-xl p-6 mb-6">
+            <h4 class="text-xl font-bold text-white mb-4 flex items-center">
+                <i class="fas fa-map-marker-alt mr-3"></i>Ubicación Completa
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                <div class="bg-white/10 rounded-lg p-3">
+                    <span class="text-indigo-200 text-sm block mb-1">Empresa:</span>
+                    <span class="text-white font-medium">${alert.empresa_nombre}</span>
+                </div>
+                <div class="bg-white/10 rounded-lg p-3">
+                    <span class="text-indigo-200 text-sm block mb-1">Sede:</span>
+                    <span class="text-white font-medium">${alert.sede}</span>
+                </div>
+                ${alert.ubicacion || alert.data?.botonera_ubicacion ? `
+                    <div class="bg-white/10 rounded-lg p-3">
+                        <span class="text-indigo-200 text-sm block mb-1">Ubicación Específica:</span>
+                        <span class="text-white font-medium text-sm">${alert.data?.botonera_ubicacion?.direccion || alert.ubicacion?.direccion || 'No especificada'}</span>
+                    </div>
+                    <div class="bg-white/10 rounded-lg p-3">
+                        <span class="text-indigo-200 text-sm block mb-1">Hardware Asociado:</span>
+                        <span class="text-white font-medium text-sm">${alert.data?.botonera_ubicacion?.hardware_nombre || alert.ubicacion?.hardware_nombre || alert.hardware_nombre || 'No especificado'}</span>
                     </div>
                 ` : `
-                    <div class="modal-section bg-gradient-to-br ${
-                        isUserOrigin ? 'from-purple-600 to-indigo-800' : 
-                        isHardwareOrigin ? 'from-blue-600 to-cyan-800' : 
-                        'from-gray-600 to-gray-800'} rounded-lg p-4 text-center">
-                        <div class="w-16 h-16 bg-gradient-to-br ${
-                            isUserOrigin ? 'from-purple-400 to-pink-500' : 
-                            isHardwareOrigin ? 'from-blue-400 to-cyan-500' : 
-                            'from-gray-400 to-gray-500'} rounded-full mx-auto mb-2 flex items-center justify-center">
-                            <i class="fas fa-${
-                                isUserOrigin ? 'user-shield' : 
-                                isHardwareOrigin ? 'microchip' : 'exclamation-triangle'} text-white text-2xl"></i>
-                        </div>
-                        <h3 class="text-lg font-bold text-white">
-                            ${isUserOrigin ? 'Alerta de Usuario' : isHardwareOrigin ? 'Alerta de Hardware' : 'Alerta del Sistema'}
-                        </h3>
+                    <div class="md:col-span-2 bg-white/10 rounded-lg p-3 flex items-center justify-center">
+                        <span class="text-indigo-200 text-sm">Sin ubicación específica disponible</span>
                     </div>
                 `}
-                
-                <div class="modal-section bg-white/5 rounded-lg p-4">
-                    <h4 class="text-white font-semibold mb-2">
-                        <i class="fas fa-info-circle mr-2"></i>Información
-                    </h4>
-                    <div class="space-y-2 text-sm">
-                        <div class="flex justify-between">
-                            <span class="text-gray-400">Nombre:</span>
-                            <span class="text-white">${alert.nombre_alerta || 'N/A'}</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-400">Empresa:</span>
-                            <span class="text-white">${alert.empresa_nombre || 'N/A'}</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-400">Sede:</span>
-                            <span class="text-white">${alert.sede || 'N/A'}</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Estado y prioridad en columna -->
-                <div class="lg:col-span-1 space-y-3">
-                    <div class="modal-section bg-gradient-to-r from-gray-700 to-gray-800 rounded-lg p-3">
-                        <h4 class="text-sm font-medium text-gray-300 mb-2">Estado</h4>
-                        <div class="flex items-center">
-                            <div class="w-3 h-3 rounded-full mr-2 ${alert.activo ? 'bg-green-400' : 'bg-red-400'}"></div>
-                            <span class="text-lg font-bold ${alert.activo ? 'text-green-400' : 'text-red-400'}">
-                                ${alert.activo ? 'ACTIVA' : 'INACTIVA'}
-                            </span>
-                        </div>
-                    </div>
-                    <div class="modal-section bg-gradient-to-r from-gray-700 to-gray-800 rounded-lg p-3">
-                        <h4 class="text-sm font-medium text-gray-300 mb-2">Prioridad</h4>
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold ${getPriorityClass(alert.prioridad)}">
-                            ${alert.prioridad.toUpperCase()}
-                        </span>
-                    </div>
-                </div>
+            </div>
+            ${generateLocationContent(alert)}
+        </div>
 
-                <!-- Información del origen (Usuario o Hardware) -->
-                <div class="lg:col-span-1">
-                    ${isUserOrigin ? `
-                        <div class="modal-section bg-gradient-to-r from-purple-700 to-indigo-800 rounded-lg p-3 h-full">
-                            <h4 class="text-sm font-semibold text-white mb-2 flex items-center">
-                                <i class="fas fa-user-shield mr-1 text-xs"></i>Usuario Origen
-                            </h4>
-                            <div class="space-y-1 text-xs">
-                                <div class="flex justify-between">
-                                    <span class="text-purple-200">Usuario:</span>
-                                    <span class="text-white font-medium truncate ml-2">${alert.activacion_alerta?.nombre || 'Usuario no especificado'}</span>
+        <!-- Grid inferior: 2 columnas -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            
+            <!-- Descripción -->
+            <div class="space-y-4">
+                ${alert.data?.tipo_alarma_info?.descripcion ? `
+                    <div class="modal-section bg-orange-600/10 border border-orange-500/20 rounded-xl p-4">
+                        <h4 class="text-orange-300 font-semibold mb-3 flex items-center">
+                            <i class="fas fa-info-circle mr-2"></i>Descripción
+                        </h4>
+                        <p class="text-orange-200 text-sm leading-relaxed">${alert.data.tipo_alarma_info.descripcion}</p>
+                    </div>
+                ` : ''}
+                
+                ${alert.topic ? `
+                    <div class="modal-section bg-teal-600/10 border border-teal-500/20 rounded-xl p-4">
+                        <h4 class="text-teal-300 font-semibold mb-3 flex items-center">
+                            <i class="fas fa-code-branch mr-2"></i>Topic MQTT
+                        </h4>
+                        <code class="text-teal-100 font-mono text-sm bg-black/20 px-3 py-2 rounded-lg block break-all">${alert.topic}</code>
+                        <p class="text-teal-200 text-xs mt-2">Empresa/Sede/Tipo/Hardware</p>
+                    </div>
+                ` : ''}
+            </div>
+
+            <!-- Hardware relacionado -->
+            <div class="modal-section bg-slate-700/20 border border-slate-500/20 rounded-xl p-4">
+                <h4 class="text-slate-300 font-semibold mb-3 flex items-center justify-between">
+                    <span><i class="fas fa-network-wired mr-2"></i>Hardware Relacionado</span>
+                    ${(() => {
+                        const topics = alert.topics_otros_hardware || alert.data?.topics_otros_hardware || [];
+                        return topics.length > 0 ? `<span class="bg-slate-600 text-white px-2 py-1 rounded-full text-xs">${topics.length}</span>` : '';
+                    })()}
+                </h4>
+                ${(() => {
+                    const topics = alert.topics_otros_hardware || alert.data?.topics_otros_hardware || [];
+                    if (topics.length > 0) {
+                        return `
+                            <div class="space-y-2 max-h-40 overflow-y-auto custom-scrollbar">
+                                ${topics.slice(0, 5).map(topic => `
+                                    <div class="bg-black/20 rounded-lg p-2">
+                                        <code class="text-slate-200 font-mono text-xs break-all">${topic}</code>
+                                    </div>
+                                `).join('')}
+                                ${topics.length > 5 ? `
+                                    <div class="text-center text-slate-400 text-xs pt-2 border-t border-slate-600/30">
+                                        +${topics.length - 5} elementos más
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `;
+                    }
+                    return `
+                        <div class="text-center py-8">
+                            <i class="fas fa-server text-gray-400 text-3xl mb-3"></i>
+                            <p class="text-gray-300 text-sm font-medium">Sin hardware relacionado</p>
+                            <p class="text-gray-500 text-xs mt-1">No hay topics MQTT vinculados</p>
+                        </div>
+                    `;
+                })()}
+            </div>
+        </div>
+
+        <!-- Contactos: Grid responsivo -->
+        ${alert.numeros_telefonicos?.length > 0 ? `
+            <div class="modal-section bg-teal-600/10 border border-teal-500/20 rounded-xl p-6">
+                <h4 class="text-teal-300 font-semibold mb-4 flex items-center justify-between">
+                    <span><i class="fas fa-phone mr-2"></i>Contactos Notificados</span>
+                    <span class="bg-teal-600 text-white px-3 py-1 rounded-full text-sm">${alert.numeros_telefonicos.length}</span>
+                </h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                    ${alert.numeros_telefonicos.map(contacto => `
+                        <div class="bg-white/5 border border-teal-500/10 rounded-lg p-4 flex items-center space-x-3">
+                            <div class="w-10 h-10 ${contacto.disponible ? 'bg-teal-500' : 'bg-red-500'} rounded-full flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-user text-white"></i>
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <p class="text-white font-medium truncate">${contacto.nombre}</p>
+                                <p class="text-teal-200 text-sm">${contacto.numero}</p>
+                                <div class="flex items-center space-x-2 mt-1">
+                                    <span class="w-2 h-2 rounded-full ${contacto.disponible ? 'bg-green-400' : 'bg-red-400'}"></span>
+                                    <span class="text-xs ${contacto.disponible ? 'text-green-300' : 'text-red-300'}">
+                                        ${contacto.disponible ? 'Disponible' : 'No disponible'}
+                                    </span>
                                 </div>
-                                ${alert.activacion_alerta?.id ? `
-                                    <div class="flex justify-between">
-                                        <span class="text-purple-200">ID:</span>
-                                        <span class="text-white font-medium font-mono text-xs">${alert.activacion_alerta.id}</span>
-                                    </div>
-                                ` : ''}
-                                ${alert.data?.metadatos?.plataforma ? `
-                                    <div class="pt-1">
-                                        <span class="text-purple-200 block mb-1">Plataforma:</span>
-                                        <span class="inline-flex items-center px-2 py-1 bg-purple-600/30 text-purple-100 rounded text-xs">
-                                            <i class="fas fa-mobile-alt mr-1"></i>
-                                            ${alert.data.metadatos.plataforma === 'mobile_app' ? 'App Móvil' : alert.data.metadatos.plataforma}
-                                        </span>
-                                    </div>
-                                ` : ''}
-                                ${alert.fecha_desactivacion ? `
-                                    <div class="pt-1">
-                                        <span class="text-purple-200 block mb-1">Desactivada:</span>
-                                        <span class="text-red-300 text-xs">${formatDate(alert.fecha_desactivacion)}</span>
-                                    </div>
-                                ` : ''}
                             </div>
                         </div>
-                    ` : isHardwareOrigin ? `
-                        <div class="modal-section bg-gradient-to-r from-blue-700 to-cyan-800 rounded-lg p-3 h-full">
-                            <h4 class="text-sm font-semibold text-white mb-2 flex items-center">
-                                <i class="fas fa-microchip mr-1 text-xs"></i>Hardware Origen
-                            </h4>
-                            <div class="space-y-1 text-xs">
-                                <div class="flex justify-between">
-                                    <span class="text-blue-200">Nombre:</span>
-                                    <span class="text-white font-medium truncate ml-2">${alert.activacion_alerta?.nombre || alert.hardware_nombre || 'Hardware no especificado'}</span>
-                                </div>
-                                ${alert.data?.id_origen ? `
-                                    <div class="flex justify-between">
-                                        <span class="text-blue-200">ID Origen:</span>
-                                        <span class="text-white font-medium font-mono text-xs">${alert.data.id_origen}</span>
-                                    </div>
-                                ` : ''}
-                                ${alert.topic ? `
-                                    <div class="pt-1">
-                                        <span class="text-blue-200 block mb-1">Topic MQTT:</span>
-                                        <code class="text-blue-100 font-mono text-xs bg-black/20 px-1 py-1 rounded block break-all">${alert.topic}</code>
-                                    </div>
-                                ` : ''}
-                                ${alert.fecha_desactivacion ? `
-                                    <div class="pt-1">
-                                        <span class="text-blue-200 block mb-1">Desactivada:</span>
-                                        <span class="text-red-300 text-xs">${formatDate(alert.fecha_desactivacion)}</span>
-                                    </div>
-                                ` : ''}
-                            </div>
-                        </div>
-                    ` : `
-                        <div class="modal-section bg-gradient-to-r from-gray-700 to-gray-800 rounded-lg p-3 h-full flex items-center justify-center">
-                            <div class="text-center">
-                                <i class="fas fa-question-circle text-gray-400 text-2xl mb-2"></i>
-                                <p class="text-gray-300 text-sm">Origen no especificado</p>
-                                ${alert.fecha_desactivacion ? `
-                                    <p class="text-red-300 text-xs mt-2">Desactivada: ${formatDate(alert.fecha_desactivacion)}</p>
-                                ` : ''}
-                            </div>
-                        </div>
-                    `}
+                    `).join('')}
                 </div>
             </div>
-            ${alert.ubicacion || alert.data?.botonera_ubicacion ? generateSpecificLocationContent(alert) : ''}
-            ${alert.data?.tipo_alarma_info?.descripcion ? `
-                <div class="modal-section bg-orange-600/5 rounded-lg p-4">
-                    <h4 class="text-orange-300 font-semibold mb-2">
-                        <i class="fas fa-info-circle mr-2"></i>Descripción
-                    </h4>
-                    <p class="text-orange-200 text-sm">${alert.data.tipo_alarma_info.descripcion}</p>
-                </div>
-            ` : ''}
-        ${alert.numeros_telefonicos ? generateContactsContent(alert) : ''}
+        ` : ''}
 
-        <!-- Recomendar e Implementos -->
+        <!-- Recomendaciones e Implementos -->
         ${alert.data?.tipo_alarma_info?.recomendaciones || alert.data?.tipo_alarma_info?.implementos_necesarios ? `
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 ${alert.data.tipo_alarma_info.recomendaciones?.length > 0 ? `
-                    <div class="modal-section bg-gradient-to-br from-green-700 to-emerald-800 rounded-lg p-3">
-                        <h4 class="text-sm font-semibold text-white mb-2 flex items-center">
-                            <i class="fas fa-lightbulb mr-1 text-xs"></i>Recomendaciones
+                    <div class="modal-section bg-green-600/10 border border-green-500/20 rounded-xl p-4">
+                        <h4 class="text-green-300 font-semibold mb-3 flex items-center">
+                            <i class="fas fa-lightbulb mr-2"></i>Recomendaciones
                         </h4>
-                        <ul class="space-y-1">
+                        <ul class="space-y-2">
                             ${alert.data.tipo_alarma_info.recomendaciones.map(rec => `
                                 <li class="flex items-start text-green-100">
-                                    <i class="fas fa-check-circle text-green-300 mr-1 mt-0.5 flex-shrink-0 text-xs"></i>
-                                    <span class="text-xs">${rec}</span>
+                                    <i class="fas fa-check-circle text-green-400 mr-2 mt-0.5 flex-shrink-0"></i>
+                                    <span class="text-sm">${rec}</span>
                                 </li>
                             `).join('')}
                         </ul>
@@ -690,15 +737,15 @@ function generateInactiveModalContent(alert, isUserOrigin, isHardwareOrigin) {
                 ` : ''}
                 
                 ${alert.data.tipo_alarma_info.implementos_necesarios?.length > 0 ? `
-                    <div class="modal-section bg-gradient-to-br from-cyan-700 to-blue-800 rounded-lg p-3">
-                        <h4 class="text-sm font-semibold text-white mb-2 flex items-center">
-                            <i class="fas fa-tools mr-1 text-xs"></i>Implementos Necesarios
+                    <div class="modal-section bg-cyan-600/10 border border-cyan-500/20 rounded-xl p-4">
+                        <h4 class="text-cyan-300 font-semibold mb-3 flex items-center">
+                            <i class="fas fa-tools mr-2"></i>Implementos Necesarios
                         </h4>
-                        <ul class="space-y-1">
+                        <ul class="space-y-2">
                             ${alert.data.tipo_alarma_info.implementos_necesarios.map(impl => `
                                 <li class="flex items-start text-cyan-100">
-                                    <i class="fas fa-wrench text-cyan-300 mr-1 mt-0.5 flex-shrink-0 text-xs"></i>
-                                    <span class="text-xs">${impl}</span>
+                                    <i class="fas fa-wrench text-cyan-400 mr-2 mt-0.5 flex-shrink-0"></i>
+                                    <span class="text-sm">${impl}</span>
                                 </li>
                             `).join('')}
                         </ul>
@@ -706,154 +753,8 @@ function generateInactiveModalContent(alert, isUserOrigin, isHardwareOrigin) {
                 ` : ''}
             </div>
         ` : ''}
-
-        <!-- Fila principal: Mapa de ancho completo -->
-        <div class="space-y-4">
-            <!-- Mapa y ubicación principal (ancho completo) -->
-            <div class="w-full">
-                <div class="modal-section bg-gradient-to-r from-indigo-600 to-purple-700 rounded-lg p-4">
-                    <h4 class="text-lg font-semibold text-white mb-3 flex items-center">
-                        <i class="fas fa-map-marker-alt mr-2"></i>Ubicación Completa
-                    </h4>
-                    <div class="space-y-3">
-                        <!-- Empresa y Sede más compactas -->
-                        <div class="grid grid-cols-2 gap-4 pb-3">
-                            <div>
-                                <span class="text-indigo-200 text-sm block">Empresa:</span>
-                                <span class="text-white font-medium">${alert.empresa_nombre}</span>
-                            </div>
-                            <div>
-                                <span class="text-indigo-200 text-sm block">Sede:</span>
-                                <span class="text-white font-medium">${alert.sede}</span>
-                            </div>
-                        </div>
-                        
-                        <!-- Dirección física y mapa más grande -->
-                        ${generateLocationContent(alert)}
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Información adicional de ubicación reorganizada debajo del mapa -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <!-- Ubicación específica y Hardware asociado combinados -->
-                <div class="modal-section bg-gradient-to-r from-cyan-600 to-amber-700 rounded-lg p-3">
-                    <h4 class="text-sm font-semibold text-white mb-3 flex items-center">
-                        <i class="fas fa-crosshairs mr-2 text-xs"></i>Ubicación y Hardware
-                    </h4>
-                    <div class="space-y-3">
-                        ${generateSpecificLocationContent(alert)}
-                        ${generateAssociatedHardwareContent(alert)}
-                    </div>
-                </div>
-                
-                <!-- Topic MQTT como ubicación lógica -->
-                ${alert.topic ? `
-                    <div class="modal-section bg-gradient-to-r from-teal-600 to-green-700 rounded-lg p-3">
-                        <h4 class="text-sm font-semibold text-white mb-2 flex items-center">
-                            <i class="fas fa-code-branch mr-1 text-xs"></i>Ubicación MQTT
-                        </h4>
-                        <code class="text-teal-100 font-mono text-xs bg-black/20 px-2 py-1 rounded block break-all">${alert.topic}</code>
-                        <p class="text-teal-200 text-xs mt-1">Empresa/Sede/Tipo/Hardware</p>
-                    </div>
-                ` : ''}
-            </div>
-        </div>
-        </div>
-        
-        <!-- Información principal -->
-        <div class="space-y-4">
-            <!-- Información del hardware y descripción en la misma fila -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                ${alert.hardware_nombre ? `
-                    <div class="modal-section bg-gradient-to-r from-blue-700 to-blue-800 rounded-lg p-3">
-                        <h4 class="text-sm font-semibold text-white mb-2 flex items-center">
-                            <i class="fas fa-microchip mr-1 text-xs"></i>Hardware Origen
-                        </h4>
-                        <div class="space-y-1 text-xs">
-                            <div class="flex justify-between">
-                                <span class="text-blue-200">Nombre:</span>
-                                <span class="text-white font-medium">${alert.hardware_nombre}</span>
-                            </div>
-                            ${alert.data?.id_origen ? `
-                                <div class="flex justify-between">
-                                    <span class="text-blue-200">ID Origen:</span>
-                                    <span class="text-white font-medium">${alert.data.id_origen}</span>
-                                </div>
-                            ` : ''}
-                            ${alert.topic ? `
-                                <div class="pt-1">
-                                    <span class="text-blue-200 block">Topic MQTT:</span>
-                                    <code class="text-blue-100 font-mono text-xs bg-black/20 px-1 py-0.5 rounded block mt-1 break-all">${alert.topic}</code>
-                                </div>
-                            ` : ''}
-                        </div>
-                    </div>
-                ` : ''}
-                
-                <!-- Descripción de la alerta -->
-                ${alert.data?.tipo_alarma_info?.descripcion ? `
-                    <div class="modal-section bg-gradient-to-r from-orange-600 to-red-700 rounded-lg p-3">
-                        <h4 class="text-sm font-semibold text-white mb-2 flex items-center">
-                            <i class="fas fa-info-circle mr-1 text-xs"></i>Descripción
-                        </h4>
-                        <p class="text-orange-100 text-xs leading-relaxed">${alert.data.tipo_alarma_info.descripcion}</p>
-                    </div>
-                ` : ''}
-            </div>
-            
-            <!-- Información del usuario y hardware relacionado en la misma fila -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                <!-- Información específica según el tipo de origen -->
-                ${generateOriginDetailsContent(alert, isUserOrigin, isHardwareOrigin)}
-                
-                <!-- Hardware Relacionado en columna 2 -->
-                ${(() => {
-                    // Intentar múltiples fuentes para hardware relacionado
-                    const topicsRelacionados = alert.topics_otros_hardware || 
-                                             alert.data?.topics_otros_hardware || 
-                                             alert.data?.topics || 
-                                             alert.hardware_relacionado || 
-                                             [];
-                    
-                    if (topicsRelacionados && topicsRelacionados.length > 0) {
-                        return `
-                            <div class="modal-section bg-gradient-to-r from-slate-700 to-slate-800 rounded-lg p-3 h-full">
-                                <h4 class="text-sm font-semibold text-white mb-2 flex items-center">
-                                    <i class="fas fa-network-wired mr-1 text-xs"></i>Hardware Relacionado (${topicsRelacionados.length})
-                                </h4>
-                                <div class="space-y-1 max-h-32 overflow-y-auto text-xs custom-scrollbar">
-                                    ${topicsRelacionados.slice(0, 3).map(topic => `
-                                        <div class="bg-black/20 rounded p-1">
-                                            <code class="text-slate-200 font-mono text-xs break-all">${topic}</code>
-                                        </div>
-                                    `).join('')}
-                                    ${topicsRelacionados.length > 3 ? `
-                                        <div class="text-center text-slate-400 text-xs pt-1">
-                                            +${topicsRelacionados.length - 3} más
-                                        </div>
-                                    ` : ''}
-                                </div>
-                            </div>
-                        `;
-                    } else {
-                        return `
-                            <div class="modal-section bg-gradient-to-r from-gray-700 to-gray-800 rounded-lg p-3 h-full flex items-center justify-center">
-                                <div class="text-center">
-                                    <i class="fas fa-server text-gray-400 text-2xl mb-2"></i>
-                                    <p class="text-gray-300 text-sm">Sin hardware relacionado</p>
-                                    <p class="text-gray-500 text-xs mt-1">No hay topics MQTT vinculados</p>
-                                </div>
-                            </div>
-                        `;
-                    }
-                })()}
-            </div>
-        </div>
-        </div>
     `;
 }
-
 // ========== FUNCIONES DE PAGINACIÓN ==========
 function changePageInactive(direction) {
     const newPage = currentInactivePage + direction;
