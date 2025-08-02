@@ -1061,6 +1061,23 @@ def empresa_alertas():
         empresa_username=empresa_username
     )
 
+@app.route('/empresa/alertas_inactivas')
+@require_role(['empresa'])
+def empresa_alertas_inactivas():
+    """Página de alertas inactivas para empresa"""
+    # Get empresa info from session
+    empresa_id = session.get('user', {}).get('id')
+    empresa_username = session.get('user', {}).get('username')
+    
+    return render_template(
+        'empresa/alertas_inactivas.html',
+        api_url=PROXY_PREFIX,
+        active_page='alertas_inactivas',
+        user_role='empresa',
+        empresa_id=empresa_id,
+        empresa_username=empresa_username
+    )
+
 # Rutas alias para mantener compatibilidad
 @app.route('/empresa/empleados')
 @require_role(['empresa'])

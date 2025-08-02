@@ -226,7 +226,11 @@
             </a>
             <a href="{{ url_for('empresa_alertas') }}" class="sidebar__link {% if active_page=='alertas' %}sidebar__link--active{% endif %}">
               <div class="sidebar__link-icon"><i class="fas fa-exclamation-triangle"></i></div>
-              <span class="sidebar__link-text">Alertas</span>
+              <span class="sidebar__link-text">Alertas Activas</span>
+            </a>
+            <a href="{{ url_for('empresa_alertas_inactivas') }}" class="sidebar__link {% if active_page=='alertas_inactivas' %}sidebar__link--active{% endif %}">
+              <div class="sidebar__link-icon"><i class="fas fa-bell-slash"></i></div>
+              <span class="sidebar__link-text">Alertas Inactivas</span>
             </a>
           </div>
         </div>

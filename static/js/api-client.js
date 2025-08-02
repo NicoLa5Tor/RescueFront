@@ -4,7 +4,7 @@
  */
 if (typeof window.EndpointTestClient === 'undefined') {
 class EndpointTestClient {
-    constructor(baseUrl = 'http://localhost:5002', token = null) {
+    constructor(baseUrl = '/proxy', token = null) {
         this.baseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
         this.token = token;
     }
@@ -249,6 +249,10 @@ async get_all_usuarios_including_inactive() {
     // MQTT Alerts endpoints
     async get_active_alerts_by_empresa(empresaId, limit = 5, offset = 0) {
         return this._request('GET', `/api/mqtt-alerts/empresa/${empresaId}/active-by-sede?limit=${limit}&offset=${offset}`);
+    }
+
+    async get_inactive_alerts_by_empresa(empresaId, limit = 5, offset = 0) {
+        return this._request('GET', `/api/mqtt-alerts/inactive?empresaId=${empresaId}&limit=${limit}&offset=${offset}`);
     }
 
     async deactivate_user_alert(alertId, desactivadoPorId, desactivadoPorTipo) {
