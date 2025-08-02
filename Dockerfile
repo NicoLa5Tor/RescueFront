@@ -34,8 +34,7 @@ COPY requirements.txt .
 
 # Instalar dependencias de Python
 RUN pip install --upgrade pip \
-    && pip install -r requirements.txt \
-    && pip cache purge
+    && pip install -r requirements.txt
 
 # Copiar el código de la aplicación
 COPY . .
