@@ -46,20 +46,20 @@ def get_public_config():
     """Devuelve solo la configuración pública validada y segura para el frontend"""
     import json
     
-    # Validar que todas las variables públicas estén configuradas
-    missing_vars = []
+    # Las variables de contacto son OPCIONALES
     validated_config = {}
     
     for key, value in PUBLIC_CONTACT_CONFIG.items():
-        if not value:
-            missing_vars.append(key)
-        else:
+        if value:  # Solo incluir si tiene valor
             # Sanitizar valor para prevenir XSS
             sanitized_value = str(value).replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;')
             validated_config[key] = sanitized_value
-    
-    if missing_vars:
-        raise ValueError(f"Variables públicas faltantes en .env: {', '.join(missing_vars)}")
+        else:
+            # Valores por defecto para variables de contacto
+            if key == 'apiUrl':
+                validated_config[key] = '/proxy/api/contact/send'
+            else:
+                validated_config[key] = ''  # Valor vacío si no está configurado
     
     return validated_config
 
