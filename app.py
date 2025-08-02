@@ -10,14 +10,10 @@ from flask import (
     g,
 )
 from flask_cors import CORS
-from python_api_client import EndpointTestClient
+import requests
 import os
 from dotenv import load_dotenv
-from dashboard_data_providers import (
-    get_dashboard_stats,
-    get_detailed_statistics,
-    get_company_types_data,
-)
+from utils.api_client import APIClient
 
 # Importar configuración centralizada
 from config import (
@@ -120,8 +116,7 @@ def require_role(allowed_roles):
 def validate_backend_connection():
     """Valida si el backend está disponible"""
     try:
-        client = EndpointTestClient(BACKEND_API_URL)
-        response = client.health()
+        response = requests.get(f"{BACKEND_API_URL}/health")
         return response.ok
     except Exception as e:
         print(f"❌ Backend no disponible: {e}")
@@ -138,8 +133,8 @@ def attach_api_client():
             session.clear()
             return redirect(url_for('login', error='backend_unavailable'))
     
-    # No usar token de sesión - las cookies HTTPOnly se envían automáticamente
-    g.api_client = EndpointTestClient(BACKEND_API_URL, None)
+    # Inicializar cliente API simplificado
+    g.api_client = APIClient(BACKEND_API_URL)
 
 # ========== RUTAS PÚBLICAS ==========
 @app.route('/')
@@ -167,8 +162,8 @@ def login():
         
         usuario = request.form.get('usuario')
         password = request.form.get('password')
-        client = EndpointTestClient(BACKEND_API_URL)
-        res = client.login(usuario, password)
+        res = requests.post(f"{BACKEND_API_URL}/auth/login", 
+                           json={"usuario": usuario, "password": password})
         if res.ok:
             data = res.json()
             # NO almacenar token en sesión - debe venir en cookie HTTPOnly
@@ -502,19 +497,7 @@ def admin_users():
     initial_active_users = 0
 
     if user_role == 'empresa' and empresa_id:
-        try:
-            usuarios_data = g.api_client.get_usuarios_data_for_frontend(empresa_id)
-        except Exception as e:
-            print(f"Error getting usuarios data: {e}")
-            usuarios_data = {
-                'usuarios': [],
-                'usuarios_stats': {
-                    'total_users': 0,
-                    'active_users': 0,
-                    'inactive_users': 0
-                },
-                'count': 0
-            }
+        usuarios_data = g.api_client.get_usuarios_by_empresa(empresa_id)
 
         stats = usuarios_data.get('usuarios_stats', {})
         usuarios_list = usuarios_data.get('usuarios', [])
@@ -560,19 +543,7 @@ def admin_empresas():
     """Gestión de empresas - Solo para super_admin"""
     
     # Get companies data from backend to render real stats immediately
-    try:
-        companies_data = g.api_client.get_empresas_data_for_frontend(include_inactive=True)
-    except Exception as e:
-        print(f"Error getting empresas data: {e}")
-        companies_data = {
-            'empresas': [],
-            'empresas_stats': {
-                'total_empresas': 0,
-                'active_empresas': 0,
-                'inactive_empresas': 0
-            },
-            'count': 0
-        }
+    companies_data = g.api_client.get_empresas(include_inactive=True)
 
     stats = companies_data.get('empresas_stats', {})
     empresas_list = companies_data.get('empresas', [])
@@ -608,22 +579,7 @@ def admin_hardware():
     """Gestión de hardware - Solo para super_admin"""
     
     # Get real hardware data from backend
-    try:
-        hardware_data = g.api_client.get_hardware_data_for_frontend()
-    except Exception as e:
-        print(f"Error getting hardware data: {e}")
-        # Fallback to empty data
-        hardware_data = {
-            'hardware_list': [],
-            'hardware_types': [],
-            'hardware_stats': {
-                'total_items': 0,
-                'available_items': 0,
-                'out_of_stock': 0,
-                'total_value': 0,
-                'avg_price': 0
-            }
-        }
+    hardware_data = g.api_client.get_hardware()
     
     return render_template(
         'admin/hardware.html', 
@@ -718,67 +674,8 @@ def admin_company_types():
     
     # ALWAYS get ALL company types from backend
     # Frontend will filter by 'activo' field locally
-    try:
-        # Direct call to dashboard endpoint that brings ALL types
-        all_types_response = g.api_client.get_tipos_empresa_dashboard_all()
-        stats_response = g.api_client._request("GET", "/api/tipos_empresa/estadisticas")
-        
-        if all_types_response.ok:
-            all_types_data = all_types_response.json()
-            if all_types_data.get('success'):
-                raw_types = all_types_data.get('data', [])
-                
-                # Map backend fields to frontend expected fields
-                mapped_types = []
-                for raw_type in raw_types:
-                    mapped_type = {
-                        'id': str(raw_type.get('_id', '')),
-                        'name': raw_type.get('nombre', ''),
-                        'description': raw_type.get('descripcion', ''),
-                        'active': raw_type.get('activo', True),
-                        'companies_count': raw_type.get('empresas_count', 0),
-                        'features': raw_type.get('caracteristicas', []),
-                        'created_at': raw_type.get('fecha_creacion', ''),
-                        # Add some default styling for frontend
-                        'color': '#8b5cf6',  # Default purple
-                        'icon': 'fas fa-building'  # Default icon
-                    }
-                    mapped_types.append(mapped_type)
-                
-                # Calculate stats from all types
-                stats = {
-                    'total_types': len(mapped_types),
-                    'active_types': len([t for t in mapped_types if t.get('active', True)]),
-                    'inactive_types': len([t for t in mapped_types if not t.get('active', True)]),
-                    'total_companies': sum(t.get('companies_count', 0) for t in mapped_types),
-                    'avg_companies_per_type': 0
-                }
-                
-                if stats['total_types'] > 0:
-                    stats['avg_companies_per_type'] = round(stats['total_companies'] / stats['total_types'], 1)
-                
-                company_types_data = {
-                    'company_types': mapped_types,  # Mapped types, frontend will filter
-                    'company_types_stats': stats
-                }
-            else:
-                raise Exception("Backend response not successful")
-        else:
-            raise Exception(f"Backend error: {all_types_response.status_code}")
-            
-    except Exception as e:
-        print(f"Error getting company types data: {e}")
-        # Fallback to empty data
-        company_types_data = {
-            'company_types': [],
-            'company_types_stats': {
-                'total_types': 0,
-                'active_types': 0,
-                'inactive_types': 0,
-                'total_companies': 0,
-                'avg_companies_per_type': 0
-            }
-        }
+    # Get ALL company types from backend
+    company_types_data = g.api_client.get_company_types()
     
     return render_template(
         'admin/company_types.html', 
@@ -885,19 +782,7 @@ def empresa_usuarios():
     empresa_id = session.get('user', {}).get('id')
     empresa_username = session.get('user', {}).get('username')
 
-    try:
-        usuarios_data = g.api_client.get_usuarios_data_for_frontend(empresa_id)
-    except Exception as e:
-        print(f"Error getting usuarios data: {e}")
-        usuarios_data = {
-            'usuarios': [],
-            'usuarios_stats': {
-                'total_users': 0,
-                'active_users': 0,
-                'inactive_users': 0
-            },
-            'count': 0
-        }
+    usuarios_data = g.api_client.get_usuarios_by_empresa(empresa_id)
 
     stats = usuarios_data.get('usuarios_stats', {})
     usuarios_list = usuarios_data.get('usuarios', [])

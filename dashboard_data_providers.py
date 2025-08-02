@@ -8,7 +8,7 @@ with real API calls to your backend later.
 import random
 from datetime import datetime, timedelta
 from typing import List, Dict, Any
-from python_api_client import EndpointTestClient
+import requests
 from flask import session
 import logging
 
@@ -20,7 +20,7 @@ class RealDashboardDataProvider:
     
     def __init__(self, api_base_url: str, token: str = None):
         self.api_base_url = api_base_url
-        self.client = EndpointTestClient(api_base_url, token)
+        self.token = token
         self.dummy_provider = DashboardDataProvider()  # Fallback to dummy data
     
     def get_dashboard_data(self) -> Dict[str, Any]:
