@@ -40,20 +40,48 @@
     const welcomeScreen = document.createElement('div');
     welcomeScreen.className = 'tunnel-welcome-screen absolute inset-0 bg-black/80 flex items-center justify-center z-30';
     welcomeScreen.innerHTML = `
-      <div class="text-center px-4 sm:px-6 lg:px-8 max-w-xs sm:max-w-lg md:max-w-2xl lg:max-w-4xl mx-auto">
-        <h1 class="tunnel-welcome-title text-3xl sm:text-4xl md:text-6xl lg:text-8xl font-bold text-white mb-4 sm:mb-6 lg:mb-8 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent leading-tight">
-          Sistema de Emergencia IoT
-        </h1>
-        <p class="text-sm sm:text-base md:text-xl lg:text-2xl text-gray-300 mb-6 sm:mb-8 lg:mb-12 leading-relaxed px-2">
-          Explora el flujo completo de una alerta de emergencia a través de nuestra red inteligente
-        </p>
-        <div class="tunnel-scroll-indicator mt-8 sm:mt-12 lg:mt-16 text-white/50">
-          <p class="text-xs sm:text-sm mb-2">Usa el scroll para navegar</p>
-          <svg class="w-4 h-4 sm:w-6 sm:h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-          </svg>
-        </div>
-      </div>
+     <div class="text-center px-4 sm:px-6 lg:px-8 max-w-xs sm:max-w-lg md:max-w-2xl lg:max-w-4xl mx-auto">
+  <h1 class="tunnel-welcome-title text-3xl sm:text-4xl md:text-6xl lg:text-8xl font-bold text-white mb-4 sm:mb-6 lg:mb-8 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent leading-tight">
+    Sistema de Emergencia IoT
+  </h1>
+  
+  <!-- Párrafo principal -->
+  <p class="text-sm sm:text-base md:text-lg lg:text-xl text-gray-400 mb-2 leading-relaxed px-2 font-semibold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+    "Su equipo listo, su emergencia bajo control"
+  </p>
+  
+  <!-- Subtítulo -->
+  <p class="text-xs sm:text-sm md:text-base lg:text-lg text-gray-300 mb-6 sm:mb-8 lg:mb-12 leading-relaxed px-2 font-light">
+    Conozca más acerca de nuestro sistema en el túnel Rescue.
+  </p>
+
+  <!-- OPCIÓN 2: Con efectos de brillo sutil -->
+  <!-- <p class="text-xs sm:text-sm md:text-base lg:text-lg text-gray-300 mb-6 sm:mb-8 lg:mb-12 leading-relaxed px-2 font-medium drop-shadow-lg">
+    <span class="bg-gradient-to-r from-emerald-400 to-blue-500 bg-clip-text text-transparent">Su equipo listo</span>, 
+    <span class="text-gray-400">su emergencia bajo control</span>
+  </p> -->
+
+  <!-- OPCIÓN 3: Con acento visual sutil -->
+  <!-- <div class="text-center mb-6 sm:mb-8 lg:mb-12">
+    <p class="text-xs sm:text-sm md:text-base lg:text-lg text-gray-400 leading-relaxed px-2 font-light relative">
+      Su equipo listo, su emergencia bajo control
+      <span class="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-24 h-px bg-gradient-to-r from-transparent via-blue-500 to-transparent"></span>
+    </p>
+  </div> -->
+
+  <!-- OPCIÓN 4: Con animación sutil -->
+  <!-- <p class="text-xs sm:text-sm md:text-base lg:text-lg text-gray-400 mb-6 sm:mb-8 lg:mb-12 leading-relaxed px-2 font-light animate-pulse">
+    Su equipo listo, su emergencia bajo control
+  </p> -->
+
+  <div class="tunnel-scroll-indicator mt-8 sm:mt-12 lg:mt-16 text-white/50">
+    <p class="text-xs sm:text-sm mb-2">Usa el scroll para navegar</p>
+    <svg class="w-4 h-4 sm:w-6 sm:h-6 mx-auto animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+    </svg>
+  </div>
+</div>
+
     `;
     container.appendChild(welcomeScreen);
 
@@ -361,7 +389,7 @@
         title: "Activación de Emergencia",
         subtitle: "Inicio del protocolo de seguridad",
         description:
-          "El proceso comienza cuando un usuario autorizado activa la emergencia, ya sea presionando un botón físico (botonera) o enviando un mensaje específico por WhatsApp.",
+          "El proceso comienza cuando un usuario autorizado activa la emergencia, ya sea presionando un botón físico (botonera), enviando un mensaje específico por WhatsApp, o reportadas desde la central.",
         details: [
           "Activación inmediata < 100ms",
           "Verificación de identidad según el canal (botonera o WhatsApp)",
@@ -375,14 +403,16 @@
       },
       {
         title: "Validación y Transmisión",
-        subtitle: "Autenticación y envío seguro",
+        subtitle: "Dispositivos Móviles",
         description:
-          "Se valida que la activación provenga de una fuente legítima mediante credenciales o identificación. Si se aprueba, la alerta se transmite en tiempo real a la nube.",
+          "Usamos la aplicación de mensajería más popular “WhatsApp” para crear una potente herramienta de comunicación con la que brindamos información y proveemos capacidades a nuestros equipos de reacción y apoyo.",
         details: [
-          "Autenticación del emisor",
-          "Transmisión segura con protocolo TI",
-          "Latencia promedio < 50ms",
-          "Trazabilidad completa del origen"
+          "Le permite a los usuarios registrados, enviar una alerta desde su dispositivo, ampliando impresionantemente las posibilidades de identificación de un suceso o emergencia, sin pérdidas de tiempo.  ",
+          "Envía el mapa con la georreferenciación del suceso, permitiendo a todo el equipo navegar desde sus posiciones hasta el sitio del evento crítico. ",
+          "Pueden usar el chat para coordinar tareas con el grupo específico y la central de coordinación.",
+          "Los miembros que reciben una alerta pueden confirmar o no su disponibilidad y anunciar que van en camino desde el chat (embarcados). ",
+          "Lleva todo el flujo de información con el personal que realmente atendió la emergencia. ",
+          "Posibilita la finalización de una alerta desde el dispositivo."
         ],
         icon: "📡",
         color: "from-blue-500 to-blue-700",
@@ -397,8 +427,8 @@
         details: [
           "Fecha, hora y lugar de la alerta con información georreferenciada",
           "Persona o dispositivo que la emitió",
-          "Formación del equipo de reacción: del personal que ha recibido la alerta, establece quienes se han declarado 'enterado y disponible' y cuáles de ellos se encuentran rumbo al lugar de la emergencia 'embarcado'",
-          "SU EQUIPO LISTO SU EMERGENCIA BAJO CONTROL"
+          "Del personal que ha recibido la alerta establece quienes se declaran enterados y disponibles.",
+          "Además informa cuando el personal se declaró embarcado, es decir rumbo a la emergencia."
         ],
         icon: "🧠",
         color: "from-purple-500 to-purple-700",
@@ -409,7 +439,7 @@
         title: "Activación de Dispositivos",
         subtitle: "Respuesta física y visual",
         description:
-          "Una vez validada, la alerta activa una red de dispositivos físicos como semáforos, sirenas y pantallas LED para informar y coordinar acciones en la zona afectada.",
+          "Una vez validada, la alerta activa una red de dispositivos físicos como postes de alerta visual y auditiva, pantallas LED para informar y coordinar acciones en la zona afectada.",
         details: [
           "Activación sincronizada",
           "Tiempo de respuesta < 1 segundo",

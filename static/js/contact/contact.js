@@ -10,15 +10,6 @@ class RescueContactForm {
         this.messagesContainer = document.querySelector('.form-messages');
         this.isSubmitting = false;  // Protección contra múltiples envíos
         
-        // Configuración cargada desde Flask (no necesita fetch)
-        this.config = window.RESCUE_CONFIG || {
-            recipientEmail: null,
-            companyPhone: null,
-            emailSubject: null,
-            whatsappMessage: null,
-            emailBodyMessage: null
-        };
-        
         this.init();
     }
 
@@ -27,22 +18,6 @@ class RescueContactForm {
             console.error('Contact form not found');
             return;
         }
-        
-        // Verificar que la configuración se haya cargado
-        if (!this.config || !this.config.companyPhone) {
-            if (window.RESCUE_CONFIG_ERROR) {
-                this.showConfigError(window.RESCUE_CONFIG_ERROR);
-                return;
-            }
-            console.warn('⚠️ No se encontró configuración RESCUE_CONFIG');
-            this.showConfigError('Configuración no disponible');
-            return;
-        }
-        
-        console.log('✅ Configuración cargada desde Flask:', this.config);
-        
-        // Update contact links with loaded config
-        this.updateContactLinks();
         
         this.bindEvents();
         this.initializeAnimations();
@@ -198,13 +173,13 @@ class RescueContactForm {
 
     getProjectTypeLabel(value) {
         const labels = {
-            'emergency-alerts': 'Sistemas de Alertas de Emergencia',
-            'security-monitoring': 'Monitoreo de Seguridad',
-            'industrial-safety': 'Seguridad Industrial',
-            'healthcare-emergency': 'Emergencias Hospitalarias',
-            'educational-safety': 'Seguridad Educativa',
-            'government-alerts': 'Alertas Gubernamentales',
-            'other': 'Otro Sistema de Seguridad'
+            'industria-empresas': 'Industria o empresas privadas',
+            'bomberos-defensa': 'Bomberos y Defensa Civil',
+            'policia-seguridad': 'Policía y cuerpos de seguridad',
+            'municipios-gobernaciones': 'Municipios o Gobernaciones',
+            'gestion-riesgo': 'Entidades de gestión de riesgo',
+            'salud-publica': 'Entidades de salud pública',
+            'otros': 'Otros'
         };
         return labels[value] || value;
     }
@@ -368,102 +343,6 @@ class RescueContactForm {
         setTimeout(() => this.form.classList.remove('form-reset'), 300);
     }
 
-    // Load configuration from backend
-    async loadConfig() {
-        try {
-            const response = await fetch(this.config.configUrl);
-            if (response.ok) {
-                const config = await response.json();
-                // Verificar si hay error en la respuesta
-                if (config.error) {
-                    throw new Error(config.error);
-                }
-                // Update config with values from backend
-                Object.assign(this.config, config);
-                console.log('✅ Configuration loaded from backend:', config);
-            } else {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Error del servidor');
-            }
-        } catch (error) {
-            console.error('❌ Error loading config from backend:', error.message);
-            // Mostrar error al usuario
-            this.showConfigError(error.message);
-            throw error; // Re-lanzar para que init() sepa que falló
-        }
-    }
-
-    // Update contact links with loaded configuration
-    updateContactLinks() {
-        // Update email link
-        const emailLink = document.getElementById('email-link');
-        const emailDisplay = document.getElementById('email-display');
-        
-        if (emailLink && emailDisplay) {
-            const mailtoUrl = `mailto:${this.config.recipientEmail}?subject=${encodeURIComponent(this.config.emailSubject)}&body=${encodeURIComponent(this.config.emailBodyMessage)}`;
-            
-            // Update onclick handler
-            emailLink.onclick = (e) => {
-                e.preventDefault();
-                window.open(mailtoUrl, '_blank');
-                return false;
-            };
-            
-            // Update displayed email
-            emailDisplay.textContent = this.config.recipientEmail;
-        }
-
-        // Update WhatsApp link
-        const whatsappLink = document.getElementById('whatsapp-link');
-        const phoneDisplay = document.getElementById('phone-display');
-        
-        if (whatsappLink && phoneDisplay) {
-            const phoneNumber = this.config.companyPhone.replace(/[^0-9]/g, ''); // Remove non-digits
-            const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(this.config.whatsappMessage)}`;
-            
-            // Update href
-            whatsappLink.href = whatsappUrl;
-            
-            // Update displayed phone number
-            phoneDisplay.textContent = this.config.companyPhone;
-        }
-
-        console.log('📞 Contact links updated with configuration:', {
-            email: this.config.recipientEmail,
-            phone: this.config.companyPhone,
-            emailSubject: this.config.emailSubject,
-            whatsappMessage: this.config.whatsappMessage.substring(0, 50) + '...'
-        });
-    }
-
-    // Show configuration error to user
-    showConfigError(errorMessage) {
-        // Mostrar error en los elementos de contacto
-        const emailDisplay = document.getElementById('email-display');
-        const phoneDisplay = document.getElementById('phone-display');
-        
-        if (emailDisplay) {
-            emailDisplay.textContent = 'Error de configuración';
-            emailDisplay.style.color = '#e74c3c';
-        }
-        
-        if (phoneDisplay) {
-            phoneDisplay.textContent = 'Error de configuración';
-            phoneDisplay.style.color = '#e74c3c';
-        }
-        
-        // Mostrar mensaje de error general
-        this.showMessage(
-            `Error de configuración: ${errorMessage}. Verifica que todas las variables estén configuradas en el archivo .env`,
-            'error'
-        );
-        
-        // Deshabilitar formulario si hay error de configuración
-        if (this.form) {
-            this.form.style.opacity = '0.5';
-            this.form.style.pointerEvents = 'none';
-        }
-    }
 }
 
 // CSS Animations (inject into page)
