@@ -16,8 +16,9 @@ from dotenv import load_dotenv
 from utils.api_client import APIClient
 
 # Importar configuración centralizada
-from config import (
+from utils.config import (
     BACKEND_API_URL, 
+    WEBSOCKET_URL,
     PROXY_PREFIX, 
     SECRET_KEY, 
     SESSION_LIFETIME,
@@ -38,7 +39,7 @@ app.config['SECRET_KEY'] = SECRET_KEY
 # Configurar sesiones temporales (no persistentes)
 app.config['PERMANENT_SESSION_LIFETIME'] = SESSION_LIFETIME
 app.config['SESSION_COOKIE_HTTPONLY'] = True
-app.config['SESSION_COOKIE_SECURE'] = False  # True en producción con HTTPS
+app.config['SESSION_COOKIE_SECURE'] = not DEBUG_MODE  # True en producción con HTTPS
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 
 # Habilitar CORS
@@ -188,6 +189,27 @@ def logout():
     """Cerrar sesión - Redirect para limpiar estados"""
     session.clear()
     return redirect(url_for('login'))
+
+@app.route('/health')
+def health_check():
+    """Health check endpoint para Docker y monitoreo"""
+    try:
+        # Verificar conectividad con backend
+        backend_status = validate_backend_connection()
+        
+        return jsonify({
+            'status': 'healthy' if backend_status else 'degraded',
+            'frontend': 'running',
+            'backend_connection': 'connected' if backend_status else 'disconnected',
+            'timestamp': os.environ.get('HOSTNAME', 'unknown'),
+            'version': '1.0.0'
+        }), 200 if backend_status else 503
+    except Exception as e:
+        return jsonify({
+            'status': 'unhealthy',
+            'error': str(e),
+            'timestamp': os.environ.get('HOSTNAME', 'unknown')
+        }), 503
 @app.route('/api/sync-session', methods=['POST'])
 def sync_session():
     """Sincroniza la cookie JWT con la sesión Flask"""
@@ -982,6 +1004,7 @@ def inject_config():
     """Inyectar configuración en todas las plantillas"""
     return dict(
         api_url=PROXY_PREFIX,
+        websocket_url=WEBSOCKET_URL,
         app_name="Rescue Dashboard",
         version="1.0.0",
         current_user=session.get('user')
@@ -996,15 +1019,16 @@ def after_request(response):
     response.headers['X-Frame-Options'] = 'DENY'
     response.headers['X-XSS-Protection'] = '1; mode=block'
     
-    # Headers para desarrollo (quitar en producción)
-    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-    response.headers['Pragma'] = 'no-cache'
-    response.headers['Expires'] = '0'
+    # Headers solo para desarrollo
+    if DEBUG_MODE:
+        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '0'
     
     return response
 
 # ========== ENDPOINTS DE CONFIGURACIÓN DE CONTACTO SEGUROS ==========
-from config import get_public_config, validate_contact_config
+from utils.config import get_public_config, validate_contact_config
 import json
 
 @app.route('/contact')

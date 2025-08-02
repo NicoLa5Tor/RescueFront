@@ -12,7 +12,7 @@ let alertsPerPage = 5;
 
 // Variables para WebSocket
 let websocket = null;
-let websocketUrl = 'ws://localhost:8080';
+let websocketUrl = window.websocket_url || 'ws://localhost:8080'; // Usar la configuración de Flask
 let reconnectAttempts = 0;
 const maxReconnectAttempts = 5;
 const reconnectDelay = 3000; // 3 segundos
