@@ -44,6 +44,9 @@ document.addEventListener('DOMContentLoaded', function() {
         console.warn('⚠️ ModalManager no está disponible');
     }
     
+    // Configurar contador de caracteres para el textarea de mensaje
+    setupMessageCharacterCounter();
+    
     // Cargar alertas iniciales
     loadActiveAlerts();
     
@@ -646,6 +649,20 @@ function generateModalContent(alert, isUserOrigin, isHardwareOrigin) {
                                 ${alert.activo ? 'ACTIVA' : 'INACTIVA'}
                             </span>
                         </div>
+                        ${!alert.activo && alert.fecha_desactivacion ? `
+                            <div class="mt-2 pt-2 border-t border-gray-600">
+                                <p class="text-xs text-gray-400 mb-1">
+                                    <i class="fas fa-calendar-times mr-1"></i>
+                                    Desactivada: ${formatDate(alert.fecha_desactivacion)}
+                                </p>
+                                ${alert.desactivado_por ? `
+                                    <p class="text-xs text-gray-400">
+                                        <i class="fas fa-user-times mr-1"></i>
+                                        Por: ${alert.desactivado_por.tipo === 'empresa' ? 'Empresa' : 'Sistema'}
+                                    </p>
+                                ` : ''}
+                            </div>
+                        ` : ''}
                     </div>
                     <div class="modal-section bg-gradient-to-r from-gray-700 to-gray-800 rounded-lg p-3">
                         <h4 class="text-sm font-medium text-gray-300 mb-2">Prioridad</h4>
@@ -908,6 +925,30 @@ function generateModalContent(alert, isUserOrigin, isHardwareOrigin) {
             </div>
         ` : ''}
         
+        <!-- Mensaje de desactivación (si existe) -->
+        ${!alert.activo && alert.mensaje_desactivacion ? `
+            <div class="modal-section bg-gradient-to-r from-red-700 to-red-800 rounded-lg p-4 mt-3">
+                <h4 class="text-lg font-semibold text-white mb-3 flex items-center">
+                    <i class="fas fa-comment-times mr-2"></i>Mensaje de Desactivación
+                </h4>
+                <div class="bg-black/20 rounded-lg p-4">
+                    <div class="flex items-start space-x-3">
+                        <div class="w-10 h-10 bg-red-500/30 rounded-full flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-quote-left text-red-200 text-sm"></i>
+                        </div>
+                        <div class="flex-1">
+                            <blockquote class="text-red-100 text-sm leading-relaxed italic">
+                                "${alert.mensaje_desactivacion}"
+                            </blockquote>
+                            <footer class="mt-2 text-xs text-red-300">
+                                — Mensaje proporcionado por la empresa al desactivar la alerta
+                            </footer>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        ` : ''}
+        
         <!-- Sección final: Contactos notificados (ancho completo) -->
         ${alert.numeros_telefonicos && alert.numeros_telefonicos.length > 0 ? `
             <div class="modal-section bg-gradient-to-r from-teal-700 to-green-800 rounded-lg p-4 mt-3">
@@ -1028,6 +1069,12 @@ function showDeactivateConfirmation() {
     console.log('🔄 Mostrando modal de confirmación para desactivar alerta:', selectedAlertId);
     
     const modalMessage = document.getElementById('deactivateModalMessage');
+    const mensajeTextarea = document.getElementById('mensajeDesactivacion');
+    if (mensajeTextarea) {
+        mensajeTextarea.value = '';
+        updateCharacterCounter(); // Resetear contador
+        setTimeout(() => mensajeTextarea.focus(), 100); // Enfocar después del reset
+    }
     if (modalMessage) {
         modalMessage.innerHTML = `
             <p class="text-white/90 text-base mb-3">
@@ -1050,6 +1097,10 @@ function showDeactivateConfirmation() {
     
     if (window.modalManager) {
         window.modalManager.openModal('deactivateAlertModal');
+        // Activar contador de caracteres después de abrir el modal
+        setTimeout(() => {
+            attachCharacterCounterListener();
+        }, 100);
     }
 }
 
@@ -1082,10 +1133,18 @@ async function confirmDeactivateAlert() {
         
         console.log('📤 Enviando petición de desactivación');
         
+        const mensajeDesactivacion = document.getElementById('mensajeDesactivacion')?.value?.trim() || '';
+        
+        // Validación obligatoria del mensaje
+        if (!mensajeDesactivacion || mensajeDesactivacion.length === 0) {
+            throw new Error('El mensaje de desactivación es obligatorio');
+        }
+        
         const response = await window.apiClient.deactivate_user_alert(
             selectedAlertId,
             empresaId,
-            'empresa'
+            'empresa',
+            mensajeDesactivacion
         );
         
         const data = await response.json();
@@ -1554,6 +1613,7 @@ async function findAlertById(alertId) {
                 origen_id: data.alert.origen_id,
                 usuario_id: data.alert.usuario_id,
                 desactivado_por: data.alert.desactivado_por,
+                mensaje_desactivacion: data.alert.mensaje_desactivacion,
                 tipo_alerta: data.alert.tipo_alerta,
                 nombre_alerta: data.alert.nombre_alerta,
                 descripcion: data.alert.descripcion,
@@ -1993,6 +2053,70 @@ window.confirmDeactivateAlert = confirmDeactivateAlert;
 window.closeAlertStatusModal = closeAlertStatusModal;
 window.refreshAlerts = refreshAlerts;
 window.changePage = changePage;
+
+// ========== FUNCIONES PARA CONTADOR DE CARACTERES ==========
+function setupMessageCharacterCounter() {
+    // Esta función se ejecuta cuando se carga la página
+    // El event listener se añade dinámicamente cuando el modal se abre
+    console.log('✅ Sistema de contador de caracteres configurado');
+}
+
+function updateCharacterCounter() {
+    const textarea = document.getElementById('mensajeDesactivacion');
+    const counter = document.getElementById('charCounter');
+    const confirmBtn = document.getElementById('deactivateConfirmBtn');
+    
+    if (textarea && counter) {
+        const currentLength = textarea.value.length;
+        const maxLength = parseInt(textarea.getAttribute('maxlength')) || 500;
+        const message = textarea.value.trim();
+        
+        counter.textContent = `${currentLength}/${maxLength}`;
+        
+        // Validar si el mensaje es obligatorio
+        const isValid = message.length > 0;
+        
+        // Controlar el estado del botón de confirmación
+        if (confirmBtn) {
+            confirmBtn.disabled = !isValid;
+            if (isValid) {
+                confirmBtn.className = confirmBtn.className.replace('opacity-50 cursor-not-allowed', 'hover:bg-red-700');
+                confirmBtn.title = 'Desactivar alerta con el mensaje proporcionado';
+            } else {
+                confirmBtn.className = confirmBtn.className.replace('hover:bg-red-700', 'opacity-50 cursor-not-allowed');
+                confirmBtn.title = 'Debe escribir un mensaje para desactivar la alerta';
+            }
+        }
+        
+        // Cambiar color según el límite y validez
+        if (!isValid) {
+            counter.className = 'text-red-300 text-xs font-semibold';
+        } else if (currentLength >= maxLength * 0.9) {
+            counter.className = 'text-orange-300 text-xs font-semibold';
+        } else if (currentLength >= maxLength * 0.7) {
+            counter.className = 'text-yellow-300 text-xs';
+        } else {
+            counter.className = 'text-green-300 text-xs';
+        }
+    }
+}
+
+// Añadir event listener cuando el modal se abre
+function attachCharacterCounterListener() {
+    const textarea = document.getElementById('mensajeDesactivacion');
+    if (textarea) {
+        // Remover listeners anteriores para evitar duplicados
+        textarea.removeEventListener('input', updateCharacterCounter);
+        textarea.removeEventListener('keyup', updateCharacterCounter);
+        
+        // Añadir nuevos listeners
+        textarea.addEventListener('input', updateCharacterCounter);
+        textarea.addEventListener('keyup', updateCharacterCounter);
+        
+        // Inicializar contador
+        updateCharacterCounter();
+    }
+}
 
 // Debug tools
 window.alertsDebug = {

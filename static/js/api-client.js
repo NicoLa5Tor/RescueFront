@@ -255,12 +255,13 @@ async get_all_usuarios_including_inactive() {
         return this._request('GET', `/api/mqtt-alerts/inactive?empresaId=${empresaId}&limit=${limit}&offset=${offset}`);
     }
 
-    async deactivate_user_alert(alertId, desactivadoPorId, desactivadoPorTipo) {
+    async deactivate_user_alert(alertId, desactivadoPorId, desactivadoPorTipo, mensajeDesactivacion = '') {
         return this._request('PUT', '/api/mqtt-alerts/user-alert/deactivate', {
             data: {
                 alert_id: alertId,
                 desactivado_por_id: desactivadoPorId,
-                desactivado_por_tipo: desactivadoPorTipo
+                desactivado_por_tipo: desactivadoPorTipo,
+                mensaje_desactivacion: mensajeDesactivacion
             }
         });
     }
