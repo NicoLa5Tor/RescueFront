@@ -52,7 +52,7 @@
   
   <!-- Subtítulo -->
   <p class="text-xs sm:text-sm md:text-base lg:text-lg text-gray-300 mb-6 sm:mb-8 lg:mb-12 leading-relaxed px-2 font-light">
-    Conozca más acerca de nuestro sistema en el túnel Rescue.
+    Conoce más de nuestra solución de Internet de las cosas.
   </p>
 
   <!-- OPCIÓN 2: Con efectos de brillo sutil -->
