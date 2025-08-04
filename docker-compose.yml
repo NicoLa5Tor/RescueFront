@@ -1,5 +1,5 @@
 # ==========================================
-# Docker Compose para ECOES FrontEnd
+# Docker Compose para RESCUE FrontEnd
 # Optimizado para Cloudflare Tunnels
 # ==========================================
 
@@ -13,8 +13,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: ecoes-frontend:latest
-    container_name: ecoes-frontend
+    image: rescue-frontend:latest
+    container_name: rescue-frontend
     # Solo puerto local para Cloudflare Tunnel
     ports:
       - "127.0.0.1:5000:5000"  # Solo localhost
@@ -37,13 +37,15 @@ services:
       start_period: 15s
     # Red interna simple
     networks:
-      - ecoes-network
+      - rescue-network
 
 networks:
-  ecoes-network:
+  rescue-network:
     driver: bridge
+    external: false
+    name: frontend_rescue-network
 
 # Volumen para logs persistentes
 volumes:
-  ecoes-logs:
+  rescue-logs:
     driver: local

@@ -1,5 +1,5 @@
 # ==========================================
-# Multi-stage Dockerfile para ECOES FrontEnd
+# Multi-stage Dockerfile para RESCUE FrontEnd
 # ==========================================
 
 # Stage 1: Build stage para Node.js (Tailwind CSS)
@@ -23,8 +23,8 @@ RUN npm run build-css-prod
 FROM python:3.11-slim AS production
 
 # Información del mantenedor
-LABEL maintainer="ECOES Team"
-LABEL description="Frontend Flask para sistema ECOES con Tailwind CSS"
+LABEL maintainer="RESCUE Team"
+LABEL description="Frontend Flask para sistema RESCUE con Tailwind CSS"
 LABEL version="2.0"
 
 # Variables de entorno optimizadas
