@@ -12,8 +12,14 @@
         init: function(gsapMain) {
             this.gsapMain = gsapMain;
             
-            // Buscar elementos
+            // Buscar elementos - solo header sticky global, no login-header
             this.header = document.getElementById('globalStickyHeader');
+            
+            // Verificar que no sea un header de login
+            if (this.header && this.header.classList.contains('login-header')) {
+                console.warn('Header de login detectado, saltando configuración sticky');
+                return;
+            }
             this.loginButton = document.getElementById('loginbutton');
             this.clampElement = document.getElementById('clamp');
             

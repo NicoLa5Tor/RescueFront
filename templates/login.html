@@ -8,16 +8,21 @@
 {% endblock %}
 
 {% block navbar %}
-<!-- Header minimalista para login -->
-<header class="fixed top-0 left-0 right-0 z-50 bg-transparent border-b-0 py-4">
+<!-- Header moderno para login -->
+<header class="login-header fixed top-0 left-0 right-0 z-50 bg-transparent py-4">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-    <a href="{{ url_for('index') }}" class="flex items-center space-x-3 text-white hover:text-blue-200 transition-all duration-300 hover:translate-x-1 text-lg sm:text-xl font-bold">
-      <i class="fas fa-building text-xl sm:text-2xl bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent"></i>
-      <span>Rescue</span>
+    <a href="{{ url_for('index') }}" class="flex items-center space-x-3 text-white hover:text-cyan-300 transition-all duration-300 hover:scale-105 text-lg sm:text-xl font-bold group">
+      <div class="relative">
+        <i class="fas fa-shield-halved text-xl sm:text-2xl bg-gradient-to-r from-blue-400 via-purple-500 to-cyan-400 bg-clip-text text-transparent group-hover:scale-110 transition-transform duration-300"></i>
+        <div class="absolute inset-0 bg-gradient-to-r from-blue-400 via-purple-500 to-cyan-400 opacity-0 group-hover:opacity-20 blur-lg transition-opacity duration-300"></div>
+      </div>
+      <span class="bg-gradient-to-r from-blue-400 via-purple-500 to-cyan-400 bg-clip-text text-transparent group-hover:scale-110 transition-transform duration-300">RESCUE</span>
     </a>
-    <button id="themeToggle" class="text-white hover:text-blue-200 transition-all duration-300">
-      <i id="themeIcon" class="fas fa-moon"></i>
-    </button>
+    <div class="flex items-center space-x-4">
+      <button id="themeToggle" class="text-white/80 hover:text-cyan-300 transition-all duration-300 hover:scale-110 p-2 rounded-lg hover:bg-white/10">
+        <i id="themeIcon" class="fas fa-moon text-sm sm:text-base"></i>
+      </button>
+    </div>
   </div>
 </header>
 {% endblock %}
@@ -35,7 +40,7 @@
   </div>
 
   <!-- Contenedor principal -->
-  <div class="relative z-10 min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 pb-8 sm:pb-16">
+  <div class="relative z-10 min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 pt-8 sm:pt-10 lg:pt-16 pb-8 sm:pb-16">
     <div class="w-full max-w-6xl mx-auto">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
         
@@ -63,9 +68,6 @@
             
             <!-- Header del formulario -->
             <div class="text-center mb-4 sm:mb-6">
-              <div id="brandLogo" class="brand-logo inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 rounded-xl mb-3 fade-in-scale">
-                <i class="fas fa-shield-alt text-white text-lg sm:text-xl drop-shadow-lg"></i>
-              </div>
               <h1 id="loginTitle" class="text-xl sm:text-2xl font-bold text-gradient mb-1 fade-in-up">Bienvenido</h1>
               <p id="loginSubtitle" class="text-xs sm:text-sm text-white/80 fade-in-up">Accede a tu cuenta</p>
               {% if error %}

@@ -1,10 +1,39 @@
-// Animaciones de login sin manejo de autenticación
+// Animaciones simples y funcionales de login
 function initLoginAnimations() {
-  if (typeof window.gsap === 'undefined') return;
+  if (typeof window.gsap === 'undefined') {
+    console.log('GSAP no está disponible, usando fallback CSS');
+    // Fallback: mostrar elementos inmediatamente si GSAP no está disponible
+    const elements = document.querySelectorAll('.fade-in-up, .fade-in-scale');
+    elements.forEach(el => {
+      el.style.opacity = '1';
+      el.style.transform = 'none';
+    });
+    return;
+  }
+  
+  console.log('Iniciando animaciones GSAP');
+  
+  // Configuraciones iniciales más suaves
   window.gsap.set('.fade-in-up', { opacity: 0, y: 30 });
   window.gsap.set('.fade-in-scale', { opacity: 0, scale: 0.8 });
-  const tl = window.gsap.timeline({ delay: 0.2 });
-  tl.to('.fade-in-up', { opacity: 1, y: 0, stagger: 0.1 });
+  
+  // Timeline simple y confiable
+  const tl = window.gsap.timeline({ delay: 0.3 });
+  
+  // Animaciones básicas que funcionan
+  tl.to('.fade-in-scale', {
+    opacity: 1,
+    scale: 1,
+    duration: 0.6,
+    ease: "back.out(1.2)"
+  })
+  .to('.fade-in-up', {
+    opacity: 1,
+    y: 0,
+    duration: 0.5,
+    stagger: 0.1,
+    ease: "power2.out"
+  }, "-=0.3");
 }
 
 function initVisualEffects() {

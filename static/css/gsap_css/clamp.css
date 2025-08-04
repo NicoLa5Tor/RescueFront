@@ -19,13 +19,14 @@
     calc(var(--f-5-max) * 1px)
   );
 }
-header {
+/* Solo aplica a headers que NO sean login-header */
+header:not(.login-header) {
   padding: 3rem;
   display: flex;
   background-color: var(--dark);
 }
 
-.sticky {
+.sticky:not(.login-header) {
   position: relative;
   z-index: 100;
   width: 100%;
@@ -159,7 +160,7 @@ a {
   left: -6%;
 }
 
-.heading {
+.heading:not(.login-header):not(.login-header *) {
   position: relative;
   z-index: 2;
   mix-blend-mode: difference;
@@ -167,6 +168,12 @@ a {
     -webkit-backface-visibility: visible;
     backface-visibility: visible;
 transform: rotate(0.1deg);
+}
+
+/* Asegurar que elementos dentro del login-header no tengan mix-blend-mode */
+.login-header .heading,
+.login-header * {
+  mix-blend-mode: normal !important;
 }
 .images {
   z-index: -1

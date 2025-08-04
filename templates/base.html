@@ -1,3 +1,4 @@
+{% set current_route = request.endpoint %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -99,8 +100,10 @@
     <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/animations.css') }}" rel="stylesheet">
     
-    <!-- Sticky Header CSS -->
+    <!-- Sticky Header CSS - Solo en páginas que no sean login -->
+    {% if current_route != 'login' %}
     <link href="{{ url_for('static', filename='css/gsap_css/sticky-header.css') }}" rel="stylesheet">
+    {% endif %}
     
     {% block extra_css %}{% endblock %}
     
@@ -509,7 +512,8 @@
     <!-- GSAP ScrollSmoother Wrapper -->
     <div id="gsap-smoother-wrapper">
         <div id="gsap-smoother-content">
-            <!-- Sticky Header Global -->
+            <!-- Sticky Header Global - Solo visible en páginas que no sean login -->
+            {% if current_route != 'login' %}
             <header class="sticky-header" id="globalStickyHeader">
             <a id="loginbutton" href="/empresa">
                 <svg version="1.1" id="Icons" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="-3.2 -3.2 38.40 38.40" xml:space="preserve" width="77px" height="77px" fill="#ffffff" stroke="#ffffff">
@@ -522,6 +526,7 @@
                 </svg>
             </a>
             </header>
+            {% endif %}
             
             {% block navbar %}{% endblock %}
             
