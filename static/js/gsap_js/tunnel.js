@@ -118,40 +118,14 @@
         bloomRadius: 0
       };
 
-    //Create a WebGL renderer with enhanced error handling
-    var renderer;
-    try {
-      renderer = new THREE.WebGLRenderer({
-        canvas: canvas,
-        antialias: !isMobile(), // Disable antialiasing on mobile for performance
-        shadowMapEnabled: !isMobile(),
-        shadowMapType: THREE.PCFSoftShadowMap,
-        preserveDrawingBuffer: isCloudflare, // Ayuda con proxies
-        powerPreference: 'high-performance'
-      });
-      renderer.setSize(ww, wh);
-      
-      // Verificar contexto WebGL
-      const gl = renderer.getContext();
-      console.log('🌐 WebGL Context:', gl);
-      console.log('🌐 WebGL Version:', gl.getParameter(gl.VERSION));
-      console.log('🌐 WebGL Vendor:', gl.getParameter(gl.VENDOR));
-      console.log('🌐 WebGL Renderer:', gl.getParameter(gl.RENDERER));
-      
-    } catch (error) {
-      console.error('❌ TUNNEL: Error creando WebGL renderer:', error);
-      // Fallback: crear un mensaje de error visible
-      container.innerHTML = `
-        <div class="flex items-center justify-center h-full bg-black text-white">
-          <div class="text-center p-8">
-            <h2 class="text-2xl font-bold mb-4">⚠️ Error de Renderizado</h2>
-            <p class="mb-4">WebGL no está disponible o hay un problema de compatibilidad.</p>
-            <p class="text-sm text-gray-400">Intenta recargar la página o usar un navegador compatible.</p>
-          </div>
-        </div>
-      `;
-      return;
-    }
+    //Create a WebGL renderer
+    var renderer = new THREE.WebGLRenderer({
+      canvas: canvas,
+      antialias: !isMobile(), // Disable antialiasing on mobile for performance
+      shadowMapEnabled: !isMobile(),
+      shadowMapType: THREE.PCFSoftShadowMap
+    });
+    renderer.setSize(ww, wh);
 
     //Create an empty scene
     var scene = new THREE.Scene();
@@ -224,76 +198,17 @@
     var tubeSegments = isMobile() ? 200 : 300; // Reduce segments on mobile
     var geometry = new THREE.TubeGeometry( path, tubeSegments, 4, 32, false );
 
-    // ============ DIAGNÓSTICOS PARA CLOUDFLARE ============
-    console.log('🌐 TUNNEL: Detectando entorno...');
-    console.log('🌐 URL actual:', window.location.href);
-    console.log('🌐 User Agent:', navigator.userAgent);
-    console.log('🌐 WebGL disponible:', !!window.WebGLRenderingContext);
-    
-    // Verificar si estamos detrás de Cloudflare
-    const isCloudflare = window.location.hostname.includes('.trycloudflare.com') || 
-                        window.location.hostname.includes('cloudflareaccess.com') ||
-                        document.querySelector('meta[name="cf-ray"]') !== null;
-    
-    console.log('🌐 Detrás de Cloudflare:', isCloudflare);
-    
-    // ============ CARGA OPTIMIZADA DE TEXTURAS DESDE CACHÉ ============
-    console.log('🖼️ TUNNEL: Cargando texturas optimizadas desde caché del navegador...');
-    
-    // Crear TextureLoader con configuración optimizada
-    var textureLoader = new THREE.TextureLoader();
-    
-    // Configurar crossOrigin para evitar problemas con CORS
-    textureLoader.crossOrigin = 'anonymous';
-    
-    // Configurar el manager para optimizar la carga
-    textureLoader.manager.onLoad = function() {
-      console.log('✅ TUNNEL: Todas las texturas cargadas desde caché');
-    };
-    
-    textureLoader.manager.onProgress = function(url, loaded, total) {
-      console.log(`📥 TUNNEL: Cargando textura ${loaded}/${total} desde caché: ${url.split('/').pop()}`);
-    };
-    
-    // Texture principal con configuración inmediata
-    var texture = textureLoader.load(
-      'https://s2.abcstatics.com/Media/201007/26/agujeronegro--478x270.jpg',
-      function(texture) {
-        // Configurar texture inmediatamente al cargar
-        texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-        texture.offset.set(0, 0);
-        texture.repeat.set(15, 2);
-        texture.needsUpdate = true;
-        console.log('✅ TUNNEL: Textura principal configurada desde caché');
-      },
-      function(progress) {
-        // Progress callback - debería ser instantáneo desde caché
-        console.log('📊 TUNNEL: Progreso textura principal:', (progress.loaded / progress.total * 100).toFixed(0) + '%');
-      },
-      function(error) {
-        console.error('❌ TUNNEL: Error cargando textura principal:', error);
-      }
-    );
-    
-    // Bump map texture con configuración inmediata
-    var mapHeight = textureLoader.load(
-      'https://s3-us-west-2.amazonaws.com/s.cdpn.io/68819/waveform-bump3.jpg',
-      function(texture) {
-        // Configurar texture inmediatamente al cargar
-        texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-        texture.offset.set(0, 0);
-        texture.repeat.set(15, 2);
-        texture.needsUpdate = true;
-        console.log('✅ TUNNEL: Bump map configurado desde caché');
-      },
-      function(progress) {
-        // Progress callback - debería ser instantáneo desde caché
-        console.log('📊 TUNNEL: Progreso bump map:', (progress.loaded / progress.total * 100).toFixed(0) + '%');
-      },
-      function(error) {
-        console.error('❌ TUNNEL: Error cargando bump map:', error);
-      }
-    );
+    var texture = new THREE.TextureLoader().load('https://s2.abcstatics.com/Media/201007/26/agujeronegro--478x270.jpg', function(texture) {
+      texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+      texture.offset.set(0, 0);
+      texture.repeat.set(15, 2);
+    });
+
+    var mapHeight = new THREE.TextureLoader().load('https://s3-us-west-2.amazonaws.com/s.cdpn.io/68819/waveform-bump3.jpg', function(texture) {
+      texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+      texture.offset.set(0, 0);
+      texture.repeat.set(15, 2);
+    });
 
     var material = new THREE.MeshPhongMaterial({
       side: THREE.BackSide,
@@ -849,14 +764,14 @@
        }
     });
 
-    //particle system with responsive particle count - USANDO TEXTURAS PRECARGADAS
-    var spikeyTexture = textureLoader.load('https://s3-us-west-2.amazonaws.com/s.cdpn.io/68819/spikey.png');
+    //particle system with responsive particle count
+    var spikeyTexture = new THREE.TextureLoader().load('https://s3-us-west-2.amazonaws.com/s.cdpn.io/68819/spikey.png');
 
     var particleCount = isMobile() ? 3000 : isTablet() ? 5000 : 6800, // Reduce particles on mobile
         particles1 = new THREE.Geometry(),
         particles2 = new THREE.Geometry(),
         particles3 = new THREE.Geometry(),
-        pMaterial = new THREE.PointsMaterial({
+        pMaterial = new THREE.ParticleBasicMaterial({
           color: 0xFFFFFF,
           size: isMobile() ? .3 : .5, // Smaller particles on mobile
           map: spikeyTexture,
@@ -889,9 +804,9 @@
       particles3.vertices.push(particle);
     }
 
-    var particleSystem1 = new THREE.Points(particles1, pMaterial);
-    var particleSystem2 = new THREE.Points(particles2, pMaterial);
-    var particleSystem3 = new THREE.Points(particles3, pMaterial);
+    var particleSystem1 = new THREE.ParticleSystem(particles1, pMaterial);
+    var particleSystem2 = new THREE.ParticleSystem(particles2, pMaterial);
+    var particleSystem3 = new THREE.ParticleSystem(particles3, pMaterial);
 
     scene.add(particleSystem1);
     scene.add(particleSystem2);

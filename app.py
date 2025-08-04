@@ -1002,12 +1002,14 @@ def empresa_perfil():
 @app.context_processor
 def inject_config():
     """Inyectar configuración en todas las plantillas"""
+    import time
     return dict(
         api_url=PROXY_PREFIX,
         websocket_url=WEBSOCKET_URL,
         app_name="Rescue Dashboard",
         version="1.0.0",
-        current_user=session.get('user')
+        current_user=session.get('user'),
+        cache_version=f"v{int(time.time())}"
     )
 
 

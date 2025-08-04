@@ -566,10 +566,10 @@
     </script>
     
     <!-- GSAP Configuration (Global) -->
-    <script src="{{ url_for('static', filename='js/gsap-config.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/gsap-config.js') }}?v={{ cache_version if cache_version else '1.0' }}"></script>
     
     <!-- GSAP Main Controller -->
-    <script type="module" src="{{ url_for('static', filename='js/gsap_main.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='js/gsap_main.js') }}?v={{ cache_version if cache_version else '1.0' }}"></script>
 
     <!-- Utils -->
     <script src="{{ url_for('static', filename='js/api-client.js') }}"></script>
