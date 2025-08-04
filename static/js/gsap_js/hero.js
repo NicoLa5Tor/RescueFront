@@ -127,9 +127,26 @@
             
             // Parallax mejorado para móviles
             if (window.innerWidth > 768) {
-                this.gsapMain.createParallax('.gradient-orbs > div', 0.5, {
-                    trigger: '#hero'
-                });
+                // Usar GSAPMain directamente si gsapMain no está disponible
+                const gsapMain = this.gsapMain || window.GSAPMain;
+                if (gsapMain && gsapMain.createParallax) {
+                    gsapMain.createParallax('.gradient-orbs > div', 0.5, {
+                        trigger: '#hero'
+                    });
+                } else {
+                    console.warn('🚨 HERO: createParallax no disponible, usando ScrollTrigger directo');
+                    // Fallback usando ScrollTrigger directamente
+                    gsap.to('.gradient-orbs > div', {
+                        yPercent: -50,
+                        ease: "none",
+                        scrollTrigger: {
+                            trigger: '#hero',
+                            start: "top bottom",
+                            end: "bottom top",
+                            scrub: true
+                        }
+                    });
+                }
             }
             
             // Fade out en scroll con mejor rendimiento

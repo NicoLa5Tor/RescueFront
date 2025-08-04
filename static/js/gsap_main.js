@@ -419,15 +419,95 @@ function waitForStylesAndHidePreloader() {
         });
     }
     
+    // Función para precargar imágenes GSAP en caché del navegador
+    function preloadGSAPImages() {
+        updateProgress(72, 'Precargando recursos GSAP...');
+        
+        return new Promise((resolve) => {
+            // ============ ESPERAR A QUE LAS IMÁGENES PRELOAD ESTÉN REALMENTE CARGADAS ============
+            console.log('🖼️ PRELOADER: Esperando carga real de imágenes GSAP...');
+            
+            // Obtener todas las etiquetas preload de imágenes
+            const preloadLinks = document.querySelectorAll('link[rel="preload"][as="image"]');
+            const totalPreloadedImages = preloadLinks.length;
+            
+            console.log(`🔍 PRELOADER: Encontradas ${totalPreloadedImages} imágenes con precarga nativa`);
+            
+            if (totalPreloadedImages === 0) {
+                console.log('📭 PRELOADER: No se encontraron imágenes con precarga nativa');
+                updateProgress(75, 'Sin recursos GSAP');
+                resolve();
+                return;
+            }
+            
+            let loadedImagesCount = 0;
+            const imagePromises = [];
+            
+            // Crear una promesa para cada imagen preload
+            preloadLinks.forEach((link, index) => {
+                const imageUrl = link.href;
+                const imagePromise = new Promise((resolveImage) => {
+                    // Crear un objeto Image para verificar la carga real
+                    const img = new Image();
+                    
+                    img.onload = function() {
+                        loadedImagesCount++;
+                        console.log(`✅ IMG ${loadedImagesCount}/${totalPreloadedImages}: ${imageUrl.split('/').pop()} cargada desde caché`);
+                        
+                        // Actualizar progreso por cada imagen cargada
+                        const imageProgress = 72 + (loadedImagesCount / totalPreloadedImages) * 8; // 72% a 80%
+                        updateProgress(imageProgress, `Cargadas ${loadedImagesCount}/${totalPreloadedImages} imágenes`);
+                        
+                        resolveImage();
+                    };
+                    
+                    img.onerror = function() {
+                        loadedImagesCount++;
+                        console.warn(`⚠️ IMG ${loadedImagesCount}/${totalPreloadedImages}: Error cargando ${imageUrl.split('/').pop()}`);
+                        
+                        // Actualizar progreso incluso en caso de error
+                        const imageProgress = 72 + (loadedImagesCount / totalPreloadedImages) * 8;
+                        updateProgress(imageProgress, `Procesadas ${loadedImagesCount}/${totalPreloadedImages} imágenes`);
+                        
+                        resolveImage(); // Resolver incluso en error para no bloquear
+                    };
+                    
+                    // Iniciar la carga (debería ser instantánea desde caché)
+                    img.src = imageUrl;
+                });
+                
+                imagePromises.push(imagePromise);
+            });
+            
+            // Esperar a que todas las imágenes se carguen
+            Promise.all(imagePromises).then(() => {
+                console.log('✅ PRELOADER: Todas las imágenes GSAP cargadas desde caché');
+                updateProgress(80, 'Recursos GSAP disponibles');
+                resolve();
+            }).catch((error) => {
+                console.error('❌ PRELOADER: Error en carga de imágenes GSAP:', error);
+                updateProgress(80, 'Recursos GSAP listos (con errores)');
+                resolve(); // Resolver para no bloquear el preloader
+            });
+            
+            // Timeout de seguridad más generoso para imágenes grandes
+            setTimeout(() => {
+                console.log(`⚠️ PRELOADER: Timeout en carga de imágenes - ${loadedImagesCount}/${totalPreloadedImages} cargadas`);
+                updateProgress(80, 'Recursos GSAP listos (timeout)');
+                resolve();
+            }, 5000); // 5 segundos máximo para carga de imágenes
+        });
+    }
+    
     // Función para esperar a que GSAP esté completamente inicializado
     function checkGSAPReady() {
-        updateProgress(75, progressMessages[3]); // "Inicializando GSAP..."
+        updateProgress(82, progressMessages[3]); // "Inicializando GSAP..."
         
         return new Promise((resolve) => {
             // Si GSAP ya está disponible
             if (window.gsap && window.ScrollTrigger && window.GSAPMain) {
                 console.log('✅ GSAP: Ya está completamente inicializado');
-                updateProgress(90, 'GSAP inicializado');
+                updateProgress(95, 'GSAP inicializado');
                 resolve();
                 return;
             }
@@ -437,23 +517,24 @@ function waitForStylesAndHidePreloader() {
             // Listener para cuando GSAP se inicialice
             window.addEventListener('gsap:initialized', function() {
                 console.log('✅ GSAP: Inicialización completa detectada');
-                updateProgress(90, 'GSAP inicializado');
+                updateProgress(95, 'GSAP inicializado');
                 resolve();
             }, { once: true });
             
             // Timeout de seguridad (3 segundos)
             setTimeout(() => {
                 console.warn('⚠️ GSAP: Timeout en inicialización, continuando...');
-                updateProgress(90, 'GSAP listo (timeout)');
+                updateProgress(95, 'GSAP listo (timeout)');
                 resolve();
             }, 3000);
         });
     }
     
-    // Esperar a que TODOS los recursos se carguen (CSS, JS, GSAP)
+    // Esperar a que TODOS los recursos se carguen (CSS, JS, Imágenes GSAP, GSAP)
     Promise.all([
         checkStylesLoaded(),
         checkScriptsLoaded(),
+        preloadGSAPImages(),
         checkGSAPReady()
     ]).then(() => {
         console.log('🎆 PRELOADER: Todos los recursos cargados (CSS + JS + GSAP)');
