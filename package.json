@@ -6,7 +6,11 @@
   "scripts": {
     "build-css": "tailwindcss -i ./static/css/input.css -o ./static/css/output.css --watch",
     "build-css-prod": "tailwindcss -i ./static/css/input.css -o ./static/css/output.css --minify",
-    "dev": "npm run build-css"
+    "build": "npm run build-css-prod",
+    "dev": "npm run build-css",
+    "clean": "rm -f ./static/css/output.css ./static/css/output.css.map",
+    "docker:build": "docker build -t ecoes-frontend .",
+    "docker:run": "docker run -p 5000:5000 ecoes-frontend"
   },
   "devDependencies": {
     "tailwindcss": "^3.4.1",

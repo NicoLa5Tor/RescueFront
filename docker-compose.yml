@@ -1,0 +1,49 @@
+# ==========================================
+# Docker Compose para ECOES FrontEnd
+# Optimizado para Cloudflare Tunnels
+# ==========================================
+
+version: '3.8'
+
+services:
+  # ==========================================
+  # Frontend Flask + Tailwind
+  # ==========================================
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ecoes-frontend:latest
+    container_name: ecoes-frontend
+    # Solo puerto local para Cloudflare Tunnel
+    ports:
+      - "127.0.0.1:5000:5000"  # Solo localhost
+    environment:
+      - FLASK_ENV=production
+      - FLASK_DEBUG=0
+      - PYTHONUNBUFFERED=1
+      # Cargar variables desde archivo .env
+    env_file:
+      - .env
+    volumes:
+      # Logs para monitoreo
+      - ./logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    # Red interna simple
+    networks:
+      - ecoes-network
+
+networks:
+  ecoes-network:
+    driver: bridge
+
+# Volumen para logs persistentes
+volumes:
+  ecoes-logs:
+    driver: local
