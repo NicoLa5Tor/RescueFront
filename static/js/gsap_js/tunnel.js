@@ -204,7 +204,7 @@
       texture.repeat.set(15, 2);
     });
 
-    var mapHeight = new THREE.TextureLoader().load('https://s3-us-west-2.amazonaws.com/s.cdpn.io/68819/waveform-bump3.jpg', function(texture) {
+    var mapHeight = new THREE.TextureLoader().load('static/assets/tunnel-images/waveform-bump3.jpg', function(texture) {
       texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
       texture.offset.set(0, 0);
       texture.repeat.set(15, 2);
@@ -765,7 +765,7 @@
     });
 
     //particle system with responsive particle count
-    var spikeyTexture = new THREE.TextureLoader().load('https://s3-us-west-2.amazonaws.com/s.cdpn.io/68819/spikey.png');
+    var spikeyTexture = new THREE.TextureLoader().load('static/assets/tunnel-images/spikey.png');
 
     var particleCount = isMobile() ? 3000 : isTablet() ? 5000 : 6800, // Reduce particles on mobile
         particles1 = new THREE.Geometry(),
