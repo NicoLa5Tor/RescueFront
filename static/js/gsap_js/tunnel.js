@@ -198,7 +198,7 @@
     var tubeSegments = isMobile() ? 200 : 300; // Reduce segments on mobile
     var geometry = new THREE.TubeGeometry( path, tubeSegments, 4, 32, false );
 
-    var texture = new THREE.TextureLoader().load('static/assets/img/espacio2.png', function(texture) {
+    var texture = new THREE.TextureLoader().load('https://s2.abcstatics.com/Media/201007/26/agujeronegro--478x270.jpg', function(texture) {
       texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
       texture.offset.set(0, 0);
       texture.repeat.set(15, 2);
