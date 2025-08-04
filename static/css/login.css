@@ -12,6 +12,37 @@
   mix-blend-mode: normal !important;
   /* Transición suave */
   transition: all 0.3s ease !important;
+  /* Animación de entrada suave para el header */
+  animation: fadeInHeader 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* Animación específica para el header */
+@keyframes fadeInHeader {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Animación suave para el logo completo */
+.login-header a {
+  animation: fadeInLogo 1.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.3s forwards;
+  opacity: 0;
+}
+
+@keyframes fadeInLogo {
+  from {
+    opacity: 0;
+    transform: translateX(-20px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
 }
 
 /* Anula efectos de sticky */
@@ -324,21 +355,40 @@ body {
   100% { transform: rotate(360deg); }
 }
 
-/* ========== ANIMACIONES ========== */
+/* ========== ANIMACIONES MEJORADAS ========== */
 .fade-in-up {
   opacity: 0;
-  transform: translateY(30px);
+  transform: translateY(20px);
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .fade-in-scale {
   opacity: 0;
-  transform: scale(0.8);
+  transform: scale(0.95);
+  transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-@keyframes fadeInUp {
+/* Animaciones automáticas con delay escalonado */
+.fade-in-up:nth-child(1) {
+  animation: fadeInUpSmooth 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.1s forwards;
+}
+
+.fade-in-up:nth-child(2) {
+  animation: fadeInUpSmooth 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s forwards;
+}
+
+.fade-in-up:nth-child(3) {
+  animation: fadeInUpSmooth 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.3s forwards;
+}
+
+.fade-in-up:nth-child(4) {
+  animation: fadeInUpSmooth 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.4s forwards;
+}
+
+@keyframes fadeInUpSmooth {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
@@ -349,11 +399,43 @@ body {
 @keyframes fadeInScale {
   from {
     opacity: 0;
-    transform: scale(0.8);
+    transform: scale(0.95);
   }
   to {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+/* Animación específica para el formulario completo */
+#loginCard {
+  animation: fadeInCard 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s forwards;
+}
+
+@keyframes fadeInCard {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Animación específica para el panel de información */
+#loginInfo {
+  animation: fadeInInfo 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.1s forwards;
+}
+
+@keyframes fadeInInfo {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
 }
 
