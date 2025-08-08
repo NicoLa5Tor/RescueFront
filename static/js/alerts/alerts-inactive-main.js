@@ -83,16 +83,21 @@ async function loadInactiveAlerts() {
         const data = await response.json();
         console.log('📊 DATA RECIBIDA (INACTIVAS):', data);
         
-        if (data.success && data.alerts && Array.isArray(data.alerts)) {
+        if (data.success && data.data && Array.isArray(data.data)) {
             console.log('✅ Data válida, procesando alertas inactivas...');
             
-            const allInactiveAlerts = data.alerts;
+            const allInactiveAlerts = data.data;
             console.log(`📋 Total alertas inactivas en esta página: ${allInactiveAlerts.length}`);
             
-            // Usar la información de paginación del backend - los datos vienen directamente en el objeto data
-            totalInactivePages = data.total_pages || 1;
-            console.log(`📄 Paginación: página ${currentInactivePage} de ${totalInactivePages}`);
-            console.log(`📊 Total alertas: ${data.total}, Límite: ${data.limit}, Página actual: ${data.page}`);
+            // Usar la información de paginación del backend - los datos vienen en data.pagination
+            if (data.pagination) {
+                totalInactivePages = data.pagination.total_pages || 1;
+                console.log(`📄 Paginación: página ${currentInactivePage} de ${totalInactivePages}`);
+                console.log(`📊 Total alertas: ${data.pagination.total_items}, Página actual: ${data.pagination.current_page}`);
+            } else {
+                totalInactivePages = 1;
+                console.log('⚠️ No se recibió información de paginación del backend');
+            }
             
             // Guardar alertas inactivas actuales
             currentInactiveAlerts = allInactiveAlerts;
