@@ -83,7 +83,7 @@ async function loadInactiveAlerts() {
         const data = await response.json();
         console.log('📊 DATA RECIBIDA (INACTIVAS):', data);
         
-        if (data.success && data.data && Array.isArray(data.data)) {
+        if (data.success === true && data.data && Array.isArray(data.data) && data.data.length > 0) {
             console.log('✅ Data válida, procesando alertas inactivas...');
             
             const allInactiveAlerts = data.data;
