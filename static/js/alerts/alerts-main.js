@@ -609,15 +609,26 @@ function generateModalContent(alert, isUserOrigin, isHardwareOrigin) {
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
                 <!-- Imagen y tipo de alerta con diferenciación por origen -->
                 <div class="lg:col-span-1">
-                    ${(alert.image_alert || alert.data?.tipo_alarma_info?.imagen_base64) ? `
+                    ${alert.image_alert ? `
                         <div class="modal-section bg-gradient-to-br ${
                             isUserOrigin ? 'from-purple-500 to-pink-600' : 
                             isHardwareOrigin ? 'from-blue-500 to-cyan-600' : 
                             'from-gray-500 to-gray-600'
                         } rounded-lg p-4 text-center h-full">
-                            <img src="${alert.image_alert || alert.data.tipo_alarma_info.imagen_base64}" 
+                            <img src="${alert.image_alert}" 
                                  alt="${alert.nombre_alerta || 'Tipo de alerta'}" 
-                                 class="w-full h-24 object-cover rounded-lg mb-3 border-2 border-white/20 modal-image">
+                                 class="w-full h-24 object-cover rounded-lg mb-3 border-2 border-white/20 modal-image"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                            <div class="w-16 h-16 bg-gradient-to-br ${
+                                isUserOrigin ? 'from-purple-400 to-pink-500' : 
+                                isHardwareOrigin ? 'from-blue-400 to-cyan-500' : 
+                                'from-gray-400 to-gray-500'
+                            } rounded-full mx-auto mb-3 flex items-center justify-center shadow-lg" style="display: none;">
+                                <i class="fas fa-${
+                                    isUserOrigin ? 'user-shield' : 
+                                    isHardwareOrigin ? 'microchip' : 'exclamation-triangle'
+                                } text-white text-xl"></i>
+                            </div>
                             <h3 class="text-lg font-bold text-white mb-2">
                                 ${alert.nombre_alerta || 'Alerta'}
                             </h3>
