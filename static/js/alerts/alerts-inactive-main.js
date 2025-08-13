@@ -150,9 +150,10 @@ function renderInactiveAlerts(alerts) {
     }
     
     const alertsHTML = alerts.map(alert => {
-        // Determinar el origen de la alerta
+        // Determinar el origen de la alerta con soporte para alertas de empresa
         const isUserOrigin = alert.data?.origen === 'usuario_movil' || alert.activacion_alerta?.tipo_activacion === 'usuario';
         const isHardwareOrigin = alert.data?.tipo_mensaje === 'alarma' || alert.activacion_alerta?.tipo_activacion === 'hardware';
+        const isEmpresaOrigin = alert.data?.origen === 'empresa_web' || alert.activacion_alerta?.tipo_activacion === 'empresa';
         
         // Determinar el nombre de la alerta según su origen
         let alertTypeName = alert.nombre_alerta || 'Alerta';
@@ -164,6 +165,9 @@ function renderInactiveAlerts(alerts) {
         } else if (isHardwareOrigin) {
             originLabel = 'Hardware';
             alertTypeName = alert.nombre_alerta || 'Alerta de Hardware';
+        } else if (isEmpresaOrigin) {
+            originLabel = 'Empresa';
+            alertTypeName = alert.nombre_alerta || 'Alerta de Empresa';
         } else {
             originLabel = 'Sistema';
         }
@@ -172,8 +176,16 @@ function renderInactiveAlerts(alerts) {
         <div class="alert-card ios-hardware-card alert-priority-${alert.prioridad} alert-status-inactive" onclick="console.log('🖱️ CLICK en alerta:', '${alert._id}'); window.showInactiveAlertDetails('${alert._id}');">
             <div class="flex items-start space-x-4">
                 <div class="flex-shrink-0">
-                    <div class="w-16 h-16 rounded-xl flex items-center justify-center ${isUserOrigin ? 'alert-origin-usuario' : 'alert-origin-hardware'} opacity-60">
-                        <i class="fas fa-${isUserOrigin ? 'user' : 'microchip'} text-white text-xl"></i>
+                    <div class="w-16 h-16 rounded-xl flex items-center justify-center ${
+                        isUserOrigin ? 'alert-origin-usuario' : 
+                        isHardwareOrigin ? 'alert-origin-hardware' : 
+                        isEmpresaOrigin ? 'alert-origin-empresa' : 'alert-origin-hardware'
+                    } opacity-60">
+                        <i class="fas fa-${
+                            isUserOrigin ? 'user' : 
+                            isHardwareOrigin ? 'microchip' : 
+                            isEmpresaOrigin ? 'building' : 'microchip'
+                        } text-white text-xl"></i>
                     </div>
                 </div>
                 
@@ -191,7 +203,8 @@ function renderInactiveAlerts(alerts) {
                             </span>
                             <span class="px-2 py-1 rounded-full text-xs font-medium ${
                                 isUserOrigin ? 'bg-purple-500' : 
-                                isHardwareOrigin ? 'bg-blue-500' : 'bg-gray-500'
+                                isHardwareOrigin ? 'bg-blue-500' : 
+                                isEmpresaOrigin ? 'bg-green-500' : 'bg-gray-500'
                             } text-white">
                                 ${originLabel.toUpperCase()}
                             </span>

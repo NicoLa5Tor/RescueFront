@@ -297,9 +297,10 @@ function renderAlerts(alerts) {
     }
     
     const alertsHTML = alerts.map(alert => {
-        // Determinar el origen de la alerta
+        // Determinar el origen de la alerta con soporte para alertas de empresa
         const isUserOrigin = alert.data?.origen === 'usuario_movil' || alert.activacion_alerta?.tipo_activacion === 'usuario';
         const isHardwareOrigin = alert.data?.tipo_mensaje === 'alarma' || alert.activacion_alerta?.tipo_activacion === 'hardware';
+        const isEmpresaOrigin = alert.data?.origen === 'empresa_web' || alert.activacion_alerta?.tipo_activacion === 'empresa';
         
         // Determinar el nombre de la alerta según su origen
         let alertTypeName = alert.nombre_alerta || 'Alerta';
@@ -311,6 +312,9 @@ function renderAlerts(alerts) {
         } else if (isHardwareOrigin) {
             originLabel = 'Hardware';
             alertTypeName = alert.nombre_alerta || 'Alerta de Hardware';
+        } else if (isEmpresaOrigin) {
+            originLabel = 'Empresa';
+            alertTypeName = alert.nombre_alerta || 'Alerta de Empresa';
         } else {
             originLabel = 'Sistema';
         }
@@ -319,8 +323,18 @@ function renderAlerts(alerts) {
         <div class="alert-card ios-hardware-card alert-priority-${alert.prioridad}" onclick="showAlertDetails('${alert._id}')">
             <div class="flex items-start space-x-4">
                 <div class="flex-shrink-0">
-                    <div class="w-16 h-16 rounded-xl flex items-center justify-center ${isUserOrigin ? 'alert-origin-usuario' : 'alert-origin-hardware'}">
-                        <i class="fas fa-${isUserOrigin ? 'user' : 'microchip'} text-white text-xl"></i>
+                    <div class="w-16 h-16 rounded-xl flex items-center justify-center ${
+                        isUserOrigin ? 'alert-origin-usuario' : 
+                        isHardwareOrigin ? 'alert-origin-hardware' : 
+                        isEmpresaOrigin ? 'alert-origin-empresa' : 
+                        'alert-origin-system'
+                    }">
+                        <i class="fas fa-${
+                            isUserOrigin ? 'user' : 
+                            isHardwareOrigin ? 'microchip' : 
+                            isEmpresaOrigin ? 'building' : 
+                            'cog'
+                        } text-white text-xl"></i>
                     </div>
                 </div>
                 
@@ -338,7 +352,9 @@ function renderAlerts(alerts) {
                             </span>
                             <span class="px-2 py-1 rounded-full text-xs font-medium ${
                                 isUserOrigin ? 'bg-purple-500' : 
-                                isHardwareOrigin ? 'bg-blue-500' : 'bg-gray-500'
+                                isHardwareOrigin ? 'bg-blue-500' : 
+                                isEmpresaOrigin ? 'bg-emerald-500' : 
+                                'bg-gray-500'
                             } text-white">
                                 ${originLabel.toUpperCase()}
                             </span>
@@ -496,12 +512,15 @@ async function showAlertDetails(alertId) {
     
     const isUserOrigin = alert.data?.origen === 'usuario_movil' || alert.activacion_alerta?.tipo_activacion === 'usuario';
     const isHardwareOrigin = alert.data?.tipo_mensaje === 'alarma' || alert.activacion_alerta?.tipo_activacion === 'hardware';
+    const isEmpresaOrigin = alert.data?.origen === 'empresa_web' || alert.activacion_alerta?.tipo_activacion === 'empresa';
     
     let displayName = '';
     if (isUserOrigin) {
         displayName = alert.activacion_alerta?.nombre || alert.data?.botonera_ubicacion?.hardware_nombre || 'Usuario Móvil';
     } else if (isHardwareOrigin) {
         displayName = alert.activacion_alerta?.nombre || alert.hardware_nombre || 'Hardware';
+    } else if (isEmpresaOrigin) {
+        displayName = alert.activacion_alerta?.nombre || alert.nombre_alerta || 'Alerta de Empresa';
     } else {
         displayName = alert.hardware_nombre || alert.activacion_alerta?.nombre || 'Sistema';
     }
@@ -543,14 +562,16 @@ function generateModalContent(alert, isUserOrigin, isHardwareOrigin) {
                         } text-white text-lg"></i>
                     </div>
                     <div>
-                        <h3 class="text-white font-bold text-lg">
+        <h3 class="text-white font-bold text-lg">
                             ${isUserOrigin ? '👤 Alerta de Usuario Móvil' : 
                               isHardwareOrigin ? '🔧 Alerta de Hardware' : 
+                              (alert.data?.origen === 'empresa_web' || alert.activacion_alerta?.tipo_activacion === 'empresa') ? '🏢 Alerta de Empresa' :
                               '⚙️ Alerta del Sistema'}
                         </h3>
                         <p class="text-white/80 text-sm">
                             ${isUserOrigin ? 'Creada desde aplicación móvil' : 
                               isHardwareOrigin ? 'Generada automáticamente por hardware' : 
+                              (alert.data?.origen === 'empresa_web' || alert.activacion_alerta?.tipo_activacion === 'empresa') ? 'Creada manualmente por la empresa' :
                               'Alerta del sistema'}
                         </p>
                     </div>
@@ -681,67 +702,115 @@ function generateModalContent(alert, isUserOrigin, isHardwareOrigin) {
                     </div>
                 </div>
 
-                <!-- Información del origen (Usuario o Hardware) -->
+                <!-- Información del origen (Usuario, Hardware o Empresa) -->
                 <div class="lg:col-span-1">
-                    ${isUserOrigin ? `
-                        <div class="modal-section bg-gradient-to-r from-purple-700 to-indigo-800 rounded-lg p-3 h-full">
-                            <h4 class="text-sm font-semibold text-white mb-2 flex items-center">
-                                <i class="fas fa-user-shield mr-1 text-xs"></i>Usuario Origen
-                            </h4>
-                            <div class="space-y-1 text-xs">
-                                <div class="flex justify-between">
-                                    <span class="text-purple-200">Usuario:</span>
-                                    <span class="text-white font-medium truncate ml-2">${alert.activacion_alerta?.nombre || 'Usuario no especificado'}</span>
+                    ${(() => {
+                        const isEmpresaOrigin = alert.data?.origen === 'empresa_web' || alert.activacion_alerta?.tipo_activacion === 'empresa';
+                        
+                        if (isUserOrigin) {
+                            return `
+                                <div class="modal-section bg-gradient-to-r from-purple-700 to-indigo-800 rounded-lg p-3 h-full">
+                                    <h4 class="text-sm font-semibold text-white mb-2 flex items-center">
+                                        <i class="fas fa-user-shield mr-1 text-xs"></i>Usuario Origen
+                                    </h4>
+                                    <div class="space-y-1 text-xs">
+                                        <div class="flex justify-between">
+                                            <span class="text-purple-200">Usuario:</span>
+                                            <span class="text-white font-medium truncate ml-2">${alert.activacion_alerta?.nombre || 'Usuario no especificado'}</span>
+                                        </div>
+                                        ${alert.activacion_alerta?.id ? `
+                                            <div class="flex justify-between">
+                                                <span class="text-purple-200">ID:</span>
+                                                <span class="text-white font-medium font-mono text-xs">${alert.activacion_alerta.id}</span>
+                                            </div>
+                                        ` : ''}
+                                        ${alert.data?.metadatos?.plataforma ? `
+                                            <div class="pt-1">
+                                                <span class="text-purple-200 block mb-1">Plataforma:</span>
+                                                <span class="inline-flex items-center px-2 py-1 bg-purple-600/30 text-purple-100 rounded text-xs">
+                                                    <i class="fas fa-mobile-alt mr-1"></i>
+                                                    ${alert.data.metadatos.plataforma === 'mobile_app' ? 'App Móvil' : alert.data.metadatos.plataforma}
+                                                </span>
+                                            </div>
+                                        ` : ''}
+                                    </div>
                                 </div>
-                                ${alert.activacion_alerta?.id ? `
-                                    <div class="flex justify-between">
-                                        <span class="text-purple-200">ID:</span>
-                                        <span class="text-white font-medium font-mono text-xs">${alert.activacion_alerta.id}</span>
+                            `;
+                        } else if (isHardwareOrigin) {
+                            return `
+                                <div class="modal-section bg-gradient-to-r from-blue-700 to-cyan-800 rounded-lg p-3 h-full">
+                                    <h4 class="text-sm font-semibold text-white mb-2 flex items-center">
+                                        <i class="fas fa-microchip mr-1 text-xs"></i>Hardware Origen
+                                    </h4>
+                                    <div class="space-y-1 text-xs">
+                                        <div class="flex justify-between">
+                                            <span class="text-blue-200">Nombre:</span>
+                                            <span class="text-white font-medium truncate ml-2">${alert.activacion_alerta?.nombre || alert.hardware_nombre || 'Hardware no especificado'}</span>
+                                        </div>
+                                        ${alert.data?.id_origen ? `
+                                            <div class="flex justify-between">
+                                                <span class="text-blue-200">ID Origen:</span>
+                                                <span class="text-white font-medium font-mono text-xs">${alert.data.id_origen}</span>
+                                            </div>
+                                        ` : ''}
+                                        ${alert.topic ? `
+                                            <div class="pt-1">
+                                                <span class="text-blue-200 block mb-1">Topic MQTT:</span>
+                                                <code class="text-blue-100 font-mono text-xs bg-black/20 px-1 py-1 rounded block break-all">${alert.topic}</code>
+                                            </div>
+                                        ` : ''}
                                     </div>
-                                ` : ''}
-                                ${alert.data?.metadatos?.plataforma ? `
-                                    <div class="pt-1">
-                                        <span class="text-purple-200 block mb-1">Plataforma:</span>
-                                        <span class="inline-flex items-center px-2 py-1 bg-purple-600/30 text-purple-100 rounded text-xs">
-                                            <i class="fas fa-mobile-alt mr-1"></i>
-                                            ${alert.data.metadatos.plataforma === 'mobile_app' ? 'App Móvil' : alert.data.metadatos.plataforma}
-                                        </span>
-                                    </div>
-                                ` : ''}
-                            </div>
-                        </div>
-                    ` : isHardwareOrigin ? `
-                        <div class="modal-section bg-gradient-to-r from-blue-700 to-cyan-800 rounded-lg p-3 h-full">
-                            <h4 class="text-sm font-semibold text-white mb-2 flex items-center">
-                                <i class="fas fa-microchip mr-1 text-xs"></i>Hardware Origen
-                            </h4>
-                            <div class="space-y-1 text-xs">
-                                <div class="flex justify-between">
-                                    <span class="text-blue-200">Nombre:</span>
-                                    <span class="text-white font-medium truncate ml-2">${alert.activacion_alerta?.nombre || alert.hardware_nombre || 'Hardware no especificado'}</span>
                                 </div>
-                                ${alert.data?.id_origen ? `
-                                    <div class="flex justify-between">
-                                        <span class="text-blue-200">ID Origen:</span>
-                                        <span class="text-white font-medium font-mono text-xs">${alert.data.id_origen}</span>
+                            `;
+                        } else if (isEmpresaOrigin) {
+                            return `
+                                <div class="modal-section bg-gradient-to-r from-emerald-700 to-teal-800 rounded-lg p-3 h-full">
+                                    <h4 class="text-sm font-semibold text-white mb-2 flex items-center">
+                                        <i class="fas fa-building mr-1 text-xs"></i>Empresa Origen
+                                    </h4>
+                                    <div class="space-y-1 text-xs">
+                                        <div class="flex justify-between">
+                                            <span class="text-teal-200">Empresa:</span>
+                                            <span class="text-white font-medium truncate ml-2">${alert.activacion_alerta?.nombre || alert.empresa_nombre || 'Empresa no especificada'}</span>
+                                        </div>
+                                        ${alert.activacion_alerta?.id ? `
+                                            <div class="flex justify-between">
+                                                <span class="text-teal-200">ID:</span>
+                                                <span class="text-white font-medium font-mono text-xs">${alert.activacion_alerta.id}</span>
+                                            </div>
+                                        ` : ''}
+                                        ${alert.data?.origen ? `
+                                            <div class="pt-1">
+                                                <span class="text-teal-200 block mb-1">Origen:</span>
+                                                <span class="inline-flex items-center px-2 py-1 bg-teal-600/30 text-teal-100 rounded text-xs">
+                                                    <i class="fas fa-globe-americas mr-1"></i>
+                                                    ${alert.data.origen === 'empresa_web' ? 'Portal Web Empresa' : alert.data.origen}
+                                                </span>
+                                            </div>
+                                        ` : ''}
+                                        ${alert.data?.metadatos?.plataforma ? `
+                                            <div class="pt-1">
+                                                <span class="text-teal-200 block mb-1">Plataforma:</span>
+                                                <span class="inline-flex items-center px-2 py-1 bg-emerald-600/30 text-emerald-100 rounded text-xs">
+                                                    <i class="fas fa-desktop mr-1"></i>
+                                                    ${alert.data.metadatos.plataforma === 'web_app' ? 'Aplicación Web' : alert.data.metadatos.plataforma}
+                                                </span>
+                                            </div>
+                                        ` : ''}
                                     </div>
-                                ` : ''}
-                                ${alert.topic ? `
-                                    <div class="pt-1">
-                                        <span class="text-blue-200 block mb-1">Topic MQTT:</span>
-                                        <code class="text-blue-100 font-mono text-xs bg-black/20 px-1 py-1 rounded block break-all">${alert.topic}</code>
+                                </div>
+                            `;
+                        } else {
+                            return `
+                                <div class="modal-section bg-gradient-to-r from-gray-700 to-gray-800 rounded-lg p-3 h-full flex items-center justify-center">
+                                    <div class="text-center">
+                                        <i class="fas fa-question-circle text-gray-400 text-2xl mb-2"></i>
+                                        <p class="text-gray-300 text-sm">Origen no especificado</p>
                                     </div>
-                                ` : ''}
-                            </div>
-                        </div>
-                    ` : `
-                        <div class="modal-section bg-gradient-to-r from-gray-700 to-gray-800 rounded-lg p-3 h-full flex items-center justify-center">
-                            <div class="text-center">
-                                <i class="fas fa-question-circle text-gray-400 text-2xl mb-2"></i>
-                                <p class="text-gray-300 text-sm">Origen no especificado</p>
-                            </div>
-                        </div>
-                    `}
+                                </div>
+                            `;
+                        }
+                    })()}
                 </div>
             </div>
             
@@ -1780,6 +1849,8 @@ function generateAssociatedHardwareContent(alert) {
 }
 
 function generateOriginDetailsContent(alert, isUserOrigin, isHardwareOrigin) {
+    const isEmpresaOrigin = alert.data?.origen === 'empresa_web' || alert.activacion_alerta?.tipo_activacion === 'empresa';
+    
     if (isUserOrigin) {
         return `
             <div class="modal-section bg-gradient-to-r from-violet-700 to-purple-800 rounded-lg p-3">
@@ -1868,8 +1939,77 @@ function generateOriginDetailsContent(alert, isUserOrigin, isHardwareOrigin) {
                 </div>
             </div>
         `;
+    } else if (isEmpresaOrigin) {
+        return `
+            <div class="modal-section bg-gradient-to-r from-emerald-700 to-teal-800 rounded-lg p-3">
+                <h4 class="text-sm font-semibold text-white mb-2 flex items-center">
+                    <i class="fas fa-building mr-1 text-xs"></i>Detalles de Alerta de Empresa
+                </h4>
+                <div class="space-y-2 text-xs">
+                    <div class="bg-black/20 rounded p-2">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-teal-200">Tipo de Activación:</span>
+                            <span class="text-white font-medium">${alert.activacion_alerta?.tipo_activacion || 'Empresa'}</span>
+                        </div>
+                        ${alert.activacion_alerta?.nombre ? `
+                            <p class="text-teal-300 text-xs font-medium">Nombre: ${alert.activacion_alerta.nombre}</p>
+                        ` : ''}
+                    </div>
+                    
+                    ${alert.data?.origen ? `
+                        <div class="bg-black/20 rounded p-2">
+                            <div class="flex justify-between">
+                                <span class="text-teal-200">Origen:</span>
+                                <span class="inline-flex items-center px-2 py-1 bg-teal-600/50 text-white text-xs rounded">
+                                    <i class="fas fa-globe-americas mr-1"></i>
+                                    ${alert.data.origen === 'empresa_web' ? 'Portal Web Empresa' : alert.data.origen}
+                                </span>
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    ${alert.data?.metadatos ? `
+                        <div class="bg-black/20 rounded p-2">
+                            <p class="text-teal-200 mb-1">Metadatos:</p>
+                            <div class="flex flex-wrap gap-1">
+                                ${alert.data.metadatos.plataforma ? `
+                                    <span class="inline-flex items-center px-2 py-1 bg-emerald-600/50 text-white text-xs rounded">
+                                        <i class="fas fa-desktop mr-1"></i>
+                                        ${alert.data.metadatos.plataforma === 'web' ? 'Portal Web' : alert.data.metadatos.plataforma}
+                                    </span>
+                                ` : ''}
+                                ${alert.data.metadatos.tipo_procesamiento ? `
+                                    <span class="inline-flex items-center px-2 py-1 bg-teal-600/50 text-white text-xs rounded">
+                                        <i class="fas fa-${alert.data.metadatos.tipo_procesamiento === 'manual' ? 'hand-paper' : 'cogs'} mr-1"></i>
+                                        ${alert.data.metadatos.tipo_procesamiento === 'manual' ? 'Manual' : 'Automático'}
+                                    </span>
+                                ` : ''}
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    ${alert.data?.timestamp_creacion || alert.fecha_creacion ? `
+                        <div class="bg-black/20 rounded p-2">
+                            <div class="flex justify-between">
+                                <span class="text-teal-200">Creada:</span>
+                                <span class="text-white font-mono text-xs">${new Date(alert.data?.timestamp_creacion || alert.fecha_creacion).toLocaleString()}</span>
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+        `;
     }
-    return '';
+    
+    return `
+        <div class="modal-section bg-gradient-to-r from-gray-700 to-gray-800 rounded-lg p-3 h-full flex items-center justify-center">
+            <div class="text-center">
+                <i class="fas fa-question-circle text-gray-400 text-2xl mb-2"></i>
+                <p class="text-gray-300 text-sm">Origen no especificado</p>
+                <p class="text-gray-500 text-xs mt-1">No hay información de origen disponible</p>
+            </div>
+        </div>
+    `;
 }
 
 // ========== FUNCIONES PARA ALTERNAR MAPAS ==========
