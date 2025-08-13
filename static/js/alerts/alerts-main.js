@@ -50,11 +50,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Cargar alertas iniciales
     loadActiveAlerts();
     
-    // Configurar auto-refresh cada 30 segundos
-    setInterval(() => {
-        console.log('🔄 AUTO-REFRESH: Actualizando alertas...');
-        loadActiveAlerts();
-    }, 30000);
+    // Verificar si debe abrir automáticamente el modal de una alerta específica
+    checkForAutoOpenAlert();
     
     console.log('✅ ALERTAS: Sistema completamente inicializado con cache inteligente y WebSocket');
 });
@@ -2321,6 +2318,37 @@ function removeNotification(notificationId) {
 // Hacer la función disponible globalmente
 window.showSimpleNotification = showSimpleNotification;
 window.removeNotification = removeNotification;
+
+// ========== FUNCIÓN PARA APERTURA AUTOMÁTICA DE MODAL ==========
+/**
+ * Verifica si debe abrir automáticamente el modal de una alerta específica
+ * Esto se activa cuando se llega desde el sistema global de alertas
+ */
+function checkForAutoOpenAlert() {
+    // Verificar si hay un ID de alerta para abrir automáticamente
+    const openAlertId = sessionStorage.getItem('openAlertId');
+    
+    if (openAlertId) {
+        console.log(`🎯 AUTO-OPEN: Detectado ID de alerta para abrir automáticamente: ${openAlertId}`);
+        
+        // Limpiar la variable de sesión
+        sessionStorage.removeItem('openAlertId');
+        
+        // Esperar un poco para que las alertas se carguen primero
+        setTimeout(async () => {
+            // Intentar encontrar la alerta
+            const alert = await findAlertById(openAlertId);
+            
+            if (alert) {
+                console.log(`✅ AUTO-OPEN: Alerta encontrada, abriendo modal...`);
+                showAlertDetails(openAlertId);
+            } else {
+                console.warn(`⚠️ AUTO-OPEN: No se pudo encontrar la alerta ${openAlertId}`);
+                showSimpleNotification('La alerta seleccionada no se pudo cargar', 'warning');
+            }
+        }, 1500); // Esperar 1.5 segundos para asegurar que las alertas se carguen
+    }
+}
 
 // Debug tools
 window.alertsDebug = {
