@@ -2350,6 +2350,22 @@ function checkForAutoOpenAlert() {
     }
 }
 
+// ========== EXPOSICIÓN GLOBAL DE FUNCIONES ==========
+// Exponer funciones principales para uso global
+window.generateModalContent = generateModalContent;
+window.getPriorityClass = getPriorityClass;
+window.getAlertTypeColor = getAlertTypeColor;
+window.formatDate = formatDate;
+window.generateLocationContent = generateLocationContent;
+window.generateEmbeddedMap = generateEmbeddedMap;
+window.generateSpecificLocationContent = generateSpecificLocationContent;
+window.generateAssociatedHardwareContent = generateAssociatedHardwareContent;
+window.generateOriginDetailsContent = generateOriginDetailsContent;
+window.toggleMapProvider = toggleMapProvider;
+window.extractCoordsFromGoogleMapsUrl = extractCoordsFromGoogleMapsUrl;
+window.extractCoordsFromOSMUrl = extractCoordsFromOSMUrl;
+window.extractCoordsFromOSMEmbed = extractCoordsFromOSMEmbed;
+
 // Debug tools
 window.alertsDebug = {
     getCacheStats: () => cacheMetadata,

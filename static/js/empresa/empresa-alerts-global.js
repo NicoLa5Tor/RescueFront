@@ -540,7 +540,7 @@ class EmpresaAlertsGlobal {
             const priorityClass = alert.prioridad || 'media';
             
             return `
-                <div class="alert-item" onclick="window.open('/empresa/alertas', '_blank')">
+                <div class="alert-item" onclick="window.empresaAlertsGlobal.goToAlertDetails('${alert._id}')">
                     <div class="alert-header">
                         <div class="alert-title">
                             ${alert.hardware_nombre || alert.nombre_alerta || 'Alerta de Sistema'}
@@ -587,6 +587,7 @@ class EmpresaAlertsGlobal {
     startAutoRefresh() {
         // Actualizar cada 10 segundos
         this.refreshInterval = setInterval(() => {
+            console.log('🔄 AUTO-REFRESH: Cargando alertas automáticamente...');
             this.loadAlerts();
         }, 10000);
         
@@ -732,12 +733,10 @@ class EmpresaAlertsGlobal {
         
         if (trueNewAlertIds.length > 0) {
             console.log(`🚨 NUEVA ALERTA DETECTADA: ${trueNewAlertIds.length} nueva(s) alerta(s)`, trueNewAlertIds);
-            console.log('🚨 INTENTANDO ABRIR PANEL...');
             
-            // Abrir automáticamente el panel de alertas activas
+            // Abrir el panel de alertas automáticamente
+            console.log('🚨 ABRIENDO PANEL DE ALERTAS PARA NUEVA ALERTA');
             this.openAlertsPanel();
-            
-            console.log('✅ PANEL ABIERTO AUTOMÁTICAMENTE');
         } else {
             console.log('ℹ️ No se encontraron alertas nuevas (todas ya conocidas)');
         }
@@ -752,6 +751,7 @@ class EmpresaAlertsGlobal {
         console.log('🔍 DEBUG: Histórico actualizado:', Array.from(this.seenAlertIds));
     }
     
+    // ===== FUNCIONES DEL MODAL POPUP =====
     // Método para mostrar modal de nueva alerta
     showNewAlertModal(alert) {
         if (this.newAlertModalOpen) {
@@ -922,15 +922,24 @@ class EmpresaAlertsGlobal {
         this.newAlertModalOpen = false;
     }
     
+    // ===== FIN FUNCIONES DEL MODAL POPUP =====
+    
     // Ir a detalles de la alerta
     goToAlertDetails(alertId) {
-        // Cerrar modal primero
+        console.log('🔗 DEBUG: goToAlertDetails llamado con ID:', alertId);
+        
+        // Cerrar modal si está abierto
         this.dismissNewAlertModal();
+        
+        // Cerrar el panel de alertas antes de redirigir
+        this.closeAlertsPanel();
         
         // Guardar el ID de la alerta para abrir automáticamente
         sessionStorage.setItem('openAlertId', alertId);
+        console.log('🔗 DEBUG: ID guardado en sessionStorage:', alertId);
         
         // Redirigir a la vista de alertas
+        console.log('🔗 DEBUG: Redirigiendo a /empresa/alertas');
         window.location.href = '/empresa/alertas';
     }
     
@@ -946,16 +955,25 @@ class EmpresaAlertsGlobal {
             sede: 'Sede Central',
             prioridad: 'alta',
             fecha_creacion: new Date().toISOString(),
-            descripcion: 'Esta es una alerta de prueba para verificar el funcionamiento del sistema.'
+            descripcion: 'Esta es una alerta de prueba para verificar el funcionamiento del sistema.',
+            data: {
+                origen: 'hardware',
+                tipo_mensaje: 'alarma'
+            },
+            activacion_alerta: {
+                tipo_activacion: 'hardware',
+                nombre: 'Sensor Hardware'
+            }
         };
         
-        // Simular que tenemos alertas actuales + la nueva
-        const currentCache = this.alertsCache.get('current');
-        const currentAlerts = currentCache ? currentCache.alerts : [];
-        const alertsWithFake = [...currentAlerts, fakeAlert];
-        
-        console.log('🧪 TEST: Ejecutando checkForNewAlerts con alerta falsa...');
-        this.checkForNewAlerts(alertsWithFake);
+        console.log('🧪 TEST: Mostrando modal directamente...');
+        this.showNewAlertModal(fakeAlert);
+    }
+    
+    // Función para probar el modal popup directamente
+    testModalPopup() {
+        console.log('🧪 TEST MODAL: Probando modal popup de nueva alerta...');
+        this.testNewAlert();
     }
     
     testOpenPanel() {
@@ -965,7 +983,47 @@ class EmpresaAlertsGlobal {
     
     clearLastAlertIds() {
         console.log('🧪 TEST: Limpiando IDs previos para forzar detección...');
-        this.lastAlertIds.clear();
+        this.seenAlertIds.clear();
+        this.currentAlertIds.clear();
+        console.log('🧪 TEST: IDs limpiados, la próxima alerta se detectará como nueva');
+    }
+    
+    // Función para simular que llega una nueva alerta via WebSocket/refresh
+    simulateNewAlert() {
+        console.log('🧪 TEST: Simulando llegada de nueva alerta...');
+        
+        // Limpiar IDs para forzar detección
+        this.clearLastAlertIds();
+        
+        // Crear una alerta falsa con datos más realistas
+        const fakeAlert = {
+            _id: 'fake_alert_' + Date.now(),
+            hardware_nombre: 'Sensor Crítico',
+            empresa_nombre: 'Mi Empresa',
+            sede: 'Sede Principal', 
+            prioridad: 'critica',
+            fecha_creacion: new Date().toISOString(),
+            descripcion: 'Alerta de emergencia detectada por el sensor principal.',
+            data: {
+                origen: 'hardware',
+                tipo_mensaje: 'alarma',
+                id_origen: 'sensor_001'
+            },
+            activacion_alerta: {
+                tipo_activacion: 'hardware',
+                nombre: 'Sensor Principal',
+                id: 'hw_sensor_001'
+            },
+            numeros_telefonicos: [
+                { nombre: 'Administrador', numero: '+57 300 123 4567', disponible: true }
+            ]
+        };
+        
+        // Simular que esta alerta viene en la siguiente carga
+        setTimeout(() => {
+            console.log('🧪 TEST: Ejecutando checkForNewAlerts con alerta simulada...');
+            this.checkForNewAlerts([fakeAlert]);
+        }, 1000);
     }
     
     // Método para destruir el sistema

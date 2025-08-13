@@ -37,6 +37,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Cargar alertas inactivas iniciales
     loadInactiveAlerts();
     
+    // Verificar si debe abrir automáticamente una alerta específica
+    setTimeout(() => {
+        checkForAutoOpenInactiveAlert();
+    }, 1500);
+    
     console.log('✅ ALERTAS INACTIVAS: Sistema completamente inicializado');
 });
 
@@ -471,6 +476,8 @@ async function showInactiveAlertDetails(alertId) {
     }, 50);
 }
 function generateInactiveModalContent(alert, isUserOrigin, isHardwareOrigin) {
+    console.log('🔍 GENERANDO MODAL PARA ALERTA INACTIVA:', alert);
+    
     return `
         <!-- GRILLA 1: HEADER DE ALERTA INACTIVA -->
         <div class="mb-6 p-4 rounded-xl ${

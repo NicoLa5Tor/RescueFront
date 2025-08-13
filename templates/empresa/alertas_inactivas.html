@@ -111,6 +111,9 @@
 <!-- Archivo principal de alertas inactivas modularizado -->
 <script src="{{ url_for('static', filename='js/alerts/alerts-inactive-main.js') }}"></script>
 
+<!-- Script de debug temporal para testing -->
+<script src="{{ url_for('static', filename='js/debug/test-inactive-alerts.js') }}"></script>
+
 <script>
 // Inicializar cliente API (requerido por alerts-inactive-main.js)
 if (typeof EndpointTestClient !== 'undefined') {
@@ -119,5 +122,15 @@ if (typeof EndpointTestClient !== 'undefined') {
 } else {
     console.warn('⚠️ EndpointTestClient no está disponible');
 }
+
+// Auto-verificar el estado del sistema después de la carga
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        if (window.testingTools) {
+            console.log('🔍 AUTO-CHECK: Verificando estado del sistema de alertas inactivas...');
+            window.testingTools.quickCheck();
+        }
+    }, 2000);
+});
 </script>
 {% endblock %}
