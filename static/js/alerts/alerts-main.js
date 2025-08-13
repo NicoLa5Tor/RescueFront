@@ -12,7 +12,7 @@ let alertsPerPage = 5;
 
 // Variables para WebSocket
 let websocket = null;
-let websocketUrl = window.websocket_url || 'wss://websocket.rescue.com.co'; // Usar la configuración de Flask
+let websocketUrl = window.websocket_url || 'ws://localhost:8080'; // Usar la configuración de Flask o localhost por defecto
 let reconnectAttempts = 0;
 const maxReconnectAttempts = 5;
 const reconnectDelay = 3000; // 3 segundos
@@ -67,11 +67,15 @@ function connectWebSocket() {
         websocket.onopen = function(event) {
             console.log('✅ WebSocket conectado:', websocketUrl);
             reconnectAttempts = 0;
+            // Exponer WebSocket globalmente para otros módulos
+            window.websocket = websocket;
         };
         
         websocket.onclose = function(event) {
             console.log('🔌 WebSocket desconectado');
             websocket = null;
+            // Limpiar referencia global también
+            window.websocket = null;
         };
         
         websocket.onerror = function(error) {
@@ -86,6 +90,11 @@ function connectWebSocket() {
 function sendAlertDeactivationMessage(alertData) {
     return new Promise((resolve, reject) => {
         try {
+            console.log('🚀 [DEBUG] Iniciando sendAlertDeactivationMessage');
+            console.log('🚀 [DEBUG] AlertData recibida:', alertData);
+            console.log('🚀 [DEBUG] WebSocket state:', websocket ? websocket.readyState : 'no websocket');
+            console.log('🚀 [DEBUG] WebSocket URL:', websocketUrl);
+            
             // Preparar el mensaje con la información de la alerta
             const message = {
                 type: 'alert_deactivated_by_empresa',
@@ -126,33 +135,41 @@ function sendAlertDeactivationMessage(alertData) {
                 }
             };
             
-            console.log('📤 Enviando mensaje de desactivación vía WebSocket:', message);
+            console.log('📤 [DEBUG] Mensaje preparado para enviar:', JSON.stringify(message, null, 2));
             
             // Si no hay conexión, intentar conectar
             if (!websocket || websocket.readyState !== WebSocket.OPEN) {
-                console.log('🔌 WebSocket no conectado, intentando conectar...');
+                console.log('🔌 [DEBUG] WebSocket no conectado, estado:', websocket ? websocket.readyState : 'null');
+                console.log('🔌 [DEBUG] Estados WebSocket: CONNECTING=0, OPEN=1, CLOSING=2, CLOSED=3');
+                console.log('🔌 [DEBUG] Intentando conectar a:', websocketUrl);
+                
                 connectWebSocket();
                 
                 // Esperar un momento para la conexión y luego enviar
                 setTimeout(() => {
+                    console.log('⏰ [DEBUG] Después de timeout, WebSocket state:', websocket ? websocket.readyState : 'null');
                     if (websocket && websocket.readyState === WebSocket.OPEN) {
+                        console.log('✅ [DEBUG] WebSocket conectado, enviando mensaje...');
                         websocket.send(JSON.stringify(message));
-                        console.log('✅ Mensaje enviado vía WebSocket');
+                        console.log('✅ [DEBUG] Mensaje enviado vía WebSocket exitosamente');
                         resolve(true);
                     } else {
-                        console.warn('⚠️ No se pudo establecer conexión WebSocket');
+                        console.warn('⚠️ [DEBUG] No se pudo establecer conexión WebSocket después de timeout');
+                        console.warn('⚠️ [DEBUG] WebSocket final state:', websocket ? websocket.readyState : 'null');
                         resolve(false);
                     }
-                }, 1000);
+                }, 2000); // Aumenté el timeout a 2 segundos
             } else {
                 // Enviar directamente
+                console.log('✅ [DEBUG] WebSocket ya conectado, enviando mensaje directamente...');
                 websocket.send(JSON.stringify(message));
-                console.log('✅ Mensaje enviado vía WebSocket');
+                console.log('✅ [DEBUG] Mensaje enviado vía WebSocket exitosamente');
                 resolve(true);
             }
             
         } catch (error) {
-            console.error('💥 Error enviando mensaje WebSocket:', error);
+            console.error('💥 [DEBUG] Error enviando mensaje WebSocket:', error);
+            console.error('💥 [DEBUG] Stack trace:', error.stack);
             resolve(false);
         }
     });
@@ -447,15 +464,7 @@ async function showAlertDetails(alertId) {
     const alert = await findAlertById(alertId);
     if (!alert) {
         console.warn('❌ No se encontró la alerta con ID:', alertId);
-        if (window.Swal) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Alerta no encontrada',
-                text: 'No se pudo cargar la información de esta alerta.',
-                timer: 3000,
-                showConfirmButton: false
-            });
-        }
+        showSimpleNotification('No se pudo cargar la información de esta alerta', 'error');
         return;
     }
     
@@ -1058,11 +1067,7 @@ function showDeactivateConfirmation() {
     }
     
     if (!alert.activo) {
-        showAlertStatusModal({
-            success: false,
-            error: 'Alerta ya desactivada',
-            message: 'Esta alerta ya fue desactivada previamente'
-        });
+        showSimpleNotification('Esta alerta ya fue desactivada previamente', 'warning');
         return;
     }
     
@@ -1171,16 +1176,7 @@ async function confirmDeactivateAlert() {
             clearAlertsCache(false);
             await loadActiveAlerts();
             
-            showAlertStatusModal({
-                success: true,
-                message: data.message,
-                data: {
-                    topics: data.topics,
-                    numeros_telefonicos: data.numeros_telefonicos,
-                    desactivado_por: data.desactivado_por,
-                    prioridad: data.prioridad
-                }
-            });
+            showSimpleNotification(data.message || 'Alerta desactivada exitosamente', 'success');
             
         } else {
             console.error('❌ Error en la respuesta:', data);
@@ -1203,7 +1199,7 @@ async function confirmDeactivateAlert() {
             errorData.message = error.message || 'Ocurrió un error inesperado';
         }
         
-        showAlertStatusModal(errorData);
+        showSimpleNotification(errorData.error || 'Error al desactivar alerta', 'error');
         
     } finally {
         if (confirmBtn) {
@@ -1213,66 +1209,6 @@ async function confirmDeactivateAlert() {
     }
 }
 
-function showAlertStatusModal(result) {
-    console.log('📢 Mostrando modal de resultado:', result);
-    
-    const isSuccess = result.success;
-    const title = isSuccess ? 'Alerta Desactivada' : 'Error en la Operación';
-    const message = result.message || result.error || 'Operación completada';
-    
-    const modal = document.getElementById('alertStatusModal');
-    const iconElement = document.getElementById('alertStatusIcon');
-    const titleElement = document.getElementById('alertStatusTitle');
-    const contentElement = document.getElementById('alertStatusContent');
-    
-    if (!modal || !iconElement || !titleElement || !contentElement) {
-        console.error('❌ Elementos del modal de estado no encontrados');
-        return;
-    }
-    
-    if (isSuccess) {
-        iconElement.className = 'w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg';
-        iconElement.innerHTML = '<i class="fas fa-check text-white text-xl"></i>';
-    } else {
-        iconElement.className = 'w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg';
-        iconElement.innerHTML = '<i class="fas fa-times text-white text-xl"></i>';
-    }
-    
-    titleElement.textContent = title;
-    
-    let contentHtml = `
-        <div class="modal-section bg-gradient-to-r from-slate-700 to-slate-800 rounded-lg p-4">
-            <div class="flex items-start space-x-3">
-                <div class="w-8 h-8 ${isSuccess ? 'bg-green-500' : 'bg-red-500'} rounded-full flex items-center justify-center flex-shrink-0">
-                    <i class="fas fa-${isSuccess ? 'info' : 'exclamation-triangle'} text-white text-sm"></i>
-                </div>
-                <div class="flex-1">
-                    <h4 class="text-lg font-semibold text-white mb-2">Resultado de la Operación</h4>
-                    <p class="text-gray-200">${message}</p>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    contentElement.innerHTML = contentHtml;
-    
-    if (window.modalManager) {
-        window.modalManager.setupModal('alertStatusModal');
-        window.modalManager.openModal('alertStatusModal');
-    }
-    
-    if (isSuccess) {
-        setTimeout(() => {
-            closeAlertStatusModal();
-        }, 10000);
-    }
-}
-
-function closeAlertStatusModal() {
-    if (window.modalManager) {
-        window.modalManager.closeModal('alertStatusModal');
-    }
-}
 
 // ========== FUNCIONES DE PAGINACIÓN ==========
 function updatePagination() {
@@ -2050,9 +1986,9 @@ window.closeAlertModal = closeAlertModal;
 window.showDeactivateConfirmation = showDeactivateConfirmation;
 window.closeDeactivateModal = closeDeactivateModal;
 window.confirmDeactivateAlert = confirmDeactivateAlert;
-window.closeAlertStatusModal = closeAlertStatusModal;
 window.refreshAlerts = refreshAlerts;
 window.changePage = changePage;
+window.connectWebSocket = connectWebSocket;
 
 // ========== FUNCIONES PARA CONTADOR DE CARACTERES ==========
 function setupMessageCharacterCounter() {
@@ -2117,6 +2053,123 @@ function attachCharacterCounterListener() {
         updateCharacterCounter();
     }
 }
+
+// ========== FUNCIÓN DE NOTIFICACIONES SIMPLES ==========
+/**
+ * Muestra una notificación popup simple y elegante
+ * @param {string} message - Mensaje a mostrar
+ * @param {string} type - Tipo de notificación: 'success', 'error', 'warning', 'info'
+ * @param {number} duration - Duración en milisegundos (opcional, por defecto 4000)
+ */
+function showSimpleNotification(message, type = 'info', duration = 4000) {
+    console.log(`📢 NOTIFICACIÓN ${type.toUpperCase()}: ${message}`);
+    
+    // Configuración de tipos
+    const typeConfig = {
+        success: {
+            icon: 'fas fa-check-circle',
+            bgClass: 'from-green-500 to-emerald-600',
+            textClass: 'text-green-100',
+            iconClass: 'text-green-200'
+        },
+        error: {
+            icon: 'fas fa-times-circle',
+            bgClass: 'from-red-500 to-red-600',
+            textClass: 'text-red-100',
+            iconClass: 'text-red-200'
+        },
+        warning: {
+            icon: 'fas fa-exclamation-triangle',
+            bgClass: 'from-yellow-500 to-orange-600',
+            textClass: 'text-yellow-100',
+            iconClass: 'text-yellow-200'
+        },
+        info: {
+            icon: 'fas fa-info-circle',
+            bgClass: 'from-blue-500 to-cyan-600',
+            textClass: 'text-blue-100',
+            iconClass: 'text-blue-200'
+        }
+    };
+    
+    const config = typeConfig[type] || typeConfig.info;
+    
+    // Crear el elemento de notificación
+    const notificationId = `notification-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const notificationElement = document.createElement('div');
+    notificationElement.id = notificationId;
+    notificationElement.innerHTML = `
+        <div class="fixed top-4 right-4 z-50 transform transition-all duration-500 ease-out" style="transform: translateX(100%) scale(0.8); opacity: 0;">
+            <div class="bg-gradient-to-r ${config.bgClass} text-white px-6 py-4 rounded-2xl shadow-2xl border border-white/20 backdrop-blur-sm max-w-sm min-w-80">
+                <div class="flex items-center space-x-4">
+                    <!-- Icono animado -->
+                    <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
+                        <i class="${config.icon} ${config.iconClass} text-lg"></i>
+                    </div>
+                    <!-- Contenido -->
+                    <div class="flex-1 min-w-0">
+                        <p class="${config.textClass} text-sm font-medium leading-relaxed break-words">${message}</p>
+                    </div>
+                    <!-- Botón cerrar -->
+                    <div class="w-8 h-8 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center cursor-pointer transition-colors flex-shrink-0" onclick="removeNotification('${notificationId}')">
+                        <i class="fas fa-times text-white text-sm"></i>
+                    </div>
+                </div>
+                <!-- Barra de progreso -->
+                <div class="mt-3 bg-white/20 rounded-full h-1 overflow-hidden">
+                    <div class="bg-white h-full rounded-full animate-progress" style="animation: notificationProgress ${duration}ms linear forwards;"></div>
+                </div>
+            </div>
+        </div>
+        
+        <style>
+        @keyframes notificationProgress {
+            from { width: 100%; }
+            to { width: 0%; }
+        }
+        </style>
+    `;
+    
+    // Agregar al body
+    document.body.appendChild(notificationElement);
+    
+    // Animar entrada
+    const notificationDiv = notificationElement.firstElementChild;
+    requestAnimationFrame(() => {
+        notificationDiv.style.transform = 'translateX(0) scale(1)';
+        notificationDiv.style.opacity = '1';
+    });
+    
+    // Auto-eliminar después del tiempo especificado
+    setTimeout(() => {
+        removeNotification(notificationId);
+    }, duration);
+}
+
+/**
+ * Remueve una notificación específica con animación
+ * @param {string} notificationId - ID de la notificación a remover
+ */
+function removeNotification(notificationId) {
+    const notification = document.getElementById(notificationId);
+    if (notification) {
+        const notificationDiv = notification.firstElementChild;
+        if (notificationDiv) {
+            notificationDiv.style.transform = 'translateX(100%) scale(0.8)';
+            notificationDiv.style.opacity = '0';
+            
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 500);
+        }
+    }
+}
+
+// Hacer la función disponible globalmente
+window.showSimpleNotification = showSimpleNotification;
+window.removeNotification = removeNotification;
 
 // Debug tools
 window.alertsDebug = {

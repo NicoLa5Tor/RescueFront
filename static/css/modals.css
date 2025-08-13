@@ -558,6 +558,16 @@ body.empresas-modal-open {
   opacity: 0 !important;
 }
 
+/* Show modal with proper backdrop when NOT hidden */
+.ios-modal-backdrop:not(.hidden) {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  background: rgba(0, 0, 0, 0.4) !important;
+  backdrop-filter: blur(20px) saturate(1.8) brightness(0.8) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(1.8) brightness(0.8) !important;
+}
+
 /* Special positioning for toggle modals - appear near current viewport */
 .ios-modal-backdrop.toggle-modal {
   align-items: flex-start !important;

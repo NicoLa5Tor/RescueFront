@@ -396,15 +396,7 @@ async function showInactiveAlertDetails(alertId) {
     const alert = await findInactiveAlertById(alertId);
     if (!alert) {
         console.warn('❌ No se encontró la alerta inactiva con ID:', alertId);
-        if (window.Swal) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Alerta no encontrada',
-                text: 'No se pudo cargar la información de esta alerta inactiva.',
-                timer: 3000,
-                showConfirmButton: false
-            });
-        }
+        showSimpleNotification('No se pudo cargar la información de esta alerta inactiva', 'error');
         return;
     }
     
@@ -931,15 +923,7 @@ function closeAlertModal() {
 
 function showDeactivateConfirmation() {
     console.log('🚫 Esta función no está disponible para alertas inactivas');
-    if (window.Swal) {
-        Swal.fire({
-            icon: 'info',
-            title: 'Acción no disponible',
-            text: 'Esta función no está disponible para alertas inactivas.',
-            timer: 2000,
-            showConfirmButton: false
-        });
-    }
+    showSimpleNotification('Esta función no está disponible para alertas inactivas', 'info');
 }
 
 // ========== FUNCIONES AUXILIARES PARA MODAL ==========
