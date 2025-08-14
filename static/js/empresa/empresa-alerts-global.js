@@ -13,8 +13,10 @@ class EmpresaAlertsGlobal {
         this.alertsPanel = null;
         this.currentAlertIds = new Set(); // IDs de alertas actuales/activas
         this.seenAlertIds = new Set(); // Histórico de TODOS los IDs que hemos visto
+        this.shownAlertIds = new Set(); // IDs de alertas YA MOSTRADAS (persistente)
         this.newAlertModalOpen = false; // Para evitar múltiples modales
         this.isFirstLoad = true; // Flag para saber si es la primera carga
+        this.localStorageKey = 'empresa_alerts_shown'; // Clave localStorage
         
         this.initializeSystem();
     }
@@ -37,6 +39,9 @@ class EmpresaAlertsGlobal {
         
         console.log(`🏢 GLOBAL ALERTS: Sistema iniciado para empresa ${this.empresaId}`);
         this.isActive = true;
+        
+        // Cargar alertas ya mostradas desde localStorage
+        this.loadShownAlertsFromStorage();
         
         // Crear elementos UI globales
         await this.createGlobalUI();
@@ -740,19 +745,34 @@ class EmpresaAlertsGlobal {
         console.log('🔍 DEBUG: IDs histórico completo:', Array.from(this.seenAlertIds));
         console.log('🔍 DEBUG: IDs activos previos:', Array.from(this.currentAlertIds));
         
-        // Primera carga: registrar todas las alertas existentes como conocidas
+        // Primera carga: solo mostrar alertas que NUNCA hemos mostrado antes
         if (this.isFirstLoad) {
+            console.log('🔍 PRIMERA CARGA: Procesando alertas existentes');
+            
+            // Filtrar solo alertas que NUNCA fueron mostradas
+            const neverShownAlerts = [...newCurrentAlertIds].filter(id => !this.shownAlertIds.has(id));
+            console.log('🔍 DEBUG: Alertas nunca mostradas:', neverShownAlerts);
+            
+            if (neverShownAlerts.length > 0) {
+                console.log(`🚨 PRIMERA CARGA: ${neverShownAlerts.length} alerta(s) nueva(s) - ABRIENDO PANEL`);
+                this.openAlertsPanel();
+                // Marcar como mostradas
+                this.markAlertsAsShown(neverShownAlerts);
+            } else {
+                console.log('ℹ️ PRIMERA CARGA: Todas las alertas ya fueron mostradas antes');
+            }
+            
+            // Registrar todas las alertas existentes como conocidas
             this.currentAlertIds = new Set(newCurrentAlertIds);
             this.seenAlertIds = new Set([...this.seenAlertIds, ...newCurrentAlertIds]);
             this.isFirstLoad = false;
-            console.log('🔍 GLOBAL ALERTS: Primera carga, registrando alertas existentes como conocidas');
-            console.log('🔍 DEBUG: Histórico actualizado:', Array.from(this.seenAlertIds));
+            console.log('🔍 DEBUG: Primera carga procesada');
             return;
         }
         
-        // Buscar alertas REALMENTE nuevas: están en current pero NUNCA las hemos visto
-        const trueNewAlertIds = [...newCurrentAlertIds].filter(id => !this.seenAlertIds.has(id));
-        console.log('🔍 DEBUG: Alertas REALMENTE nuevas (nunca vistas):', trueNewAlertIds);
+        // Buscar alertas REALMENTE nuevas: están en current pero NUNCA las hemos mostrado
+        const trueNewAlertIds = [...newCurrentAlertIds].filter(id => !this.shownAlertIds.has(id));
+        console.log('🔍 DEBUG: Alertas REALMENTE nuevas (nunca mostradas):', trueNewAlertIds);
         
         if (trueNewAlertIds.length > 0) {
             console.log(`🚨 NUEVA ALERTA DETECTADA: ${trueNewAlertIds.length} nueva(s) alerta(s)`, trueNewAlertIds);
@@ -760,8 +780,11 @@ class EmpresaAlertsGlobal {
             // Abrir el panel de alertas automáticamente
             console.log('🚨 ABRIENDO PANEL DE ALERTAS PARA NUEVA ALERTA');
             this.openAlertsPanel();
+            
+            // Marcar como mostradas
+            this.markAlertsAsShown(trueNewAlertIds);
         } else {
-            console.log('ℹ️ No se encontraron alertas nuevas (todas ya conocidas)');
+            console.log('ℹ️ No se encontraron alertas nuevas (todas ya mostradas)');
         }
         
         // Actualizar conjuntos:
@@ -1008,7 +1031,8 @@ class EmpresaAlertsGlobal {
         console.log('🧪 TEST: Limpiando IDs previos para forzar detección...');
         this.seenAlertIds.clear();
         this.currentAlertIds.clear();
-        console.log('🧪 TEST: IDs limpiados, la próxima alerta se detectará como nueva');
+        this.clearShownAlerts(); // Limpiar también el historial persistente
+        console.log('🧪 TEST: TODOS los IDs limpiados');
     }
     
     // Función para simular que llega una nueva alerta via WebSocket/refresh
@@ -1048,6 +1072,55 @@ class EmpresaAlertsGlobal {
             this.checkForNewAlerts([fakeAlert]);
         }, 1000);
     }
+    
+    // ===== FUNCIONES DE localStorage =====
+    
+    // Cargar alertas ya mostradas desde localStorage
+    loadShownAlertsFromStorage() {
+        try {
+            const stored = localStorage.getItem(this.localStorageKey);
+            if (stored) {
+                const shownIds = JSON.parse(stored);
+                this.shownAlertIds = new Set(shownIds);
+                console.log('💾 STORAGE: Alertas ya mostradas cargadas:', Array.from(this.shownAlertIds));
+            } else {
+                console.log('💾 STORAGE: No hay historial de alertas mostradas');
+            }
+        } catch (error) {
+            console.error('💥 STORAGE: Error cargando historial:', error);
+            this.shownAlertIds = new Set();
+        }
+    }
+    
+    // Guardar alertas mostradas en localStorage
+    saveShownAlertsToStorage() {
+        try {
+            const shownIds = Array.from(this.shownAlertIds);
+            localStorage.setItem(this.localStorageKey, JSON.stringify(shownIds));
+            console.log('💾 STORAGE: Historial guardado:', shownIds.length);
+        } catch (error) {
+            console.error('💥 STORAGE: Error guardando historial:', error);
+        }
+    }
+    
+    // Marcar alertas como ya mostradas
+    markAlertsAsShown(alertIds) {
+        console.log('✅ MARCANDO COMO MOSTRADAS:', alertIds);
+        alertIds.forEach(id => {
+            this.shownAlertIds.add(id);
+        });
+        this.saveShownAlertsToStorage();
+    }
+    
+    // Limpiar historial (para testing)
+    clearShownAlerts() {
+        console.log('🧹 LIMPIANDO HISTORIAL DE ALERTAS MOSTRADAS');
+        this.shownAlertIds.clear();
+        localStorage.removeItem(this.localStorageKey);
+        console.log('🧹 HISTORIAL LIMPIADO');
+    }
+    
+    // ===== FIN FUNCIONES localStorage =====
     
     // Método para destruir el sistema
     destroy() {

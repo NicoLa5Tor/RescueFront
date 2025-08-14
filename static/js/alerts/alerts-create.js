@@ -1,12 +1,7 @@
-/**
- * CREAR ALERTAS MANUALES - EMPRESA
- * Sistema para crear alertas manuales desde el panel de administración de empresa
- */
 
 // Variables globales para la creación de alertas
 let empresaData = null;
 let createModalManager = null;
-
 // ========== INICIALIZACIÓN ==========
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚨 Inicializando sistema de creación de alertas...');
@@ -26,11 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('✅ Sistema de creación de alertas inicializado');
 });
 
-// ========== FUNCIONES DE MODAL ==========
 
-/**
- * Mostrar modal de crear alerta
- */
 function showCreateAlertModal() {
     console.log('📝 Abriendo modal de crear alerta...');
     
