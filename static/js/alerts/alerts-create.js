@@ -304,8 +304,12 @@ async function handleCreateAlertSubmit(event) {
             setTimeout(() => {
                 closeCreateAlertModal();
                 
-                // Refrescar lista de alertas
-                if (typeof refreshAlerts === 'function') {
+                // Refrescar lista de alertas SIN mostrar popup de éxito (ya se mostró uno)
+                if (typeof refreshAlertsQuietly === 'function') {
+                    refreshAlertsQuietly();
+                } else if (typeof refreshAlerts === 'function') {
+                    // Fallback: marcar que no debe mostrar popup
+                    window.skipNextSuccessPopup = true;
                     refreshAlerts();
                 }
             }, 2000);

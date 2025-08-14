@@ -1339,14 +1339,27 @@ function showNoAlerts() {
     }
 }
 
-async function refreshAlerts() {
+async function refreshAlerts(skipSuccessPopup = false) {
     console.log('🔄 REFRESH: Actualizando alertas manualmente...');
+    console.log('📢 REFRESH: skipSuccessPopup =', skipSuccessPopup);
+    
+    // Verificar si se debe omitir el popup por flag global
+    const shouldSkipPopup = skipSuccessPopup || window.skipNextSuccessPopup;
+    if (window.skipNextSuccessPopup) {
+        window.skipNextSuccessPopup = false; // Resetear el flag
+        console.log('🔇 REFRESH: Omitiendo popup de éxito por flag global');
+    }
     
     try {
         clearAlertsCache(false);
         currentPage = 1;
         await loadActiveAlerts();
-        showUpdateSuccessPopup();
+        
+        // Solo mostrar popup si no se debe omitir
+        if (!shouldSkipPopup) {
+            showUpdateSuccessPopup();
+        }
+        
         console.log('✅ REFRESH: Actualización completada exitosamente');
         
     } catch (error) {
