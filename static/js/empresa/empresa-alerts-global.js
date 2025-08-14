@@ -71,33 +71,45 @@ class EmpresaAlertsGlobal {
     }
     
     createNotificationBadge() {
-        // Buscar el sidebar o header para inyectar el badge
-        const sidebar = document.querySelector('.sidebar__nav') || 
-                       document.querySelector('.sidebar') ||
-                       document.querySelector('nav');
+        // Buscar el botón de notificaciones del header
+        const headerNotificationBtn = document.querySelector('.navbar__action[aria-label="Notifications"]');
+        const notificationBadge = document.querySelector('.navbar__notification-badge');
         
-        if (!sidebar) {
-            console.warn('🏢 GLOBAL ALERTS: No se encontró sidebar para inyectar badge');
+        if (!headerNotificationBtn || !notificationBadge) {
+            console.warn('🏢 GLOBAL ALERTS: No se encontró el icono de notificaciones del header');
             return;
         }
         
-        const badgeHTML = `
-            <div id="globalAlertsBadge" class="empresa-alerts-badge hidden" onclick="window.empresaAlertsGlobal.toggleAlertsPanel()">
-                <div class="badge-icon">
-                    <i class="fas fa-bell"></i>
-                    <span id="alertsCount" class="badge-count">0</span>
-                </div>
-                <div class="badge-text">
-                    <span class="badge-title">Alertas Activas</span>
-                    <span class="badge-subtitle">Clic para ver</span>
-                </div>
-            </div>
-        `;
+        // Configurar el botón del header para que abra el panel
+        headerNotificationBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            this.toggleAlertsPanel();
+        });
         
-        sidebar.insertAdjacentHTML('beforeend', badgeHTML);
-        this.notificationBadge = document.getElementById('globalAlertsBadge');
+        // Agregar ID al badge para poder actualizarlo
+        notificationBadge.id = 'alertsCount';
         
-        console.log('✅ GLOBAL ALERTS: Badge de notificación creado');
+        // Configurar estilos del badge
+        notificationBadge.style.display = 'none'; // Oculto por defecto
+        notificationBadge.style.position = 'absolute';
+        notificationBadge.style.top = '-5px';
+        notificationBadge.style.right = '-5px';
+        notificationBadge.style.backgroundColor = '#ef4444';
+        notificationBadge.style.color = 'white';
+        notificationBadge.style.borderRadius = '50%';
+        notificationBadge.style.minWidth = '18px';
+        notificationBadge.style.height = '18px';
+        notificationBadge.style.fontSize = '11px';
+        notificationBadge.style.fontWeight = 'bold';
+        notificationBadge.style.textAlign = 'center';
+        notificationBadge.style.lineHeight = '18px';
+        notificationBadge.style.zIndex = '10';
+        
+        // Guardar referencia
+        this.notificationBadge = notificationBadge;
+        this.headerNotificationBtn = headerNotificationBtn;
+        
+        console.log('✅ GLOBAL ALERTS: Icono de notificaciones del header configurado');
     }
     
     createFloatingAlertsPanel() {
@@ -176,6 +188,18 @@ class EmpresaAlertsGlobal {
                 @keyframes alertPulse {
                     0%, 100% { transform: scale(1); }
                     50% { transform: scale(1.05); }
+                }
+                
+                /* Animación de brillo para el badge del header */
+                @keyframes alertGlow {
+                    0%, 100% {
+                        transform: scale(1);
+                        box-shadow: 0 0 0 rgba(239, 68, 68, 0.4), 0 0 0 rgba(255, 255, 255, 0.2);
+                    }
+                    50% {
+                        transform: scale(1.1);
+                        box-shadow: 0 0 8px rgba(239, 68, 68, 0.8), 0 0 12px rgba(239, 68, 68, 0.4), 0 0 0 2px rgba(255, 255, 255, 0.6);
+                    }
                 }
                 
                 .badge-icon {
@@ -499,20 +523,19 @@ class EmpresaAlertsGlobal {
     updateUI(alerts) {
         const alertsCount = alerts.length;
         
-        // Actualizar badge - solo mostrar si hay alertas
+        // Actualizar badge del header - solo mostrar si hay alertas
         if (this.notificationBadge) {
-            const countElement = document.getElementById('alertsCount');
-            if (countElement) {
-                countElement.textContent = alertsCount;
-            }
+            this.notificationBadge.textContent = alertsCount;
             
             if (alertsCount > 0) {
-                this.notificationBadge.classList.remove('hidden');
-                this.notificationBadge.classList.add('pulse');
+                this.notificationBadge.style.display = 'flex';
+                // Añadir efecto de brillo sutil sin cambiar el tamaño
+                this.notificationBadge.style.animation = 'alertGlow 2s infinite';
             } else {
                 // Ocultar completamente cuando no hay alertas
-                this.notificationBadge.classList.add('hidden');
-                this.notificationBadge.classList.remove('pulse');
+                this.notificationBadge.style.display = 'none';
+                // Quitar efecto de animación del badge
+                this.notificationBadge.style.animation = 'none';
             }
         }
         

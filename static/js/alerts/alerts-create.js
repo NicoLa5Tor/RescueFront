@@ -88,10 +88,15 @@ function resetCreateAlertForm() {
         form.reset();
     }
     
-    // Resetear contador de caracteres
+    // Resetear contadores de caracteres
     const charCounter = document.getElementById('createAlertCharCounter');
     if (charCounter) {
         charCounter.textContent = '0/500';
+    }
+    
+    const direccionCharCounter = document.getElementById('direccionCharCounter');
+    if (direccionCharCounter) {
+        direccionCharCounter.textContent = '0/200';
     }
     
     // Resetear botón de submit
@@ -237,6 +242,26 @@ function setupCreateAlertEventListeners() {
         });
     }
     
+    // Contador de caracteres para dirección
+    const direccionInput = document.getElementById('direccionAlerta');
+    const direccionCharCounter = document.getElementById('direccionCharCounter');
+    
+    if (direccionInput && direccionCharCounter) {
+        direccionInput.addEventListener('input', function() {
+            const length = this.value.length;
+            direccionCharCounter.textContent = `${length}/200`;
+            
+            // Cambiar color según proximidad al límite
+            if (length > 180) {
+                direccionCharCounter.style.color = '#ef4444'; // Rojo
+            } else if (length > 150) {
+                direccionCharCounter.style.color = '#f59e0b'; // Amarillo
+            } else {
+                direccionCharCounter.style.color = ''; // Por defecto
+            }
+        });
+    }
+    
     // Submit del formulario
     const form = document.getElementById('createAlertForm');
     if (form) {
@@ -303,11 +328,18 @@ async function handleCreateAlertSubmit(event) {
  */
 function getCreateAlertFormData() {
     const empresaId = window.currentUser?.empresa_id || window.currentUser?.id;
+    const empresaUsername = window.currentUser?.username;
+    const sedeSeleccionada = document.getElementById('sedeAlerta').value;
+    const direccionIngresada = document.getElementById('direccionAlerta').value.trim();
     
+    // Formato correcto para coincidir con el ejemplo de curl
     return {
-        type: "create_empresa_alert",
-        empresa_id: empresaId,
-        sede: document.getElementById('sedeAlerta').value,
+        creador: {
+            empresa_id: empresaId,
+            tipo: "empresa",
+            sede: sedeSeleccionada,
+            direccion: direccionIngresada
+        },
         tipo_alerta: document.getElementById('tipoAlerta').value,
         descripcion: document.getElementById('descripcionAlerta').value,
         prioridad: document.getElementById('prioridadAlerta').value
@@ -320,12 +352,23 @@ function getCreateAlertFormData() {
 function validateCreateAlertData(data) {
     const errors = [];
     
-    if (!data.empresa_id) {
-        errors.push('No se pudo obtener el ID de la empresa');
-    }
-    
-    if (!data.sede || data.sede.trim() === '') {
-        errors.push('Debe seleccionar una sede');
+    // Validar datos del creador
+    if (!data.creador) {
+        errors.push('Datos del creador no válidos');
+    } else {
+        if (!data.creador.empresa_id) {
+            errors.push('No se pudo obtener el ID de la empresa');
+        }
+        
+        if (!data.creador.sede || data.creador.sede.trim() === '') {
+            errors.push('Debe seleccionar una sede');
+        }
+        
+        if (!data.creador.direccion || data.creador.direccion.trim() === '') {
+            errors.push('Debe proporcionar una dirección de la emergencia');
+        } else if (data.creador.direccion.trim().length < 10) {
+            errors.push('La dirección debe tener al menos 10 caracteres');
+        }
     }
     
     if (!data.tipo_alerta || data.tipo_alerta.trim() === '') {
@@ -346,96 +389,148 @@ function validateCreateAlertData(data) {
 }
 
 /**
- * Enviar solicitud de crear alerta al backend via WebSocket
+ * Enviar solicitud de crear alerta al backend usando el cliente API
  */
 async function sendCreateAlertRequest(alertData) {
-    return new Promise((resolve, reject) => {
-        try {
-            console.log('📡 Enviando datos de alerta via WebSocket:', alertData);
-            
-            // Verificar que tenemos acceso al WebSocket global
-            // El WebSocket se define en alerts-main.js como variable local 'websocket'
-            // Pero necesitamos acceso global, así que intentaremos diferentes enfoques
-            let websocketToUse = window.websocket;
-            
-            if (!websocketToUse) {
-                console.warn('⚠️ WebSocket global no disponible, buscando alternativas...');
-                // Intentar acceder al websocket del contexto global si fue expuesto
-                websocketToUse = window.websocket || window.alertsWebSocket;
-            }
-            
-            // Preparar mensaje con la estructura exacta requerida
-            const message = {
-                type: "create_empresa_alert",
-                empresa_id: alertData.empresa_id,
-                sede: alertData.sede,
-                tipo_alerta: alertData.tipo_alerta,
-                descripcion: alertData.descripcion,
-                prioridad: alertData.prioridad
-            };
-            
-            console.log('📤 Estructura del mensaje:', message);
-            
-            // Función para enviar el mensaje
-            const sendMessage = () => {
-                if (window.websocket && window.websocket.readyState === WebSocket.OPEN) {
-                    window.websocket.send(JSON.stringify(message));
-                    console.log('✅ Mensaje enviado via WebSocket');
-                    
-                    // Simular respuesta exitosa después de enviar
-                    setTimeout(() => {
-                        resolve({
-                            success: true,
-                            message: 'Alerta creada exitosamente',
-                            data: {
-                                id: 'alert_' + Date.now(),
-                                tipo_alerta: alertData.tipo_alerta,
-                                sede: alertData.sede,
-                                prioridad: alertData.prioridad,
-                                fecha_creacion: new Date().toISOString()
-                            }
-                        });
-                    }, 1000);
-                } else {
-                    console.error('❌ WebSocket no está conectado');
-                    resolve({
-                        success: false,
-                        error: 'No se pudo establecer conexión con el servidor'
-                    });
-                }
-            };
-            
-            // Si el WebSocket no está conectado, intentar conectar
-            if (!window.websocket || window.websocket.readyState !== WebSocket.OPEN) {
-                console.log('🔌 WebSocket no conectado, intentando conectar...');
-                
-                // Intentar conectar usando la función global si existe
-                if (typeof connectWebSocket === 'function') {
-                    connectWebSocket();
-                    
-                    // Esperar un momento para la conexión
-                    setTimeout(() => {
-                        sendMessage();
-                    }, 2000);
-                } else {
-                    resolve({
-                        success: false,
-                        error: 'Sistema de comunicación no disponible'
-                    });
-                }
-            } else {
-                // Enviar directamente
-                sendMessage();
-            }
-            
-        } catch (error) {
-            console.error('💥 Error enviando mensaje WebSocket:', error);
-            resolve({
+    try {
+        console.log('📡 Enviando datos de alerta via API Client:', alertData);
+        
+        // Verificar que tenemos el cliente API disponible
+        if (!window.apiClient) {
+            console.error('❌ API Client no está disponible');
+            return {
                 success: false,
-                error: error.message || 'Error de comunicación'
-            });
+                error: 'Sistema de comunicación no disponible'
+            };
         }
-    });
+        
+        console.log('📤 Enviando petición usando API Client...');
+        console.log('📤 Datos a enviar:', JSON.stringify(alertData, null, 2));
+        
+        // Usar el cliente API para enviar la petición
+        const response = await window.apiClient.create_empresa_alert(alertData);
+        
+        console.log('📨 Respuesta recibida:', response.status, response.statusText);
+        
+        // Procesar respuesta
+        if (!response.ok) {
+            let errorMessage = `Error HTTP ${response.status}: ${response.statusText}`;
+            
+            try {
+                // Intentar parsear la respuesta como JSON para obtener el mensaje específico
+                const errorData = await response.json();
+                console.error('❌ Error JSON del backend:', errorData);
+                
+                // Extraer mensaje específico del backend
+                if (errorData.message) {
+                    errorMessage = errorData.message;
+                } else if (errorData.error) {
+                    errorMessage = errorData.error;
+                } else {
+                    errorMessage = `Error ${response.status}: ${response.statusText}`;
+                }
+                
+            } catch (jsonError) {
+                // Si no es JSON válido, usar respuesta como texto
+                try {
+                    const errorText = await response.text();
+                    console.error('❌ Error texto del backend:', errorText);
+                    errorMessage = errorText || `Error HTTP ${response.status}: ${response.statusText}`;
+                } catch (textError) {
+                    console.error('❌ No se pudo leer respuesta de error:', textError);
+                    errorMessage = `Error HTTP ${response.status}: ${response.statusText}`;
+                }
+            }
+            
+            return {
+                success: false,
+                error: errorMessage
+            };
+        }
+        
+        const responseData = await response.json();
+        console.log('✅ Respuesta JSON procesada:', responseData);
+        
+        // Verificar si la respuesta indica éxito
+        if (responseData.success) {
+            // Enviar notificación por WebSocket si la alerta se creó exitosamente
+            // El backend devuelve la alerta en responseData.alert
+            const alertData = responseData.alert || responseData.data || responseData;
+            sendAlertCreatedWebSocketMessage(alertData);
+            
+            return {
+                success: true,
+                message: responseData.message || 'Alerta creada exitosamente',
+                data: {
+                    id: alertData._id || 'alert_' + Date.now(),
+                    tipo_alerta: alertData.tipo_alerta,
+                    sede: alertData.sede,
+                    prioridad: alertData.prioridad,
+                    fecha_creacion: alertData.fecha_creacion || new Date().toISOString()
+                }
+            };
+        } else {
+            return {
+                success: false,
+                error: responseData.error || responseData.message || 'Error desconocido del servidor'
+            };
+        }
+        
+    } catch (error) {
+        console.error('💥 Error en petición API:', error);
+        
+        // Determinar tipo de error
+        let errorMessage = 'Error de conexión';
+        
+        if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+            errorMessage = 'No se pudo conectar con el servidor. Verifique su conexión a internet.';
+        } else if (error.name === 'AbortError') {
+            errorMessage = 'La petición fue cancelada o tardó demasiado tiempo.';
+        } else if (error.message) {
+            errorMessage = error.message;
+        } else {
+            errorMessage = 'Error desconocido de red';
+        }
+        
+        return {
+            success: false,
+            error: errorMessage
+        };
+    }
+}
+
+// ========== FUNCIONES WEBSOCKET ==========
+
+/**
+ * Enviar notificación por WebSocket cuando se crea una alerta exitosamente
+ */
+function sendAlertCreatedWebSocketMessage(alertDataFromBackend) {
+    try {
+        console.log('📡 Enviando notificación de alerta creada por WebSocket...');
+        console.log('📡 Datos recibidos del backend:', alertDataFromBackend);
+        
+        // Verificar que tenemos WebSocket disponible
+        if (!window.websocket || window.websocket.readyState !== WebSocket.OPEN) {
+            console.warn('⚠️ WebSocket no está conectado, omitiendo notificación');
+            return;
+        }
+        
+        // Preparar mensaje simple con el nuevo formato
+        const message = {
+            type: "create_empresa_alert",
+            alert_data: alertDataFromBackend // El JSON limpio que devuelve el backend
+        };
+        
+        console.log('📤 Mensaje WebSocket a enviar:', JSON.stringify(message, null, 2));
+        
+        // Enviar por WebSocket
+        window.websocket.send(JSON.stringify(message));
+        console.log('✅ Notificación WebSocket enviada exitosamente');
+        
+    } catch (error) {
+        console.error('💥 Error enviando notificación WebSocket:', error);
+        // No fallar la creación de la alerta por un error de WebSocket
+    }
 }
 
 // ========== UI FEEDBACK ==========

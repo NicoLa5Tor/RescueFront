@@ -266,6 +266,12 @@ async get_all_usuarios_including_inactive() {
         });
     }
 
+    async create_empresa_alert(alertData) {
+        return this._request('POST', '/api/mqtt-alerts/user-alert', {
+            data: alertData
+        });
+    }
+
     async toggle_alert_status(alertId) {
         return this._request('PATCH', `/api/mqtt-alerts/${alertId}/toggle-status`);
     }
