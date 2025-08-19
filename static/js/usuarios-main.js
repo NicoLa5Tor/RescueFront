@@ -62,14 +62,28 @@ class UsuariosMain {
   setupEventListeners() {
     console.log('🎯 DEBUG: Iniciando configuración de event listeners...');
     
+    // Wait for DOM elements to be ready
+    setTimeout(() => this.setupDelayedEventListeners(), 100);
+  }
+
+  /**
+   * Setup delayed event listeners after DOM is ready
+   */
+  setupDelayedEventListeners() {
     // Search input
     const searchInput = document.getElementById('searchInput');
     console.log('🔍 DEBUG: searchInput encontrado:', !!searchInput);
     if (searchInput) {
-      searchInput.addEventListener('input', (e) => {
+      // Remove any existing listeners
+      const newSearchInput = searchInput.cloneNode(true);
+      searchInput.parentNode.replaceChild(newSearchInput, searchInput);
+      
+      newSearchInput.addEventListener('input', (e) => {
+        console.log('🔍 DEBUG: Search input changed:', e.target.value);
         this.currentFilters.search = e.target.value.toLowerCase();
         this.applyFilters();
       });
+      console.log('🔍 Search input listener configured');
     }
 
     // Empresa selector - CRÍTICO PARA DEBUG
@@ -125,20 +139,32 @@ class UsuariosMain {
     const statusFilter = document.getElementById('statusFilter');
     console.log('📊 DEBUG: statusFilter encontrado:', !!statusFilter);
     if (statusFilter) {
-      statusFilter.addEventListener('change', (e) => {
+      // Remove any existing listeners
+      const newStatusFilter = statusFilter.cloneNode(true);
+      statusFilter.parentNode.replaceChild(newStatusFilter, statusFilter);
+      
+      newStatusFilter.addEventListener('change', (e) => {
+        console.log('📊 DEBUG: Status filter changed:', e.target.value);
         this.currentFilters.status = e.target.value;
         this.applyFilters();
       });
+      console.log('📊 Status filter listener configured');
     }
 
     // Include inactive filter
     const includeInactiveFilter = document.getElementById('includeInactiveFilter');
     console.log('📊 DEBUG: includeInactiveFilter encontrado:', !!includeInactiveFilter);
     if (includeInactiveFilter) {
-      includeInactiveFilter.addEventListener('change', (e) => {
+      // Remove any existing listeners
+      const newIncludeInactiveFilter = includeInactiveFilter.cloneNode(true);
+      includeInactiveFilter.parentNode.replaceChild(newIncludeInactiveFilter, includeInactiveFilter);
+      
+      newIncludeInactiveFilter.addEventListener('change', (e) => {
+        console.log('📊 DEBUG: Include inactive filter changed:', e.target.value);
         this.currentFilters.activa = e.target.value;
         this.loadUsuarios(); // Reload with different endpoint
       });
+      console.log('📊 Include inactive filter listener configured');
     }
 
     console.log('🎯 Event listeners configurados completamente');
@@ -410,6 +436,11 @@ class UsuariosMain {
     if (filtersDiv) {
       filtersDiv.style.display = 'block';
       console.log('📊 Filtros mostrados - display:', filtersDiv.style.display);
+      
+      // Re-setup event listeners after showing filters
+      setTimeout(() => {
+        this.setupDelayedEventListeners();
+      }, 50);
     } else {
       console.error('❌ No se encontró el elemento usuariosFilters');
     }
@@ -946,6 +977,7 @@ class UsuariosMain {
    * Clear all filters
    */
   clearFilters() {
+    console.log('🧹 DEBUG: Clearing all filters');
     this.currentFilters = {
       search: '',
       status: '',
@@ -957,10 +989,20 @@ class UsuariosMain {
     const statusFilter = document.getElementById('statusFilter');
     const includeInactiveFilter = document.getElementById('includeInactiveFilter');
 
-    if (searchInput) searchInput.value = '';
-    if (statusFilter) statusFilter.value = '';
-    if (includeInactiveFilter) includeInactiveFilter.value = 'active';
+    if (searchInput) {
+      searchInput.value = '';
+      console.log('🧹 Search input cleared');
+    }
+    if (statusFilter) {
+      statusFilter.value = '';
+      console.log('🧹 Status filter cleared');
+    }
+    if (includeInactiveFilter) {
+      includeInactiveFilter.value = 'active';
+      console.log('🧹 Include inactive filter reset');
+    }
 
+    console.log('🧹 Applying filters after clear');
     this.applyFilters();
   }
 
@@ -1137,5 +1179,58 @@ window.initializeUsuariosPage = () => {
   }
 };
 
-console.log('👥 Usuarios main module loaded');
+// Test function to debug filters
+window.testUsuariosFilters = function() {
+  console.log('🧪 DEBUG: Testing usuarios filters...');
+  
+  const elements = {
+    searchInput: document.getElementById('searchInput'),
+    statusFilter: document.getElementById('statusFilter'),
+    includeInactiveFilter: document.getElementById('includeInactiveFilter'),
+    usuariosFilters: document.getElementById('usuariosFilters'),
+    usuariosStatsGrid: document.getElementById('usuariosStatsGrid'),
+    usuariosGrid: document.getElementById('usuariosGrid')
+  };
+  
+  console.log('🧪 Elements found:', elements);
+  
+  Object.entries(elements).forEach(([key, element]) => {
+    if (element) {
+      console.log(`✅ ${key}: found, display: ${element.style.display}`);
+      if (element.addEventListener) {
+        console.log(`   - Has event listeners capability: yes`);
+      }
+    } else {
+      console.log(`❌ ${key}: NOT FOUND`);
+    }
+  });
+  
+  if (window.usuariosMain) {
+    console.log('🧪 usuariosMain status:', {
+      usuarios: window.usuariosMain.usuarios.length,
+      usuariosAll: window.usuariosMain.usuariosAll.length,
+      currentEmpresa: window.usuariosMain.currentEmpresa,
+      currentFilters: window.usuariosMain.currentFilters,
+      isLoading: window.usuariosMain.isLoading
+    });
+  } else {
+    console.log('❌ usuariosMain not available');
+  }
+  
+  // Force show filters for testing
+  const filtersDiv = document.getElementById('usuariosFilters');
+  if (filtersDiv) {
+    filtersDiv.style.display = 'block';
+    console.log('🧪 Forced filters to show');
+  }
+};
 
+// Auto-debug function that runs after page load
+setTimeout(() => {
+  console.log('🧪 AUTO-DEBUG: Running filter test after 2 seconds...');
+  if (window.testUsuariosFilters) {
+    window.testUsuariosFilters();
+  }
+}, 2000);
+
+console.log('👥 Usuarios main module loaded');
