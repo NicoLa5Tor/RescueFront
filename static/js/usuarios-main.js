@@ -18,8 +18,7 @@ class UsuariosMain {
     this.currentEmpresa = null; // Empresa seleccionada actualmente
     this.currentFilters = {
       search: '',
-      status: '',
-      activa: 'active'
+      status: ''
     };
     this.apiClient = null;
     this.isLoading = false;
@@ -74,8 +73,12 @@ class UsuariosMain {
     const searchInput = document.getElementById('searchInput');
     console.log('🔍 DEBUG: searchInput encontrado:', !!searchInput);
     if (searchInput) {
+      // Preserve current value
+      const currentSearchValue = searchInput.value;
+      
       // Remove any existing listeners
       const newSearchInput = searchInput.cloneNode(true);
+      newSearchInput.value = currentSearchValue; // Restore value
       searchInput.parentNode.replaceChild(newSearchInput, searchInput);
       
       newSearchInput.addEventListener('input', (e) => {
@@ -139,33 +142,25 @@ class UsuariosMain {
     const statusFilter = document.getElementById('statusFilter');
     console.log('📊 DEBUG: statusFilter encontrado:', !!statusFilter);
     if (statusFilter) {
+      // Preserve current value and sync with internal state
+      const currentStatusValue = this.currentFilters.status || statusFilter.value;
+      
       // Remove any existing listeners
       const newStatusFilter = statusFilter.cloneNode(true);
+      newStatusFilter.value = currentStatusValue; // Restore value
       statusFilter.parentNode.replaceChild(newStatusFilter, statusFilter);
+      
+      // Sync internal state with DOM value
+      this.currentFilters.status = currentStatusValue;
       
       newStatusFilter.addEventListener('change', (e) => {
         console.log('📊 DEBUG: Status filter changed:', e.target.value);
         this.currentFilters.status = e.target.value;
         this.applyFilters();
       });
-      console.log('📊 Status filter listener configured');
+      console.log('📊 Status filter listener configured with value:', currentStatusValue);
     }
 
-    // Include inactive filter
-    const includeInactiveFilter = document.getElementById('includeInactiveFilter');
-    console.log('📊 DEBUG: includeInactiveFilter encontrado:', !!includeInactiveFilter);
-    if (includeInactiveFilter) {
-      // Remove any existing listeners
-      const newIncludeInactiveFilter = includeInactiveFilter.cloneNode(true);
-      includeInactiveFilter.parentNode.replaceChild(newIncludeInactiveFilter, includeInactiveFilter);
-      
-      newIncludeInactiveFilter.addEventListener('change', (e) => {
-        console.log('📊 DEBUG: Include inactive filter changed:', e.target.value);
-        this.currentFilters.activa = e.target.value;
-        this.loadUsuarios(); // Reload with different endpoint
-      });
-      console.log('📊 Include inactive filter listener configured');
-    }
 
     console.log('🎯 Event listeners configurados completamente');
   }
@@ -314,14 +309,9 @@ class UsuariosMain {
 
       // Empresa específica - hacer petición con el ID de la empresa
       console.log(`🔄 Cargando usuarios para empresa: ${this.currentEmpresa.nombre}`);
-      let response;
       
-      if (this.currentFilters.activa === 'all') {
-        response = await this.apiClient.get_usuarios_including_inactive(this.currentEmpresa._id);
-      } else {
-        // Siempre cargar todos los usuarios (incluyendo inactivos) para mostrar filtros
-        response = await this.apiClient.get_usuarios_including_inactive(this.currentEmpresa._id);
-      }
+      // Siempre cargar todos los usuarios (incluyendo inactivos)
+      const response = await this.apiClient.get_usuarios_including_inactive(this.currentEmpresa._id);
 
       if (!response.ok) {
         throw new Error(`Error HTTP! status: ${response.status}`);
@@ -918,6 +908,7 @@ class UsuariosMain {
     console.log('🔍 DEBUG: Iniciando applyFilters()');
     console.log('  - this.usuariosAll:', this.usuariosAll);
     console.log('  - this.usuariosAll.length:', this.usuariosAll ? this.usuariosAll.length : 'null');
+    console.log('  - this.currentFilters:', JSON.stringify(this.currentFilters));
     
     if (!this.usuariosAll || this.usuariosAll.length === 0) {
       console.log('📋 No hay usuarios para filtrar');
@@ -928,19 +919,16 @@ class UsuariosMain {
     }
 
     let filteredUsuarios = [...this.usuariosAll];
+    console.log('🔍 Usuarios iniciales:', filteredUsuarios.length);
 
-    // 1. FILTRO PRINCIPAL: Include inactive filter (jerarquía más alta)
-    if (this.currentFilters.activa === 'active') {
-      filteredUsuarios = filteredUsuarios.filter(usuario => {
-        return usuario.activo === true || usuario.activo === 1 || usuario.activo === 'true';
-      });
-    }
-    // Si es 'all', se incluyen todos (activos e inactivos)
-
-    // 2. FILTRO SECUNDARIO: Status filter específico
-    if (this.currentFilters.status) {
+    // 1. FILTRO DE ESTADO: Status filter
+    console.log('🔍 Aplicando filtro de estado:', this.currentFilters.status);
+    if (this.currentFilters.status && this.currentFilters.status !== '') {
+      const beforeFilter = filteredUsuarios.length;
       filteredUsuarios = filteredUsuarios.filter(usuario => {
         const isActive = usuario.activo === true || usuario.activo === 1 || usuario.activo === 'true';
+        console.log(`  - Usuario ${usuario.nombre}: activo=${usuario.activo}, isActive=${isActive}`);
+        
         if (this.currentFilters.status === 'active') {
           return isActive;
         } else if (this.currentFilters.status === 'inactive') {
@@ -948,22 +936,31 @@ class UsuariosMain {
         }
         return true;
       });
+      console.log(`🔍 Filtro de estado: ${beforeFilter} -> ${filteredUsuarios.length} usuarios`);
+    } else {
+      console.log('🔍 Sin filtro de estado - mostrando todos los usuarios');
     }
 
-    // 3. FILTRO DE BÚSQUEDA: Search filter (última prioridad)
-    if (this.currentFilters.search) {
+    // 2. FILTRO DE BÚSQUEDA: Search filter
+    if (this.currentFilters.search && this.currentFilters.search !== '') {
+      const beforeSearch = filteredUsuarios.length;
       const searchTerm = this.currentFilters.search.toLowerCase();
+      console.log('🔍 Aplicando filtro de búsqueda:', searchTerm);
+      
       filteredUsuarios = filteredUsuarios.filter(usuario => 
         (usuario.nombre || '').toLowerCase().includes(searchTerm) ||
         (usuario.email || '').toLowerCase().includes(searchTerm) ||
         (usuario.cedula || '').toLowerCase().includes(searchTerm) ||
         (usuario.rol || '').toLowerCase().includes(searchTerm)
       );
+      console.log(`🔍 Filtro de búsqueda: ${beforeSearch} -> ${filteredUsuarios.length} usuarios`);
+    } else {
+      console.log('🔍 Sin filtro de búsqueda');
     }
 
     this.usuarios = filteredUsuarios;
     console.log(`🔍 RESULTADO FINAL: ${filteredUsuarios.length} usuarios filtrados de ${this.usuariosAll.length} totales`);
-    console.log('🔍 Usuarios finales:', filteredUsuarios.map(u => u.nombre));
+    console.log('🔍 Usuarios finales:', filteredUsuarios.map(u => `${u.nombre} (activo: ${u.activo})`));
     
     this.renderUsuarios();
     this.updateUserStats();
@@ -980,14 +977,12 @@ class UsuariosMain {
     console.log('🧹 DEBUG: Clearing all filters');
     this.currentFilters = {
       search: '',
-      status: '',
-      activa: 'active'
+      status: ''
     };
 
     // Reset form elements
     const searchInput = document.getElementById('searchInput');
     const statusFilter = document.getElementById('statusFilter');
-    const includeInactiveFilter = document.getElementById('includeInactiveFilter');
 
     if (searchInput) {
       searchInput.value = '';
@@ -997,21 +992,42 @@ class UsuariosMain {
       statusFilter.value = '';
       console.log('🧹 Status filter cleared');
     }
-    if (includeInactiveFilter) {
-      includeInactiveFilter.value = 'active';
-      console.log('🧹 Include inactive filter reset');
-    }
 
     console.log('🧹 Applying filters after clear');
     this.applyFilters();
   }
 
   /**
-   * Refresh users list (used by modals)
+   * Refresh users list (used by modals) with filter reload
    */
   async refreshUsers() {
     console.log('🔄 Refrescando lista de usuarios...');
     await this.loadUsuarios();
+    
+    // Recargar filtros después de actualizar datos
+    setTimeout(() => {
+      this.reloadFilters();
+    }, 200);
+  }
+
+  /**
+   * Reload filters after actions - ensures filters work correctly
+   */
+  reloadFilters() {
+    console.log('🔃 Recargando filtros automáticamente...');
+    
+    // Re-setup event listeners
+    this.setupDelayedEventListeners();
+    
+    // Force show filters if there are users
+    if (this.usuariosAll && this.usuariosAll.length > 0) {
+      this.showFilters();
+    }
+    
+    // Re-apply current filters
+    this.applyFilters();
+    
+    console.log('✅ Filtros recargados correctamente');
   }
 
   /**
@@ -1222,6 +1238,54 @@ window.testUsuariosFilters = function() {
   if (filtersDiv) {
     filtersDiv.style.display = 'block';
     console.log('🧪 Forced filters to show');
+  }
+};
+
+// Debug specific function for status filter issue
+window.debugStatusFilter = function() {
+  console.log('📊 DEBUG: Testing status filter specifically...');
+  
+  const statusFilter = document.getElementById('statusFilter');
+  console.log('statusFilter element:', statusFilter);
+  console.log('statusFilter.value:', statusFilter?.value);
+  
+  if (statusFilter) {
+    console.log('statusFilter options:');
+    Array.from(statusFilter.options).forEach((option, index) => {
+      console.log(`  ${index}: value="${option.value}" text="${option.text}" selected=${option.selected}`);
+    });
+  }
+  
+  if (window.usuariosMain) {
+    console.log('Current filters:', window.usuariosMain.currentFilters);
+    console.log('usuariosAll count:', window.usuariosMain.usuariosAll?.length);
+    console.log('usuarios count:', window.usuariosMain.usuarios?.length);
+    
+    // Force test different values
+    console.log('\nTesting filter values:');
+    
+    // Test empty (all states)
+    console.log('1. Testing empty value (all states):');
+    window.usuariosMain.currentFilters.status = '';
+    window.usuariosMain.applyFilters();
+    
+    setTimeout(() => {
+      console.log('2. Testing active filter:');
+      window.usuariosMain.currentFilters.status = 'active';
+      window.usuariosMain.applyFilters();
+      
+      setTimeout(() => {
+        console.log('3. Testing inactive filter:');
+        window.usuariosMain.currentFilters.status = 'inactive';
+        window.usuariosMain.applyFilters();
+        
+        setTimeout(() => {
+          console.log('4. Back to all states:');
+          window.usuariosMain.currentFilters.status = '';
+          window.usuariosMain.applyFilters();
+        }, 1000);
+      }, 1000);
+    }, 1000);
   }
 };
 

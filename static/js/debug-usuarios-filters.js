@@ -147,6 +147,14 @@ window.debugUsuariosFilters = function() {
   debugUsuariosFiltersState();
   forceShowUsuariosFilters();
   forceSetupUsuariosFiltersListeners();
+  
+  // Forzar recarga de filtros si usuariosMain está disponible
+  if (window.usuariosMain && window.usuariosMain.reloadFilters) {
+    setTimeout(() => {
+      console.log('🔃 Forzando recarga de filtros con usuariosMain...');
+      window.usuariosMain.reloadFilters();
+    }, 500);
+  }
 };
 
 // Función global para simular datos de prueba
@@ -194,7 +202,13 @@ window.simulateUsuariosData = function() {
   window.usuariosMain.showFilters();
   window.usuariosMain.applyFilters();
   
+  // Forzar recarga de filtros después de simular datos
+  setTimeout(() => {
+    window.usuariosMain.reloadFilters();
+  }, 300);
+  
   console.log('✅ Datos simulados aplicados');
+  console.log('🔃 Recarga de filtros programada');
 };
 
 console.log('🔧 Debug script para filtros de usuarios cargado');

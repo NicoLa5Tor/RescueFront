@@ -837,6 +837,8 @@ class UsuariosModals {
         
         if (window.usuariosMain && window.usuariosMain.refreshUsers) {
           window.usuariosMain.refreshUsers();
+          // Recargar filtros después de editar
+          setTimeout(() => window.usuariosMain.reloadFilters(), 300);
         }
       } else {
         if (submitBtn) {
@@ -969,7 +971,11 @@ class UsuariosModals {
           this.showSuccessModal(data.message || `Usuario ${newStatus ? 'activado' : 'desactivado'} exitosamente`);
           
           if (window.usuariosMain && window.usuariosMain.refreshUsers) {
-            setTimeout(() => window.usuariosMain.refreshUsers(), 1000);
+            setTimeout(() => {
+              window.usuariosMain.refreshUsers();
+              // Recargar filtros después de la acción
+              setTimeout(() => window.usuariosMain.reloadFilters(), 300);
+            }, 1000);
           }
         } else {
           if (confirmBtn && originalContent) {
@@ -1179,6 +1185,8 @@ class UsuariosModals {
         
         if (window.usuariosMain && window.usuariosMain.refreshUsers) {
           window.usuariosMain.refreshUsers();
+          // Recargar filtros después de crear
+          setTimeout(() => window.usuariosMain.reloadFilters(), 300);
         }
       } else {
         if (submitBtn) {
