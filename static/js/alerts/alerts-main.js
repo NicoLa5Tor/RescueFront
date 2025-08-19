@@ -614,7 +614,7 @@ function generateModalContent(alert, isUserOrigin, isHardwareOrigin) {
                         } rounded-lg p-4 text-center h-full">
                             <img src="${alert.image_alert}" 
                                  alt="${alert.nombre_alerta || 'Tipo de alerta'}" 
-                                 class="w-full h-24 object-cover rounded-lg mb-3 border-2 border-white/20 modal-image"
+                                 class="w-1/2 sm:w-2/5 lg:w-1/3 xl:w-1/4 max-w-xs max-h-32 object-contain rounded-lg mb-3 border-2 border-white/20 modal-image mx-auto"
                                  onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                             <div class="w-16 h-16 bg-gradient-to-br ${
                                 isUserOrigin ? 'from-purple-400 to-pink-500' : 
@@ -2141,6 +2141,223 @@ function extractCoordsFromOSMEmbed(embedUrl) {
     }
     return null;
 }
+// ========== FUNCIONES DE MODAL DE IMÁGENES ==========
+
+/**
+ * Muestra una imagen en modal de pantalla completa
+ * @param {string} imageSrc - URL de la imagen
+ * @param {string} imageTitle - Título de la imagen
+ */
+function showImageModal(imageSrc, imageTitle = 'Imagen') {
+    console.log('🖼️ Mostrando modal de imagen:', imageSrc);
+    
+    // Crear el modal de imagen si no existe
+    let imageModal = document.getElementById('imageDisplayModal');
+    if (!imageModal) {
+        // Crear el modal dinámicamente
+        const modalHTML = `
+            <div id="imageDisplayModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/80 backdrop-blur-sm">
+                <div class="relative max-w-7xl max-h-[95vh] w-full mx-4 bg-gray-900 rounded-2xl overflow-hidden shadow-2xl">
+                    <!-- Header del modal -->
+                    <div class="flex items-center justify-between p-4 bg-gradient-to-r from-gray-800 to-gray-700 border-b border-gray-600">
+                        <h3 id="imageModalTitle" class="text-lg font-semibold text-white truncate flex-1 mr-4">Imagen de la Alerta</h3>
+                        <button 
+                            onclick="closeImageModal()" 
+                            class="w-8 h-8 flex items-center justify-center bg-red-500/20 hover:bg-red-500/40 text-red-300 hover:text-white rounded-full transition-all duration-200"
+                            title="Cerrar imagen"
+                        >
+                            <i class="fas fa-times text-sm"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Contenedor de imagen -->
+                    <div class="relative bg-gray-800 flex items-center justify-center" style="min-height: 400px; max-height: calc(95vh - 120px);">
+                        <img 
+                            id="modalDisplayImage" 
+                            src="" 
+                            alt="Imagen de alerta" 
+                            class="max-w-full max-h-full object-contain rounded-lg shadow-lg"
+                            onload="hideImageLoading()"
+                            onerror="showImageError()"
+                        />
+                        
+                        <!-- Indicador de carga -->
+                        <div id="imageLoadingIndicator" class="absolute inset-0 flex items-center justify-center bg-gray-800">
+                            <div class="text-center text-white">
+                                <i class="fas fa-spinner fa-spin text-3xl mb-3 text-blue-400"></i>
+                                <p class="text-sm text-gray-300">Cargando imagen...</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Mensaje de error -->
+                        <div id="imageErrorIndicator" class="absolute inset-0 flex items-center justify-center bg-gray-800 hidden">
+                            <div class="text-center text-white">
+                                <i class="fas fa-exclamation-triangle text-3xl mb-3 text-red-400"></i>
+                                <p class="text-sm text-gray-300 mb-2">Error al cargar la imagen</p>
+                                <button 
+                                    onclick="retryImageLoad()" 
+                                    class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors"
+                                >
+                                    <i class="fas fa-redo mr-2"></i>Reintentar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Footer con controles -->
+                    <div class="flex items-center justify-between p-4 bg-gradient-to-r from-gray-800 to-gray-700 border-t border-gray-600">
+                        <div class="flex items-center space-x-2 text-gray-300 text-sm">
+                            <i class="fas fa-info-circle text-blue-400"></i>
+                            <span>Clic fuera de la imagen para cerrar</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button 
+                                onclick="downloadImage()" 
+                                class="px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm rounded-lg transition-colors flex items-center"
+                                title="Descargar imagen"
+                            >
+                                <i class="fas fa-download mr-2"></i>Descargar
+                            </button>
+                            <button 
+                                onclick="openImageInNewTab()" 
+                                class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors flex items-center"
+                                title="Abrir en nueva pestaña"
+                            >
+                                <i class="fas fa-external-link-alt mr-2"></i>Nueva Pestaña
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Agregar al DOM
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+        imageModal = document.getElementById('imageDisplayModal');
+        
+        // Agregar evento de clic fuera del modal para cerrar
+        imageModal.addEventListener('click', function(e) {
+            if (e.target === imageModal) {
+                closeImageModal();
+            }
+        });
+        
+        // Agregar evento de teclado para cerrar con ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && !imageModal.classList.contains('hidden')) {
+                closeImageModal();
+            }
+        });
+    }
+    
+    // Configurar y mostrar el modal
+    const modalTitle = document.getElementById('imageModalTitle');
+    const modalImage = document.getElementById('modalDisplayImage');
+    const loadingIndicator = document.getElementById('imageLoadingIndicator');
+    const errorIndicator = document.getElementById('imageErrorIndicator');
+    
+    if (modalTitle) modalTitle.textContent = imageTitle;
+    if (modalImage) {
+        modalImage.src = imageSrc;
+        modalImage.style.display = 'none'; // Ocultar hasta que cargue
+    }
+    
+    // Mostrar indicador de carga
+    if (loadingIndicator) loadingIndicator.classList.remove('hidden');
+    if (errorIndicator) errorIndicator.classList.add('hidden');
+    
+    // Mostrar el modal
+    imageModal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden'; // Prevenir scroll del body
+    
+    console.log('✅ Modal de imagen mostrado correctamente');
+}
+
+/**
+ * Cierra el modal de imagen
+ */
+function closeImageModal() {
+    const imageModal = document.getElementById('imageDisplayModal');
+    if (imageModal) {
+        imageModal.classList.add('hidden');
+        document.body.style.overflow = ''; // Restaurar scroll del body
+        console.log('🖼️ Modal de imagen cerrado');
+    }
+}
+
+/**
+ * Oculta el indicador de carga cuando la imagen se carga exitosamente
+ */
+function hideImageLoading() {
+    const loadingIndicator = document.getElementById('imageLoadingIndicator');
+    const modalImage = document.getElementById('modalDisplayImage');
+    
+    if (loadingIndicator) loadingIndicator.classList.add('hidden');
+    if (modalImage) modalImage.style.display = 'block';
+}
+
+/**
+ * Muestra el indicador de error cuando falla la carga de imagen
+ */
+function showImageError() {
+    const loadingIndicator = document.getElementById('imageLoadingIndicator');
+    const errorIndicator = document.getElementById('imageErrorIndicator');
+    const modalImage = document.getElementById('modalDisplayImage');
+    
+    if (loadingIndicator) loadingIndicator.classList.add('hidden');
+    if (errorIndicator) errorIndicator.classList.remove('hidden');
+    if (modalImage) modalImage.style.display = 'none';
+}
+
+/**
+ * Reintenta cargar la imagen
+ */
+function retryImageLoad() {
+    const modalImage = document.getElementById('modalDisplayImage');
+    const loadingIndicator = document.getElementById('imageLoadingIndicator');
+    const errorIndicator = document.getElementById('imageErrorIndicator');
+    
+    if (modalImage && loadingIndicator && errorIndicator) {
+        // Mostrar loading y ocultar error
+        loadingIndicator.classList.remove('hidden');
+        errorIndicator.classList.add('hidden');
+        modalImage.style.display = 'none';
+        
+        // Reintentar carga añadiendo timestamp para evitar cache
+        const currentSrc = modalImage.src;
+        const newSrc = currentSrc + (currentSrc.includes('?') ? '&' : '?') + 't=' + Date.now();
+        modalImage.src = newSrc;
+    }
+}
+
+/**
+ * Descarga la imagen actual
+ */
+function downloadImage() {
+    const modalImage = document.getElementById('modalDisplayImage');
+    if (modalImage && modalImage.src) {
+        const link = document.createElement('a');
+        link.href = modalImage.src;
+        link.download = `alerta-imagen-${Date.now()}.jpg`;
+        link.target = '_blank';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        showSimpleNotification('Descarga de imagen iniciada', 'success', 3000);
+    }
+}
+
+/**
+ * Abre la imagen en una nueva pestaña
+ */
+function openImageInNewTab() {
+    const modalImage = document.getElementById('modalDisplayImage');
+    if (modalImage && modalImage.src) {
+        window.open(modalImage.src, '_blank');
+    }
+}
+
 // Hacer funciones disponibles globalmente
 window.showAlertDetails = showAlertDetails;
 window.closeAlertModal = closeAlertModal;
@@ -2150,6 +2367,13 @@ window.confirmDeactivateAlert = confirmDeactivateAlert;
 window.refreshAlerts = refreshAlerts;
 window.changePage = changePage;
 window.connectWebSocket = connectWebSocket;
+window.showImageModal = showImageModal;
+window.closeImageModal = closeImageModal;
+window.hideImageLoading = hideImageLoading;
+window.showImageError = showImageError;
+window.retryImageLoad = retryImageLoad;
+window.downloadImage = downloadImage;
+window.openImageInNewTab = openImageInNewTab;
 
 // ========== FUNCIONES PARA CONTADOR DE CARACTERES ==========
 function setupMessageCharacterCounter() {

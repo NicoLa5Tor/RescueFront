@@ -600,7 +600,8 @@ function generateInactiveModalContent(alert, isUserOrigin, isHardwareOrigin) {
             } rounded-xl p-4 text-center">
                 ${alert.image_alert ? `
                     <img src="${alert.image_alert}" alt="${alert.nombre_alerta}" 
-                         class="w-full h-32 object-cover rounded-lg mb-3 border-2 border-white/20">
+                         class="w-1/2 sm:w-2/5 lg:w-1/3 xl:w-1/4 max-w-xs max-h-32 object-contain rounded-lg mb-3 border-2 border-white/20 mx-auto"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                 ` : `
                     <div class="w-16 h-16 bg-gradient-to-br ${
                         isUserOrigin ? 'from-purple-400 to-pink-500' : 
