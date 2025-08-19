@@ -1020,6 +1020,42 @@ window.viewHardware = (id) => hardwareCore.viewHardware(id);
 window.closeModal = () => hardwareCore.closeCreateEditModal();
 window.closeViewModal = () => hardwareCore.closeViewModal();
 
+// Export modal functions that are called from HTML
+window.closeToggleModal = () => {
+  if (window.hardwareModals && window.hardwareModals.closeToggleModal) {
+    window.hardwareModals.closeToggleModal();
+  } else {
+    // Fallback
+    const modal = document.getElementById('toggleHardwareModal');
+    if (modal) {
+      modal.classList.add('hidden');
+      if (window.modalManager) {
+        window.modalManager.closeModal('toggleHardwareModal');
+      }
+    }
+  }
+};
+
+window.confirmToggleHardware = () => {
+  // Esta función debe estar definida en hardware.html donde están los datos del modal
+  console.log('confirmToggleHardware called - should be handled by hardware.html');
+};
+
+window.closeUpdateModal = () => {
+  if (window.hardwareModals && window.hardwareModals.closeUpdateModal) {
+    window.hardwareModals.closeUpdateModal();
+  } else {
+    // Fallback
+    const modal = document.getElementById('clientUpdateModal');
+    if (modal) {
+      modal.classList.add('hidden');
+      if (window.modalManager) {
+        window.modalManager.closeModal('clientUpdateModal');
+      }
+    }
+  }
+};
+
 // Export location modal functions
 // Note: openLocationModal and closeLocationModal are defined in hardware.html
 

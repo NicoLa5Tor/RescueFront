@@ -246,9 +246,7 @@ class HardwareMain {
     console.log('🔍 Inicializando sistema de filtros...');
     
     // NO configurar event listeners - ya están en hardware.html
-    // Solo hacer las funciones disponibles globalmente
-    window.clearFilters = () => this.clearFilters();
-    window.filterHardware = () => this.filterHardware();
+    // Las funciones estarán disponibles a través de window.hardwareMain
     
     console.log('✅ Sistema de filtros inicializado');
   }
@@ -913,6 +911,7 @@ class HardwareMain {
     
     setTimeout(() => errorDiv.remove(), 5000);
   }
+
 }
 
 // Initialize hardware system

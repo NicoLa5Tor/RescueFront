@@ -2712,134 +2712,23 @@ function populateTypeDropdowns(types) {
 // Este evento listener estaba causando que se enviara tanto POST como PUT
 // cuando se editaba hardware, resultando en errores de nombres duplicados
 
-// Filter functionality
+// Filter functionality - Direct delegation to hardwareMain
 function clearFilters() {
-  document.getElementById('searchInput').value = '';
-  document.getElementById('typeFilter').value = '';
-  document.getElementById('statusFilter').value = '';
-  document.getElementById('includeInactiveFilter').value = 'active';
-  
-  // Remove any filter empty messages
-  const filterEmptyMessage = document.getElementById('filterEmptyMessage');
-  if (filterEmptyMessage) {
-    filterEmptyMessage.remove();
-  }
-  
-  // Use hardware-main.js function instead of reloading
+  console.log('🧹 clearFilters() llamado desde HTML - delegando a hardwareMain');
   if (window.hardwareMain) {
     window.hardwareMain.clearFilters();
   } else {
-    // Fallback: just show all items without reloading
-    const allItems = document.querySelectorAll('.hardware-item');
-    allItems.forEach(item => {
-      item.style.display = '';
-      item.classList.remove('hidden');
-    });
+    console.error('❌ hardwareMain no disponible');
   }
 }
 
 function filterHardware() {
-  console.log('🚀 === INICIANDO FILTRO DE HARDWARE ===');
-  
-  const searchInput = document.getElementById('searchInput');
-  const typeFilterEl = document.getElementById('typeFilter');
-  const statusFilterEl = document.getElementById('statusFilter');
-  
-  if (!searchInput || !typeFilterEl || !statusFilterEl) {
-    console.error('❌ Elementos de filtro no encontrados:');
-    console.error('  - searchInput:', searchInput ? 'SI' : 'NO');
-    console.error('  - typeFilter:', typeFilterEl ? 'SI' : 'NO');
-    console.error('  - statusFilter:', statusFilterEl ? 'SI' : 'NO');
-    return;
+  console.log('🚀 filterHardware() llamado desde HTML - delegando a hardwareMain');
+  if (window.hardwareMain) {
+    window.hardwareMain.filterHardware();
+  } else {
+    console.error('❌ hardwareMain no disponible');
   }
-  
-  const search = searchInput.value.toLowerCase();
-  const type = typeFilterEl.value;
-  const status = statusFilterEl.value;
-  
-  console.log('🔍 Valores de filtros:');
-  console.log('  - search:', search);
-  console.log('  - type:', type);
-  console.log('  - status:', status);
-  
-  // Filtrar elementos del grid
-  const gridItems = document.querySelectorAll('.hardware-item');
-  const allItems = [...gridItems];
-  let visibleCount = 0;
-  
-  console.log(`🔍 Elementos encontrados:`);
-  console.log(`  - Grid items (.hardware-item): ${gridItems.length}`);
-  console.log(`  - Total elementos: ${allItems.length}`);
-  
-  if (allItems.length === 0) {
-    console.error('❌ NO HAY ELEMENTOS DE HARDWARE EN EL DOM!');
-    console.log('🔍 Verificando contenedor de hardware...');
-    const gridContainer = document.getElementById('hardwareGrid');
-    console.log('  - gridContainer children:', gridContainer ? gridContainer.children.length : 'NO ENCONTRADO');
-    return;
-  }
-  
-  allItems.forEach((item, index) => {
-    const name = item.dataset.name || '';
-    const itemType = item.dataset.type || '';
-    const itemStatus = item.dataset.status || '';
-    const stock = parseInt(item.dataset.stock || '0');
-    const activa = item.dataset.activa === 'true';
-    
-    // Enhanced search - matches name, type, brand, model, or sede
-    const brand = item.dataset.brand || '';
-    const model = item.dataset.model || '';
-    const sede = item.dataset.sede || '';
-    
-    const matchesSearch = !search || 
-      name.includes(search) || 
-      itemType.toLowerCase().includes(search) ||
-      brand.includes(search) ||
-      model.includes(search) ||
-      sede.includes(search);
-    
-    // Type filter
-    const matchesType = !type || itemType === type;
-    
-    // Status filter logic
-    let matchesStatus = true;
-    if (status) {
-      switch (status) {
-        case 'available':
-          matchesStatus = activa && stock > 0 && itemStatus !== 'discontinued';
-          break;
-        case 'out_of_stock':
-          matchesStatus = stock === 0 || itemStatus === 'out_of_stock';
-          break;
-        case 'discontinued':
-          matchesStatus = itemStatus === 'discontinued';
-          break;
-        case 'inactive':
-          matchesStatus = !activa;
-          break;
-      }
-    }
-    
-    // Show/hide item
-    if (matchesSearch && matchesType && matchesStatus) {
-      item.style.display = '';
-      item.classList.remove('hidden');
-      visibleCount++;
-      console.log(`✅ Elemento ${index + 1} visible: ${name}`);
-    } else {
-      item.style.display = 'none';
-      item.classList.add('hidden');
-      console.log(`❌ Elemento ${index + 1} oculto: ${name}`);
-    }
-  });
-  
-  console.log(`📊 Filtrado completado: ${visibleCount} de ${allItems.length} elementos visibles`);
-  
-  // Show/hide empty message for filters
-  showFilterEmptyMessage(visibleCount);
-  
-  // Update filter status message
-  updateFilterStatus(visibleCount, gridItems.length); // Solo contar grid items para el status
 }
 
 // Show empty message when filters return no results

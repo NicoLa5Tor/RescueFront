@@ -76,21 +76,47 @@ class UsuariosMain {
     const empresaSelector = document.getElementById('empresaSelector');
     console.log('🏢 DEBUG: empresaSelector encontrado:', !!empresaSelector);
     console.log('🏢 DEBUG: empresaSelector element:', empresaSelector);
+    console.log('🏢 DEBUG: empresaSelector.tagName:', empresaSelector?.tagName);
+    console.log('🏢 DEBUG: empresaSelector.id:', empresaSelector?.id);
     
     if (empresaSelector) {
       console.log('🏢 DEBUG: Configurando event listener para empresaSelector...');
+      
+      // Agregar múltiples tipos de listeners para asegurar que alguno funcione
       empresaSelector.addEventListener('change', (e) => {
-        console.log('🏢 DEBUG: Event listener EJECUTADO! Valor:', e.target.value);
+        console.log('🏢 🚨 CHANGE EVENT EJECUTADO! Valor:', e.target.value);
         const empresaId = e.target.value;
         if (empresaId) {
-          console.log('🏢 DEBUG: Llamando selectEmpresa con:', empresaId);
+          console.log('🏢 🚨 Llamando selectEmpresa con:', empresaId);
           this.selectEmpresa(empresaId);
         } else {
-          console.log('🏢 DEBUG: Valor vacío, llamando clearUsuarios');
+          console.log('🏢 🚨 Valor vacío, llamando clearUsuarios');
           this.clearUsuarios();
         }
       });
-      console.log('🏢 DEBUG: Event listener configurado exitosamente');
+      
+      empresaSelector.addEventListener('input', (e) => {
+        console.log('🏢 🔥 INPUT EVENT EJECUTADO! Valor:', e.target.value);
+        const empresaId = e.target.value;
+        if (empresaId) {
+          console.log('🏢 🔥 Llamando selectEmpresa con:', empresaId);
+          this.selectEmpresa(empresaId);
+        } else {
+          console.log('🏢 🔥 Valor vacío, llamando clearUsuarios');
+          this.clearUsuarios();
+        }
+      });
+      
+      // También listener para click (por si acaso)
+      empresaSelector.addEventListener('click', () => {
+        console.log('🏢 👆 CLICK EVENT en empresaSelector');
+      });
+      
+      console.log('🏢 DEBUG: Event listeners configurados exitosamente');
+      console.log('🏢 DEBUG: Opciones actuales en el selector:');
+      Array.from(empresaSelector.options).forEach((option, index) => {
+        console.log(`  ${index}: value="${option.value}" text="${option.text}"`);
+      });
     } else {
       console.error('❌ DEBUG: No se encontró empresaSelector en el DOM!');
     }
@@ -174,8 +200,12 @@ class UsuariosMain {
    */
   populateEmpresaSelector() {
     const selector = document.getElementById('empresaSelector');
-    if (!selector) return;
+    if (!selector) {
+      console.error('❌ populateEmpresaSelector: No se encontró el selector');
+      return;
+    }
 
+    console.log('🏢 populateEmpresaSelector: Limpiando y llenando selector...');
     selector.innerHTML = '<option value="">Selecciona una empresa...</option>';
     
     this.empresas.forEach(empresa => {
@@ -183,6 +213,12 @@ class UsuariosMain {
       option.value = empresa._id;
       option.textContent = empresa.nombre;
       selector.appendChild(option);
+    });
+    
+    console.log(`🏢 populateEmpresaSelector: ${this.empresas.length} opciones añadidas`);
+    console.log('🏢 DEBUG: Opciones en selector después de poblar:');
+    Array.from(selector.options).forEach((option, index) => {
+      console.log(`  ${index}: value="${option.value}" text="${option.text}"`);
     });
   }
 
