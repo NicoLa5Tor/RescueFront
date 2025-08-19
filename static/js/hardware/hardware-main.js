@@ -305,29 +305,40 @@ class HardwareMain {
     this.isLoadingHardware = true;
     
     try {
-      console.log('🔄 Cargando hardware específico para empresa...');
-      
-      // Obtener ID de empresa del contexto
+      // Detectar si es super admin o empresa específica
       const empresaId = window.EMPRESA_ID || document.body.dataset.empresaId;
-      if (!empresaId) {
-        console.error('❌ No se encontró ID de empresa');
-        this.renderHardware([]);
-        return;
-      }
-      
-      console.log('🏢 ID de empresa:', empresaId);
+      const isSuperAdmin = window.currentUser && (window.currentUser.tipo === 'super_admin' || window.currentUser.role === 'super_admin');
       
       const includeInactiveFilter = document.getElementById('includeInactiveFilter');
       const includeInactive = includeInactiveFilter ? includeInactiveFilter.value === 'all' : false;
       
       let response;
-      // USAR ENDPOINTS ESPECÍFICOS DE EMPRESA - NO DE ADMIN
-      if (includeInactive) {
-        console.log('🌐 Usando endpoint de empresa con inactivos');
-        response = await this.apiClient.get_hardware_by_empresa_including_inactive(empresaId);
+      
+      if (isSuperAdmin && !empresaId) {
+        // Super admin sin empresa específica - cargar todo el hardware
+        console.log('🔄 Cargando hardware de todas las empresas (Super Admin)...');
+        if (includeInactive) {
+          console.log('🌐 Usando endpoint global con inactivos');
+          response = await this.apiClient.get_hardware_list_including_inactive();
+        } else {
+          console.log('🌐 Usando endpoint global activos');
+          response = await this.apiClient.get_hardware_list();
+        }
+      } else if (empresaId) {
+        // Empresa específica
+        console.log('🔄 Cargando hardware específico para empresa...', empresaId);
+        if (includeInactive) {
+          console.log('🌐 Usando endpoint de empresa con inactivos');
+          response = await this.apiClient.get_hardware_by_empresa_including_inactive(empresaId);
+        } else {
+          console.log('🌐 Usando endpoint de empresa activos');
+          response = await this.apiClient.get_hardware_by_empresa(empresaId);
+        }
       } else {
-        console.log('🌐 Usando endpoint de empresa activos');
-        response = await this.apiClient.get_hardware_by_empresa(empresaId);
+        // No hay empresa específica ni es super admin - error
+        console.error('❌ No se encontró ID de empresa y el usuario no es super admin');
+        this.renderHardware([]);
+        return;
       }
       
       if (!response.ok) {
@@ -909,6 +920,16 @@ const hardwareMain = new HardwareMain();
 
 // Export for debugging
 window.hardwareMain = hardwareMain;
+
+// Global function for SPA navigation
+window.loadHardware = function() {
+  console.log('🔄 SPA: Iniciando carga dinámica de hardware...');
+  if (window.hardwareMain) {
+    window.hardwareMain.loadHardware();
+  } else {
+    console.error('❌ SPA: hardwareMain no está disponible');
+  }
+};
 
 // Backward compatibility functions
 window.toggleHardwareStatus = (id, activa) => {

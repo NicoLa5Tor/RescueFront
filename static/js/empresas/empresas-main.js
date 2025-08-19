@@ -1259,7 +1259,15 @@ window.openCreateEmpresaModal = () => {
   }
 };
 
-window.loadEmpresas = () => empresasMain.loadEmpresas();
+// Global function for SPA navigation - Version robusta similar a hardware
+window.loadEmpresas = function() {
+  console.log('🔄 SPA: Iniciando carga dinámica de empresas...');
+  if (window.empresasMain) {
+    window.empresasMain.loadEmpresas();
+  } else {
+    console.error('❌ SPA: empresasMain no está disponible');
+  }
+};
 window.editEmpresa = (id) => empresasMain.editEmpresa(id);
 window.viewEmpresa = (id) => empresasMain.viewEmpresa(id);
 window.clearFilters = () => empresasMain.clearFilters();

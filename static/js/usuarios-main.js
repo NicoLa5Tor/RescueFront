@@ -60,8 +60,11 @@ class UsuariosMain {
    * Setup event listeners
    */
   setupEventListeners() {
+    console.log('🎯 DEBUG: Iniciando configuración de event listeners...');
+    
     // Search input
     const searchInput = document.getElementById('searchInput');
+    console.log('🔍 DEBUG: searchInput encontrado:', !!searchInput);
     if (searchInput) {
       searchInput.addEventListener('input', (e) => {
         this.currentFilters.search = e.target.value.toLowerCase();
@@ -69,21 +72,32 @@ class UsuariosMain {
       });
     }
 
-    // Empresa selector
+    // Empresa selector - CRÍTICO PARA DEBUG
     const empresaSelector = document.getElementById('empresaSelector');
+    console.log('🏢 DEBUG: empresaSelector encontrado:', !!empresaSelector);
+    console.log('🏢 DEBUG: empresaSelector element:', empresaSelector);
+    
     if (empresaSelector) {
+      console.log('🏢 DEBUG: Configurando event listener para empresaSelector...');
       empresaSelector.addEventListener('change', (e) => {
+        console.log('🏢 DEBUG: Event listener EJECUTADO! Valor:', e.target.value);
         const empresaId = e.target.value;
         if (empresaId) {
+          console.log('🏢 DEBUG: Llamando selectEmpresa con:', empresaId);
           this.selectEmpresa(empresaId);
         } else {
+          console.log('🏢 DEBUG: Valor vacío, llamando clearUsuarios');
           this.clearUsuarios();
         }
       });
+      console.log('🏢 DEBUG: Event listener configurado exitosamente');
+    } else {
+      console.error('❌ DEBUG: No se encontró empresaSelector en el DOM!');
     }
 
     // Status filter
     const statusFilter = document.getElementById('statusFilter');
+    console.log('📊 DEBUG: statusFilter encontrado:', !!statusFilter);
     if (statusFilter) {
       statusFilter.addEventListener('change', (e) => {
         this.currentFilters.status = e.target.value;
@@ -93,6 +107,7 @@ class UsuariosMain {
 
     // Include inactive filter
     const includeInactiveFilter = document.getElementById('includeInactiveFilter');
+    console.log('📊 DEBUG: includeInactiveFilter encontrado:', !!includeInactiveFilter);
     if (includeInactiveFilter) {
       includeInactiveFilter.addEventListener('change', (e) => {
         this.currentFilters.activa = e.target.value;
@@ -100,13 +115,15 @@ class UsuariosMain {
       });
     }
 
-    console.log('🎯 Event listeners configurados');
+    console.log('🎯 Event listeners configurados completamente');
   }
 
   /**
    * Load initial data
    */
   async loadInitialData() {
+    const isSuperAdmin = window.currentUser && (window.currentUser.tipo === 'super_admin' || window.currentUser.role === 'super_admin');
+    
     // Si es usuario tipo empresa, cargar usuarios directamente
     if (window.userRole === 'empresa' && window.empresaId) {
       this.currentEmpresa = { 
@@ -116,7 +133,7 @@ class UsuariosMain {
       await this.loadUsuarios();
       this.showFilters();
     } else {
-      // Para super_admin, cargar lista de empresas
+      // Para todos los demás casos (incluyendo super admin), cargar lista de empresas primero
       await this.loadEmpresas();
     }
   }
@@ -173,19 +190,26 @@ class UsuariosMain {
    * Select empresa and load its usuarios
    */
   async selectEmpresa(empresaId) {
+    console.log('🔍 DEBUG: selectEmpresa llamada con ID:', empresaId);
+    
     const empresa = this.empresas.find(e => e._id === empresaId);
-    if (!empresa) return;
+    console.log('🔍 DEBUG: Empresa encontrada:', empresa);
+    
+    if (!empresa) {
+      console.error('❌ DEBUG: No se encontró empresa con ID:', empresaId);
+      return;
+    }
 
     this.currentEmpresa = empresa;
+    console.log('🔍 DEBUG: currentEmpresa establecida:', this.currentEmpresa);
+    
     this.updateEmpresaInfo(empresa);
-    // Cargar usuarios solo si el rol no es empresa
-    if (window.userRole !== 'empresa') {
-      await this.loadUsuarios();
-    } else {
-      // Usar ID de empresa del usuario logueado
-      this.currentEmpresa = { _id: window.empresaId, nombre: window.empresaNombre };
-      await this.loadUsuarios();
-    }
+    
+    // Siempre cargar usuarios del backend con el ID de la empresa seleccionada
+    console.log('🔍 DEBUG: Iniciando carga de usuarios...');
+    await this.loadUsuarios();
+    console.log('🔍 DEBUG: Carga de usuarios completada');
+    
     this.updateHeaderBadge();
   }
 
@@ -223,12 +247,13 @@ class UsuariosMain {
 
     try {
       this.isLoading = true;
-      console.log(`🔄 Cargando usuarios para empresa: ${this.currentEmpresa.nombre}`);
-
+      
       this.showLoadingState();
 
-      // Determine which endpoint to use based on filter
+      // Empresa específica - hacer petición con el ID de la empresa
+      console.log(`🔄 Cargando usuarios para empresa: ${this.currentEmpresa.nombre}`);
       let response;
+      
       if (this.currentFilters.activa === 'all') {
         response = await this.apiClient.get_usuarios_including_inactive(this.currentEmpresa._id);
       } else {
@@ -250,10 +275,10 @@ class UsuariosMain {
         console.log(`✅ ${this.usuariosAll.length} usuarios cargados desde backend`);
         console.log('📊 Backend stats received:', this.backendStats);
         
-        // Renderizar usuarios (igual que hardware)
+        // Renderizar usuarios
         this.renderUsuarios();
         
-        // Actualizar estadísticas inmediatamente con todos los datos (igual que hardware)
+        // Actualizar estadísticas inmediatamente con todos los datos
         this.updateUserStats(data);
         console.log('📊 Verificando si mostrar filtros - usuariosAll.length:', this.usuariosAll.length);
         if (this.usuariosAll && this.usuariosAll.length > 0) {
@@ -263,9 +288,6 @@ class UsuariosMain {
           console.log('📊 Ocultando filtros porque no hay usuarios');
           this.hideFilters();
         }
-
-        // Actualizar estadísticas inmediatamente con todos los datos (igual que hardware)
-        this.updateUserStats(data);
 
         // DESPUÉS aplicar filtros automáticos
         this.applyFilters();
@@ -280,6 +302,39 @@ class UsuariosMain {
     } finally {
       this.isLoading = false;
     }
+  }
+
+  /**
+   * Filter users by empresa (for super admin)
+   */
+  filterByEmpresa(empresaId) {
+    if (!this.usuariosAll || this.usuariosAll.length === 0) {
+      console.warn('⚠️ No hay usuarios para filtrar por empresa');
+      return;
+    }
+    
+    // Filtrar usuarios por el campo empresa_id o similar
+    // Nota: Ajustar el campo según la estructura real del backend
+    const filteredUsuarios = this.usuariosAll.filter(usuario => {
+      // Probar diferentes posibles campos de empresa en el usuario
+      return usuario.empresa_id === empresaId || 
+             usuario.empresa === empresaId ||
+             usuario.empresaId === empresaId;
+    });
+    
+    console.log(`🔍 Filtrados ${filteredUsuarios.length} usuarios de empresa ${empresaId}`);
+    
+    // Guardar el resultado filtrado como base para otros filtros
+    this.usuarios = filteredUsuarios;
+    
+    // Aplicar filtros adicionales si existen
+    this.applyFilters();
+    
+    // Actualizar estadísticas con usuarios filtrados
+    this.updateUserStats();
+    
+    // Mostrar filtros
+    this.showFilters();
   }
 
   /**
@@ -962,6 +1017,16 @@ class UsuariosMain {
 const usuariosMain = new UsuariosMain();
 window.usuariosMain = usuariosMain;
 
+// Global function for SPA navigation
+window.loadUsers = function() {
+  console.log('🔄 SPA: Iniciando carga dinámica de usuarios...');
+  if (window.usuariosMain) {
+    window.usuariosMain.loadUsuarios();
+  } else {
+    console.error('❌ SPA: usuariosMain no está disponible');
+  }
+};
+
 // Export functions for global access
 window.clearUsuariosFilters = () => {
   if (window.usuariosMain) {
@@ -977,6 +1042,48 @@ window.exportUsuarios = () => {
     alert('Funcionalidad de exportación en desarrollo');
   } else {
     alert('Selecciona una empresa primero');
+  }
+};
+
+// Global function for create user modal
+window.openCreateUsuarioModal = () => {
+  console.log('🆕 Abriendo modal de crear usuario');
+  if (window.usuariosModals && typeof window.usuariosModals.openCreateModal === 'function') {
+    window.usuariosModals.openCreateModal();
+  } else {
+    alert('Sistema de modales no disponible');
+  }
+};
+
+// Global function to refresh usuarios (for SPA)
+window.refreshUsuarios = () => {
+  console.log('🔄 Refrescando datos de usuarios (SPA)');
+  if (window.usuariosMain) {
+    window.usuariosMain.refreshUsers();
+  }
+};
+
+// Global function for SPA to initialize users page
+window.initializeUsuariosPage = () => {
+  console.log('🔄 SPA: Inicializando página de usuarios');
+  if (window.usuariosMain) {
+    // Re-inicializar el sistema para SPA
+    const isSuperAdmin = window.currentUser && (window.currentUser.tipo === 'super_admin' || window.currentUser.role === 'super_admin');
+    const isEmpresa = window.userRole === 'empresa' && window.empresaId;
+    
+    if (isEmpresa) {
+      // Usuario empresa: cargar usuarios directamente
+      window.usuariosMain.currentEmpresa = {
+        _id: window.empresaId,
+        nombre: window.empresaNombre || 'Mi Empresa'
+      };
+      window.usuariosMain.loadUsuarios();
+    } else {
+      // Super admin u otros: cargar empresas primero
+      window.usuariosMain.loadInitialData();
+    }
+  } else {
+    console.error('❌ SPA: usuariosMain no está disponible');
   }
 };
 

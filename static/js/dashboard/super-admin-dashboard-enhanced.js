@@ -465,3 +465,69 @@ function checkConnectionStatus() {
             });
     }
 }
+
+// ============ FUNCIÓN GLOBAL PARA NAVEGACIÓN SPA ============
+// Esta función es llamada por SPA-navigation.js para cargar el dashboard
+window.loadDashboard = function() {
+    console.log('📊 SPA: Intentando cargar dashboard desde función global loadDashboard');
+    
+    if (window.superAdminDashboard && typeof window.superAdminDashboard.loadDashboardData === 'function') {
+        console.log('✅ SPA: Usando window.superAdminDashboard.loadDashboardData()');
+        window.superAdminDashboard.loadDashboardData();
+        return true;
+    } else if (window.superAdminDashboardEnhanced && typeof window.superAdminDashboardEnhanced.loadDashboardData === 'function') {
+        console.log('✅ SPA: Usando window.superAdminDashboardEnhanced.loadDashboardData()');
+        window.superAdminDashboardEnhanced.loadDashboardData();
+        return true;
+    } else {
+        console.error('❌ SPA: No se encontró instancia válida de superAdminDashboard para loadDashboard');
+        
+        // Intentar crear instancia si no existe
+        if (typeof SuperAdminDashboardEnhanced !== 'undefined') {
+            console.log('🔄 SPA: Intentando crear instancia de SuperAdminDashboardEnhanced...');
+            try {
+                window.superAdminDashboard = new SuperAdminDashboardEnhanced();
+                if (typeof window.superAdminDashboard.loadDashboardData === 'function') {
+                    console.log('✅ SPA: Instancia creada y loadDashboardData ejecutado');
+                    window.superAdminDashboard.loadDashboardData();
+                    return true;
+                }
+            } catch (error) {
+                console.error('❌ SPA: Error creando instancia de SuperAdminDashboardEnhanced:', error);
+            }
+        } else if (typeof window.SuperAdminDashboard !== 'undefined') {
+            console.log('🔄 SPA: Intentando crear instancia de SuperAdminDashboard (fallback)...');
+            try {
+                window.superAdminDashboard = new window.SuperAdminDashboard();
+                if (typeof window.superAdminDashboard.loadDashboardData === 'function') {
+                    console.log('✅ SPA: Instancia fallback creada y loadDashboardData ejecutado');
+                    window.superAdminDashboard.loadDashboardData();
+                    return true;
+                }
+            } catch (error) {
+                console.error('❌ SPA: Error creando instancia fallback de SuperAdminDashboard:', error);
+            }
+        }
+        
+        return false;
+    }
+};
+
+console.log('🔗 SPA: Función global window.loadDashboard registrada para navegación SPA');
+
+// También asegurarnos de que la función esté disponible tras un pequeño delay
+setTimeout(() => {
+    if (typeof window.loadDashboard !== 'function') {
+        console.warn('⚠️ SPA: Función loadDashboard no está disponible, re-registrando...');
+        // Re-registrar la función si por alguna razón se perdió
+        window.loadDashboard = function() {
+            if (window.superAdminDashboard && typeof window.superAdminDashboard.loadDashboardData === 'function') {
+                window.superAdminDashboard.loadDashboardData();
+                return true;
+            }
+            return false;
+        };
+    } else {
+        console.log('✅ SPA: Función window.loadDashboard confirmada como disponible');
+    }
+}, 100);

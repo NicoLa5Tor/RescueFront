@@ -637,6 +637,9 @@
 <!-- Enhanced Dashboard Script -->
 <script src="{{ url_for('static', filename='js/dashboard/super-admin-dashboard-enhanced.js') }}"></script>
 
+<!-- Dashboard SPA Loader -->
+<script src="{{ url_for('static', filename='js/dashboard/dashboard-spa-loader.js') }}"></script>
+
 <!-- Auth Verification Script (temporal para debugging) -->
 <script src="{{ url_for('static', filename='js/auth-verification.js') }}"></script>
 
@@ -702,6 +705,63 @@ function refreshDashboard() {
     console.log('Dashboard is already loading or not initialized');
   }
 }
+
+// ============ FUNCIÓN GLOBAL PARA NAVEGACIÓN SPA ============
+// Esta función es llamada por SPA-navigation.js para cargar el dashboard
+window.loadDashboard = function() {
+    console.log('📊 SPA: Intentando cargar dashboard desde función global loadDashboard (template)');
+    
+    if (window.superAdminDashboard && typeof window.superAdminDashboard.loadDashboardData === 'function') {
+        console.log('✅ SPA: Usando window.superAdminDashboard.loadDashboardData()');
+        window.superAdminDashboard.loadDashboardData();
+        return true;
+    } else if (window.SuperAdminDashboardEnhanced) {
+        console.log('🔄 SPA: Creando instancia de SuperAdminDashboardEnhanced...');
+        try {
+            window.superAdminDashboard = new window.SuperAdminDashboardEnhanced();
+            if (typeof window.superAdminDashboard.loadDashboardData === 'function') {
+                console.log('✅ SPA: Instancia creada y loadDashboardData ejecutado');
+                window.superAdminDashboard.loadDashboardData();
+                return true;
+            }
+        } catch (error) {
+            console.error('❌ SPA: Error creando instancia de SuperAdminDashboardEnhanced:', error);
+        }
+    } else if (window.SuperAdminDashboard) {
+        console.log('🔄 SPA: Creando instancia de SuperAdminDashboard fallback...');
+        try {
+            window.superAdminDashboard = new window.SuperAdminDashboard();
+            if (typeof window.superAdminDashboard.loadDashboardData === 'function') {
+                console.log('✅ SPA: Instancia fallback creada y loadDashboardData ejecutado');
+                window.superAdminDashboard.loadDashboardData();
+                return true;
+            }
+        } catch (error) {
+            console.error('❌ SPA: Error creando instancia fallback de SuperAdminDashboard:', error);
+        }
+    } else {
+        console.warn('⚠️ SPA: Ni superAdminDashboard ni las clases están disponibles, usando función básica refreshDashboard');
+        if (typeof refreshDashboard === 'function') {
+            refreshDashboard();
+            return true;
+        }
+        console.error('❌ SPA: No se encontró ninguna función de carga de dashboard disponible');
+        return false;
+    }
+    
+    return false;
+};
+
+console.log('🔗 SPA: Función global window.loadDashboard registrada en template principal');
+
+// Verificar disponibilidad tras un pequeño delay
+setTimeout(() => {
+    if (typeof window.loadDashboard === 'function') {
+        console.log('✅ SPA: Función window.loadDashboard confirmada como disponible desde template');
+    } else {
+        console.error('❌ SPA: Error - función loadDashboard no está disponible después del registro');
+    }
+}, 50);
 
 function updateConnectionStatus(status) {
   const indicator = document.getElementById('connectionIndicator');
@@ -916,7 +976,67 @@ window.refreshDashboardStats = function() {
     updateDashboardStats();
 };
 
+// ============ FUNCIÓN GLOBAL PARA SPA NAVIGATION ============
+// Función principal para ser llamada por el SPA cuando navega al dashboard
+window.loadDashboard = function() {
+    console.log('🔄 CARGA SPA: Iniciando carga dinámica del dashboard...');
+    
+    // Verificar si tenemos el sistema de dashboard disponible
+    if (window.superAdminDashboard) {
+        console.log('✅ SPA: Usando superAdminDashboard.loadDashboardData()');
+        window.superAdminDashboard.loadDashboardData();
+    } else if (window.superAdminDashboardEnhanced) {
+        console.log('✅ SPA: Usando superAdminDashboardEnhanced.loadDashboardData()');
+        window.superAdminDashboardEnhanced.loadDashboardData();
+    } else {
+        console.log('⚠️ SPA: Creando instancias de dashboard...');
+        
+        // Intentar crear instancias si no existen
+        try {
+            if (typeof SuperAdminDashboardEnhanced !== 'undefined') {
+                window.superAdminDashboardEnhanced = new SuperAdminDashboardEnhanced();
+                window.superAdminDashboardEnhanced.loadDashboardData();
+            } else if (typeof SuperAdminDashboard !== 'undefined') {
+                window.superAdminDashboard = new SuperAdminDashboard();
+                window.superAdminDashboard.loadDashboardData();
+            } else {
+                console.warn('⚠️ SPA: Usando inicialización básica (datos estáticos)');
+                initializeDashboard();
+            }
+        } catch (error) {
+            console.error('❌ SPA: Error creando instancias de dashboard:', error);
+            // Fallback a inicialización básica
+            initializeDashboard();
+        }
+    }
+};
+
+// ============ INICIALIZACIÓN AUTOMÁTICA DE INSTANCIAS ============
+// Asegurar que las instancias de dashboard estén disponibles
+function ensureDashboardInstances() {
+    console.log('🔧 Asegurando instancias de dashboard...');
+    
+    // Solo crear si no existen para evitar duplicados
+    if (!window.superAdminDashboard && !window.superAdminDashboardEnhanced) {
+        try {
+            if (typeof SuperAdminDashboardEnhanced !== 'undefined') {
+                window.superAdminDashboardEnhanced = new SuperAdminDashboardEnhanced();
+                console.log('✅ SuperAdminDashboardEnhanced instance created');
+            } else if (typeof SuperAdminDashboard !== 'undefined') {
+                window.superAdminDashboard = new SuperAdminDashboard();
+                console.log('✅ SuperAdminDashboard instance created');
+            }
+        } catch (error) {
+            console.error('❌ Error creating dashboard instances:', error);
+        }
+    }
+}
+
+// Ejecutar asegurar instancias cuando todo esté listo
+setTimeout(ensureDashboardInstances, 100);
+
 console.log('🏁 Script de inicialización del dashboard cargado');
+console.log('✅ Función window.loadDashboard() registrada para SPA');
 </script>
 {% endblock %}
 {% endblock %}

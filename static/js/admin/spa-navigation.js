@@ -35,6 +35,7 @@ class SPANavigation {
         
         // Mapear rutas a identificadores
         const routeMap = {
+            '/admin': 'dashboard',
             '/admin/super-dashboard': 'dashboard',
             '/admin/users': 'users',
             '/admin/empresas': 'empresas',
@@ -87,7 +88,8 @@ class SPANavigation {
             href.includes('/admin/empresas') ||
             href.includes('/admin/hardware') ||
             href.includes('/admin/company-types') ||
-            href.includes('/admin/super-dashboard')
+            href.includes('/admin/super-dashboard') ||
+            href === '/admin'
         );
     }
     
@@ -97,7 +99,8 @@ class SPANavigation {
             '/admin/users': 'users', 
             '/admin/empresas': 'empresas',
             '/admin/hardware': 'hardware',
-            '/admin/company-types': 'company_types'
+            '/admin/company-types': 'company_types',
+            '/admin': 'dashboard'
         };
         
         // Ordenar por longitud descendente para evitar matches incorrectos
@@ -344,19 +347,7 @@ class SPANavigation {
     
     async fadeOutContent() {
         const mainContent = document.querySelector('.main-content > div');
-        if (mainContent && typeof gsap !== 'undefined') {
-            return new Promise(resolve => {
-                gsap.to(mainContent, {
-                    opacity: 0,
-                    y: -20,
-                    duration: 0.2,
-                    ease: "power2.in",
-                    onComplete: resolve
-                });
-            });
-        }
         
-        // Fallback sin GSAP
         if (mainContent) {
             mainContent.style.opacity = '0';
             mainContent.style.transform = 'translateY(-20px)';
@@ -367,23 +358,7 @@ class SPANavigation {
     
     async fadeInContent() {
         const mainContent = document.querySelector('.main-content > div');
-        if (mainContent && typeof gsap !== 'undefined') {
-            return new Promise(resolve => {
-                // Reset inicial
-                gsap.set(mainContent, { opacity: 0, y: 20 });
-                
-                // Animación de entrada
-                gsap.to(mainContent, {
-                    opacity: 1,
-                    y: 0,
-                    duration: 0.4,
-                    ease: "power2.out",
-                    onComplete: resolve
-                });
-            });
-        }
         
-        // Fallback sin GSAP
         if (mainContent) {
             mainContent.style.opacity = '0';
             mainContent.style.transform = 'translateY(20px)';
@@ -424,9 +399,20 @@ class SPANavigation {
     }
     
     initializeUsersPage() {
-        // Re-inicializar funcionalidades específicas de usuarios
-        if (window.loadUsers && typeof window.loadUsers === 'function') {
+        // Re-inicializar funcionalidades específicas de usuarios - CARGA DINÁMICA
+        console.log('👥 Inicializando usuarios con carga dinámica de datos');
+        
+        if (window.initializeUsuariosPage && typeof window.initializeUsuariosPage === 'function') {
+            console.log('✅ Inicializando página de usuarios con función SPA');
+            window.initializeUsuariosPage();
+        } else if (window.usuariosMain && typeof window.usuariosMain.loadInitialData === 'function') {
+            console.log('✅ Cargando datos iniciales de usuarios');
+            window.usuariosMain.loadInitialData();
+        } else if (window.loadUsers && typeof window.loadUsers === 'function') {
+            console.log('✅ Cargando usuarios con función global');
             window.loadUsers();
+        } else {
+            console.warn('❌ No se encontró función de carga de usuarios');
         }
         
         // Re-inicializar event listeners específicos
@@ -434,18 +420,35 @@ class SPANavigation {
     }
     
     initializeEmpresasPage() {
-        // Re-inicializar funcionalidades específicas de empresas
-        if (window.loadEmpresas && typeof window.loadEmpresas === 'function') {
+        // Re-inicializar funcionalidades específicas de empresas - CARGA DINÁMICA
+        console.log('🏢 Inicializando empresas con carga dinámica de datos');
+        
+        if (window.empresasMain && typeof window.empresasMain.loadEmpresas === 'function') {
+            console.log('✅ Cargando datos de empresas desde backend');
+            window.empresasMain.loadEmpresas();
+        } else if (window.loadEmpresas && typeof window.loadEmpresas === 'function') {
+            console.log('✅ Cargando empresas con función global');
             window.loadEmpresas();
+        } else {
+            console.warn('❌ No se encontró función de carga de empresas');
         }
         
+        // Re-inicializar event listeners específicos
         this.setupPageSpecificListeners('empresas');
     }
     
     initializeHardwarePage() {
-        // Re-inicializar funcionalidades específicas de hardware
-        if (window.loadHardware && typeof window.loadHardware === 'function') {
+        // Re-inicializar funcionalidades específicas de hardware - CARGA DINÁMICA
+        console.log('🔧 Inicializando hardware con carga dinámica de datos');
+        
+        if (window.hardwareMain && typeof window.hardwareMain.loadHardware === 'function') {
+            console.log('✅ Cargando datos de hardware desde backend');
+            window.hardwareMain.loadHardware();
+        } else if (window.loadHardware && typeof window.loadHardware === 'function') {
+            console.log('✅ Cargando hardware con función global');
             window.loadHardware();
+        } else {
+            console.warn('❌ No se encontró función de carga de hardware');
         }
         
         this.setupPageSpecificListeners('hardware');
@@ -457,9 +460,24 @@ class SPANavigation {
     }
     
     initializeDashboardPage() {
-        // Re-inicializar dashboard
-        if (window.initializeDashboard && typeof window.initializeDashboard === 'function') {
+        // Re-inicializar dashboard - CARGA DINÁMICA DE DATOS
+        console.log('🏠 Inicializando dashboard con carga dinámica de datos');
+        
+        // Llamar a la función de carga de datos del dashboard
+        if (window.superAdminDashboard && typeof window.superAdminDashboard.loadDashboardData === 'function') {
+            console.log('✅ Cargando datos del dashboard desde backend');
+            window.superAdminDashboard.loadDashboardData();
+        } else if (window.superAdminDashboardEnhanced && typeof window.superAdminDashboardEnhanced.loadDashboardData === 'function') {
+            console.log('✅ Cargando datos del dashboard enhanced desde backend');
+            window.superAdminDashboardEnhanced.loadDashboardData();
+        } else if (window.loadDashboard && typeof window.loadDashboard === 'function') {
+            console.log('✅ Cargando dashboard con función global');
+            window.loadDashboard();
+        } else if (window.initializeDashboard && typeof window.initializeDashboard === 'function') {
+            console.log('⚠️ Usando función básica de inicialización (no carga datos)');
             window.initializeDashboard();
+        } else {
+            console.warn('❌ No se encontró función de carga de dashboard');
         }
         
         this.setupPageSpecificListeners('dashboard');
@@ -486,26 +504,6 @@ class SPANavigation {
         if (window.ThemeManager && window.ThemeManager.init) {
             window.ThemeManager.init();
         }
-        
-        // Re-inicializar tooltips, dropdowns, etc.
-        setTimeout(() => {
-            // Aplicar animaciones GSAP si están disponibles
-            if (typeof gsap !== 'undefined' && window.HardwareAnimations) {
-                const cards = document.querySelectorAll('.ios-hardware-card, .glass-card');
-                cards.forEach((card, index) => {
-                    gsap.fromTo(card, 
-                        { opacity: 0, y: 20 },
-                        { 
-                            opacity: 1, 
-                            y: 0, 
-                            duration: 0.3, 
-                            delay: index * 0.1,
-                            ease: "power2.out"
-                        }
-                    );
-                });
-            }
-        }, 200);
     }
     
     // Método público para limpiar cache

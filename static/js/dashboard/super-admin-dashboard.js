@@ -691,3 +691,24 @@ if (window.location.pathname.includes('/admin/super-dashboard')) {
  */
 
 // 1. MEJORA: Extend tu clase existente con mejor manejo de errores
+
+// ============ FUNCIÓN GLOBAL PARA NAVEGACIÓN SPA ============
+// Global function for SPA navigation - Igual que en empresas-main.js
+window.loadDashboard = function() {
+  console.log('🔄 SPA: Iniciando carga dinámica de dashboard...');
+  if (window.superAdminDashboard && typeof window.superAdminDashboard.loadDashboardData === 'function') {
+    console.log('✅ SPA: Usando window.superAdminDashboard.loadDashboardData()');
+    window.superAdminDashboard.loadDashboardData();
+  } else {
+    console.error('❌ SPA: superAdminDashboard no está disponible');
+    // Intentar crear instancia si no existe
+    if (typeof SuperAdminDashboard !== 'undefined') {
+      console.log('🔄 SPA: Creando nueva instancia de SuperAdminDashboard...');
+      window.superAdminDashboard = new SuperAdminDashboard();
+      window.superAdminDashboard.loadDashboardData();
+    }
+  }
+};
+
+console.log('📊 Super Admin Dashboard main module loaded');
+console.log('✅ Función window.loadDashboard() registrada para SPA');

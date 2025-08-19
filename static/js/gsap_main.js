@@ -1047,9 +1047,20 @@ let spinnerState = {
 // Mostrar spinner interno (para navegación/refresh)
 function showInternalSpinner(message = 'Cargando...', duration = 1200) {
     const spinner = document.getElementById('internal-spinner');
-    const spinnerText = spinner.querySelector('.spinner-text');
     
-    if (!spinner || !spinnerText) return false;
+    // Protección null check mejorada
+    if (!spinner) {
+        console.log('⚠️ SPINNER: Elemento #internal-spinner no encontrado, creando fallback...');
+        // Crear un spinner temporal si no existe
+        createFallbackSpinner(message, duration);
+        return false;
+    }
+    
+    const spinnerText = spinner.querySelector('.spinner-text');
+    if (!spinnerText) {
+        console.warn('⚠️ SPINNER: Elemento .spinner-text no encontrado en #internal-spinner');
+        return false;
+    }
     
     // Si ya está visible, solo actualizar el mensaje
     if (spinnerState.isVisible) {
@@ -1125,82 +1136,6 @@ window.showSavingSpinner = function() {
     return showInternalSpinner('Guardando...', 1000);
 };
 
-// ============ INTERCEPTOR DE NAVEGACIÓN ============
-// Mostrar spinner antes de navegar a enlaces internos
-
-function setupNavigationInterceptor() {
-    // Interceptar clics en enlaces
-    document.addEventListener('click', function(e) {
-        const link = e.target.closest('a');
-        
-        if (!link) return;
-        
-        const href = link.getAttribute('href');
-        
-        // Solo interceptar enlaces internos (no externos, no JavaScript, no descargas)
-        if (href && 
-            !href.startsWith('http') && 
-            !href.startsWith('mailto:') && 
-            !href.startsWith('tel:') && 
-            !href.startsWith('#') && 
-            !href.startsWith('javascript:') &&
-            href !== '' &&
-            !link.hasAttribute('download') &&
-            !link.hasAttribute('target')) {
-            
-            // Mostrar spinner inmediatamente
-            showInternalSpinner('Navegando...', 5000); // 5 segundos máximo
-            
-            console.log(`🔗 NAVEGACIÓN: Link interceptado -> ${href}`);
-        }
-    });
-    
-    // Interceptar formularios
-    document.addEventListener('submit', function(e) {
-        const form = e.target;
-        
-        if (form && form.tagName === 'FORM') {
-            // Verificar si es un formulario interno (no externo)
-            const action = form.getAttribute('action');
-            const method = form.getAttribute('method');
-            
-            if (!action || !action.startsWith('http')) {
-                const message = method && method.toLowerCase() === 'post' ? 'Enviando...' : 'Cargando...';
-                showInternalSpinner(message, 5000);
-                
-                console.log(`📝 FORMULARIO: Envío interceptado -> ${action || 'misma página'}`);
-            }
-        }
-    });
-    
-    // Interceptar navegación del navegador (back/forward)
-    window.addEventListener('popstate', function(e) {
-        showInternalSpinner('Navegando...', 3000);
-        console.log('←→ NAVEGACIÓN: Histórico del navegador');
-    });
-    
-    // Ocultar spinner cuando la página termine de cargar
-    window.addEventListener('load', function() {
-        setTimeout(() => {
-            hideInternalSpinner();
-        }, 100);
-    });
-    
-    // También ocultar en caso de error
-    window.addEventListener('error', function() {
-        setTimeout(() => {
-            hideInternalSpinner();
-        }, 100);
-    });
-    
-    console.log('🔗 INTERCEPTOR: Sistema de navegación configurado');
-}
-
-// Configurar interceptor cuando el DOM esté listo
-document.addEventListener('DOMContentLoaded', function() {
-    // Pequeño delay para asegurar que todo esté cargado
-    setTimeout(setupNavigationInterceptor, 100);
-});
 
 console.log('🚀 PRELOADER: Sistema de control global inicializado');
 console.log('💡 Comandos disponibles: resetPreloaderSession(), getPreloaderStatus(), forceHidePreloader(), debugPreloader()');

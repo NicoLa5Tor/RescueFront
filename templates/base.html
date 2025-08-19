@@ -28,45 +28,6 @@
             });
         })();
         
-        // ============ DETECCIÓN DE PRELOADER TEMPRANA (COMENTADO) ============
-        /* Comentado porque el preloader fue deshabilitado
-        (function() {
-            function shouldShowPreloaderEarly() {
-                try {
-                    // 1. Verificar sesión
-                    const sessionLoaded = sessionStorage.getItem('rescue_app_loaded');
-                    if (sessionLoaded) return false;
-                    
-                    // 2. Verificar tipo de navegación
-                    const navigation = performance.getEntriesByType('navigation')[0];
-                    if (navigation) {
-                        const navType = navigation.type;
-                        if (navType === 'reload' || navType === 'back_forward') {
-                            return false;
-                        }
-                    }
-                    
-                    // 3. Verificar rutas
-                    const currentPath = window.location.pathname;
-                    const preloaderRoutes = ['/', '/login', '/dashboard', '/admin/dashboard', '/admin/super_admin_dashboard', '/empresa/dashboard'];
-                    const shouldShow = preloaderRoutes.some(route => currentPath === route || currentPath.startsWith(route));
-                    
-                    return shouldShow;
-                } catch (error) {
-                    return true; // En caso de error, mostrar por seguridad
-                }
-            }
-            
-            // Si debe mostrar preloader, añadir clase al documento
-            if (shouldShowPreloaderEarly()) {
-                document.documentElement.classList.add('show-preloader');
-                console.log('🎬 PRELOADER: Habilitado desde head script');
-            } else {
-                console.log('⚡ PRELOADER: Deshabilitado desde head script');
-            }
-        })();
-        */
-        
         // ============ DETECCIÓN TEMPRANA PARA EL PRELOADER SIMPLE ============
         // Solo mostrar en la página principal, ocultar en todas las demás
         (function() {
@@ -362,101 +323,6 @@
             overscroll-behavior-y: contain !important;
         }
         
-        /* ============ SPINNER INTERNO (Para navegación interna) ============ */
-        #internal-spinner {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            z-index: 8888; /* Menor que el preloader principal */
-            display: none;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 0.3s ease-in-out;
-        }
-        
-        #internal-spinner.show {
-            display: flex;
-            animation: spinnerFadeIn 0.3s ease-out;
-        }
-        
-        @keyframes spinnerFadeIn {
-            from {
-                opacity: 0;
-                backdrop-filter: blur(0px);
-            }
-            to {
-                opacity: 1;
-                backdrop-filter: blur(8px);
-            }
-        }
-        
-        /* Spinner principal */
-        .internal-spinner-ring {
-            display: inline-block;
-            position: relative;
-            width: 80px;
-            height: 80px;
-        }
-        
-        .internal-spinner-ring div {
-            box-sizing: border-box;
-            display: block;
-            position: absolute;
-            width: 64px;
-            height: 64px;
-            margin: 8px;
-            border: 6px solid rgba(96, 165, 250, 0.9);
-            border-radius: 50%;
-            animation: spinnerRotate 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-            border-color: rgba(96, 165, 250, 0.9) transparent transparent transparent;
-        }
-        
-        .internal-spinner-ring div:nth-child(1) { animation-delay: -0.45s; }
-        .internal-spinner-ring div:nth-child(2) { animation-delay: -0.3s; }
-        .internal-spinner-ring div:nth-child(3) { animation-delay: -0.15s; }
-        
-        @keyframes spinnerRotate {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        /* Texto del spinner */
-        .spinner-text {
-            margin-top: 20px;
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 14px;
-            font-weight: 500;
-            text-align: center;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-        }
-        
-        /* Container del spinner - Sin fondo, solo contenedor flex */
-        .spinner-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        /* Responsive spinner */
-        @media (max-width: 768px) {
-            .internal-spinner-ring {
-                width: 60px;
-                height: 60px;
-            }
-            
-            .internal-spinner-ring div {
-                width: 48px;
-                height: 48px;
-                margin: 6px;
-                border-width: 4px;
-            }
-        }
     </style>
 </head>
 <body>
@@ -497,17 +363,6 @@
         </div>
     </div>
 
-    <!-- Internal Spinner (Para navegación interna/refresh) -->
-    <div id="internal-spinner">
-        <div class="spinner-container">
-            <div class="internal-spinner-ring">
-                <div></div>
-                <div></div>
-                <div></div>
-            </div>
-            <div class="spinner-text">Cargando...</div>
-        </div>
-    </div>
 
     <!-- GSAP ScrollSmoother Wrapper -->
     <div id="gsap-smoother-wrapper">
