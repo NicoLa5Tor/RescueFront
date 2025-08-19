@@ -420,10 +420,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Registrar plugins
     gsap.registerPlugin(ScrollTrigger);
     
-    // Configuración global de GSAP para mejor rendimiento
+    // Configuración global de GSAP para mejor rendimiento (optimizada para Chrome)
     gsap.config({
-        force3D: true,
-        nullTargetWarn: false
+        force3D: false, // Desactivado para evitar problemas en Chrome
+        nullTargetWarn: false,
+        trialWarn: false
     });
     
     // Refrescar ScrollTrigger en cambios de orientación

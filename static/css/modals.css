@@ -290,37 +290,128 @@ body.empresas-modal-open {
   color: var(--text-tertiary);
 }
 
-/* Fix for select visibility in light mode - Chrome specific issue */
-:root:not(.dark) select.form-select,
-body:not(.dark) select.form-select,
-html:not(.dark) select.form-select {
-  color: rgba(30, 41, 59, 0.9) !important;
-  background-color: rgba(255, 255, 255, 0.95) !important;
+/* ============ CORRECCIÓN COMPLETA PARA VISIBILIDAD DE SELECT EN CHROME ============ */
+/* Esta corrección soluciona el problema donde las opciones de select aparecen blancas */
+/* sobre fondo blanco en Chrome cuando se seleccionan */
+
+/* Base styles for all select elements */
+select.form-select,
+select[class*="form-"],
+select[class*="select-"] {
+  /* Forzar colores específicos para Chrome */
+  color: #1e293b !important;
+  background-color: #ffffff !important;
+  /* Asegurar que no hay herencia de colores problemáticos */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  /* Fondo personalizado para el dropdown */
+  background-image: url("data:image/svg+xml;charset=utf-8,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-right: 2.5rem;
 }
 
-:root:not(.dark) select.form-select option,
-body:not(.dark) select.form-select option,
-html:not(.dark) select.form-select option {
-  color: rgba(30, 41, 59, 0.9) !important;
-  background-color: rgba(255, 255, 255, 1) !important;
+/* Options styling - crítico para Chrome */
+select.form-select option,
+select[class*="form-"] option,
+select[class*="select-"] option {
+  color: #1e293b !important;
+  background-color: #ffffff !important;
+  /* Prevenir que Chrome aplique estilos automáticos */
+  -webkit-appearance: none;
 }
 
-/* Chrome/Webkit specific fix for selects */
-@media screen and (-webkit-min-device-pixel-ratio:0) {
-  :root:not(.dark) select.form-select,
-  body:not(.dark) select.form-select,
-  html:not(.dark) select.form-select {
-    color: rgba(30, 41, 59, 0.9) !important;
-    background-color: rgba(255, 255, 255, 0.95) !important;
+/* Estado selected específico para Chrome */
+select.form-select option:checked,
+select[class*="form-"] option:checked,
+select[class*="select-"] option:checked {
+  background-color: #3b82f6 !important;
+  color: #ffffff !important;
+}
+
+/* Estado hover para opciones */
+select.form-select option:hover,
+select[class*="form-"] option:hover,
+select[class*="select-"] option:hover {
+  background-color: #f1f5f9 !important;
+  color: #1e293b !important;
+}
+
+/* ============ CORRECCIONES ESPECÍFICAS PARA WEBKIT/CHROME ============ */
+@supports (-webkit-appearance: none) {
+  /* Chrome y Safari específico */
+  select.form-select,
+  select[class*="form-"],
+  select[class*="select-"] {
+    color: #1e293b !important;
+    background-color: #ffffff !important;
+    /* Desactivar apariencia nativa */
+    -webkit-appearance: none;
   }
   
-  :root:not(.dark) select.form-select option,
-  body:not(.dark) select.form-select option,
-  html:not(.dark) select.form-select option {
-    color: rgba(30, 41, 59, 0.9) !important;
-    background-color: rgba(255, 255, 255, 1) !important;
+  select.form-select option,
+  select[class*="form-"] option,
+  select[class*="select-"] option {
+    color: #1e293b !important;
+    background-color: #ffffff !important;
   }
 }
+
+/* ============ MODO OSCURO - SELECTS ============ */
+.dark select.form-select,
+.dark select[class*="form-"],
+.dark select[class*="select-"] {
+  color: #f1f5f9 !important;
+  background-color: #334155 !important;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%29cbd5e1' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+}
+
+.dark select.form-select option,
+.dark select[class*="form-"] option,
+.dark select[class*="select-"] option {
+  color: #f1f5f9 !important;
+  background-color: #334155 !important;
+}
+
+.dark select.form-select option:checked,
+.dark select[class*="form-"] option:checked,
+.dark select[class*="select-"] option:checked {
+  background-color: #3b82f6 !important;
+  color: #ffffff !important;
+}
+
+/* ============ ESTADOS DE FOCUS MEJORADOS ============ */
+select.form-select:focus,
+select[class*="form-"]:focus,
+select[class*="select-"]:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  border-color: #3b82f6;
+  /* Asegurar que el color del texto se mantenga visible */
+  color: #1e293b !important;
+  background-color: #ffffff !important;
+}
+
+.dark select.form-select:focus,
+.dark select[class*="form-"]:focus,
+.dark select[class*="select-"]:focus {
+  color: #f1f5f9 !important;
+  background-color: #334155 !important;
+}
+
+/* ============ CORRECCIÓN PARA TAILWIND CONFLICTS ============ */
+/* Evitar que las clases de Tailwind interfieran con los selects */
+select.form-select,
+select[class*="form-"],
+select[class*="select-"] {
+  /* Sobreescribir cualquier clase de texto de Tailwind */
+  --tw-text-opacity: 1 !important;
+}
+
+/* ============ FALLBACK PARA CASOS EXTREMOS ============ */
+/* Si todo lo anterior falla, aplicar estilos inline via JavaScript se manejará automáticamente */
 
 /* Light Mode Strong Contrast */
 :not(.dark) .modal-container {

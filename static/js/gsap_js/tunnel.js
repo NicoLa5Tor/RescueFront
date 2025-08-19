@@ -289,6 +289,15 @@
     }
 
     gsap.registerPlugin(ScrollTrigger);
+    
+    // ============ CONFIGURACIÓN GSAP OPTIMIZADA PARA CHROME ============
+    // Configuraciones específicas para resolver problemas de renderizado en Chrome
+    gsap.config({
+      force3D: false,         // Desactivar force3D que causa problemas en Chrome
+      nullTargetWarn: false,  // Evitar warnings innecesarios
+      trialWarn: false,       // Evitar warnings de trial
+      autoSleep: 60           // Optimización para Chrome
+    });
 
     // Enhanced process steps data with responsive adjustments
     // var processSteps = [

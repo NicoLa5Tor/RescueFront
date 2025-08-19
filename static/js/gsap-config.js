@@ -28,10 +28,18 @@ if (gsap.registerPlugin && typeof ScrollTrigger !== 'undefined') {
   console.log('✅ ScrollTrigger configurado');
 }
 
-// Configuración global de duración y ease
+// Configuración global de duración y ease optimizada para Chrome
 gsap.defaults({
   duration: 0.6,
   ease: "power2.out"
+});
+
+// Configuración específica para Chrome
+gsap.config({
+  force3D: false, // Desactivar force3D que causa problemas en Chrome
+  nullTargetWarn: false,
+  trialWarn: false,
+  autoSleep: 60
 });
 
 // ===== ANIMACIONES GLOBALES REUTILIZABLES =====

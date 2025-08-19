@@ -702,10 +702,12 @@ window.addEventListener('load', function() {
             );
             
             // ============ CONFIGURACIÓN GLOBAL DE GSAP ============
-            // Configuraciones que afectan a todas las animaciones
+            // Configuraciones que afectan a todas las animaciones (optimizada para Chrome)
             gsap.config({
                 nullTargetWarn: false,  // No mostrar warnings si un elemento no existe
-                trialWarn: false        // No mostrar warnings de versión trial
+                trialWarn: false,       // No mostrar warnings de versión trial
+                force3D: false,         // Desactivar force3D que causa problemas en Chrome
+                autoSleep: 60           // Optimización para Chrome
             });
             
             // ============ CREAR SCROLLSMOOTHER GLOBAL ============
