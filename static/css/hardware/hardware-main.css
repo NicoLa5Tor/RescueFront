@@ -1,6 +1,8 @@
-/*
- * ===== HARDWARE MAIN CSS =====
- * 
+/* ===== HARDWARE MAIN STYLES ===== */
+
+/* Hardware container styles removed - using Tailwind classes directly */
+
+/* 
  * Este archivo importa todos los módulos CSS específicos para el hardware
  * para mantener una arquitectura modular y organizada.
  * 
@@ -123,6 +125,17 @@ body.ios-modal-open {
 
 .hardware-debug.active {
   display: block;
+}
+
+/* Corrección de scroll para vista empresa de hardware modal */
+#viewHardwareModal .ios-blur-body {
+  overflow-x: hidden !important;
+  max-width: 100% !important;
+}
+
+#viewHardwareModal .grid {
+  max-width: 100% !important;
+  overflow-x: hidden !important;
 }
 
 /* Hardware loading states */

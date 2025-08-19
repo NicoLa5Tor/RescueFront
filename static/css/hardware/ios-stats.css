@@ -1,11 +1,36 @@
 /* ===== iOS STATS CARDS ===== */
 
-/* iOS Stats Grid */
+/* iOS Stats Grid - Carousel Horizontal */
 .ios-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  display: flex;
   gap: 1rem;
   margin-bottom: 1.5rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+  padding-bottom: 0.5rem;
+}
+
+/* Custom scrollbar for stats carousel */
+.ios-stats-grid::-webkit-scrollbar {
+  height: 6px;
+}
+
+.ios-stats-grid::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.ios-stats-grid::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+.ios-stats-grid::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
 }
 
 .ios-stat-card {
@@ -22,6 +47,12 @@
   box-shadow: 
     0 8px 25px rgba(0, 0, 0, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  
+  /* Tamaño fijo para carousel */
+  min-width: 180px;
+  max-width: 220px;
+  width: 200px;
+  flex-shrink: 0;
   
   /* SIEMPRE VISIBLE - SIN GSAP - RENDIMIENTO OPTIMIZADO */
   opacity: 1 !important;
@@ -143,6 +174,14 @@
 /* Responsive Design for Stats */
 @media (max-width: 768px) {
   .ios-stats-grid {
-    grid-template-columns: repeat(2, 1fr);
+    /* Mantener comportamiento de carousel en móvil */
+    gap: 0.75rem;
+    padding-right: 1rem;
+  }
+  
+  .ios-stat-card {
+    min-width: 160px;
+    max-width: 180px;
+    width: 170px;
   }
 }

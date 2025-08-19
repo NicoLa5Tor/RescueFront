@@ -868,6 +868,8 @@ select[class*="select-"] {
   scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
   /* Force focus on modal scroll */
   -webkit-overflow-scrolling: touch;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* Custom scrollbar for iOS blur body */
