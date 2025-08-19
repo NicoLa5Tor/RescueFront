@@ -4,15 +4,15 @@
 
 {% block extra_css %}
 {{ super() }}
-<script src="{{ url_for('static', filename='js/disable-scroll-effects.js') }}"></script>
+<!-- CRITICAL: Disable ScrollSmoother BEFORE any other scripts load -->
+<script src="{{ url_for('static', filename='js/dashboard/disable-scroll-smoother.js') }}"></script>
 <link href="{{ url_for('static', filename='css/modals.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/hardware/hardware-main.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/company-types/company-types-main.css') }}" rel="stylesheet">
 {% endblock %}
 
 {% block main_content %}
-<div class="company-types-container">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Enhanced iOS Header - HARDWARE STYLE -->
     <div class="ios-header-container mb-8">
       <div class="ios-header-backdrop">
@@ -236,9 +236,7 @@
       </div>
       {% endif %}
       {% endfor %}
-    </div>
   </div>
-</div>
 </div>
 
 <!-- Create/Edit Company Type Modal - EXACT HARDWARE STYLE -->

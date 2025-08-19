@@ -675,6 +675,26 @@ window.addEventListener('load', function() {
 (function() {
     'use strict';
     
+    // ============ VERIFICAR SI ESTAMOS EN UNA VISTA DE DASHBOARD ============
+    // Si estamos en una vista de dashboard, no crear ScrollSmoother
+    function isDashboardView() {
+        const currentPath = window.location.pathname;
+        const dashboardPaths = [
+            '/empresa/dashboard',
+            '/admin/dashboard', 
+            '/admin/super-dashboard',
+            '/empresa/hardware',
+            '/empresa/usuarios',
+            '/empresa/alertas',
+            '/admin/empresas',
+            '/admin/users',
+            '/admin/hardware',
+            '/admin/company-types'
+        ];
+        
+        return dashboardPaths.some(path => currentPath.startsWith(path));
+    }
+    
     // ============ NAMESPACE GLOBAL PARA GSAP ============
     // Crea un objeto global que contiene todas las funcionalidades de GSAP
     window.GSAPMain = {
@@ -713,14 +733,21 @@ window.addEventListener('load', function() {
             // ============ CREAR SCROLLSMOOTHER GLOBAL ============
             // ScrollSmoother proporciona scroll suave en toda la aplicación
             // Busca elementos con IDs específicos para crear el contenedor de scroll
-            this.smoother = ScrollSmoother.create({
-                wrapper: '#gsap-smoother-wrapper',   // Contenedor exterior (fijo)
-                content: '#gsap-smoother-content',   // Contenido que se mueve
-                smooth: 2,                           // Intensidad del suavizado (2 = medio)
-                effects: true,                       // Habilitar efectos de parallax
-                smoothTouch: 0.1,                   // Suavizado en dispositivos táctiles
-                normalizeScroll: true               // Normalizar comportamiento entre navegadores
-            });
+            // PERO NO se crea en vistas de dashboard para evitar problemas de scroll
+            if (isDashboardView()) {
+                console.log('🚫 GSAP: ScrollSmoother NO creado - Vista de dashboard detectada');
+                this.smoother = null;
+            } else {
+                this.smoother = ScrollSmoother.create({
+                    wrapper: '#gsap-smoother-wrapper',   // Contenedor exterior (fijo)
+                    content: '#gsap-smoother-content',   // Contenido que se mueve
+                    smooth: 2,                           // Intensidad del suavizado (2 = medio)
+                    effects: true,                       // Habilitar efectos de parallax
+                    smoothTouch: 0.1,                   // Suavizado en dispositivos táctiles
+                    normalizeScroll: true               // Normalizar comportamiento entre navegadores
+                });
+                console.log('✅ GSAP: ScrollSmoother creado para página normal');
+            }
             
             // ============ CONFIGURAR LISTENERS GLOBALES ============
             this.setupGlobalListeners();

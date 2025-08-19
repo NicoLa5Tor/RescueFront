@@ -11,14 +11,14 @@
         const dashboardPaths = [
             '/empresa/dashboard',
             '/admin/dashboard', 
-            '/admin/super_admin_dashboard',
+            '/admin/super-dashboard',
             '/empresa/hardware',
             '/empresa/usuarios',
             '/empresa/alertas',
             '/admin/empresas',
             '/admin/users',
             '/admin/hardware',
-            '/admin/company_types'
+            '/admin/company-types'
         ];
         
         return dashboardPaths.some(path => currentPath.startsWith(path));
