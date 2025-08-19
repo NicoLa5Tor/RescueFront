@@ -1,0 +1,138 @@
+/* ===================================================================
+   ADMIN MAIN STYLES - Sistema modular centralizado
+   =================================================================== */
+
+/* === CORE SYSTEM === */
+/* Importar estilos fundamentales en orden específico */
+
+/* 1. Modales (base para todos los sistemas) */
+@import url('../modals.css');
+
+/* 2. Sistema iOS principal (hardware-main.css contiene todo el sistema iOS) */
+@import url('../hardware/hardware-main.css');
+
+/* === SPECIFIC MODULES === */
+/* Solo estilos específicos que no están en hardware-main.css */
+
+/* 3. Usuarios - solo estilos únicos no cubiertos por hardware-main */
+@import url('../usuarios/usuarios-main.css');
+
+/* 4. Company Types - solo estilos únicos no cubiertos por hardware-main */
+@import url('../company-types/company-types-main.css');
+
+/* 5. Hardware específico adicional (location modal, etc.) */
+@import url('../hardware/location-modal.css');
+
+/* ===================================================================
+   ADMIN CORE OVERRIDES & UNIFIED STYLES
+   =================================================================== */
+
+/* Asegurar visibilidad por defecto para todos los componentes iOS */
+.ios-header-container,
+.ios-stats-grid .ios-stat-card,
+.ios-hardware-grid .ios-hardware-card,
+.ios-empresas-grid .ios-empresa-card,
+.empresa-item,
+.company-type-item,
+.usuario-item {
+  opacity: 1 !important;
+  transform: none !important;
+  visibility: visible !important;
+}
+
+/* ===================================================================
+   UNIFIED EMPRESA STYLES
+   =================================================================== */
+
+/* Estilos específicos para empresas */
+.empresa-item .ios-info-label {
+  display: flex;
+  align-items: center;
+  font-size: 0.75rem;
+}
+
+/* Hacer que ciertos elementos ocupen fila completa */
+.empresa-item .ios-info-item.full-width,
+.company-type-item .ios-info-item.full-width {
+  grid-column: 1 / -1;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.empresa-item .ios-card-info,
+.company-type-item .ios-card-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.empresa-item .ios-card-subtitle,
+.company-type-item .ios-card-subtitle {
+  max-height: 3rem;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* Botones específicos para empresas */
+.ios-card-btn-info {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.ios-card-btn-info:hover {
+  background: linear-gradient(135deg, #2563eb, #1e40af);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+}
+
+/* ===================================================================
+   FEATURE TAGS (Company Types)
+   =================================================================== */
+
+.feature-tag {
+  transition: all 0.2s ease;
+}
+
+.feature-tag:hover {
+  transform: scale(1.05);
+}
+
+/* ===================================================================
+   RESPONSIVE IMPROVEMENTS
+   =================================================================== */
+
+@media (max-width: 768px) {
+  .ios-hardware-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .ios-stats-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+  
+  .ios-filters-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .ios-stats-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ===================================================================
+   PERFORMANCE OPTIMIZATIONS
+   =================================================================== */
+
+.ios-hardware-card,
+.ios-stat-card {
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+.ios-blur-modal-container {
+  transform: translateZ(0);
+}

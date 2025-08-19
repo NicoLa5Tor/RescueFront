@@ -2,10 +2,11 @@
 {% block title %}Dashboard - Sistema Multi-Tenant{% endblock %}
 
 {% block extra_css %}
-<!<!-- DASHBOARD SCROLL MANAGER - DEBE CARGARSE PRIMERO -->
+<!-- ===== ADMIN SCRIPTS GLOBALES - SE CARGAN EN TODAS LAS VISTAS ===== -->
+<!-- DASHBOARD SCROLL MANAGER - DEBE CARGARSE PRIMERO -->
 <script src="{{ url_for('static', filename='js/dashboard/disable-scroll-smoother.js') }}"></script>
-<!<!-- SCRIPT ANTI-BORDES-BLANCOS DESACTIVADO TEMPORALMENTE -->
-<!<!-- <script src="{{ url_for('static', filename='js/disable-scroll-effects.js') }}"></script> -->
+<!-- SCRIPT ANTI-BORDES-BLANCOS -->
+<script src="{{ url_for('static', filename='js/disable-scroll-effects.js') }}"></script>
 
 <!-- External Libraries -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -19,6 +20,9 @@
 
 <!-- Super Dashboard iOS Styles SOLO para componentes específicos -->
 <link href="{{ url_for('static', filename='css/super-dashboard/super-dashboard-main.css') }}" rel="stylesheet">
+
+<!-- ===== ADMIN UNIFIED SYSTEM - SISTEMA MODULAR ===== -->
+<link href="{{ url_for('static', filename='css/admin/admin-main.css') }}" rel="stylesheet">
 
 <!-- Enhanced CSS for improved functionality -->
 <style>

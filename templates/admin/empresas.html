@@ -4,68 +4,7 @@
 
 {% block extra_css %}
 {{ super() }}
-<script src="{{ url_for('static', filename='js/disable-scroll-effects.js') }}"></script>
-<!-- SISTEMA UNIFICADO - TODO EN UNO -->
-<link href="{{ url_for('static', filename='css/hardware/hardware-main.css') }}" rel="stylesheet">
-<style>
-/* Asegurar visibilidad por defecto - SISTEMA UNIFICADO */
-.ios-header-container,
-.ios-stats-grid .ios-stat-card,
-.ios-hardware-grid .ios-hardware-card,
-.ios-empresas-grid .ios-empresa-card {
-  opacity: 1 !important;
-  transform: none !important;
-  visibility: visible !important;
-}
-
-/* Asegurar que las tarjetas de empresas sean visibles desde el inicio */
-.empresa-item,
-.ios-empresa-card {
-  opacity: 1 !important;
-  transform: none !important;
-  visibility: visible !important;
-}
-
-/* Estilos específicos para empresas */
-.empresa-item .ios-info-label {
-  display: flex;
-  align-items: center;
-  font-size: 0.75rem;
-}
-
-/* Hacer que ciertos elementos ocupen fila completa */
-.empresa-item .ios-info-item.full-width {
-  grid-column: 1 / -1; /* Ocupa toda la fila en el grid */
-  width: 100%;
-  margin-bottom: 8px;
-}
-
-.empresa-item .ios-card-info {
-  display: grid;
-  grid-template-columns: 1fr 1fr; /* Dos columnas por defecto */
-  gap: 8px;
-}
-
-.empresa-item .ios-card-subtitle {
-  max-height: 3rem;
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-}
-
-/* Botones específicos para empresas */
-.ios-card-btn-info {
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-  border: 1px solid rgba(59, 130, 246, 0.3);
-}
-
-.ios-card-btn-info:hover {
-  background: linear-gradient(135deg, #2563eb, #1e40af);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
-}
-</style>
+<!-- Los scripts globales ya se cargan en dashboard.html -->
 {% endblock %}
 
 {% block main_content %}
