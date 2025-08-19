@@ -23,6 +23,9 @@
 /* 5. Hardware específico adicional (location modal, etc.) */
 @import url('../hardware/location-modal.css');
 
+/* 6. SPA Navigation transitions */
+@import url('spa-transitions.css');
+
 /* ===================================================================
    ADMIN CORE OVERRIDES & UNIFIED STYLES
    =================================================================== */

@@ -505,6 +505,10 @@ def super_admin_dashboard():
         active_page='dashboard'
     )
 
+def is_spa_request():
+    """Check if this is a SPA navigation request"""
+    return request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+
 @app.route('/admin/users')
 @require_role(['super_admin', 'empresa'])
 def admin_users():
