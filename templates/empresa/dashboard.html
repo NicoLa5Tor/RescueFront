@@ -30,16 +30,36 @@
 /* Layout fixes mantenidos para compatibilidad */
 @media (min-width: 1024px) {
   .main-content {
-    margin-left: var(--sidebar-width) !important;
     width: calc(100% - var(--sidebar-width)) !important;
   }
 }
 
 @media (min-width: 1200px) {
   .main-content {
-    margin-left: calc(var(--sidebar-width) + 2rem) !important;
     width: calc(100% - var(--sidebar-width) - 2rem) !important;
   }
+}
+
+/* Corregir modales para que no se vean afectados por el margin del sidebar */
+.ios-modal-backdrop,
+.modal-backdrop {
+  margin-left: 0 !important;
+  width: 100vw !important;
+  position: fixed !important;
+  left: 0 !important;
+  right: 0 !important;
+}
+
+.ios-blur-modal-container {
+  margin-left: 0 !important;
+  position: relative !important;
+}
+
+/* Asegurar que el contenido del modal no se vea afectado */
+.ios-blur-body {
+  margin-left: 0 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
 }
 
 /* Resto de estilos comentados - usando CSS de hardware */

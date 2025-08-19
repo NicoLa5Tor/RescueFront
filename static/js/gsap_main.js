@@ -225,6 +225,27 @@ function scrollToTop() {
 function waitForStylesAndHidePreloader() {
     const simplePreloader = document.getElementById('simple-preloader');
     
+    // Saltar preloader en vistas de dashboard para evitar conflictos de scroll
+    const currentPath = window.location.pathname;
+    const dashboardPaths = [
+        '/empresa',
+        '/empresa/dashboard',
+        '/admin/dashboard', 
+        '/admin/super-dashboard',
+        '/empresa/hardware',
+        '/empresa/usuarios',
+        '/empresa/alertas',
+        '/admin/empresas',
+        '/admin/users',
+        '/admin/hardware',
+        '/admin/company-types'
+    ];
+    
+    if (dashboardPaths.some(path => currentPath.startsWith(path))) {
+        console.log('🏢 PRELOADER: Saltando en vista de dashboard para evitar conflictos de scroll');
+        return;
+    }
+    
     if (!simplePreloader || !document.documentElement.classList.contains('show-simple-preloader')) {
         return;
     }
@@ -680,6 +701,7 @@ window.addEventListener('load', function() {
     function isDashboardView() {
         const currentPath = window.location.pathname;
         const dashboardPaths = [
+            '/empresa',
             '/empresa/dashboard',
             '/admin/dashboard', 
             '/admin/super-dashboard',
