@@ -28,3 +28,52 @@
     @apply bg-gradient-to-r from-rescue-red to-rescue-blue bg-clip-text text-transparent;
   }
 }
+
+/* CRITICAL FIX: Override Tailwind Forms plugin for select visibility in light mode */
+@layer utilities {
+  /* Force select text color in light mode - highest priority */
+  html:not(.dark) select,
+  body:not(.dark) select,
+  :root:not(.dark) select {
+    color: #1f2937 !important;
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    -webkit-text-fill-color: #1f2937 !important;
+  }
+  
+  /* Force option text color in light mode */
+  html:not(.dark) select option,
+  body:not(.dark) select option,
+  :root:not(.dark) select option {
+    color: #1f2937 !important;
+    background-color: #ffffff !important;
+    -webkit-text-fill-color: #1f2937 !important;
+  }
+  
+  /* Specific override for ios-filter-input class */
+  html:not(.dark) .ios-filter-input,
+  body:not(.dark) .ios-filter-input,
+  :root:not(.dark) .ios-filter-input {
+    color: #1f2937 !important;
+    background-color: rgba(255, 255, 255, 0.9) !important;
+    -webkit-text-fill-color: #1f2937 !important;
+  }
+  
+  /* Chrome/WebKit specific fix */
+  @supports (-webkit-appearance: none) {
+    html:not(.dark) select,
+    body:not(.dark) select,
+    :root:not(.dark) select {
+      color: #1f2937 !important;
+      -webkit-text-fill-color: #1f2937 !important;
+      -webkit-appearance: menulist !important;
+    }
+    
+    html:not(.dark) select option,
+    body:not(.dark) select option,
+    :root:not(.dark) select option {
+      color: #1f2937 !important;
+      background-color: #ffffff !important;
+      -webkit-text-fill-color: #1f2937 !important;
+    }
+  }
+}

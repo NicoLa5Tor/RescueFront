@@ -290,6 +290,38 @@ body.empresas-modal-open {
   color: var(--text-tertiary);
 }
 
+/* Fix for select visibility in light mode - Chrome specific issue */
+:root:not(.dark) select.form-select,
+body:not(.dark) select.form-select,
+html:not(.dark) select.form-select {
+  color: rgba(30, 41, 59, 0.9) !important;
+  background-color: rgba(255, 255, 255, 0.95) !important;
+}
+
+:root:not(.dark) select.form-select option,
+body:not(.dark) select.form-select option,
+html:not(.dark) select.form-select option {
+  color: rgba(30, 41, 59, 0.9) !important;
+  background-color: rgba(255, 255, 255, 1) !important;
+}
+
+/* Chrome/Webkit specific fix for selects */
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  :root:not(.dark) select.form-select,
+  body:not(.dark) select.form-select,
+  html:not(.dark) select.form-select {
+    color: rgba(30, 41, 59, 0.9) !important;
+    background-color: rgba(255, 255, 255, 0.95) !important;
+  }
+  
+  :root:not(.dark) select.form-select option,
+  body:not(.dark) select.form-select option,
+  html:not(.dark) select.form-select option {
+    color: rgba(30, 41, 59, 0.9) !important;
+    background-color: rgba(255, 255, 255, 1) !important;
+  }
+}
+
 /* Light Mode Strong Contrast */
 :not(.dark) .modal-container {
  

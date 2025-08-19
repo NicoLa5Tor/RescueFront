@@ -5,10 +5,11 @@
 {% block extra_css %}
 {{ super() }}
 <script src="{{ url_for('static', filename='js/disable-scroll-effects.js') }}"></script>
-<!-- USAR EXACTAMENTE LOS MISMOS ESTILOS DE HARDWARE -->
+<!-- USAR EXACTAMENTE LOS MISMOS ESTILOS DE HARDWARE Y MODALES UNIFICADOS -->
 <link href="{{ url_for('static', filename='css/modals.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/hardware/hardware-main.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/usuarios/usuarios-modal-fix.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/usuarios/usuarios-main.css') }}" rel="stylesheet">
 <style>
 /* Asegurar visibilidad por defecto - OVERRIDE para usuarios */
 .ios-header-container,
@@ -198,6 +199,58 @@
   max-width: 600px;
   width: 90%;
   transform: translateZ(0) !important;
+}
+
+/* CRITICAL FIX - Force select text to be visible in Chrome light mode */
+body:not(.dark) select.ios-filter-input,
+html:not(.dark) select.ios-filter-input,
+:root:not(.dark) select.ios-filter-input {
+  color: #1f2937 !important;
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  -webkit-text-fill-color: #1f2937 !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+}
+
+/* Force option colors in light mode */
+body:not(.dark) select.ios-filter-input option,
+html:not(.dark) select.ios-filter-input option,
+:root:not(.dark) select.ios-filter-input option {
+  color: #1f2937 !important;
+  background-color: white !important;
+  -webkit-text-fill-color: #1f2937 !important;
+}
+
+/* Chrome/Webkit specific aggressive override */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  body:not(.dark) select.ios-filter-input,
+  html:not(.dark) select.ios-filter-input,
+  :root:not(.dark) select.ios-filter-input {
+    color: #1f2937 !important;
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    -webkit-text-fill-color: #1f2937 !important;
+    -webkit-appearance: menulist !important;
+  }
+  
+  body:not(.dark) select.ios-filter-input option,
+  html:not(.dark) select.ios-filter-input option,
+  :root:not(.dark) select.ios-filter-input option {
+    color: #1f2937 !important;
+    background-color: white !important;
+    -webkit-text-fill-color: #1f2937 !important;
+  }
+}
+
+/* Additional fallback for any select element in light mode */
+body:not(.dark) select,
+html:not(.dark) select {
+  color: #1f2937 !important;
+}
+
+body:not(.dark) option,
+html:not(.dark) option {
+  color: #1f2937 !important;
+  background-color: white !important;
 }
 </style>
 {% endblock %}

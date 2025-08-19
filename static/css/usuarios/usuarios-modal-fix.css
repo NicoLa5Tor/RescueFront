@@ -1,4 +1,7 @@
-/* /* 
+/* ===== USUARIOS MODALS UNIFIED CSS - RESPONSIVE ===== */
+/* Estilos unificados para modales de usuarios en vistas admin y empresa */
+
+/* ===== BASE MODAL POSITIONING ===== */
 #viewUserModal,
 #editUserModal,
 #toggleUserModal,
@@ -21,6 +24,7 @@
   contain: layout style paint !important;
 }
 
+/* ===== MODAL VISIBLE STATES ===== */
 #viewUserModal:not(.hidden),
 #editUserModal:not(.hidden),
 #toggleUserModal:not(.hidden),
@@ -33,70 +37,32 @@
   align-items: flex-start !important;
   justify-content: center !important;
   padding: 1rem !important;
-  padding-top: 5vh !important;
+  padding-top: 3vh !important;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
-#createUserModal:not(.hidden),
-#editUserModal:not(.hidden) {
+/* ===== SPECIFIC MODAL POSITIONING ===== */
+/* View modal - un poco más alto */
+#viewUserModal:not(.hidden) {
   padding-top: 4vh !important;
 }
 
-#toggleUserModal:not(.hidden),
-#userUpdateModal:not(.hidden) {
-  padding-top: 8vh !important;
-}
-
-#viewUserModal.hidden,
-#editUserModal.hidden,
-#toggleUserModal.hidden,
-
-#viewUserModal,
-#editUserModal,
-#toggleUserModal,
-#createUserModal,
-#userUpdateModal {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  z-index: 99999 !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  border: none !important;
-  transform: none !important;
-  background: none !important;
-  isolation: isolate !important;
-  contain: layout style paint !important;
-}
-
-#viewUserModal:not(.hidden),
-#editUserModal:not(.hidden),
-#toggleUserModal:not(.hidden),
+/* Create y Edit modals - más centrados */
 #createUserModal:not(.hidden),
-#userUpdateModal:not(.hidden) {
-  background: rgba(0, 0, 0, 0.4) !important;
-  backdrop-filter: blur(20px) saturate(1.8) brightness(0.8) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(1.8) brightness(0.8) !important;
-  display: flex !important;
+#editUserModal:not(.hidden) {
+  padding-top: 2vh !important;
   align-items: flex-start !important;
-  justify-content: center !important;
-  padding: 1rem !important;
-  padding-top: 5vh !important;
 }
 
-#createUserModal:not(.hidden),
-#editUserModal:not(.hidden) {
-  padding-top: 4vh !important;
-}
-
+/* Toggle y Update modals - más centrados */
 #toggleUserModal:not(.hidden),
 #userUpdateModal:not(.hidden) {
   padding-top: 8vh !important;
+  align-items: center !important;
 }
 
+/* ===== MODAL HIDDEN STATES ===== */
 #viewUserModal.hidden,
 #editUserModal.hidden,
 #toggleUserModal.hidden,
@@ -108,52 +74,39 @@
   pointer-events: none !important;
 }
 
-* #viewUserModal,
-* #editUserModal,
-* #toggleUserModal,
-* #createUserModal,
-* #userUpdateModal {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  z-index: 99999 !important;
-  transform: none !important;
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
-body.modal-open {
+/* ===== BODY MODAL STATES ===== */
+body.modal-open,
+body.usuarios-modal-open {
   overflow: hidden !important;
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
 }
 
+/* ===== MODAL CONTAINER RESPONSIVE ===== */
 .ios-blur-modal-container {
   position: relative !important;
-  margin: 0 !important;
+  margin: 0 auto !important;
+  max-width: min(95vw, 900px) !important;
+  width: 100% !important;
+  transform: translateZ(0) !important;
 }
 
-@media (max-width: 768px) {
-  #viewUserModal:not(.hidden),
-  #editUserModal:not(.hidden),
-  #toggleUserModal:not(.hidden),
-  #createUserModal:not(.hidden),
-  #userUpdateModal:not(.hidden) {
-    padding: 0.5rem !important;
-    align-items: flex-start !important;
-  }
+/* Contenedores específicos por tipo de modal */
+#viewUserModal .ios-blur-modal-container {
+  max-width: min(90vw, 700px) !important;
 }
 
-body #viewUserModal,
-body #editUserModal,
-body #toggleUserModal,
-body #createUserModal,
-body #userUpdateModal {
-  position: fixed !important;
-  inset: 0 !important;
-  z-index: 99999 !important;
+#createUserModal .ios-blur-modal-container,
+#editUserModal .ios-blur-modal-container {
+  max-width: min(95vw, 900px) !important;
 }
 
+#toggleUserModal .ios-blur-modal-container,
+#userUpdateModal .ios-blur-modal-container {
+  max-width: min(85vw, 500px) !important;
+}
+
+/* ===== IOS MODAL BACKDROP COMPATIBILITY ===== */
 .ios-modal-backdrop {
   position: fixed !important;
   top: 0 !important;
@@ -164,11 +117,12 @@ body #userUpdateModal {
   display: flex !important;
   align-items: flex-start !important;
   justify-content: center !important;
-  padding-top: 10vh !important;
   padding: 1rem !important;
+  padding-top: 3vh !important;
   background: rgba(0, 0, 0, 0.4) !important;
   backdrop-filter: blur(20px) saturate(1.8) brightness(0.8) !important;
   -webkit-backdrop-filter: blur(20px) saturate(1.8) brightness(0.8) !important;
+  transition: opacity 0.3s ease, backdrop-filter 0.3s ease;
 }
 
 .ios-modal-backdrop.hidden {
@@ -176,41 +130,40 @@ body #userUpdateModal {
   visibility: hidden !important;
   opacity: 0 !important;
   pointer-events: none !important;
+  transition: opacity 0.3s ease, backdrop-filter 0.3s ease, visibility 0s 0.3s;
 }
 
-#createUserModal.hidden,
-#userUpdateModal.hidden {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
+/* ===== RESPONSIVE DESIGN ===== */
+
+/* Large Desktops (1200px+) */
+@media (min-width: 1200px) {
+  .ios-blur-modal-container {
+    max-width: 1000px !important;
+  }
+  
+  #createUserModal:not(.hidden),
+  #editUserModal:not(.hidden) {
+    padding-top: 3vh !important;
+  }
 }
 
-* #viewUserModal,
-* #editUserModal,
-* #toggleUserModal,
-* #createUserModal,
-* #userUpdateModal {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  z-index: 99999 !important;
-  transform: none !important;
-  margin: 0 !important;
-  padding: 0 !important;
+/* Tablets and Small Desktops (768px - 1199px) */
+@media (max-width: 1199px) and (min-width: 769px) {
+  .ios-blur-modal-container {
+    max-width: 90vw !important;
+  }
+  
+  #viewUserModal:not(.hidden) {
+    padding-top: 3vh !important;
+  }
+  
+  #createUserModal:not(.hidden),
+  #editUserModal:not(.hidden) {
+    padding-top: 2vh !important;
+  }
 }
 
-body.modal-open {
-  overflow: hidden !important;
-}
-
-.ios-blur-modal-container {
-  position: relative !important;
-  margin: 0 !important;
-}
-
+/* Mobile and Small Tablets (768px and below) */
 @media (max-width: 768px) {
   #viewUserModal:not(.hidden),
   #editUserModal:not(.hidden),
@@ -218,10 +171,148 @@ body.modal-open {
   #createUserModal:not(.hidden),
   #userUpdateModal:not(.hidden) {
     padding: 0.5rem !important;
+    padding-top: 1vh !important;
     align-items: flex-start !important;
+  }
+  
+  .ios-blur-modal-container {
+    max-width: 100vw !important;
+    width: 100% !important;
+    margin: 0 !important;
+    min-height: auto !important;
+  }
+  
+  /* Hacer modales más accesibles en móviles */
+  #createUserModal .ios-blur-modal-container,
+  #editUserModal .ios-blur-modal-container {
+    max-height: 95vh !important;
+  }
+  
+  /* Modal body scrollable en móviles */
+  .ios-blur-body {
+    max-height: calc(95vh - 200px) !important;
+    overflow-y: auto !important;
   }
 }
 
+/* Small Mobile (480px and below) */
+@media (max-width: 480px) {
+  #viewUserModal:not(.hidden),
+  #editUserModal:not(.hidden),
+  #toggleUserModal:not(.hidden),
+  #createUserModal:not(.hidden),
+  #userUpdateModal:not(.hidden) {
+    padding: 0.25rem !important;
+    padding-top: 0.5vh !important;
+  }
+  
+  .ios-blur-modal-container {
+    border-radius: 16px !important;
+  }
+  
+  /* Form grid en una columna en móviles pequeños */
+  .form-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+}
+
+/* ===== ACCESSIBILITY ===== */
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  #viewUserModal:not(.hidden),
+  #editUserModal:not(.hidden),
+  #toggleUserModal:not(.hidden),
+  #createUserModal:not(.hidden),
+  #userUpdateModal:not(.hidden) {
+    background: rgba(0, 0, 0, 0.8) !important;
+  }
+  
+  .ios-blur-modal-container {
+    border: 2px solid rgba(255, 255, 255, 0.3) !important;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .ios-blur-modal-container {
+    transition: none !important;
+  }
+  
+  #viewUserModal,
+  #editUserModal,
+  #toggleUserModal,
+  #createUserModal,
+  #userUpdateModal {
+    transition: none !important;
+  }
+}
+
+/* ===== LANDSCAPE ORIENTATION ===== */
+@media (max-height: 600px) and (orientation: landscape) {
+  #viewUserModal:not(.hidden),
+  #editUserModal:not(.hidden),
+  #toggleUserModal:not(.hidden),
+  #createUserModal:not(.hidden),
+  #userUpdateModal:not(.hidden) {
+    padding-top: 1vh !important;
+    align-items: flex-start !important;
+  }
+  
+  .ios-blur-modal-container {
+    max-height: 95vh !important;
+  }
+  
+  .ios-blur-body {
+    max-height: calc(95vh - 150px) !important;
+    overflow-y: auto !important;
+  }
+}
+
+/* ===== PHONE INPUT SPECIFIC FIXES ===== */
+
+/* Asegurar que los inputs de teléfono se vean bien en modales */
+.phone-input-container {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 0;
+  align-items: stretch;
+  width: 100%;
+}
+
+.phone-country-selector {
+  z-index: 10002;
+  border-right: none;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.phone-country-dropdown {
+  z-index: 10003;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: max-content;
+  min-width: 250px;
+}
+
+/* ===== FORM RESPONSIVE FIXES ===== */
+
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+  
+  .form-group-full {
+    grid-column: 1 !important;
+  }
+}
+
+/* ===== Z-INDEX HIERARCHY ===== */
+
+/* Asegurar jerarquía correcta de z-index */
 body #viewUserModal,
 body #editUserModal,
 body #toggleUserModal,
@@ -232,26 +323,23 @@ body #userUpdateModal {
   z-index: 99999 !important;
 }
 
-.ios-modal-backdrop {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  z-index: 99999 !important;
-  display: flex !important;
-  align-items: flex-start !important;
-  justify-content: center !important;
-  padding-top: 10vh !important;
-  padding: 1rem !important;
-  background: rgba(0, 0, 0, 0.4) !important;
-  backdrop-filter: blur(20px) saturate(1.8) brightness(0.8) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(1.8) brightness(0.8) !important;
+/* Dropdown de teléfono por encima de modales */
+.phone-country-dropdown {
+  z-index: 100001 !important;
 }
 
-.ios-modal-backdrop.hidden {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-}  */
+/* Tooltips y otros elementos flotantes */
+.iti__country-list {
+  z-index: 100002 !important;
+}
+
+/* ===== PRINT STYLES ===== */
+@media print {
+  #viewUserModal,
+  #editUserModal,
+  #toggleUserModal,
+  #createUserModal,
+  #userUpdateModal {
+    display: none !important;
+  }
+}
