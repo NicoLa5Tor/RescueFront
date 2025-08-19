@@ -589,9 +589,10 @@ class HardwareMain {
         <button class="ios-card-btn" onclick="viewHardware('${hardware._id}')" title="Ver detalles">
           <i class="fas fa-eye"></i>
         </button>
+        ${window.currentUser?.role !== 'empresa' ? `
         <button class="ios-card-btn ios-card-btn-primary" onclick="editHardware('${hardware._id}')" title="Editar">
           <i class="fas fa-edit"></i>
-        </button>
+        </button>` : ''}
         <button class="ios-card-btn ${hardware.activa ? 'ios-card-btn-warning' : 'ios-card-btn-success'}" 
                 onclick="toggleHardwareStatus('${hardware._id}', ${!hardware.activa})" 
                 title="${hardware.activa ? 'Desactivar' : 'Activar'}">
