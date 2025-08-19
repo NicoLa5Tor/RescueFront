@@ -219,7 +219,7 @@ class AuthManager {
      */
     showMessage(message, type = 'info') {
         const notification = document.createElement('div');
-        notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg text-white max-w-sm ${
+        notification.className = `auth-notification fixed top-4 right-4 p-4 rounded-lg text-white max-w-sm ${
             type === 'error' ? 'bg-red-500' : 
             type === 'success' ? 'bg-green-500' : 
             'bg-blue-500'

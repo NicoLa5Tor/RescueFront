@@ -2484,7 +2484,7 @@ function showSimpleNotification(message, type = 'info', duration = 4000) {
     const notificationElement = document.createElement('div');
     notificationElement.id = notificationId;
     notificationElement.innerHTML = `
-        <div class="fixed top-4 right-4 z-50 transform transition-all duration-500 ease-out" style="transform: translateX(100%) scale(0.8); opacity: 0;">
+        <div class="alert-notification fixed top-4 right-4 transform transition-all duration-500 ease-out" style="transform: translateX(100%) scale(0.8); opacity: 0; z-index: 1080;">
             <div class="bg-gradient-to-r ${config.bgClass} text-white px-6 py-4 rounded-2xl shadow-2xl border border-white/20 backdrop-blur-sm max-w-sm min-w-80">
                 <div class="flex items-center space-x-4">
                     <!-- Icono animado -->
