@@ -1383,7 +1383,7 @@ class UsuariosModals {
     }, 4000);
   }
 
-  // ===== GLOBAL FUNCTIONS =====
+// ===== GLOBAL FUNCTIONS =====
   
   viewUser(userId) {
     this.openViewModal(userId);
@@ -1409,4 +1409,97 @@ window.toggleUser = (userId, currentStatus, userName) => usuariosModals.showTogg
 window.closeToggleModal = () => usuariosModals.closeToggleModal();
 window.confirmToggle = () => usuariosModals.confirmToggle();
 window.closeUpdateModal = () => usuariosModals.closeUpdateModal();
+
+// ===== FUNCIONES GLOBALES ADICIONALES PARA HTML =====
+
+/**
+ * Exportar usuarios - Función global llamada desde HTML
+ */
+window.exportUsuarios = function() {
+  console.log('📊 Exportando usuarios...');
+  if (window.usuariosMain && window.usuariosMain.exportUsuarios) {
+    window.usuariosMain.exportUsuarios();
+  } else {
+    console.warn('⚠️ Función exportUsuarios no disponible en usuariosMain');
+    alert('Función de exportación no disponible en este momento');
+  }
+};
+
+/**
+ * Limpiar filtros de usuarios - Función global llamada desde HTML
+ */
+window.clearUsuariosFilters = function() {
+  console.log('🧹 Limpiando filtros de usuarios...');
+  if (window.usuariosMain && window.usuariosMain.clearFilters) {
+    window.usuariosMain.clearFilters();
+  } else {
+    // Fallback manual
+    document.getElementById('searchInput').value = '';
+    document.getElementById('statusFilter').value = '';
+    document.getElementById('includeInactiveFilter').value = 'active';
+    console.log('✅ Filtros limpiados manualmente');
+  }
+};
+
+/**
+ * Toggle country dropdown para teléfonos - Función global llamada desde HTML
+ */
+window.toggleCountryDropdown = function(element) {
+  const dropdown = element.querySelector('.phone-country-dropdown');
+  if (dropdown) {
+    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+  }
+};
+
+/**
+ * Seleccionar país para teléfonos - Función global llamada desde HTML
+ */
+window.selectCountry = function(element, event) {
+  event.stopPropagation();
+  
+  const countryCode = element.dataset.code;
+  const countryName = element.dataset.country;
+  
+  // Find the parent selector
+  const selector = element.closest('.phone-country-selector');
+  if (selector) {
+    const flagSpan = selector.querySelector('.country-flag');
+    const codeSpan = selector.querySelector('.country-code');
+    
+    // Update the display
+    if (codeSpan) codeSpan.textContent = countryCode;
+    
+    // Set flag emoji based on country
+    if (flagSpan) {
+      const flags = {
+        'co': '🇨🇴',
+        'us': '🇺🇸', 
+        'mx': '🇲🇽',
+        'ar': '🇦🇷',
+        'cl': '🇨🇱',
+        'pe': '🇵🇪'
+      };
+      flagSpan.textContent = flags[countryName] || '🌐';
+    }
+    
+    // Hide dropdown
+    const dropdown = selector.querySelector('.phone-country-dropdown');
+    if (dropdown) {
+      dropdown.style.display = 'none';
+    }
+  }
+  
+  console.log('🌍 País seleccionado:', countryName, countryCode);
+};
+
+// Cerrar dropdowns cuando se haga clic fuera
+document.addEventListener('click', function(event) {
+  if (!event.target.closest('.phone-country-selector')) {
+    document.querySelectorAll('.phone-country-dropdown').forEach(dropdown => {
+      dropdown.style.display = 'none';
+    });
+  }
+});
+
 console.log('👥 Usuarios modals module loaded - MODALSCROLLMANAGER VERSION');
+console.log('🌐 Funciones globales adicionales registradas para HTML');

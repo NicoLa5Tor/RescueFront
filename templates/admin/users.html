@@ -43,7 +43,7 @@
       <div class="ios-filters-grid">
         <div class="ios-filter-item col-span-full">
           <label class="ios-filter-label">Seleccionar Empresa</label>
-          <select id="empresaSelector" class="ios-filter-input">
+          <select id="empresaSelector" class="ios-filter-input" onchange="selectEmpresaFromHTML(this.value)">
             <option value="">Cargando empresas...</option>
           </select>
         </div>

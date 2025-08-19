@@ -1099,6 +1099,20 @@ window.refreshUsuarios = () => {
   }
 };
 
+// Global function for empresa selection (fallback for HTML onchange)
+window.selectEmpresaFromHTML = (empresaId) => {
+  console.log('🏢 selectEmpresaFromHTML llamado con:', empresaId);
+  if (window.usuariosMain) {
+    if (empresaId) {
+      window.usuariosMain.selectEmpresa(empresaId);
+    } else {
+      window.usuariosMain.clearUsuarios();
+    }
+  } else {
+    console.error('❌ usuariosMain no disponible');
+  }
+};
+
 // Global function for SPA to initialize users page
 window.initializeUsuariosPage = () => {
   console.log('🔄 SPA: Inicializando página de usuarios');
