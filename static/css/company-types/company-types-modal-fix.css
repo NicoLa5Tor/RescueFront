@@ -1,87 +1,42 @@
-/* #companyTypeModal,
-#detailsModal,
-#toggleCompanyTypeModal,
-#clientUpdateModal {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  z-index: 99999 !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  border: none !important;
-  transform: none !important;
-  background: none !important;
-  isolation: isolate !important;
-  contain: layout style paint !important;
-}
-#companyTypeModal:not(.hidden),
-#detailsModal:not(.hidden),
-#toggleCompanyTypeModal:not(.hidden),
-#clientUpdateModal:not(.hidden) {
-  background: rgba(0, 0, 0, 0.4) !important;
-  backdrop-filter: blur(20px) saturate(1.8) brightness(0.8) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(1.8) brightness(0.8) !important;
-  display: flex !important;
-  align-items: flex-start !important;
-  justify-content: center !important;
-  padding: 1rem !important;
-  padding-top: 10vh !important;
-}
-#companyTypeModal.hidden,
-#detailsModal.hidden,
-#toggleCompanyTypeModal.hidden,
-#clientUpdateModal.hidden {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-}
-* #companyTypeModal,
-* #detailsModal,
-* #toggleCompanyTypeModal,
-* #clientUpdateModal {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  z-index: 99999 !important;
-  transform: none !important;
-  margin: 0 !important;
-  padding: 0 !important;
-}
+/* ===== COMPANY TYPES MODAL FIXES - PREVENT Z-INDEX AND SCROLL ISSUES ===== */
 
-#companyTypeModal .ios-blur-modal-container,
-#detailsModal .ios-blur-modal-container,
-#toggleCompanyTypeModal .ios-blur-modal-container,
-#clientUpdateModal .ios-blur-modal-container {
-  position: relative !important;
-  margin: 0 !important;
-}
+/* Prevent scroll jumping and hide navbar/sidebar when modals are open */
 body:has(#companyTypeModal:not(.hidden)),
 body:has(#detailsModal:not(.hidden)),
 body:has(#toggleCompanyTypeModal:not(.hidden)),
 body:has(#clientUpdateModal:not(.hidden)) {
   overflow: hidden !important;
 }
-@media (max-width: 768px) {
-  #companyTypeModal:not(.hidden),
-  #detailsModal:not(.hidden),
-  #toggleCompanyTypeModal:not(.hidden),
-  #clientUpdateModal:not(.hidden) {
-    padding: 0.5rem !important;
-    align-items: flex-start !important;
-  }
+
+/* Hide navbar and sidebar when specific company-types modals are active */
+body:has(#companyTypeModal:not(.hidden)) .navbar,
+body:has(#companyTypeModal:not(.hidden)) .sidebar,
+body:has(#detailsModal:not(.hidden)) .navbar,
+body:has(#detailsModal:not(.hidden)) .sidebar,
+body:has(#toggleCompanyTypeModal:not(.hidden)) .navbar,
+body:has(#toggleCompanyTypeModal:not(.hidden)) .sidebar,
+body:has(#clientUpdateModal:not(.hidden)) .navbar,
+body:has(#clientUpdateModal:not(.hidden)) .sidebar {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: translateX(-100%) !important;
 }
-body #companyTypeModal,
-body #detailsModal,
-body #toggleCompanyTypeModal,
-body #clientUpdateModal {
-  position: fixed !important;
-  inset: 0 !important;
-  z-index: 99999 !important;
-} */
+
+/* Ensure modal containers use proper z-index hierarchy */
+#companyTypeModal:not(.hidden),
+#detailsModal:not(.hidden),
+#toggleCompanyTypeModal:not(.hidden),
+#clientUpdateModal:not(.hidden) {
+  z-index: var(--z-modal-backdrop, 10000) !important;
+}
+
+#companyTypeModal .ios-blur-modal-container,
+#detailsModal .ios-blur-modal-container,
+#toggleCompanyTypeModal .ios-blur-modal-container,
+#clientUpdateModal .ios-blur-modal-container {
+  z-index: var(--z-modal, 10001) !important;
+  position: relative !important;
+  margin: 0 !important;
+}

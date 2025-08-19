@@ -9,7 +9,7 @@
   background: rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  z-index: 1000;
+  z-index: var(--z-modal-backdrop, 10000);
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -291,7 +291,43 @@
 
 /* Prevent body scroll when modal is open - SOLO PARA COMPANY TYPES */
 body.company-types-modal-open {
-  overflow: hidden;
+  overflow: hidden !important;
+}
+
+/* Hide navbar and sidebar when company-types modals are active - CRITICAL FIX */
+body.company-types-modal-open .navbar,
+body.company-types-modal-open .sidebar {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: translateX(-100%) !important;
+}
+
+/* Also apply to iOS modal backdrops when active */
+body:has(.ios-ct-modal-backdrop.active) .navbar,
+body:has(.ios-ct-modal-backdrop.active) .sidebar {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: translateX(-100%) !important;
+}
+
+/* Hide navbar/sidebar for specific modal IDs */
+body:has(#companyTypeModal:not(.hidden)) .navbar,
+body:has(#companyTypeModal:not(.hidden)) .sidebar,
+body:has(#detailsModal:not(.hidden)) .navbar,
+body:has(#detailsModal:not(.hidden)) .sidebar,
+body:has(#toggleCompanyTypeModal:not(.hidden)) .navbar,
+body:has(#toggleCompanyTypeModal:not(.hidden)) .sidebar,
+body:has(#clientUpdateModal:not(.hidden)) .navbar,
+body:has(#clientUpdateModal:not(.hidden)) .sidebar {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: translateX(-100%) !important;
 }
 
 /* Responsive Design */

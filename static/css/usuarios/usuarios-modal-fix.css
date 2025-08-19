@@ -76,7 +76,7 @@
 
 /* ===== BODY MODAL STATES ===== */
 body.modal-open,
-body.usuarios-modal-open {
+body.ios-modal-open {
   overflow: hidden !important;
   overscroll-behavior: none;
   -webkit-overflow-scrolling: touch;
@@ -86,25 +86,12 @@ body.usuarios-modal-open {
 .ios-blur-modal-container {
   position: relative !important;
   margin: 0 auto !important;
-  max-width: min(95vw, 900px) !important;
   width: 100% !important;
   transform: translateZ(0) !important;
+  /* Solo aplicar max-width por defecto si no hay clases de Tailwind */
 }
 
-/* Contenedores específicos por tipo de modal */
-#viewUserModal .ios-blur-modal-container {
-  max-width: min(90vw, 700px) !important;
-}
-
-#createUserModal .ios-blur-modal-container,
-#editUserModal .ios-blur-modal-container {
-  max-width: min(95vw, 900px) !important;
-}
-
-#toggleUserModal .ios-blur-modal-container,
-#userUpdateModal .ios-blur-modal-container {
-  max-width: min(85vw, 500px) !important;
-}
+/* Permitir que Tailwind controle el max-width - sin reglas hardcoded */
 
 /* ===== IOS MODAL BACKDROP COMPATIBILITY ===== */
 .ios-modal-backdrop {
@@ -135,24 +122,16 @@ body.usuarios-modal-open {
 
 /* ===== RESPONSIVE DESIGN ===== */
 
-/* Large Desktops (1200px+) */
+/* Large Desktops (1200px+) - Solo ajustar posicionamiento */
 @media (min-width: 1200px) {
-  .ios-blur-modal-container {
-    max-width: 1000px !important;
-  }
-  
   #createUserModal:not(.hidden),
   #editUserModal:not(.hidden) {
     padding-top: 3vh !important;
   }
 }
 
-/* Tablets and Small Desktops (768px - 1199px) */
+/* Tablets and Small Desktops (768px - 1199px) - Solo ajustar posicionamiento */
 @media (max-width: 1199px) and (min-width: 769px) {
-  .ios-blur-modal-container {
-    max-width: 90vw !important;
-  }
-  
   #viewUserModal:not(.hidden) {
     padding-top: 3vh !important;
   }
@@ -176,21 +155,13 @@ body.usuarios-modal-open {
   }
   
   .ios-blur-modal-container {
-    max-width: 100vw !important;
     width: 100% !important;
     margin: 0 !important;
     min-height: auto !important;
   }
   
-  /* Hacer modales más accesibles en móviles */
-  #createUserModal .ios-blur-modal-container,
-  #editUserModal .ios-blur-modal-container {
-    max-height: 95vh !important;
-  }
-  
-  /* Modal body scrollable en móviles */
+  /* Hacer modales más accesibles en móviles - sin restricciones de tamaño */
   .ios-blur-body {
-    max-height: calc(95vh - 200px) !important;
     overflow-y: auto !important;
   }
 }

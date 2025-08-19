@@ -171,9 +171,8 @@
 
 /* Estilos específicos para usuarios únicos que no están en usuarios-modal-fix.css */
 .ios-blur-modal-container {
-  max-width: 600px;
-  width: 90%;
   transform: translateZ(0) !important;
+  /* Permitir que Tailwind controle max-width y width */
 }
 
 /* Ensure content is visible immediately - SOLO para el contenido principal */

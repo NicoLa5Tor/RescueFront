@@ -132,13 +132,13 @@
   --z-50: 50;
   --z-dropdown: 1000;
   --z-sticky: 1020;
-  --z-fixed: 1;
-  --z-modal-backdrop: 9995;
-  --z-modal: 9996;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 10000;
+  --z-modal: 10001;
   --z-popover: 1060;
   --z-tooltip: 1070;
   --z-toast: 1080;
-  --z-max: 9999;
+  --z-max: 10002;
   
   /* Enhanced Glass Morphism */
   --glass-bg: rgba(255, 255, 255, 0.85);

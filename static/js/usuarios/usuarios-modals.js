@@ -120,7 +120,7 @@ class UsuariosModalScrollManager {
     const body = document.body;
     
     // USAR SOLO CLASE CSS CON OVERSCROLL-BEHAVIOR PARA EVITAR BORDES BLANCOS
-    body.classList.add('usuarios-modal-open');
+    body.classList.add('ios-modal-open');
     
     this.isLocked = true;
     console.log('✅ CSS-only scroll lock applied');
@@ -134,7 +134,7 @@ class UsuariosModalScrollManager {
     const body = document.body;
     
     // USAR SOLO CLASE CSS - NO MANIPULAR ESTILOS DIRECTAMENTE
-    body.classList.remove('usuarios-modal-open');
+    body.classList.remove('ios-modal-open');
     
     this.isLocked = false;
     console.log('✅ CSS-only scroll unlock applied');
@@ -436,6 +436,18 @@ class UsuariosModals {
     
     // Usar nuestro ModalScrollManager siempre
     this.modalManager.openModal(modalId, { focusTrap: true });
+    
+    // LIMPIAR ESTILOS INLINE que interfieren con Tailwind
+    setTimeout(() => {
+      const modal = document.getElementById(modalId);
+      const container = modal?.querySelector('.ios-blur-modal-container');
+      if (container) {
+        // Eliminar cualquier estilo inline que esté sobreescribiendo Tailwind
+        container.style.maxWidth = '';
+        container.style.width = '';
+        console.log('🧹 Limpiados estilos inline que interferían con Tailwind');
+      }
+    }, 50);
     
     // Focus en el primer input después de abrir
     setTimeout(() => {

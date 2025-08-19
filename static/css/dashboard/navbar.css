@@ -19,6 +19,22 @@
   -webkit-overflow-scrolling: touch;
 }
 
+/* Hide navbar and sidebar when modals are active */
+body.modal-open .navbar,
+body.ios-modal-open .navbar,
+body.usuarios-modal-open .navbar,
+body.empresas-modal-open .navbar,
+body.modal-open .sidebar,
+body.ios-modal-open .sidebar,
+body.usuarios-modal-open .sidebar,
+body.empresas-modal-open .sidebar {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: translateX(-100%) !important;
+}
+
 /* Responsive navbar heights */
 @media (min-width: 640px) {
   .navbar {

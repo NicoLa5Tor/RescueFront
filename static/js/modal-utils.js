@@ -139,7 +139,7 @@ class ModalManager {
         document.body.style.overflow = '';
         
         // Remover todas las clases de modal conocidas
-        const modalClasses = ['modal-open', 'company-types-modal-open', 'usuarios-modal-open'];
+        const modalClasses = ['modal-open', 'company-types-modal-open', 'ios-modal-open'];
         modalClasses.forEach(className => {
             document.body.classList.remove(className);
         });
@@ -233,9 +233,12 @@ class ModalManager {
             'toggleCompanyTypeModal': 'company-types-modal-open', 
             'clientUpdateModal': 'company-types-modal-open',
             'detailsModal': 'company-types-modal-open',
-            'userModal': 'usuarios-modal-open',
-            'createUserModal': 'usuarios-modal-open',
-            'editUserModal': 'usuarios-modal-open'
+            'userModal': 'ios-modal-open',
+            'createUserModal': 'ios-modal-open',
+            'editUserModal': 'ios-modal-open',
+            'viewUserModal': 'ios-modal-open',
+            'toggleUserModal': 'ios-modal-open',
+            'userUpdateModal': 'ios-modal-open'
         };
         
         return modalClassMap[modalId] || null;
