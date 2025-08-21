@@ -170,66 +170,9 @@
                     });
                 }
                 
-                // Animaciones continuas solo para desktop (evitar problemas en móvil)
-                if (!isMobile) {
-                    // Animación de flotación sutil para las imágenes
-                    gsap.to('.img-clamp', {
-                        rotationZ: 2,
-                        transformOrigin: "center center",
-                        duration: 4,
-                        ease: "power2.inOut",
-                        yoyo: true,
-                        repeat: -1,
-                        stagger: {
-                            amount: 1.2,
-                            from: "random"
-                        },
-                        delay: 4
-                    });
-                    
-                    // Animación de escala respiratoria muy sutil
-                    gsap.to('.img-clamp', {
-                        scale: 1.02,
-                        duration: 5,
-                        ease: "sine.inOut",
-                        yoyo: true,
-                        repeat: -1,
-                        stagger: {
-                            amount: 1.5,
-                            from: "center"
-                        },
-                        delay: 5
-                    });
-                }
+                // Animaciones continuas removidas para mejorar performance del ScrollTrigger
                 
-                // Animación de hover individual para cada imagen
-                gsap.utils.toArray('.img-clamp').forEach((img, index) => {
-                    let hoverTween;
-                    
-                    img.addEventListener('mouseenter', () => {
-                        hoverTween = gsap.to(img, {
-                            scale: 1.08,
-                            rotationY: 8,
-                            rotationX: -3,
-                            z: 50,
-                            duration: 0.6,
-                            ease: "power2.out",
-                            transformOrigin: "center center"
-                        });
-                    });
-                    
-                    img.addEventListener('mouseleave', () => {
-                        if (hoverTween) hoverTween.kill();
-                        gsap.to(img, {
-                            scale: 1,
-                            rotationY: 0,
-                            rotationX: 0,
-                            z: 0,
-                            duration: 0.4,
-                            ease: "power2.out"
-                        });
-                    });
-                });
+                // Animaciones hover removidas para mejorar performance
                 
                 
                 

@@ -89,8 +89,7 @@ a {
   align-items: stretch;
   justify-items: center;
   margin-top: 0.5rem;
-  perspective: 1200px;
-  transform-style: preserve-3d;
+  /* Perspective removido para mejor performance */
 }
 
 .img-clamp {
@@ -99,25 +98,15 @@ a {
   object-fit: cover;
   border-radius: 5%;
   opacity: 0;
-  transform: translateY(50px) scale(0.9) translateZ(0);
+  transform: translateY(50px) scale(0.9);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  backface-visibility: hidden;
-  will-change: transform, opacity, filter;
-  transform-style: preserve-3d;
-  /* Optimizaciones GPU */
+  will-change: transform, opacity;
+  /* Optimizaciones GPU simplificadas */
   -webkit-transform: translateZ(0);
-  -moz-transform: translateZ(0);
-  -ms-transform: translateZ(0);
-  -o-transform: translateZ(0);
-  -webkit-backface-visibility: hidden;
-  -moz-backface-visibility: hidden;
-  -ms-backface-visibility: hidden;
+  transform: translateZ(0);
 }
 
 .img-clamp:hover {
-  /* Hover manejado por GSAP - no CSS */
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
   cursor: pointer;
 }
 
@@ -133,12 +122,11 @@ a {
   }
   
   .img-clamp:hover {
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    /* Hover simplificado en móvil */
   }
   
   .images {
-    /* Simplificar perspective en móvil */
-    perspective: 800px;
+    /* Performance optimizado para móvil */
   }
 }
 
@@ -156,7 +144,7 @@ a {
   width: 112%;
   top: 0;
   top: 50%;
-  transform: translateY(-50%) rotate(2deg);
+  transform: translateY(-50%);
   left: -6%;
 }
 
@@ -164,10 +152,7 @@ a {
   position: relative;
   z-index: 2;
   mix-blend-mode: difference;
-   perspective:1000px;
-    -webkit-backface-visibility: visible;
-    backface-visibility: visible;
-transform: rotate(0.1deg);
+  /* Perspective y transform removidos para mejor performance con ScrollTrigger */
 }
 
 /* Asegurar que elementos dentro del login-header no tengan mix-blend-mode */
