@@ -288,7 +288,7 @@ class AuthManager {
     async testConnection() {
         try {
             //console.log('📌 Probando conexión directa al backend...');
-            const response = await fetch('http://localhost:5002/health', {
+            const response = await fetch('http://rescue-backend:5002/health', {
                 method: 'GET',
                 credentials: 'include'
             });
