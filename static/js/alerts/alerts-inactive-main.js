@@ -1239,6 +1239,33 @@ function generateEmbeddedMap(googleUrl, osmUrl) {
     return '<p class="text-gray-400 text-xs mb-4">⚠️ No se pudieron extraer coordenadas de los enlaces</p>';
 }
 
+
+// ========== FUNCIÓN PARA APERTURA AUTOMÁTICA DE MODAL ==========
+/**
+ * Verifica si debe abrir automáticamente el modal de una alerta inactiva
+ * Esto se activa cuando se llega desde el sistema global de alertas
+ */
+function checkForAutoOpenInactiveAlert() {
+    // Obtener ID de alerta almacenado para apertura automática
+    const openAlertId = sessionStorage.getItem("openAlertId");
+
+    if (openAlertId) {
+        // Limpiar la variable de sesión para evitar reaperturas
+        sessionStorage.removeItem("openAlertId");
+
+        // Esperar a que las alertas se carguen antes de abrir
+        setTimeout(async () => {
+            const alert = await findInactiveAlertById(openAlertId);
+            if (alert) {
+                showInactiveAlertDetails(openAlertId);
+            } else if (typeof window.showSimpleNotification === "function") {
+                // Notificar si la alerta no se pudo cargar
+                window.showSimpleNotification("La alerta seleccionada no se pudo cargar", "warning");
+            }
+        }, 1500);
+    }
+}
+
 // Hacer funciones disponibles globalmente
 window.showInactiveAlertDetails = showInactiveAlertDetails;
 window.closeAlertModal = closeAlertModal;
