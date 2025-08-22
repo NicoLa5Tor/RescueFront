@@ -180,7 +180,7 @@ function renderInactiveAlerts(alerts) {
         }
         
         return `
-        <div class="alert-card ios-hardware-card alert-priority-${alert.prioridad} alert-status-inactive" onclick="//console.log('🖱️ CLICK en alerta:', '${alert._id}'); window.showInactiveAlertDetails('${alert._id}');">
+        <div class="alert-card ios-hardware-card alert-priority-${alert.prioridad} alert-status-inactive" onclick="window.showInactiveAlertDetails('${alert._id}');">
             <div class="flex items-start space-x-4">
                 <div class="flex-shrink-0">
                     <div class="w-16 h-16 rounded-xl flex items-center justify-center ${
