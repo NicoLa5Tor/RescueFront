@@ -205,6 +205,13 @@
   <!-- iOS Hardware Grid View -->
   <div id="hardwareGrid" class="ios-hardware-grid">
     <!-- Hardware cards will be loaded dynamically by JavaScript -->
+    <div id="loadingIndicator" class="text-center py-8">
+      <div class="text-center">
+        <i class="fas fa-spinner fa-spin text-4xl mb-4 text-blue-400"></i>
+        <h2 class="text-2xl font-bold text-white mb-2">Cargando hardware...</h2>
+        <p class="text-sm text-gray-400">Por favor espera un momento</p>
+      </div>
+    </div>
   </div>
 
 </div>
@@ -2044,7 +2051,6 @@ fetch('/proxy/health')
   .then(response => {
     if (response.ok) {
       apiClient = new EndpointTestClient('/proxy');
-      //console.log('API Client initialized');
       
       // Check modal elements
       setTimeout(checkModalElements, 1000);
@@ -2052,14 +2058,14 @@ fetch('/proxy/health')
       // Initialize filter listeners first
       initializeFilterListeners();
       
-      // CARGAR HARDWARE INMEDIATAMENTE PARA ADMINISTRADOR
-      //console.log('✅ API Client listo, cargando hardware de administrador...');
-      loadHardware();
+      // CARGAR HARDWARE INMEDIATAMENTE PARA ADMINISTRADOR - with small delay for DOM readiness
+      setTimeout(() => {
+        loadHardware();
+      }, 50);
     }
   })
 .catch(err => {
-    //console.error('💥 Error initializing API client:', err);
-    //console.error('💥 Stack trace:', err.stack);
+    // Error handling without console logs
   });
 
 // Functions for CRUD operations
@@ -2067,13 +2073,13 @@ let isLoadingHardware = false;
 
 async function loadHardware() {
   if (isLoadingHardware) {
-    //console.warn('⚠️ loadHardware ya en progreso, saltando llamada duplicada...');
     return;
   }
   
   isLoadingHardware = true;
   try {
-    //console.log('🔄 Cargando hardware...');
+    // Small delay to ensure DOM is ready
+    await new Promise(resolve => setTimeout(resolve, 10));
     
     // Determinar qué endpoint usar basado en el filtro de inactivos
     const includeInactiveFilter = document.getElementById('includeInactiveFilter');
@@ -2081,14 +2087,13 @@ async function loadHardware() {
     
     let response;
     if (includeInactive) {
-      //console.log('🌐 Haciendo petición a:', '/proxy/api/hardware/all-including-inactive');
       response = await apiClient.get_hardware_list_including_inactive();
     } else {
-      //console.log('🌐 Haciendo petición a:', '/proxy/api/hardware');
       response = await apiClient.get_hardware_list();
     }
     
-    //console.log('📡 Respuesta recibida - Status:', response.status, 'OK:', response.ok);
+    // Small delay after API response
+    await new Promise(resolve => setTimeout(resolve, 5));
     
     if (!response.ok) {
       if (response.status === 401) {
@@ -2101,28 +2106,14 @@ async function loadHardware() {
     
     const data = await response.json();
     
-    //console.log('📦 Datos COMPLETOS recibidos del servidor:');
-    //console.log(JSON.stringify(data, null, 2));
-    //console.log('🔍 Tipo de dato recibido:', typeof data);
-    //console.log('🔍 Es array data?:', Array.isArray(data));
-    //console.log('🔍 Es array data.data?:', Array.isArray(data.data));
-    //console.log('🔍 Incluye inactivos?:', includeInactive);
+    // Small delay to process data
+    await new Promise(resolve => setTimeout(resolve, 5));
     
     if (data.success) {
-      //console.log(`✅ Hardware cargado exitosamente: ${data.data.length} elementos`);
-      //console.log('📋 Primer elemento de la lista (si existe):');
+      // Validate data structure
       if (data.data && data.data.length > 0) {
-        //console.log(JSON.stringify(data.data[0], null, 2));
-        
-        // Verificar si realmente es hardware o empresas
         const firstItem = data.data[0];
-        if (firstItem.hasOwnProperty('nombre') && firstItem.hasOwnProperty('tipo')) {
-          //console.log('✅ Confirmado: Los datos son HARDWARE');
-        } else if (firstItem.hasOwnProperty('nombre') && firstItem.hasOwnProperty('ubicacion')) {
-          //console.error('❌ ERROR: Los datos son EMPRESAS, no hardware!');
-        } else {
-          //console.warn('⚠️ ADVERTENCIA: Estructura de datos desconocida');
-        }
+        // Basic validation - no console logs needed
       }
       
       // Renderizar hardware (SAME AS EMPRESAS LOGIC)
@@ -2132,9 +2123,8 @@ async function loadHardware() {
       // Apply filters AFTER rendering (SAME AS EMPRESAS)
       // This allows all cards to be created first, then filtered
       setTimeout(() => {
-        //console.log('🔍 Aplicando filtros DESPUÉS del renderizado...');
         applyCurrentFilters();
-      }, 100);
+      }, 150); // Slightly longer delay to ensure DOM is ready
     } else {
       //console.error('❌ Error en la respuesta del servidor:', data.errors);
       // Mostrar mensaje de error al usuario
@@ -2307,35 +2297,25 @@ function closeNotification(button) {
 
 // Render hardware data - SAME LOGIC AS EMPRESAS
 function renderHardware(hardwareList) {
-  //console.log('🎆 === INICIANDO RENDERIZADO DE HARDWARE (EMPRESAS LOGIC) ===');
-  //console.log('📋 hardwareList recibida:', hardwareList);
-  //console.log('🔢 Tipo de hardwareList:', typeof hardwareList);
-  //console.log('🔢 Es array:', Array.isArray(hardwareList));
-  //console.log('🔢 Longitud:', hardwareList ? hardwareList.length : 'N/A');
-  
   const gridContainer = document.getElementById('hardwareGrid');
   
   if (!gridContainer) {
-    //console.error('❌ No se encontró el contenedor del grid');
     return;
   }
   
   // Asegurar que el grid container tenga la clase iOS correcta
   gridContainer.className = 'ios-hardware-grid';
   
-  // Clear existing content more thoroughly
-  //console.log('🧧 Limpiando contenido existente...');
+  // Clear existing content including loading indicator
   gridContainer.innerHTML = '';
   
   // Remove any existing filter messages
   const existingFilterMessage = document.getElementById('filterEmptyMessage');
   if (existingFilterMessage) {
-    //console.log('🧧 Removiendo mensaje de filtro existente');
     existingFilterMessage.remove();
   }
   const existingFilterMessageTable = document.getElementById('filterEmptyMessageTable');
   if (existingFilterMessageTable) {
-    //console.log('🧧 Removiendo mensaje de tabla existente');
     existingFilterMessageTable.remove();
   }
   
