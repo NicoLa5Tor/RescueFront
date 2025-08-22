@@ -4,7 +4,8 @@
 
 {% block extra_css %}
 {{ super() }}
-<script src="{{ url_for('static', filename='js/disable-scroll-effects.js') }}"></script>
+<!-- SCRIPT ANTI-BORDES-BLANCOS DESACTIVADO TEMPORALMENTE -->
+<!-- <script src="{{ url_for('static', filename='js/disable-scroll-effects.js') }}"></script> -->
 <link href="{{ url_for('static', filename='css/modals.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/hardware/hardware-main.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/hardware/location-modal.css') }}" rel="stylesheet">
@@ -2120,11 +2121,8 @@ async function loadHardware() {
       renderHardware(data.data);
       updateStats(data);
       
-      // Apply filters AFTER rendering (SAME AS EMPRESAS)
-      // This allows all cards to be created first, then filtered
-      setTimeout(() => {
-        applyCurrentFilters();
-      }, 150); // Slightly longer delay to ensure DOM is ready
+      // NO aplicar filtros automáticamente - dejar que las tarjetas se muestren
+      // Los filtros se aplican solo cuando el usuario los cambia manualmente
     } else {
       //console.error('❌ Error en la respuesta del servidor:', data.errors);
       // Mostrar mensaje de error al usuario

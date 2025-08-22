@@ -33,9 +33,7 @@ function scrollToTop() {
 }
 
 function waitForStylesAndHidePreloader() {
-    const simplePreloader = document.getElementById('simple-preloader');
-    
-    // Saltar preloader en vistas de dashboard para evitar conflictos de scroll
+    // MOVER VERIFICACIÓN DE RUTAS AL INICIO ANTES DE TOCAR EL SCROLL
     const currentPath = window.location.pathname;
     const dashboardPaths = [
         '/empresa',
@@ -51,12 +49,26 @@ function waitForStylesAndHidePreloader() {
         '/admin/company-types'
     ];
     
+    // SALIR INMEDIATAMENTE si estamos en dashboard ANTES de tocar cualquier estilo
     if (dashboardPaths.some(path => currentPath.startsWith(path))) {
         //console.log('🏢 PRELOADER: Saltando en vista de dashboard para evitar conflictos de scroll');
+        // ASEGURAR que el scroll esté habilitado en vistas de dashboard
+        document.body.style.overflow = '';
+        document.documentElement.style.overflow = '';
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.left = '';
+        document.body.style.width = '';
         return;
     }
     
+    const simplePreloader = document.getElementById('simple-preloader');
+    
     if (!simplePreloader || !document.documentElement.classList.contains('show-simple-preloader')) {
+        // TAMBIÉN asegurar scroll habilitado si no hay preloader
+        document.body.style.overflow = '';
+        document.documentElement.style.overflow = '';
+        document.body.style.position = '';
         return;
     }
     

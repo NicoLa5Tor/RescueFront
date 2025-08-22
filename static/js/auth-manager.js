@@ -23,10 +23,15 @@ class AuthManager {
             
             // Verificar si la sesión es válida haciendo una petición al backend
             // Las cookies se envían automáticamente
-            const response = await fetch('/proxy/health', {
+            // Usar URL absoluta HTTPS para asegurar que no use HTTP
+            const baseUrl = window.location.protocol + '//' + window.location.host;
+            const proxyUrl = baseUrl + '/proxy/health';
+            
+            const response = await fetch(proxyUrl, {
                 method: 'GET',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Cache-Control': 'no-cache, no-store, must-revalidate'
                 },
                 credentials: 'include'
             });
@@ -287,19 +292,28 @@ class AuthManager {
      */
     async testConnection() {
         try {
-            //console.log('📌 Probando conexión al backend a través del proxy...');
-            const response = await fetch('/proxy/health', {
+            //console.log('📌 Probando conexión al backend a través del proxy HTTPS...');
+            // Usar URL absoluta HTTPS para asegurar que no use HTTP
+            const baseUrl = window.location.protocol + '//' + window.location.host;
+            const proxyUrl = baseUrl + '/proxy/health';
+            
+            const response = await fetch(proxyUrl, {
                 method: 'GET',
-                credentials: 'include'
+                credentials: 'include',
+                headers: {
+                    'Cache-Control': 'no-cache, no-store, must-revalidate',
+                    'Pragma': 'no-cache',
+                    'Expires': '0'
+                }
             });
-            //console.log('🌐 Respuesta de conexión:', response.status, response.statusText);
+            //console.log('🌐 Respuesta de conexión HTTPS:', response.status, response.statusText);
             if (response.ok) {
                 const data = await response.json();
                 //console.log('📝 Datos de health:', data);
             }
             return response.ok;
         } catch (error) {
-            //console.error('❌ Error de conexión:', error);
+            //console.error('❌ Error de conexión HTTPS:', error);
             return false;
         }
     }
