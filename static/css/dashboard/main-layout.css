@@ -8,11 +8,6 @@ html, body {
     overflow-x: hidden;
 }
 
-/* Mantener el espacio del scrollbar para evitar parpadeo durante la carga */
-html {
-    overflow-y: scroll;
-    scrollbar-gutter: stable;
-}
 
 /* Estructura principal del layout */
 .dashboard-layout,
@@ -88,7 +83,8 @@ html {
     min-height: calc(100vh - var(--navbar-height));
     padding-right: 3vw;
     padding-bottom: var(--space-8);
-    overflow-y: auto;
+    overflow-y: scroll;
+    scrollbar-gutter: stable;
     -webkit-overflow-scrolling: touch;
 }
 
