@@ -2057,7 +2057,10 @@ fetch('/proxy/health')
       loadHardware();
     }
   })
-  .catch(err => console.error('Error initializing API client:', err));
+.catch(err => {
+    //console.error('💥 Error initializing API client:', err);
+    //console.error('💥 Stack trace:', err.stack);
+  });
 
 // Functions for CRUD operations
 let isLoadingHardware = false;
@@ -2122,9 +2125,16 @@ async function loadHardware() {
         }
       }
       
-      // Renderizar hardware
+      // Renderizar hardware (SAME AS EMPRESAS LOGIC)
       renderHardware(data.data);
       updateStats(data);
+      
+      // Apply filters AFTER rendering (SAME AS EMPRESAS)
+      // This allows all cards to be created first, then filtered
+      setTimeout(() => {
+        //console.log('🔍 Aplicando filtros DESPUÉS del renderizado...');
+        applyCurrentFilters();
+      }, 100);
     } else {
       //console.error('❌ Error en la respuesta del servidor:', data.errors);
       // Mostrar mensaje de error al usuario
@@ -2295,14 +2305,9 @@ function closeNotification(button) {
   }
 }
 
-// Render hardware data
+// Render hardware data - SAME LOGIC AS EMPRESAS
 function renderHardware(hardwareList) {
-    //console.log('🎨 === INICIANDO RENDERIZADO DE HARDWARE ===');
-    //console.log('⚙️ Estado inicial del DOM (por clase):', {
-    //   isHidden: document.getElementById('locationModal').classList.contains('hidden'),
-    //   isModalOpen: document.getElementById('locationModal').classList.contains('modal-open'),
-    //   isModalOpening: document.getElementById('locationModal').classList.contains('modal-opening')
-    // });
+  //console.log('🎆 === INICIANDO RENDERIZADO DE HARDWARE (EMPRESAS LOGIC) ===');
   //console.log('📋 hardwareList recibida:', hardwareList);
   //console.log('🔢 Tipo de hardwareList:', typeof hardwareList);
   //console.log('🔢 Es array:', Array.isArray(hardwareList));
@@ -2319,18 +2324,18 @@ function renderHardware(hardwareList) {
   gridContainer.className = 'ios-hardware-grid';
   
   // Clear existing content more thoroughly
-  //console.log('🧹 Limpiando contenido existente...');
+  //console.log('🧧 Limpiando contenido existente...');
   gridContainer.innerHTML = '';
   
   // Remove any existing filter messages
   const existingFilterMessage = document.getElementById('filterEmptyMessage');
   if (existingFilterMessage) {
-    //console.log('🧹 Removiendo mensaje de filtro existente');
+    //console.log('🧧 Removiendo mensaje de filtro existente');
     existingFilterMessage.remove();
   }
   const existingFilterMessageTable = document.getElementById('filterEmptyMessageTable');
   if (existingFilterMessageTable) {
-    //console.log('🧹 Removiendo mensaje de tabla existente');
+    //console.log('🧧 Removiendo mensaje de tabla existente');
     existingFilterMessageTable.remove();
   }
   
@@ -2341,19 +2346,18 @@ function renderHardware(hardwareList) {
     emptyMessage.innerHTML = `
       <div class="text-center">
         <i class="fas fa-box-open text-4xl mb-4 text-gray-400"></i>
-        <h2 class="text-2xl font-bold text-white mb-2">No hay hardware disponible para este filtro</h2>
-        <p class="text-sm text-gray-400">Prueba ajustando los filtros o haz clic en "Nuevo Hardware" para agregar uno.</p>
+        <h2 class="text-2xl font-bold text-white mb-2">No hay hardware disponible</h2>
+        <p class="text-sm text-gray-400">Haz clic en "Nuevo Hardware" para agregar uno.</p>
       </div>
     `;
     gridContainer.appendChild(emptyMessage);
-    
-    const emptyRow = document.createElement('tr');
-    emptyRow.innerHTML = '<td colspan="6" class="text-center py-8"><h2 class="text-2xl font-bold text-white">No hay hardware disponible para este filtro</h2></td>';
-    tableBody.appendChild(emptyRow);
     return;
   }
   
   //console.log(`🔨 Creando ${hardwareList.length} elementos de hardware...`);
+  
+  // Store all hardware globally for filtering (SAME AS EMPRESAS)
+  window.allHardware = hardwareList;
   
   hardwareList.forEach((hardware, index) => {
     try {
@@ -2403,12 +2407,9 @@ function renderHardware(hardwareList) {
     //console.log('  - data-activa:', firstGridItem.dataset.activa);
   }
   
-  // Apply current filters after rendering
-  //console.log('🕰️ Programando aplicación de filtros en 100ms...');
-  setTimeout(() => {
-    //console.log('🕰️ Aplicando filtros ahora...');
-    applyCurrentFilters();
-  }, 100);
+  // IMPORTANT: NO FILTER APPLICATION HERE (SAME AS EMPRESAS)
+  // Filters are applied separately by filterHardware() function
+  //console.log('✅ Renderizado completado sin aplicar filtros automáticos');
 }
 
 // Create hardware card for grid view

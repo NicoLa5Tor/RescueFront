@@ -483,6 +483,12 @@ class HardwareMain {
         ////console.error(`Error renderizando hardware ${index + 1}:`, error);
       }
     });
+    
+    // IMPORTANT: Apply filter after rendering to ensure cards are visible
+    // This fixes the issue where cards are created but not visible until user interacts with filters
+    setTimeout(() => {
+      this.filterHardware();
+    }, 50);
   }
 
   /**
