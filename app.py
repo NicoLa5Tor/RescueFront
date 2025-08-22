@@ -58,7 +58,7 @@ def require_role(allowed_roles):
             
             # If no cookie token and no session, redirect to login
             if not auth_token and not user_data:
-                print(f"❌ No auth token or session found for route {request.endpoint}")
+                ##print(f"❌ No auth token or session found for route {request.endpoint}")
                 return redirect(url_for('login'))
             
             # If we have cookie but no session, we need to validate the cookie
@@ -71,33 +71,33 @@ def require_role(allowed_roles):
                         cookies={'auth_token': auth_token}
                     )
                     if not response.ok:
-                        print(f"❌ Invalid auth token for route {request.endpoint}")
+                        #print(f"❌ Invalid auth token for route {request.endpoint}")
                         return redirect(url_for('login'))
                     
                     # Token is valid but we don't have user data in session
                     # This is OK - the backend will handle authorization
-                    print(f"✅ Valid auth token found for route {request.endpoint}")
+                    #print(f"✅ Valid auth token found for route {request.endpoint}")
                     # Continue with the request - backend will validate role
                     return f(*args, **kwargs)
                 except Exception as e:
-                    print(f"❌ Error validating auth token: {e}")
+                    #print(f"❌ Error validating auth token: {e}")
                     return redirect(url_for('login'))
             
             # If we have session data, validate role
             if user_data:
                 user_role = user_data.get('role')
-                print(f"🔍 User role: {user_role}, Required roles: {allowed_roles}, Route: {request.endpoint}")
+                #print(f"🔍 User role: {user_role}, Required roles: {allowed_roles}, Route: {request.endpoint}")
                 
                 # Validate that user role is one of the valid roles in our system
                 valid_roles = ['empresa', 'super_admin']
                 if user_role not in valid_roles:
-                    print(f"❌ Invalid role {user_role} for user")
+                    #print(f"❌ Invalid role {user_role} for user")
                     session.clear()  # Clear invalid session
                     return redirect(url_for('login'))
                 
                 # Check if user has required role
                 if user_role not in allowed_roles:
-                    print(f"❌ Access denied. User role {user_role} not in {allowed_roles}")
+                    #print(f"❌ Access denied. User role {user_role} not in {allowed_roles}")
                     # Redirect based on role - users can only access their allowed areas
                     if user_role == 'empresa':
                         return redirect(url_for('empresa_dashboard'))
@@ -107,7 +107,7 @@ def require_role(allowed_roles):
                         # Unknown role, redirect to login
                         return redirect(url_for('login'))
                 
-                print(f"✅ Access granted for {user_role} to {request.endpoint}")
+                #print(f"✅ Access granted for {user_role} to {request.endpoint}")
             
             return f(*args, **kwargs)
         return decorated_function
@@ -120,7 +120,7 @@ def validate_backend_connection():
         response = requests.get(f"{BACKEND_API_URL}/health")
         return response.ok
     except Exception as e:
-        print(f"❌ Backend no disponible: {e}")
+        #print(f"❌ Backend no disponible: {e}")
         return False
 
 # Inicializar cliente de API antes de cada request
@@ -130,7 +130,7 @@ def attach_api_client():
     protected_routes = ['admin_dashboard', 'super_admin_dashboard', 'admin_users', 'admin_empresas', 'admin_hardware']
     if request.endpoint in protected_routes:
         if not validate_backend_connection():
-            print("❌ Backend no disponible, limpiando sesión")
+            #print("❌ Backend no disponible, limpiando sesión")
             session.clear()
             return redirect(url_for('login', error='backend_unavailable'))
     
@@ -223,10 +223,10 @@ def sync_session():
         if not token:
             token = request.cookies.get('auth_token')
         
-        print(f"SYNC: Token recibido - Body: {bool(data.get('token'))}, Cookie: {bool(request.cookies.get('auth_token'))}")
-        print(f"SYNC: Datos completos del body: {str(data)[:200]}...")
-        print(f"SYNC: Cookies completas: {dict(request.cookies)}")
-        print(f"SYNC: user_data presente: {bool(user_data)}")
+        #print(f"SYNC: Token recibido - Body: {bool(data.get('token'))}, Cookie: {bool(request.cookies.get('auth_token'))}")
+        #print(f"SYNC: Datos completos del body: {str(data)[:200]}...")
+        #print(f"SYNC: Cookies completas: {dict(request.cookies)}")
+        #print(f"SYNC: user_data presente: {bool(user_data)}")
         
         if user_data:
             # NO almacenar token en sesión - debe venir en cookie HTTPOnly
@@ -262,23 +262,23 @@ def proxy_api(endpoint):
         if 'user' not in session and not request.cookies.get('auth_token'):
             return jsonify({'error': 'No autenticado'}), 401
 
-    print(f"PROXY: {request.method} /{endpoint} - Session valid: {bool(session.get('user'))}")
-    print(f"PROXY: Request cookies: {dict(request.cookies)}")
+    #print(f"PROXY: {request.method} /{endpoint} - Session valid: {bool(session.get('user'))}")
+    #print(f"PROXY: Request cookies: {dict(request.cookies)}")
     auth_cookie = request.cookies.get('auth_token')
-    print(f"PROXY: Cookie auth_token: {auth_cookie[:50] if auth_cookie else 'None'}...")
+    #print(f"PROXY: Cookie auth_token: {auth_cookie[:50] if auth_cookie else 'None'}...")
     
-    # Debug especial para toggle-status
-    if 'toggle-status' in endpoint:
-        print(f"TOGGLE DEBUG:")
-        print(f"  - Endpoint completo: /{endpoint}")
-        print(f"  - Método: {request.method}")
-        print(f"  - Headers: {dict(request.headers)}")
-        print(f"  - Usuario: {session.get('user', {}).get('username', 'NO USER')}")
+    # # Debug especial para toggle-status
+    # if 'toggle-status' in endpoint:
+    #     #print(f"TOGGLE DEBUG:")
+    #     #print(f"  - Endpoint completo: /{endpoint}")
+    #     #print(f"  - Método: {request.method}")
+    #     #print(f"  - Headers: {dict(request.headers)}")
+    #     #print(f"  - Usuario: {session.get('user', {}).get('username', 'NO USER')}")
     
     data = None
     if request.method in ['POST', 'PUT', 'PATCH']:
         data = request.get_json(silent=True)
-        print(f"PROXY DATA: PROXY: Datos enviados - {data}")
+        #print(f"PROXY DATA: PROXY: Datos enviados - {data}")
 
     try:
         # Hacer la petición manualmente con las cookies
@@ -290,8 +290,8 @@ def proxy_api(endpoint):
         if endpoint == 'api/contact/send':
             headers['User-Agent'] = 'RESCUE-Frontend/1.0'
         
-        print(f"PROXY: Enviando cookies al backend: {cookies}")
-        print(f"PROXY: Headers enviados: {headers}")
+        #print(f"PROXY: Enviando cookies al backend: {cookies}")
+        #print(f"PROXY: Headers enviados: {headers}")
         
         resp = requests.request(
             request.method,
@@ -301,30 +301,30 @@ def proxy_api(endpoint):
             headers=headers,
             cookies=cookies
         )
-        print(f"PROXY RESPONSE: PROXY: Respuesta del backend - Status: {resp.status_code}, Content-Length: {len(resp.content) if resp.content else 0}")
+        #print(f"PROXY RESPONSE: PROXY: Respuesta del backend - Status: {resp.status_code}, Content-Length: {len(resp.content) if resp.content else 0}")
         
         # Log del contenido para endpoints críticos
         if endpoint in ['api/hardware', 'api/empresas', 'api/hardware-types'] or 'toggle-status' in endpoint:
             try:
                 content_json = resp.json()
-                print(f"PROXY CONTENT: PROXY: Contenido de /{endpoint}:")
-                print(f"  - Success: {content_json.get('success', 'N/A')}")
-                print(f"  - Count: {content_json.get('count', 'N/A')}")
-                print(f"  - Data length: {len(content_json.get('data', [])) if content_json.get('data') else 0}")
+                #print(f"PROXY CONTENT: PROXY: Contenido de /{endpoint}:")
+                #print(f"  - Success: {content_json.get('success', 'N/A')}")
+                #print(f"  - Count: {content_json.get('count', 'N/A')}")
+                #print(f"  - Data length: {len(content_json.get('data', [])) if content_json.get('data') else 0}")
                 if content_json.get('data') and len(content_json.get('data', [])) > 0:
                     first_item = content_json['data'][0]
-                    print(f"  - Primer elemento: {list(first_item.keys()) if hasattr(first_item, 'keys') else type(first_item)}")
+                    #print(f"  - Primer elemento: {list(first_item.keys()) if hasattr(first_item, 'keys') else type(first_item)}")
                     
                 # Log especial para toggle-status
                 if 'toggle-status' in endpoint:
-                    print(f"  - Message: {content_json.get('message', 'N/A')}")
+                    #print(f"  - Message: {content_json.get('message', 'N/A')}")
                     print(f"  - Errors: {content_json.get('errors', 'N/A')}")
             except Exception as e:
                 print(f"PROXY ERROR: PROXY: No se pudo parsear JSON de /{endpoint}: {e}")
         
         return (resp.content, resp.status_code, resp.headers.items())
     except Exception as e:
-        print(f"PROXY ERROR: PROXY ERROR en /{endpoint}: {e}")
+        #print(f"PROXY ERROR: PROXY ERROR en /{endpoint}: {e}")
         return jsonify({'error': 'Error del servidor'}), 500
 
 # ========== RUTAS DEL DASHBOARD - PROTEGIDAS POR SESION Y ROL ==========
@@ -340,7 +340,7 @@ def admin_dashboard():
 @require_role(['super_admin'])
 def super_admin_dashboard():
     """Super Admin Dashboard - Exclusivo para super_admin - DATOS REALES ÚNICAMENTE"""
-    print(f"🔥 SUPER ADMIN DASHBOARD: Iniciando carga de datos REALES...")
+    #print(f"🔥 SUPER ADMIN DASHBOARD: Iniciando carga de datos REALES...")
     
     try:
         # Obtener datos reales del backend vía API usando el proxy interno
@@ -351,7 +351,7 @@ def super_admin_dashboard():
         cookies = dict(request.cookies)
         headers = {'Content-Type': 'application/json'}
         
-        print(f"🍪 Using cookies for API calls: {cookies}")
+        #print(f"🍪 Using cookies for API calls: {cookies}")
         
         # Hacer llamadas directas al backend con cookies
         dashboard_stats_response = requests.get(
@@ -379,37 +379,37 @@ def super_admin_dashboard():
         # Procesar estadísticas principales
         if dashboard_stats_response.ok:
             stats_data = dashboard_stats_response.json()
-            print(f"📊 Stats Response RAW: {stats_data}")
-            print(f"📊 Stats Response TYPE: {type(stats_data)}")
-            print(f"📊 Stats Response KEYS: {list(stats_data.keys()) if isinstance(stats_data, dict) else 'NOT A DICT'}")
+            #print(f"📊 Stats Response RAW: {stats_data}")
+            #print(f"📊 Stats Response TYPE: {type(stats_data)}")
+            #print(f"📊 Stats Response KEYS: {list(stats_data.keys()) if isinstance(stats_data, dict) else 'NOT A DICT'}")
             
             # Extraer datos de stats según la estructura real {'success': True, 'data': {...}}
             if stats_data.get('success') and 'data' in stats_data:
                 dashboard_data['summary_stats'] = stats_data['data']
-                print(f"✅ Summary stats loaded successfully: {dashboard_data['summary_stats']}")
-                print(f"✅ Summary stats keys: {list(dashboard_data['summary_stats'].keys()) if isinstance(dashboard_data['summary_stats'], dict) else 'NOT A DICT'}")
+                #print(f"✅ Summary stats loaded successfully: {dashboard_data['summary_stats']}")
+                #print(f"✅ Summary stats keys: {list(dashboard_data['summary_stats'].keys()) if isinstance(dashboard_data['summary_stats'], dict) else 'NOT A DICT'}")
             else:
-                print(f"❌ Stats response format unexpected: {stats_data}")
-                print(f"❌ Success field: {stats_data.get('success')}")
-                print(f"❌ Has data field: {'data' in stats_data}")
+                #print(f"❌ Stats response format unexpected: {stats_data}")
+                #print(f"❌ Success field: {stats_data.get('success')}")
+                #print(f"❌ Has data field: {'data' in stats_data}")
                 # Intentar usar los datos directamente si no hay wrapper
                 if isinstance(stats_data, dict) and any(key in stats_data for key in ['total_empresas', 'total_users', 'total_hardware']):
-                    print(f"🔄 Trying to use stats data directly without wrapper...")
+                    #print(f"🔄 Trying to use stats data directly without wrapper...")
                     dashboard_data['summary_stats'] = stats_data
-                    print(f"✅ Summary stats loaded directly: {dashboard_data['summary_stats']}")
+                    #print(f"✅ Summary stats loaded directly: {dashboard_data['summary_stats']}")
         else:
-            print(f"❌ Failed to load dashboard stats: {dashboard_stats_response.status_code}")
+            #print(f"❌ Failed to load dashboard stats: {dashboard_stats_response.status_code}")
             print(f"❌ Response text: {dashboard_stats_response.text[:500] if hasattr(dashboard_stats_response, 'text') else 'NO TEXT'}")
         
         # Procesar métricas de performance
         if performance_response.ok:
             perf_data = performance_response.json()
-            print(f"⚡ Performance Response: {perf_data}")
+            #print(f"⚡ Performance Response: {perf_data}")
             
             # Las métricas de performance vienen directamente según la estructura: 
             # {'uptime_percentage': 99.01, 'response_time': 151, ...}
             dashboard_data['performance_metrics'] = perf_data
-            print(f"✅ Performance metrics loaded: {dashboard_data['performance_metrics']}")
+            #print(f"✅ Performance metrics loaded: {dashboard_data['performance_metrics']}")
         else:
             print(f"❌ Failed to load performance metrics: {performance_response.status_code}")
         
@@ -424,7 +424,7 @@ def super_admin_dashboard():
                 companies_data = companies_response.json()
                 if companies_data.get('success') and 'data' in companies_data:
                     dashboard_data['recent_companies'] = companies_data['data']
-                    print(f"✅ Recent companies loaded: {len(dashboard_data['recent_companies'])} items")
+                    #print(f"✅ Recent companies loaded: {len(dashboard_data['recent_companies'])} items")
         except Exception as e:
             print(f"⚠️ Error loading recent companies: {e}")
         
@@ -438,7 +438,7 @@ def super_admin_dashboard():
                 users_data = users_response.json()
                 if users_data.get('success') and 'data' in users_data:
                     dashboard_data['recent_users'] = users_data['data']
-                    print(f"✅ Recent users loaded: {len(dashboard_data['recent_users'])} items")
+                    #print(f"✅ Recent users loaded: {len(dashboard_data['recent_users'])} items")
         except Exception as e:
             print(f"⚠️ Error loading recent users: {e}")
         
@@ -453,7 +453,7 @@ def super_admin_dashboard():
                 activity_data = activity_response.json()
                 if activity_data.get('success') and 'data' in activity_data:
                     dashboard_data['activity_chart'] = activity_data['data']
-                    print(f"✅ Activity chart loaded")
+                    #print(f"✅ Activity chart loaded")
         except Exception as e:
             print(f"⚠️ Error loading activity chart: {e}")
         
@@ -467,15 +467,15 @@ def super_admin_dashboard():
                 distribution_data = distribution_response.json()
                 if distribution_data.get('success') and 'data' in distribution_data:
                     dashboard_data['distribution_chart'] = distribution_data['data']
-                    print(f"✅ Distribution chart loaded")
+                    #print(f"✅ Distribution chart loaded")
         except Exception as e:
             print(f"⚠️ Error loading distribution chart: {e}")
         
-        print(f"🔥 SUPER ADMIN DASHBOARD: Datos finales para renderizar:")
-        print(f"  - Summary Stats: {dashboard_data.get('summary_stats', {})}")
-        print(f"  - Recent Companies count: {len(dashboard_data.get('recent_companies', []))}")
-        print(f"  - Recent Users count: {len(dashboard_data.get('recent_users', []))}")
-        print(f"  - Performance Metrics: {dashboard_data.get('performance_metrics', {})}")
+        #print(f"🔥 SUPER ADMIN DASHBOARD: Datos finales para renderizar:")
+        #print(f"  - Summary Stats: {dashboard_data.get('summary_stats', {})}")
+        #print(f"  - Recent Companies count: {len(dashboard_data.get('recent_companies', []))}")
+        #print(f"  - Recent Users count: {len(dashboard_data.get('recent_users', []))}")
+        #print(f"  - Performance Metrics: {dashboard_data.get('performance_metrics', {})}")
         
     except Exception as e:
         print(f"❌ Critical error loading dashboard data: {e}")
@@ -659,7 +659,7 @@ def empresa_hardware():
             raise Exception("No auth token found")
             
     except Exception as e:
-        print(f"Error getting hardware data for empresa {empresa_id}: {e}")
+        #print(f"Error getting hardware data for empresa {empresa_id}: {e}")
         hardware_data = {
             'hardware_list': [],
             'hardware_types': [],
@@ -774,7 +774,7 @@ def empresa_dashboard():
                             'hardware_total': backend_data.get('hardware', {}).get('total_hardware', 0),
                             'alertas_activas': backend_data.get('alertas', {}).get('alertas_activas', 0)
                         })
-                        print(f"✅ Dashboard KPIs loaded for {empresa_id} using cookies")
+                        #print(f"✅ Dashboard KPIs loaded for {empresa_id} using cookies")
                     else:
                         print(f"⚠️ Backend returned error for dashboard KPIs: {data.get('errors', [])}")
                 else:
@@ -886,7 +886,7 @@ def empresa_stats():
                     data = response.json()
                     if data.get('success'):
                         backend_data = data.get('data', {})
-                        print(f"📊 Raw backend data: {backend_data}")
+                        #print(f"📊 Raw backend data: {backend_data}")
                         
                         # Map backend data to frontend expected structure
                         empresa_statistics = {
@@ -928,12 +928,12 @@ def empresa_stats():
                                 'ultima_actividad': backend_data.get('empresa', {}).get('fecha_creacion', '2024-07-20T10:30:00Z')
                             }
                         }
-                        print(f"✅ Loaded and mapped empresa statistics for {empresa_id}")
-                        print(f"📋 Mapped data: {empresa_statistics}")
+                        print(f"✅ Loaded and mapped empresa statistics")
+                        #print(f"📋 Mapped data: {empresa_statistics}")
                     else:
                         print(f"⚠️ Backend returned error: {data.get('errors', [])}")
                 else:
-                    print(f"⚠️ Backend statistics not available, using defaults. Status: {response.status_code}")
+                    #print(f"⚠️ Backend statistics not available, using defaults. Status: {response.status_code}")
                     if response.status_code == 401:
                         print(f"❌ Unauthorized - token might be invalid or expired")
             else:
@@ -1149,11 +1149,11 @@ def test_login():
 
 # ========== CONFIGURACIÓN DE DEBUG ==========
 if __name__ == '__main__':
-    print("🚀 Iniciando Rescue Frontend...")
-    print(f"PROXY RESPONSE: Backend API: {BACKEND_API_URL}")
-    print("🌐 Frontend URL: http://localhost:5050")
-    print("🔐 Autenticación: manejada por Flask y proxy interno")
-    print("=" * 50)
+    #print("🚀 Iniciando Rescue Frontend...")
+    #print(f"PROXY RESPONSE: Backend API: {BACKEND_API_URL}")
+    #print("🌐 Frontend URL: http://localhost:5050")
+    #print("🔐 Autenticación: manejada por Flask y proxy interno")
+    #print("=" * 50)
     
     # Configuración de desarrollo
     app.run(
