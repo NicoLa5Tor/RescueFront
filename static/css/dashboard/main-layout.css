@@ -8,6 +8,12 @@ html, body {
     overflow-x: hidden;
 }
 
+/* Mantener el espacio del scrollbar para evitar parpadeo durante la carga */
+html {
+    overflow-y: scroll;
+    scrollbar-gutter: stable;
+}
+
 /* Estructura principal del layout */
 .dashboard-layout,
 .min-h-screen {
