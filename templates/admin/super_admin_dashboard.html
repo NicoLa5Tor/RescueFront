@@ -479,37 +479,37 @@
   // Dashboard data con verificación de integridad
   try {
     window.DASHBOARD_DATA = {{ dashboard_data | tojson }};
-    console.log('✅ DASHBOARD_DATA cargado correctamente:', window.DASHBOARD_DATA);
+    ////console.log('✅ DASHBOARD_DATA cargado correctamente:', window.DASHBOARD_DATA);
   } catch (e) {
-    console.error('❌ Error cargando DASHBOARD_DATA:', e);
+    ////console.error('❌ Error cargando DASHBOARD_DATA:', e);
     window.DASHBOARD_DATA = null;
   }
   
   // Usuario actual
   try {
     window.currentUser = {{ session.user | tojson }};
-    console.log('✅ currentUser cargado:', window.currentUser);
+    //console.log('✅ currentUser cargado:', window.currentUser);
   } catch (e) {
-    console.error('❌ Error cargando currentUser:', e);
+    //console.error('❌ Error cargando currentUser:', e);
     window.currentUser = null;
   }
   
   // Inicializar las tarjetas con datos del servidor al cargar la página
   function initializeDashboardCards() {
-    console.log('🎯 Inicializando tarjetas del dashboard...');
+    //console.log('🎯 Inicializando tarjetas del dashboard...');
     
     if (window.DASHBOARD_DATA && window.DASHBOARD_DATA.summary_stats) {
       const stats = window.DASHBOARD_DATA.summary_stats;
-      console.log('📊 Stats disponibles:', stats);
+      //console.log('📊 Stats disponibles:', stats);
       
       // Actualizar tarjetas con datos reales
       const updateElement = (selector, value) => {
         const element = document.querySelector(selector);
         if (element) {
           element.textContent = value;
-          console.log(`✅ Actualizado ${selector} = ${value}`);
+          //console.log(`✅ Actualizado ${selector} = ${value}`);
         } else {
-          console.warn(`⚠️ Elemento no encontrado: ${selector}`);
+          //console.warn(`⚠️ Elemento no encontrado: ${selector}`);
         }
       };
       
@@ -523,15 +523,15 @@
       updateElement('#performanceCount', stats.performance || stats.performanceValue || 0);
       updateElement('#avgPerformanceCount', stats.avg_performance || stats.avgPerformance || 0);
       
-      console.log('✅ Inicialización de tarjetas completada');
+      //console.log('✅ Inicialización de tarjetas completada');
     } else {
-      console.warn('⚠️ No hay datos de dashboard disponibles para inicializar las tarjetas');
+      //console.warn('⚠️ No hay datos de dashboard disponibles para inicializar las tarjetas');
     }
     
     // Inicializar métricas de performance si están disponibles
     if (window.DASHBOARD_DATA && window.DASHBOARD_DATA.performance_metrics) {
       const perf = window.DASHBOARD_DATA.performance_metrics;
-      console.log('⚡ Performance metrics disponibles:', perf);
+      //console.log('⚡ Performance metrics disponibles:', perf);
       
       // Se pueden agregar más elementos de performance aquí si es necesario
       // updateElement('#cpu-usage', perf.cpu_usage + '%');
@@ -571,7 +571,7 @@
     // Usar las animaciones GSAP globales ya disponibles
     if (window.SuperDashboardAnimations) {
       // Las animaciones de hover ya están configuradas en super-dashboard-animations.js
-      console.log('🔧 Optimizaciones GSAP aplicadas a tarjeta individual');
+      //console.log('🔧 Optimizaciones GSAP aplicadas a tarjeta individual');
       return;
     }
     
@@ -580,7 +580,7 @@
     if (shimmer && !window.GSAPUtils?.prefersReducedMotion()) {
       shimmer.style.opacity = '0';
       shimmer.style.transform = 'rotate(45deg) translateX(-100%)';
-      console.log('🔧 Fallback aplicado a tarjeta individual');
+      //console.log('🔧 Fallback aplicado a tarjeta individual');
     }
   }
   
@@ -590,11 +590,11 @@
     existingCards.forEach(card => {
       applyCardOptimizations(card);
     });
-    console.log(`🔧 Optimizaciones aplicadas a ${existingCards.length} tarjetas existentes`);
+    //console.log(`🔧 Optimizaciones aplicadas a ${existingCards.length} tarjetas existentes`);
   }
   
   document.addEventListener('DOMContentLoaded', function() {
-    console.log('🛠️ Super Dashboard page loaded with GSAP optimizations');
+    //console.log('🛠️ Super Dashboard page loaded with GSAP optimizations');
     
     // Las animaciones principales ya se manejan en super-dashboard-animations.js
     // Solo mantenemos funcionalidad específica que no está en GSAP
@@ -606,7 +606,7 @@
         mutations.forEach(function(mutation) {
           mutation.addedNodes.forEach(function(node) {
             if (node.nodeType === 1 && (node.classList.contains('ios-dashboard-card') || node.classList.contains('glass-card'))) {
-              console.log('👀 Nueva tarjeta detectada, aplicando animación GSAP...');
+              //console.log('👀 Nueva tarjeta detectada, aplicando animación GSAP...');
               
               // Usar animación GSAP para nueva tarjeta
               if (window.SuperDashboardAnimations) {
@@ -624,10 +624,10 @@
         subtree: true
       });
       
-      console.log('👀 Observer configurado para detectar nuevas tarjetas');
+      //console.log('👀 Observer configurado para detectar nuevas tarjetas');
     }
     
-    console.log('✅ Super Dashboard page optimizations applied successfully');
+    //console.log('✅ Super Dashboard page optimizations applied successfully');
   });
 </script>
 
@@ -699,7 +699,7 @@ function refreshDashboard() {
   if (window.superAdminDashboard && !window.superAdminDashboard.isLoading) {
     window.superAdminDashboard.loadDashboardData();
   } else {
-    console.log('Dashboard is already loading or not initialized');
+    //console.log('Dashboard is already loading or not initialized');
   }
 }
 
@@ -733,18 +733,18 @@ function updateConnectionStatus(status) {
 
 // Función principal para actualizar las estadísticas
 function updateDashboardStats() {
-    console.log('📊 Iniciando actualización de estadísticas...');
+    //console.log('📊 Iniciando actualización de estadísticas...');
     
     const data = window.DASHBOARD_DATA;
-    console.log('📦 Datos del dashboard:', data);
+    //console.log('📦 Datos del dashboard:', data);
     
     if (!data || !data.summary_stats) {
-        console.error('❌ No se encontraron datos del dashboard');
+        //console.error('❌ No se encontraron datos del dashboard');
         return;
     }
     
     const stats = data.summary_stats;
-    console.log('📊 Estadísticas:', stats);
+    //console.log('📊 Estadísticas:', stats);
     
     // Mapear elementos con sus respectivos valores
     const mappings = [
@@ -763,13 +763,13 @@ function updateDashboardStats() {
         const element = document.getElementById(id);
         if (element) {
             element.textContent = value;
-            console.log(`✅ ${id}: ${value}`);
+            //console.log(`✅ ${id}: ${value}`);
         } else {
-            console.warn(`⚠️ Elemento no encontrado: ${id}`);
+            //console.warn(`⚠️ Elemento no encontrado: ${id}`);
         }
     });
     
-    console.log('✅ Actualización de estadísticas completada');
+    //console.log('✅ Actualización de estadísticas completada');
 }
 
 // Función para manejar listas de empresas recientes
@@ -781,7 +781,7 @@ function updateRecentCompanies() {
     if (!container) return;
     
     const companies = data.recent_companies;
-    console.log('🏢 Actualizando empresas recientes:', companies);
+    //console.log('🏢 Actualizando empresas recientes:', companies);
     
     if (companies.length === 0) {
         container.innerHTML = '<p class="text-center text-gray-500 p-4">No hay empresas recientes</p>';
@@ -832,7 +832,7 @@ function updateRecentUsers() {
     if (!container) return;
     
     const users = data.recent_users;
-    console.log('👥 Actualizando usuarios recientes:', users);
+    //console.log('👥 Actualizando usuarios recientes:', users);
     
     if (users.length === 0) {
         container.innerHTML = '<p class="text-center text-gray-500 p-4">No hay usuarios recientes</p>';
@@ -884,11 +884,11 @@ function updateRecentUsers() {
 
 // Función principal de inicialización
 function initializeDashboard() {
-    console.log('🚀 Inicializando Super Admin Dashboard...');
+    //console.log('🚀 Inicializando Super Admin Dashboard...');
     
     // Verificar que tenemos datos
     if (!window.DASHBOARD_DATA) {
-        console.error('❌ No se encontraron datos del dashboard en window.DASHBOARD_DATA');
+        //console.error('❌ No se encontraron datos del dashboard en window.DASHBOARD_DATA');
         return;
     }
     
@@ -897,7 +897,7 @@ function initializeDashboard() {
     updateRecentCompanies();
     updateRecentUsers();
     
-    console.log('✅ Dashboard inicializado correctamente');
+    //console.log('✅ Dashboard inicializado correctamente');
 }
 
 // Ejecutar cuando el DOM esté listo
@@ -912,11 +912,11 @@ setTimeout(initializeDashboard, 500);
 
 // Función de recarga manual
 window.refreshDashboardStats = function() {
-    console.log('🔄 Recargando estadísticas manualmente...');
+    //console.log('🔄 Recargando estadísticas manualmente...');
     updateDashboardStats();
 };
 
-console.log('🏁 Script de inicialización del dashboard cargado');
+//console.log('🏁 Script de inicialización del dashboard cargado');
 </script>
 {% endblock %}
 {% endblock %}

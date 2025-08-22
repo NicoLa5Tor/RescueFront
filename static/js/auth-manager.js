@@ -283,18 +283,20 @@ class AuthManager {
     }
 
     /**
-     * Test de conectividad directo
+     * Test de conectividad a través del proxy
      */
     async testConnection() {
         try {
-            //console.log('📌 Probando conexión directa al backend...');
-            const response = await fetch('http://rescue-backend:5002/health', {
+            //console.log('📌 Probando conexión al backend a través del proxy...');
+            const response = await fetch('/proxy/health', {
                 method: 'GET',
                 credentials: 'include'
             });
             //console.log('🌐 Respuesta de conexión:', response.status, response.statusText);
-            const data = await response.json();
-            //console.log('📝 Datos de health:', data);
+            if (response.ok) {
+                const data = await response.json();
+                //console.log('📝 Datos de health:', data);
+            }
             return response.ok;
         } catch (error) {
             //console.error('❌ Error de conexión:', error);

@@ -1,6 +1,10 @@
 // basic-managers.js - Animation-focused managers and theme management
 
-class StatsManager {
+// Prevent double declaration by checking window object first
+if (typeof window.StatsManager === 'undefined') {
+
+// Define StatsManager
+window.StatsManager = class StatsManager {
     constructor(dashboard) {
         this.dashboard = dashboard;
     }
@@ -27,10 +31,14 @@ class StatsManager {
             updateCounter();
         });
     }
+};
+
 }
 
 // Theme Manager
-class ThemeManager {
+if (typeof window.ThemeManager === 'undefined') {
+
+window.ThemeManager = class ThemeManager {
     constructor() {
         this.init();
     }
@@ -219,13 +227,14 @@ class ThemeManager {
         
         //console.log('✅ Contenedores de gráficas actualizados');
     }
-}
+};
+
+} // End of ThemeManager conditional declaration
 
 // Initialize theme manager when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    new ThemeManager();
+    if (typeof window.themeManagerInitialized === 'undefined') {
+        window.themeManagerInitialized = true;
+        new window.ThemeManager();
+    }
 });
-
-// Expose globally
-window.StatsManager = StatsManager;
-window.ThemeManager = ThemeManager;
