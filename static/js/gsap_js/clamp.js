@@ -14,11 +14,11 @@
             this.container = document.querySelector('.hero-clamp');
             
             if (!this.container) {
-                console.warn(`Contenedor .hero-clamp no encontrado`);
+                //console.warn(`Contenedor .hero-clamp no encontrado`);
                 return;
             }
             
-            console.log('Iniciando módulo Clamp');
+            //console.log('Iniciando módulo Clamp');
             this.setupAnimations();
         },
         
@@ -217,7 +217,7 @@
             if (this.gsapContext) {
                 this.gsapContext.revert();
             }
-            console.log(`Módulo ${this.id} destruido`);
+            //console.log(`Módulo ${this.id} destruido`);
         }
     };
     

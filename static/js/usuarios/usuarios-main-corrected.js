@@ -36,7 +36,7 @@ class UsuariosMain {
    */
   async initializeComponents() {
     try {
-      console.log('👥 Inicializando sistema de usuarios corregido...');
+      //console.log('👥 Inicializando sistema de usuarios corregido...');
       
       // 1. Setup API client first
       this.setupApiClient();
@@ -50,10 +50,10 @@ class UsuariosMain {
       // 4. Load initial data based on context
       await this.loadInitialData();
       
-      console.log('✅ Sistema de usuarios inicializado correctamente');
+      //console.log('✅ Sistema de usuarios inicializado correctamente');
       
     } catch (error) {
-      console.error('💥 Error al inicializar sistema de usuarios:', error);
+      //console.error('💥 Error al inicializar sistema de usuarios:', error);
       this.showEnhancedNotification('Error al inicializar el sistema de usuarios', 'error');
     }
   }
@@ -62,7 +62,7 @@ class UsuariosMain {
    * Initialize empresa context based on user role and global variables
    */
   initializeEmpresaContext() {
-    console.log('🏢 Inicializando contexto de empresa...');
+    //console.log('🏢 Inicializando contexto de empresa...');
     console.log('Variables globales disponibles:', {
       userRole: window.userRole,
       empresaId: window.empresaId,
@@ -75,7 +75,7 @@ class UsuariosMain {
         _id: window.empresaId,
         nombre: window.empresaNombre || 'Mi Empresa'
       };
-      console.log('🏢 Empresa configurada automáticamente:', this.currentEmpresa);
+      //console.log('🏢 Empresa configurada automáticamente:', this.currentEmpresa);
       
       // Update UI to show empresa info
       this.updateEmpresaInfo(this.currentEmpresa);
@@ -84,9 +84,9 @@ class UsuariosMain {
       this.showFilters();
       
     } else if (window.userRole === 'super_admin') {
-      console.log('👑 Usuario super admin detectado - requerirá selección de empresa');
+      //console.log('👑 Usuario super admin detectado - requerirá selección de empresa');
     } else {
-      console.log('⚠️ Tipo de usuario no reconocido o sin empresa asignada');
+      //console.log('⚠️ Tipo de usuario no reconocido o sin empresa asignada');
     }
   }
 
@@ -94,18 +94,18 @@ class UsuariosMain {
    * Setup API client with fallback options
    */
   setupApiClient() {
-    console.log('🔌 Configurando cliente API...');
+    //console.log('🔌 Configurando cliente API...');
     
     if (window.EndpointTestClient) {
       this.apiClient = new window.EndpointTestClient('/proxy');
-      console.log('✅ Usando EndpointTestClient global');
+      //console.log('✅ Usando EndpointTestClient global');
     } else if (window.apiClient) {
       this.apiClient = window.apiClient;
-      console.log('✅ Usando apiClient global');
+      //console.log('✅ Usando apiClient global');
     } else {
       // Create basic fallback client
       this.apiClient = this.createBasicApiClient();
-      console.log('✅ Usando cliente API básico (fallback)');
+      //console.log('✅ Usando cliente API básico (fallback)');
     }
   }
 
@@ -150,7 +150,7 @@ class UsuariosMain {
    * Setup event listeners with proper error handling
    */
   setupEventListeners() {
-    console.log('🎯 Configurando event listeners...');
+    //console.log('🎯 Configurando event listeners...');
     
     // Wait for DOM to be ready
     if (document.readyState === 'loading') {
@@ -164,7 +164,7 @@ class UsuariosMain {
    * Setup event listeners after DOM is ready
    */
   setupDelayedEventListeners() {
-    console.log('🎯 Configurando event listeners diferidos...');
+    //console.log('🎯 Configurando event listeners diferidos...');
     
     // Search input
     const searchInput = document.getElementById('searchInput');
@@ -173,7 +173,7 @@ class UsuariosMain {
         this.currentFilters.search = e.target.value.toLowerCase();
         this.applyFilters();
       });
-      console.log('🔍 Search input listener configured');
+      //console.log('🔍 Search input listener configured');
     }
     
     // Status filter
@@ -183,7 +183,7 @@ class UsuariosMain {
         this.currentFilters.status = e.target.value;
         this.applyFilters();
       });
-      console.log('📊 Status filter listener configured');
+      //console.log('📊 Status filter listener configured');
     }
     
     // Include inactive filter
@@ -193,24 +193,24 @@ class UsuariosMain {
         this.currentFilters.includeInactive = e.target.value;
         this.applyFilters();
       });
-      console.log('👥 Include inactive filter listener configured');
+      //console.log('👥 Include inactive filter listener configured');
     }
     
-    console.log('✅ Event listeners configurados exitosamente');
+    //console.log('✅ Event listeners configurados exitosamente');
   }
 
   /**
    * Load initial data based on user context
    */
   async loadInitialData() {
-    console.log('📊 Cargando datos iniciales...');
+    //console.log('📊 Cargando datos iniciales...');
     
     if (this.currentEmpresa && this.currentEmpresa._id) {
       // Load usuarios for empresa user or selected empresa
-      console.log('🏢 Cargando usuarios para empresa:', this.currentEmpresa.nombre);
+      //console.log('🏢 Cargando usuarios para empresa:', this.currentEmpresa.nombre);
       await this.loadUsuarios();
     } else {
-      console.log('⏳ Sin empresa seleccionada, esperando selección...');
+      //console.log('⏳ Sin empresa seleccionada, esperando selección...');
     }
   }
 
@@ -219,19 +219,19 @@ class UsuariosMain {
    */
   async loadUsuarios() {
     if (!this.currentEmpresa || !this.currentEmpresa._id) {
-      console.warn('⚠️ No hay empresa seleccionada para cargar usuarios');
+      //console.warn('⚠️ No hay empresa seleccionada para cargar usuarios');
       this.showEnhancedNotification('Selecciona una empresa primero', 'error');
       return;
     }
 
     if (this.isLoading) {
-      console.log('⏳ Carga ya en progreso...');
+      //console.log('⏳ Carga ya en progreso...');
       return;
     }
 
     try {
       this.isLoading = true;
-      console.log('📊 Cargando usuarios para empresa:', this.currentEmpresa._id);
+      //console.log('📊 Cargando usuarios para empresa:', this.currentEmpresa._id);
       
       // Show loading state
       this.showLoadingState();
@@ -243,11 +243,11 @@ class UsuariosMain {
       }
       
       const result = await response.json();
-      console.log('📦 Respuesta del servidor:', result);
+      //console.log('📦 Respuesta del servidor:', result);
       
       if (result.success && result.data) {
         this.usuarios = result.data;
-        console.log(`✅ ${this.usuarios.length} usuarios cargados`);
+        //console.log(`✅ ${this.usuarios.length} usuarios cargados`);
         
         // Calculate and update stats
         this.updateStats();
@@ -266,7 +266,7 @@ class UsuariosMain {
       }
       
     } catch (error) {
-      console.error('💥 Error al cargar usuarios:', error);
+      //console.error('💥 Error al cargar usuarios:', error);
       this.showEnhancedNotification(`Error al cargar usuarios: ${error.message}`, 'error');
       this.showErrorState();
     } finally {
@@ -286,7 +286,7 @@ class UsuariosMain {
     // Update stats in UI
     this.updateStatsUI();
     
-    console.log('📊 Stats actualizadas:', this.stats);
+    //console.log('📊 Stats actualizadas:', this.stats);
   }
 
   /**
@@ -326,7 +326,7 @@ class UsuariosMain {
     const filtersContainer = document.getElementById('usuariosFilters');
     if (filtersContainer) {
       filtersContainer.style.display = 'block';
-      console.log('👀 Filtros mostrados');
+      //console.log('👀 Filtros mostrados');
     }
   }
 
@@ -346,7 +346,7 @@ class UsuariosMain {
       initialsElement.textContent = initials;
     }
     
-    console.log('🏢 Info de empresa actualizada en UI:', empresa.nombre);
+    //console.log('🏢 Info de empresa actualizada en UI:', empresa.nombre);
   }
 
   /**
@@ -355,7 +355,7 @@ class UsuariosMain {
   renderUsuarios() {
     const grid = document.getElementById('usuariosGrid');
     if (!grid) {
-      console.error('❌ Grid container not found');
+      //console.error('❌ Grid container not found');
       return;
     }
 
@@ -377,7 +377,7 @@ class UsuariosMain {
     const usuariosHTML = this.usuarios.map(user => this.generateUsuarioCard(user)).join('');
     grid.innerHTML = usuariosHTML;
     
-    console.log(`✅ ${this.usuarios.length} usuarios renderizados`);
+    //console.log(`✅ ${this.usuarios.length} usuarios renderizados`);
   }
 
   /**
@@ -480,7 +480,7 @@ class UsuariosMain {
       return;
     }
 
-    console.log('🔍 Aplicando filtros:', this.currentFilters);
+    //console.log('🔍 Aplicando filtros:', this.currentFilters);
 
     let filteredUsuarios = [...this.usuarios];
 
@@ -513,7 +513,7 @@ class UsuariosMain {
     // Update grid with filtered results
     this.renderFilteredUsuarios(filteredUsuarios);
     
-    console.log(`✅ Filtros aplicados - ${filteredUsuarios.length}/${this.usuarios.length} usuarios mostrados`);
+    //console.log(`✅ Filtros aplicados - ${filteredUsuarios.length}/${this.usuarios.length} usuarios mostrados`);
   }
 
   /**
@@ -546,7 +546,7 @@ class UsuariosMain {
    * Clear all filters
    */
   clearFilters() {
-    console.log('🧹 Limpiando filtros...');
+    //console.log('🧹 Limpiando filtros...');
     
     this.currentFilters = {
       search: '',
@@ -566,14 +566,14 @@ class UsuariosMain {
     // Re-render usuarios
     this.renderUsuarios();
     
-    console.log('✅ Filtros limpiados');
+    //console.log('✅ Filtros limpiados');
   }
 
   /**
    * Refresh usuarios data
    */
   async refreshUsers() {
-    console.log('🔄 Refrescando datos de usuarios...');
+    //console.log('🔄 Refrescando datos de usuarios...');
     await this.loadUsuarios();
   }
 
@@ -581,7 +581,7 @@ class UsuariosMain {
    * Reload filters (used by modals after operations)
    */
   reloadFilters() {
-    console.log('🔄 Recargando filtros...');
+    //console.log('🔄 Recargando filtros...');
     setTimeout(() => {
       this.applyFilters();
     }, 100);
@@ -634,7 +634,7 @@ class UsuariosMain {
     }
     
     // Fallback to simple alert
-    console.log(`${type.toUpperCase()}: ${message}`);
+    //console.log(`${type.toUpperCase()}: ${message}`);
     if (type === 'error') {
       alert(`Error: ${message}`);
     }
@@ -644,13 +644,13 @@ class UsuariosMain {
    * Export usuarios (placeholder)
    */
   exportUsuarios() {
-    console.log('📊 Exportando usuarios...');
+    //console.log('📊 Exportando usuarios...');
     this.showEnhancedNotification('Funcionalidad de exportación en desarrollo', 'info');
   }
 }
 
 // Initialize usuarios main system
-console.log('👥 Inicializando UsuariosMain...');
+//console.log('👥 Inicializando UsuariosMain...');
 const usuariosMain = new UsuariosMain();
 
 // Export for global access
@@ -660,4 +660,4 @@ window.usuariosMain = usuariosMain;
 window.refreshUsers = () => usuariosMain.refreshUsers();
 window.clearUsuariosFilters = () => usuariosMain.clearFilters();
 
-console.log('✅ UsuariosMain inicializado y disponible globalmente');
+//console.log('✅ UsuariosMain inicializado y disponible globalmente');

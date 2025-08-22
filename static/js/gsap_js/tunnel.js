@@ -8,7 +8,7 @@
       this.gsapMain = gsapMain;
       this.container = document.querySelector('#tunnel');
       if (!this.container) {
-        console.warn('Tunnel section not found');
+        //console.warn('Tunnel section not found');
         return;
       }
       initTunnel(this.container);
@@ -240,7 +240,7 @@
 
     // FORZAR PRE-RENDERIZADO EN MÓVIL para que los colores se carguen inmediatamente
     if (isMobile()) {
-      console.log('📱 Forzando pre-renderizado para móvil...');
+      ////console.log('📱 Forzando pre-renderizado para móvil...');
       
       // Compilar los shaders y materiales inmediatamente
       renderer.compile(scene, camera);
@@ -254,7 +254,7 @@
       material.needsUpdate = true;
       mat.needsUpdate = true;
       
-      console.log('✅ Pre-renderizado móvil completado');
+      ////console.log('✅ Pre-renderizado móvil completado');
     }
 
     //Create a point light
@@ -619,7 +619,7 @@
           processOverlay.style.display = 'block';
         },
         onComplete: () => {
-          console.log('Telón completamente elevado - El túnel puede comenzar');
+          ////console.log('Telón completamente elevado - El túnel puede comenzar');
         }
       }
     });
@@ -852,9 +852,9 @@
     requestAnimationFrame(render);
 
     canvas.addEventListener('click', function(){
-      console.clear();
+      ////console.clear();
       markers.push(p1);
-      console.log(JSON.stringify(markers));
+      //console.log(JSON.stringify(markers));
     });
 
     // Enhanced responsive resize handler

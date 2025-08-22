@@ -37,7 +37,7 @@ class HardwareMain {
    */
   async initialize() {
     try {
-      console.log('🚀 Inicializando sistema de hardware...');
+      //////console.log('🚀 Inicializando sistema de hardware...');
       
       // 1. Initialize API client
       await this.initializeApiClient();
@@ -62,10 +62,10 @@ class HardwareMain {
       await this.loadInitialData();
       
       this.initialized = true;
-      console.log('✅ Sistema de hardware inicializado correctamente');
+      //////console.log('✅ Sistema de hardware inicializado correctamente');
       
     } catch (error) {
-      console.error('💥 Error al inicializar sistema de hardware:', error);
+      ////console.error('💥 Error al inicializar sistema de hardware:', error);
       this.showFallbackError();
     }
   }
@@ -75,14 +75,14 @@ class HardwareMain {
    */
   async initializeApiClient() {
     try {
-      console.log('🔗 Inicializando API client...');
+      ////console.log('🔗 Inicializando API client...');
       
       // Check if proxy is available
       const healthResponse = await fetch('/proxy/health');
       
       if (healthResponse.ok) {
         this.apiClient = new EndpointTestClient('/proxy');
-        console.log('✅ API Client inicializado');
+        ////console.log('✅ API Client inicializado');
         
         // Make API client available to core module
         if (window.hardwareCore) {
@@ -94,7 +94,7 @@ class HardwareMain {
         throw new Error('Proxy no disponible');
       }
     } catch (error) {
-      console.error('❌ Error inicializando API client:', error);
+      ////console.error('❌ Error inicializando API client:', error);
       throw error;
     }
   }
@@ -103,7 +103,7 @@ class HardwareMain {
    * Initialize performance optimizations
    */
   initializePerformanceOptimizations() {
-    console.log('⚡ Configurando optimizaciones de rendimiento...');
+    ////console.log('⚡ Configurando optimizaciones de rendimiento...');
     
     // Apply card optimizations to existing cards
     const existingCards = document.querySelectorAll('.ios-hardware-card');
@@ -121,7 +121,7 @@ class HardwareMain {
     );
     
     if (isLowEndDevice) {
-      console.log('📱 Dispositivo de bajo rendimiento detectado');
+      ////console.log('📱 Dispositivo de bajo rendimiento detectado');
       document.body.classList.add('low-end-device');
       
       // Disable heavy animations
@@ -134,7 +134,7 @@ class HardwareMain {
     // Set up mutation observer for new cards
     this.setupCardObserver();
     
-    console.log('✅ Optimizaciones de rendimiento aplicadas');
+    ////console.log('✅ Optimizaciones de rendimiento aplicadas');
   }
 
   /**
@@ -147,7 +147,7 @@ class HardwareMain {
         mutations.forEach((mutation) => {
           mutation.addedNodes.forEach((node) => {
             if (node.nodeType === 1 && node.classList.contains('ios-hardware-card')) {
-              console.log('👀 Nueva tarjeta detectada, aplicando optimizaciones...');
+              ////console.log('👀 Nueva tarjeta detectada, aplicando optimizaciones...');
               if (window.applyCardOptimizations) {
                 window.applyCardOptimizations(node);
               }
@@ -161,7 +161,7 @@ class HardwareMain {
         subtree: true
       });
       
-      console.log('👀 Observer configurado para nuevas tarjetas');
+      ////console.log('👀 Observer configurado para nuevas tarjetas');
     }
   }
 
@@ -169,13 +169,13 @@ class HardwareMain {
    * Initialize modals module
    */
   initializeModals() {
-    console.log('🗨️ Inicializando sistema de modales...');
+    ////console.log('🗨️ Inicializando sistema de modales...');
     
     // Create modals manager if not available
     if (!window.hardwareModals) {
       window.hardwareModals = {
         showClientUpdateModal: (message) => {
-          console.log('📢 Client update:', message);
+          ////console.log('📢 Client update:', message);
           // Basic implementation
           if (window.hardwareNotifications) {
             window.hardwareNotifications.show(message, 'success');
@@ -197,18 +197,18 @@ class HardwareMain {
       const modalIds = ['hardwareModal', 'viewHardwareModal', 'toggleHardwareModal', 'clientUpdateModal'];
       modalIds.forEach(modalId => {
         window.modalManager.setupModal(modalId);
-        console.log(`✅ Modal ${modalId} configurado`);
+        ////console.log(`✅ Modal ${modalId} configurado`);
       });
     }
     
-    console.log('✅ Sistema de modales inicializado');
+    ////console.log('✅ Sistema de modales inicializado');
   }
 
   /**
    * Initialize notifications system
    */
   initializeNotifications() {
-    console.log('📢 Inicializando sistema de notificaciones...');
+    ////console.log('📢 Inicializando sistema de notificaciones...');
     
     if (!window.hardwareNotifications) {
       window.hardwareNotifications = {
@@ -218,14 +218,14 @@ class HardwareMain {
       };
     }
     
-    console.log('✅ Sistema de notificaciones inicializado');
+    ////console.log('✅ Sistema de notificaciones inicializado');
   }
 
   /**
    * Initialize data management
    */
   initializeDataManagement() {
-    console.log('📊 Inicializando gestión de datos...');
+    ////console.log('📊 Inicializando gestión de datos...');
     
     if (!window.hardwareData) {
       window.hardwareData = {
@@ -236,28 +236,28 @@ class HardwareMain {
       };
     }
     
-    console.log('✅ Gestión de datos inicializada');
+    ////console.log('✅ Gestión de datos inicializada');
   }
 
   /**
    * Initialize filters system
    */
   initializeFilters() {
-    console.log('🔍 Inicializando sistema de filtros...');
+    ////console.log('🔍 Inicializando sistema de filtros...');
     
     // NO configurar event listeners - ya están en hardware.html
     // Solo hacer las funciones disponibles globalmente
     window.clearFilters = () => this.clearFilters();
     window.filterHardware = () => this.filterHardware();
     
-    console.log('✅ Sistema de filtros inicializado');
+    ////console.log('✅ Sistema de filtros inicializado');
   }
 
   /**
    * Connect modules together
    */
   connectModules() {
-    console.log('🔗 Conectando módulos...');
+    ////console.log('🔗 Conectando módulos...');
     
     // Connect API client to core module
     if (window.hardwareCore && this.apiClient) {
@@ -267,14 +267,14 @@ class HardwareMain {
     // Make API client available globally
     window.apiClient = this.apiClient;
     
-    console.log('✅ Módulos conectados');
+    ////console.log('✅ Módulos conectados');
   }
 
   /**
    * Load initial data
    */
   async loadInitialData() {
-    console.log('📥 Cargando datos iniciales...');
+    ////console.log('📥 Cargando datos iniciales...');
     
     try {
       // Load in parallel for better performance
@@ -286,9 +286,9 @@ class HardwareMain {
       
       await Promise.all(promises);
       
-      console.log('✅ Datos iniciales cargados');
+      ////console.log('✅ Datos iniciales cargados');
     } catch (error) {
-      console.error('❌ Error cargando datos iniciales:', error);
+      ////console.error('❌ Error cargando datos iniciales:', error);
       this.showEnhancedNotification('Error al cargar datos iniciales', 'error');
     }
   }
@@ -298,24 +298,24 @@ class HardwareMain {
    */
   async loadHardware() {
     if (this.isLoadingHardware) {
-      console.warn('⚠️ loadHardware ya en progreso...');
+      ////console.warn('⚠️ loadHardware ya en progreso...');
       return;
     }
     
     this.isLoadingHardware = true;
     
     try {
-      console.log('🔄 Cargando hardware específico para empresa...');
+      ////console.log('🔄 Cargando hardware específico para empresa...');
       
       // Obtener ID de empresa del contexto
       const empresaId = window.EMPRESA_ID || document.body.dataset.empresaId;
       if (!empresaId) {
-        console.error('❌ No se encontró ID de empresa');
+        ////console.error('❌ No se encontró ID de empresa');
         this.renderHardware([]);
         return;
       }
       
-      console.log('🏢 ID de empresa:', empresaId);
+      ////console.log('🏢 ID de empresa:', empresaId);
       
       const includeInactiveFilter = document.getElementById('includeInactiveFilter');
       const includeInactive = includeInactiveFilter ? includeInactiveFilter.value === 'all' : false;
@@ -323,10 +323,10 @@ class HardwareMain {
       let response;
       // USAR ENDPOINTS ESPECÍFICOS DE EMPRESA - NO DE ADMIN
       if (includeInactive) {
-        console.log('🌐 Usando endpoint de empresa con inactivos');
+        ////console.log('🌐 Usando endpoint de empresa con inactivos');
         response = await this.apiClient.get_hardware_by_empresa_including_inactive(empresaId);
       } else {
-        console.log('🌐 Usando endpoint de empresa activos');
+        ////console.log('🌐 Usando endpoint de empresa activos');
         response = await this.apiClient.get_hardware_by_empresa(empresaId);
       }
       
@@ -341,15 +341,15 @@ class HardwareMain {
       const data = await response.json();
       
       if (data.success) {
-        console.log(`✅ Hardware cargado: ${data.data.length} elementos`);
+        ////console.log(`✅ Hardware cargado: ${data.data.length} elementos`);
         this.renderHardware(data.data);
         this.updateStats(data);
       } else {
-        console.error('❌ Error en respuesta:', data.errors);
+        ////console.error('❌ Error en respuesta:', data.errors);
         this.renderHardware([]);
       }
     } catch (error) {
-      console.error('💥 Error al cargar hardware:', error);
+      ////console.error('💥 Error al cargar hardware:', error);
       this.renderHardware([]);
     } finally {
       this.isLoadingHardware = false;
@@ -365,11 +365,11 @@ class HardwareMain {
       const data = await response.json();
       
       if (data.success) {
-        console.log('📋 Tipos de hardware cargados');
+        ////console.log('📋 Tipos de hardware cargados');
         this.populateTypeDropdowns(data.data);
       }
     } catch (error) {
-      console.error('Error al cargar tipos de hardware:', error);
+      ////console.error('Error al cargar tipos de hardware:', error);
     }
   }
 
@@ -382,12 +382,12 @@ class HardwareMain {
       const data = await response.json();
       
       if (data.success) {
-        console.log('🏢 Empresas cargadas');
+        ////console.log('🏢 Empresas cargadas');
         window.empresas = data.data;
         this.populateEmpresaDropdown(data.data);
       }
     } catch (error) {
-      console.error('Error al cargar empresas:', error);
+      ////console.error('Error al cargar empresas:', error);
     }
   }
 
@@ -399,25 +399,25 @@ class HardwareMain {
     const sedeSelect = document.getElementById('hardwareSede');
     
     if (!empresaSelect || !sedeSelect) {
-      console.warn('⚠️ No se encontraron los elementos empresa o sede select');
+      ////console.warn('⚠️ No se encontraron los elementos empresa o sede select');
       return;
     }
     
     const selectedEmpresaId = empresaSelect.value;
-    console.log('🏢 Cargando sedes para empresa ID:', selectedEmpresaId);
+    ////console.log('🏢 Cargando sedes para empresa ID:', selectedEmpresaId);
     
     // Reset sede select
     sedeSelect.innerHTML = '<option value="">Seleccionar sede</option>';
     sedeSelect.disabled = true;
     
     if (!selectedEmpresaId) {
-      console.log('🏢 No hay empresa seleccionada');
+      ////console.log('🏢 No hay empresa seleccionada');
       return;
     }
     
     // Wait for empresas to be available
     if (!window.empresas || window.empresas.length === 0) {
-      console.warn('⚠️ Lista de empresas no disponible, esperando...');
+      ////console.warn('⚠️ Lista de empresas no disponible, esperando...');
       setTimeout(() => this.loadSedesByEmpresa(), 100);
       return;
     }
@@ -425,12 +425,12 @@ class HardwareMain {
     const selectedEmpresa = window.empresas.find(emp => emp._id === selectedEmpresaId);
     
     if (!selectedEmpresa) {
-      console.error('❌ Empresa no encontrada en la lista:', selectedEmpresaId);
-      console.error('❌ Empresas disponibles:', window.empresas.map(e => ({ id: e._id, nombre: e.nombre })));
+      ////console.error('❌ Empresa no encontrada en la lista:', selectedEmpresaId);
+      ////console.error('❌ Empresas disponibles:', window.empresas.map(e => ({ id: e._id, nombre: e.nombre })));
       return;
     }
     
-    console.log('✅ Empresa encontrada:', selectedEmpresa.nombre, 'con sedes:', selectedEmpresa.sedes);
+    ////console.log('✅ Empresa encontrada:', selectedEmpresa.nombre, 'con sedes:', selectedEmpresa.sedes);
     
     if (selectedEmpresa.sedes && Array.isArray(selectedEmpresa.sedes) && selectedEmpresa.sedes.length > 0) {
       selectedEmpresa.sedes.forEach(sede => {
@@ -440,7 +440,7 @@ class HardwareMain {
         sedeSelect.appendChild(option);
       });
       sedeSelect.disabled = false;
-      console.log('✅ Sedes cargadas:', selectedEmpresa.sedes.length);
+      ////console.log('✅ Sedes cargadas:', selectedEmpresa.sedes.length);
     } else {
       // Create default sede if none exist
       const defaultOption = document.createElement('option');
@@ -448,7 +448,7 @@ class HardwareMain {
       defaultOption.textContent = 'Principal';
       sedeSelect.appendChild(defaultOption);
       sedeSelect.disabled = false;
-      console.log('✅ Sede por defecto "Principal" añadida');
+      ////console.log('✅ Sede por defecto "Principal" añadida');
     }
   }
 
@@ -459,7 +459,7 @@ class HardwareMain {
     const gridContainer = document.getElementById('hardwareGrid');
     
     if (!gridContainer) {
-      console.error('❌ Grid container no encontrado');
+      ////console.error('❌ Grid container no encontrado');
       return;
     }
     
@@ -480,7 +480,7 @@ class HardwareMain {
           gridContainer.appendChild(gridCard);
         }
       } catch (error) {
-        console.error(`Error renderizando hardware ${index + 1}:`, error);
+        ////console.error(`Error renderizando hardware ${index + 1}:`, error);
       }
     });
   }
@@ -532,10 +532,10 @@ class HardwareMain {
     
     // Debug: Check if hardware has location URLs
     if (hardware.direccion_url && hardware.direccion_url.trim() !== '') {
-      console.log('🗺️ Hardware con Google Maps:', hardware.nombre, 'URL:', hardware.direccion_url);
+      ////console.log('🗺️ Hardware con Google Maps:', hardware.nombre, 'URL:', hardware.direccion_url);
     }
     if (hardware.direccion_open_maps && hardware.direccion_open_maps.trim() !== '') {
-      console.log('🗺️ Hardware con OpenStreetMap:', hardware.nombre, 'URL:', hardware.direccion_open_maps);
+      ////console.log('🗺️ Hardware con OpenStreetMap:', hardware.nombre, 'URL:', hardware.direccion_open_maps);
     }
     
     // Determine status display
@@ -780,7 +780,7 @@ class HardwareMain {
       item.classList.remove('hidden');
     });
     
-    console.log('🧹 Filtros limpiados sin recargar hardware');
+    ////console.log('🧹 Filtros limpiados sin recargar hardware');
   }
 
   /**
@@ -818,11 +818,11 @@ class HardwareMain {
     const empresaSelect = document.getElementById('hardwareEmpresa');
     
     if (!empresaSelect) {
-      console.warn('⚠️ No se encontró el elemento hardwareEmpresa select');
+      ////console.warn('⚠️ No se encontró el elemento hardwareEmpresa select');
       return;
     }
     
-    console.log('🏢 Poblando dropdown de empresas con', empresas.length, 'empresas');
+    ////console.log('🏢 Poblando dropdown de empresas con', empresas.length, 'empresas');
     
     empresaSelect.innerHTML = '<option value="">Seleccionar empresa</option>';
     
@@ -835,7 +835,7 @@ class HardwareMain {
       empresaSelect.appendChild(option);
     });
     
-    console.log('✅ Dropdown de empresas poblado exitosamente');
+    ////console.log('✅ Dropdown de empresas poblado exitosamente');
   }
 
   /**
@@ -916,7 +916,7 @@ window.toggleHardwareStatus = (id, activa) => {
   if (window.hardwareModals && window.hardwareModals.showToggleModal) {
     window.hardwareModals.showToggleModal(id, activa);
   } else {
-    console.warn('Toggle modal not available');
+    ////console.warn('Toggle modal not available');
   }
 };
 
@@ -925,8 +925,8 @@ window.loadSedesByEmpresa = () => {
   if (hardwareMain) {
     hardwareMain.loadSedesByEmpresa();
   } else {
-    console.warn('Hardware main not available for loadSedesByEmpresa');
+    ////console.warn('Hardware main not available for loadSedesByEmpresa');
   }
 };
 
-console.log('🏗️ Hardware main module loaded');
+////console.log('🏗️ Hardware main module loaded');

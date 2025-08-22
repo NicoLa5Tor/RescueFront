@@ -26,19 +26,19 @@ class LoginHandler {
         //     this.redirectToDashboard();
         // }
         
-        console.log('LoginHandler inicializado');
+        //console.log('LoginHandler inicializado');
     }
 
     async handleSubmit(e) {
         e.preventDefault();
         
-        console.log('📝 Formulario enviado');
+        //console.log('📝 Formulario enviado');
 
         const formData = new FormData(this.form);
         const usuario = formData.get('usuario');
         const password = formData.get('password');
         
-        console.log('📝 Datos del formulario:', { usuario, password: password ? '[PRESENTE]' : '[VACIO]' });
+        //console.log('📝 Datos del formulario:', { usuario, password: password ? '[PRESENTE]' : '[VACIO]' });
 
         // Validación básica
         if (!usuario || !password) {
@@ -50,10 +50,10 @@ class LoginHandler {
         this.setLoading(true);
 
         try {
-            console.log('🚀 Iniciando proceso de login...');
+            //console.log('🚀 Iniciando proceso de login...');
             // Intentar login
             const result = await this.authManager.login(usuario, password);
-            console.log('📝 Resultado del login:', result);
+            //console.log('📝 Resultado del login:', result);
 
             if (result.success) {
                 this.showSuccess('¡Login exitoso! Redirigiendo...');
@@ -67,7 +67,7 @@ class LoginHandler {
                 this.showError(errorMessage);
             }
         } catch (error) {
-            console.error('❌ Error en login:', error);
+            //console.error('❌ Error en login:', error);
             this.showError('Error de conexión. Inténtalo de nuevo.');
         } finally {
             this.setLoading(false);
@@ -137,27 +137,27 @@ class LoginHandler {
 
     redirectToDashboard(user) {
         // Determinar a dónde redirigir basado en el rol del usuario
-        console.log('🔄 Redirigiendo usuario:', user);
+        ////console.log('🔄 Redirigiendo usuario:', user);
         
         if (user && user.role) {
             const role = user.role;
-            console.log('👤 Rol del usuario:', role);
+            //console.log('👤 Rol del usuario:', role);
             
             switch(role) {
                 case 'super_admin':
-                    console.log('🛡️ Redirigiendo a Super Admin Dashboard');
+                    //console.log('🛡️ Redirigiendo a Super Admin Dashboard');
                     window.location.href = '/admin/super-dashboard';
                     break;
                 case 'empresa':
-                    console.log('🏢 Redirigiendo a Dashboard de Empresa');
+                    //console.log('🏢 Redirigiendo a Dashboard de Empresa');
                     window.location.href = '/empresa';
                     break;
                 default:
-                    console.warn('⚠️ Rol desconocido, redirigiendo a dashboard por defecto');
+                    //console.warn('⚠️ Rol desconocido, redirigiendo a dashboard por defecto');
                     window.location.href = '/admin/super-dashboard';
             }
         } else {
-            console.warn('⚠️ No se encontró información de usuario/rol, redirigiendo por defecto');
+            //console.warn('⚠️ No se encontró información de usuario/rol, redirigiendo por defecto');
             window.location.href = '/admin/super-dashboard';
         }
     }

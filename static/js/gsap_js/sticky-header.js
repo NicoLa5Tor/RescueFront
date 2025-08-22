@@ -17,18 +17,18 @@
             
             // Verificar que no sea un header de login
             if (this.header && this.header.classList.contains('login-header')) {
-                console.warn('Header de login detectado, saltando configuración sticky');
+                //console.warn('Header de login detectado, saltando configuración sticky');
                 return;
             }
             this.loginButton = document.getElementById('loginbutton');
             this.clampElement = document.getElementById('clamp');
             
             if (!this.header) {
-                console.warn('Header sticky no encontrado');
+                //console.warn('Header sticky no encontrado');
                 return;
             }
             
-            console.log('Iniciando módulo Sticky Header');
+            //console.log('Iniciando módulo Sticky Header');
             this.setupAnimations();
             this.setupLoginButton();
         },
@@ -88,11 +88,11 @@
         
         setupLoginButton: function() {
             if (!this.loginButton) {
-                console.warn('Botón de login no encontrado en sticky-header');
+                //console.warn('Botón de login no encontrado en sticky-header');
                 return;
             }
             
-            console.log('📌 STICKY-HEADER: Botón de login encontrado, delegando control al sistema global');
+            //console.log('📌 STICKY-HEADER: Botón de login encontrado, delegando control al sistema global');
             
             // Delegar el control de visibilidad al sistema global
             // El sistema en base.html ya maneja la visibilidad
@@ -173,7 +173,7 @@
             });
             
             // Aquí puedes agregar la lógica del login
-            console.log('Botón de login clickeado');
+            //console.log('Botón de login clickeado');
             
             // Ejemplo: abrir modal o redirigir
             // window.location.href = '/login';
@@ -182,10 +182,10 @@
         
         // Método para testear el botón manualmente (para debugging)
         testLoginButton: function() {
-            console.log('Testeando botón de login...');
+            //console.log('Testeando botón de login...');
             this.showLoginButton();
             setTimeout(() => {
-                console.log('Intenta hacer click ahora');
+                //console.log('Intenta hacer click ahora');
             }, 500);
         },
         showLoginButton: function() {
@@ -224,7 +224,7 @@
                 this.loginButton.removeEventListener('click', this.handleLoginClick.bind(this));
             }
             
-            console.log(`Módulo ${this.id} destruido`);
+            //console.log(`Módulo ${this.id} destruido`);
         }
     };
     

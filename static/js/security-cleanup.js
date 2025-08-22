@@ -9,7 +9,7 @@ class SecurityCleanup {
     }
 
     init() {
-        console.log('🔒 Iniciando limpieza de seguridad...');
+        //console.log('🔒 Iniciando limpieza de seguridad...');
         
         // Limpiar tokens residuales
         this.cleanupTokens();
@@ -17,11 +17,11 @@ class SecurityCleanup {
         // Verificar configuración
         this.verifySecurityConfig();
         
-        console.log('✅ Limpieza de seguridad completada');
+        //console.log('✅ Limpieza de seguridad completada');
     }
 
     cleanupTokens() {
-        console.log('🧹 Limpiando tokens residuales...');
+        //console.log('🧹 Limpiando tokens residuales...');
         
         // Limpiar localStorage
         const localStorageKeys = [];
@@ -33,7 +33,7 @@ class SecurityCleanup {
         }
         
         localStorageKeys.forEach(key => {
-            console.warn(`🗑️ Eliminando token residual de localStorage: ${key}`);
+            //console.warn(`🗑️ Eliminando token residual de localStorage: ${key}`);
             localStorage.removeItem(key);
         });
         
@@ -47,20 +47,20 @@ class SecurityCleanup {
         }
         
         sessionStorageKeys.forEach(key => {
-            console.warn(`🗑️ Eliminando token residual de sessionStorage: ${key}`);
+            //console.warn(`🗑️ Eliminando token residual de sessionStorage: ${key}`);
             sessionStorage.removeItem(key);
         });
         
         // Reportar limpieza
         if (localStorageKeys.length === 0 && sessionStorageKeys.length === 0) {
-            console.log('✅ No se encontraron tokens residuales');
+            //console.log('✅ No se encontraron tokens residuales');
         } else {
-            console.log(`🧹 Eliminados ${localStorageKeys.length + sessionStorageKeys.length} tokens residuales`);
+            //console.log(`🧹 Eliminados ${localStorageKeys.length + sessionStorageKeys.length} tokens residuales`);
         }
     }
 
     verifySecurityConfig() {
-        console.log('🔍 Verificando configuración de seguridad...');
+        //console.log('🔍 Verificando configuración de seguridad...');
         
         // Verificar cookies
         this.checkCookies();
@@ -73,7 +73,7 @@ class SecurityCleanup {
     }
 
     checkCookies() {
-        console.log('🍪 Verificando cookies...');
+        //console.log('🍪 Verificando cookies...');
         
         const cookies = document.cookie.split(';');
         const authCookies = cookies.filter(cookie => {
@@ -82,10 +82,10 @@ class SecurityCleanup {
         });
         
         if (authCookies.length > 0) {
-            console.log('✅ Cookies de autenticación encontradas:');
+            //console.log('✅ Cookies de autenticación encontradas:');
             authCookies.forEach(cookie => {
                 const [name, value] = cookie.trim().split('=');
-                console.log(`  🍪 ${name}: ${value ? '[PRESENTE]' : '[VACÍA]'}`);
+                //console.log(`  🍪 ${name}: ${value ? '[PRESENTE]' : '[VACÍA]'}`);
             });
             
             // Verificar si son accesibles desde JavaScript
@@ -94,24 +94,24 @@ class SecurityCleanup {
                 try {
                     const cookieValue = this.getCookie(name);
                     if (cookieValue) {
-                        console.warn(`⚠️ PROBLEMA DE SEGURIDAD: Cookie '${name}' es accesible desde JavaScript`);
-                        console.warn(`   💡 Esta cookie debería ser HTTPOnly para mayor seguridad`);
+                        //console.warn(`⚠️ PROBLEMA DE SEGURIDAD: Cookie '${name}' es accesible desde JavaScript`);
+                        //console.warn(`   💡 Esta cookie debería ser HTTPOnly para mayor seguridad`);
                     }
                 } catch (error) {
-                    console.log(`✅ Cookie '${name}' parece estar correctamente protegida`);
+                    //console.log(`✅ Cookie '${name}' parece estar correctamente protegida`);
                 }
             });
         } else {
-            console.log('ℹ️ No se encontraron cookies de autenticación visibles');
+            //console.log('ℹ️ No se encontraron cookies de autenticación visibles');
         }
     }
 
     checkAuthentication() {
-        console.log('🔐 Verificando estado de autenticación...');
+        //console.log('🔐 Verificando estado de autenticación...');
         
         // Verificar window.currentUser
         if (window.currentUser) {
-            console.log('✅ window.currentUser configurado correctamente');
+            //console.log('✅ window.currentUser configurado correctamente');
             console.log('👤 Datos de usuario:', {
                 id: window.currentUser.id ? '✅' : '❌',
                 role: window.currentUser.role ? '✅' : '❌',
@@ -124,24 +124,24 @@ class SecurityCleanup {
         
         // Verificar AuthManager
         if (window.AuthManager && window.authManager) {
-            console.log('✅ AuthManager configurado correctamente');
+            //console.log('✅ AuthManager configurado correctamente');
             
             // Verificar método de autenticación
             if (typeof window.authManager.isAuthenticated === 'function') {
                 try {
                     const isAuth = window.authManager.isAuthenticated();
-                    console.log(`🔐 Estado de autenticación: ${isAuth ? '✅ Autenticado' : '❌ No autenticado'}`);
+                    //console.log(`🔐 Estado de autenticación: ${isAuth ? '✅ Autenticado' : '❌ No autenticado'}`);
                 } catch (error) {
-                    console.error('❌ Error verificando autenticación:', error);
+                    //console.error('❌ Error verificando autenticación:', error);
                 }
             }
         } else {
-            console.warn('⚠️ AuthManager no está disponible');
+            //console.warn('⚠️ AuthManager no está disponible');
         }
     }
 
     checkWindowConfig() {
-        console.log('🪟 Verificando configuración de ventana...');
+        //console.log('🪟 Verificando configuración de ventana...');
         
         const requiredGlobals = [
             'currentUser',
@@ -150,13 +150,13 @@ class SecurityCleanup {
             'API_BASE_URL'
         ];
         
-        requiredGlobals.forEach(global => {
-            if (window[global]) {
-                console.log(`✅ window.${global} está configurado`);
-            } else {
-                console.warn(`⚠️ window.${global} no está configurado`);
-            }
-        });
+        // requiredGlobals.forEach(global => {
+        //     if (window[global]) {
+        //         console.log(`✅ window.${global} está configurado`);
+        //     } else {
+        //         console.warn(`⚠️ window.${global} no está configurado`);
+        //     }
+        // });
     }
 
     getCookie(name) {
@@ -197,8 +197,8 @@ class SecurityCleanup {
 
     // Método para generar reporte de seguridad
     generateSecurityReport() {
-        console.log('\n📊 === REPORTE DE SEGURIDAD ===');
-        console.log('='.repeat(50));
+        //console.log('\n📊 === REPORTE DE SEGURIDAD ===');
+        //console.log('='.repeat(50));
         
         const report = {
             timestamp: new Date().toISOString(),
@@ -221,8 +221,8 @@ class SecurityCleanup {
             report.security_issues.push('AuthManager no disponible');
         }
         
-        console.log('📊 Reporte:', report);
-        console.log('='.repeat(50));
+        //console.log('📊 Reporte:', report);
+        //console.log('='.repeat(50));
         
         return report;
     }

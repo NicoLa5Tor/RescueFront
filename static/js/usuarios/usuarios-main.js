@@ -7,9 +7,9 @@ try {
     const usuariosDataElement = document.getElementById('usuariosData');
     const usuariosDataText = usuariosDataElement.textContent;
     window.USUARIOS_DATA = usuariosDataText && usuariosDataText !== 'null' ? JSON.parse(usuariosDataText) : null;
-    console.log('👥 Usuarios data loaded:', window.USUARIOS_DATA);
+    ////console.log('👥 Usuarios data loaded:', window.USUARIOS_DATA);
   } catch (error) {
-    console.warn('⚠️ Error loading usuarios data:', error);
+    ////console.warn('⚠️ Error loading usuarios data:', error);
     window.USUARIOS_DATA = null;
   }
   
@@ -17,7 +17,7 @@ try {
   function applyCardOptimizations(card) {
     // Usar las animaciones GSAP globales ya disponibles
     if (window.HardwareAnimations) {
-      console.log('🔧 Optimizaciones GSAP aplicadas a tarjeta individual');
+      //console.log('🔧 Optimizaciones GSAP aplicadas a tarjeta individual');
       return;
     }
     
@@ -26,7 +26,7 @@ try {
     if (shimmer && !window.GSAPUtils?.prefersReducedMotion()) {
       shimmer.style.opacity = '0';
       shimmer.style.transform = 'rotate(45deg) translateX(-100%)';
-      console.log('🔧 Fallback aplicado a tarjeta individual');
+      //console.log('🔧 Fallback aplicado a tarjeta individual');
     }
   }
   
@@ -36,7 +36,7 @@ try {
     existingCards.forEach(card => {
       applyCardOptimizations(card);
     });
-    console.log(`🔧 Optimizaciones aplicadas a ${existingCards.length} tarjetas existentes`);
+    //console.log(`🔧 Optimizaciones aplicadas a ${existingCards.length} tarjetas existentes`);
   }
   
   // Global functions for backward compatibility
@@ -72,26 +72,26 @@ try {
       const modal = document.getElementById(modalId);
       if (modal) {
         window.modalManager.setupModal(modalId);
-        console.log('🔧 Modal configurado con modalManager:', modalId);
+        //console.log('🔧 Modal configurado con modalManager:', modalId);
       }
     });
-    console.log('✅ Todos los modales de usuarios configurados con modalManager');
+    //console.log('✅ Todos los modales de usuarios configurados con modalManager');
   } else {
-    console.warn('⚠️ modalManager no disponible');
+    //console.warn('⚠️ modalManager no disponible');
   }
   
-  console.log('📻 Usuarios main module loaded');
+  //console.log('📻 Usuarios main module loaded');
   
   // Definir variables globales para el rol y empresa
   window.userRole = '{{ user_role or "" }}';
   window.empresaId = '{{ empresa_id or "" }}';
   window.empresaNombre = '{{ empresa_username or "" }}';
   
-  console.log('🔧 Variables globales definidas:', {
-    userRole: window.userRole,
-    empresaId: window.empresaId,
-    empresaNombre: window.empresaNombre
-  });
+  // console.log('🔧 Variables globales definidas:', {
+  //   userRole: window.userRole,
+  //   empresaId: window.empresaId,
+  //   empresaNombre: window.empresaNombre
+  // });
   
   // Funciones para el selector de país personalizado
   function toggleCountryDropdown(selector) {
@@ -140,7 +140,7 @@ try {
     const dropdown = selector.querySelector('.phone-country-dropdown');
     dropdown.classList.remove('show');
     
-    console.log('País seleccionado:', { country, code, flag, text });
+    //console.log('País seleccionado:', { country, code, flag, text });
   }
   
   // Cerrar dropdowns al hacer click fuera

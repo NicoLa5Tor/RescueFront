@@ -272,9 +272,9 @@ try {
   const estadisticasElement = document.getElementById('empresaStatisticsData');
   const estadisticasText = estadisticasElement.textContent;
   window.EMPRESA_STATISTICS = estadisticasText && estadisticasText !== 'null' ? JSON.parse(estadisticasText) : null;
-  console.log('📊 Estadísticas empresa cargadas:', window.EMPRESA_STATISTICS);
+  //console.log('📊 Estadísticas empresa cargadas:', window.EMPRESA_STATISTICS);
 } catch (error) {
-  console.warn('⚠️ Error cargando estadísticas empresa:', error);
+  //console.warn('⚠️ Error cargando estadísticas empresa:', error);
   window.EMPRESA_STATISTICS = null;
 }
 
@@ -284,9 +284,9 @@ function exportEmpresaStats() {
 }
 
 // Log para debugging
-console.log('📊 Vista de estadísticas empresa inicializada');
-console.log('👤 Usuario:', '{{ empresa_username }}');
-console.log('🆔 Empresa ID:', '{{ empresa_id }}');
-console.log('📋 Rol:', '{{ user_role }}');
+//console.log('📊 Vista de estadísticas empresa inicializada');
+//console.log('👤 Usuario:', '{{ empresa_username }}');
+//console.log('🆔 Empresa ID:', '{{ empresa_id }}');
+//console.log('📋 Rol:', '{{ user_role }}');
 </script>
 {% endblock %}

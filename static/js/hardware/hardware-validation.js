@@ -58,7 +58,7 @@ class HardwareValidator {
 
       // Validate that the name matches
       if (empresaExists.nombre !== empresaNombre) {
-        console.warn(`⚠️ Nombre de empresa no coincide: esperado "${empresaExists.nombre}", recibido "${empresaNombre}"`);
+        ////////console.warn(`⚠️ Nombre de empresa no coincide: esperado "${empresaExists.nombre}", recibido "${empresaNombre}"`);
         // Update the name to match the system
         empresaNombre = empresaExists.nombre;
       }
@@ -242,25 +242,17 @@ class HardwareValidator {
    */
   isEmpresaDataConsistent(empresaId, empresaNombre) {
     if (!window.empresas || window.empresas.length === 0) {
-      console.warn('⚠️ No hay empresas cargadas para validar consistencia');
+      ////////console.warn('⚠️ No hay empresas cargadas para validar consistencia');
       return true; // Assume consistent if no data to compare
     }
 
     const empresa = window.empresas.find(emp => emp._id === empresaId);
     if (!empresa) {
-      console.error('❌ Empresa no encontrada para validar consistencia:', empresaId);
+      ////////console.error('❌ Empresa no encontrada para validar consistencia:', empresaId);
       return false;
     }
 
     const isConsistent = empresa.nombre === empresaNombre;
-    if (!isConsistent) {
-      console.error('❌ Datos de empresa inconsistentes:', {
-        expected: empresa.nombre,
-        received: empresaNombre,
-        empresaId: empresaId
-      });
-    }
-
     return isConsistent;
   }
 }
@@ -268,4 +260,4 @@ class HardwareValidator {
 // Create global instance
 window.hardwareValidator = new HardwareValidator();
 
-console.log('✅ Hardware validation utilities loaded');
+//////console.log('✅ Hardware validation utilities loaded');

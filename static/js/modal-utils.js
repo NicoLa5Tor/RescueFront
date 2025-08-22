@@ -33,7 +33,7 @@ class ModalManager {
     openModal(modalId, options = {}) {
         const modal = document.getElementById(modalId);
         if (!modal) {
-            console.warn(`Modal with ID "${modalId}" not found`);
+            ////console.warn(`Modal with ID "${modalId}" not found`);
             return;
         }
         
@@ -54,7 +54,7 @@ class ModalManager {
             options.onOpen(modal);
         }
         
-        console.log(`Modal "${modalId}" opened`);
+        ////console.log(`Modal "${modalId}" opened`);
     }
     
     /**
@@ -65,7 +65,7 @@ class ModalManager {
     closeModal(modalId, options = {}) {
         const modal = document.getElementById(modalId);
         if (!modal) {
-            console.warn(`Modal with ID "${modalId}" not found`);
+            ////console.warn(`Modal with ID "${modalId}" not found`);
             return;
         }
         
@@ -85,7 +85,7 @@ class ModalManager {
             options.onClose(modal);
         }
         
-        console.log(`Modal "${modalId}" closed`);
+        ////console.log(`Modal "${modalId}" closed`);
     }
     
     /**
@@ -125,7 +125,7 @@ class ModalManager {
             // PREVENIR BORDES BLANCOS EN SCROLL - No manipular style.overflow directamente
             // El CSS ya tiene las reglas necesarias con overscroll-behavior
             
-            console.log(`Body scroll disabled with class: ${modalClass}`);
+            //console.log(`Body scroll disabled with class: ${modalClass}`);
         }
     }
     
@@ -144,7 +144,7 @@ class ModalManager {
             document.body.classList.remove(className);
         });
         
-        console.log('Body scroll enabled - all modal classes removed');
+        //console.log('Body scroll enabled - all modal classes removed');
     }
     
     /**
@@ -180,7 +180,7 @@ class ModalManager {
     setupModal(modalId, options = {}) {
         const modal = document.getElementById(modalId);
         if (!modal) {
-            console.warn(`Modal with ID "${modalId}" not found`);
+            //console.warn(`Modal with ID "${modalId}" not found`);
             return;
         }
         
@@ -201,7 +201,7 @@ class ModalManager {
             });
         });
         
-        console.log(`Modal "${modalId}" configured`);
+        //console.log(`Modal "${modalId}" configured`);
     }
     
     /**
@@ -288,7 +288,7 @@ window.modalUtils = {
 
 // Inicialización automática cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('Modal Manager initialized');
+    //console.log('Modal Manager initialized');
     
     // Auto-configurar modales existentes en la página
     const modals = document.querySelectorAll('.modal-backdrop');

@@ -1,7 +1,7 @@
 // Animaciones simples y funcionales de login
 function initLoginAnimations() {
   if (typeof window.gsap === 'undefined') {
-    console.log('GSAP no está disponible, usando fallback CSS');
+    //////console.log('GSAP no está disponible, usando fallback CSS');
     // Fallback: mostrar elementos inmediatamente si GSAP no está disponible
     const elements = document.querySelectorAll('.fade-in-up, .fade-in-scale');
     elements.forEach(el => {
@@ -11,7 +11,7 @@ function initLoginAnimations() {
     return;
   }
   
-  console.log('Iniciando animaciones GSAP');
+  //////console.log('Iniciando animaciones GSAP');
   
   // Configuraciones iniciales más suaves
   window.gsap.set('.fade-in-up', { opacity: 0, y: 30 });

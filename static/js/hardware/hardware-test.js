@@ -28,21 +28,21 @@ class HardwareTestSuite {
    * Run all tests
    */
   async runTests() {
-    console.log('🧪 Ejecutando pruebas de hardware...');
+    ////console.log('🧪 Ejecutando pruebas de hardware...');
     
     for (const test of this.tests) {
       try {
-        console.log(`\n🔬 Ejecutando: ${test.name}`);
+        ////console.log(`\n🔬 Ejecutando: ${test.name}`);
         const result = await test.testFunction();
         if (result) {
-          console.log(`✅ PASÓ: ${test.name}`);
+          //console.log(`✅ PASÓ: ${test.name}`);
           this.results.passed++;
         } else {
-          console.log(`❌ FALLÓ: ${test.name}`);
+          //console.log(`❌ FALLÓ: ${test.name}`);
           this.results.failed++;
         }
       } catch (error) {
-        console.error(`💥 ERROR en ${test.name}:`, error);
+        //console.error(`💥 ERROR en ${test.name}:`, error);
         this.results.failed++;
       }
       this.results.total++;
@@ -55,11 +55,11 @@ class HardwareTestSuite {
    * Show test results
    */
   showResults() {
-    console.log('\n📊 RESULTADOS DE PRUEBAS:');
-    console.log(`Total: ${this.results.total}`);
-    console.log(`Pasaron: ${this.results.passed}`);
-    console.log(`Fallaron: ${this.results.failed}`);
-    console.log(`Porcentaje de éxito: ${((this.results.passed / this.results.total) * 100).toFixed(1)}%`);
+    //console.log('\n📊 RESULTADOS DE PRUEBAS:');
+    //console.log(`Total: ${this.results.total}`);
+    //console.log(`Pasaron: ${this.results.passed}`);
+    //console.log(`Fallaron: ${this.results.failed}`);
+    //console.log(`Porcentaje de éxito: ${((this.results.passed / this.results.total) * 100).toFixed(1)}%`);
   }
 
   /**
@@ -67,28 +67,28 @@ class HardwareTestSuite {
    */
   testEmpresaValidation() {
     if (!window.hardwareValidator) {
-      console.warn('Validator no disponible');
+      //console.warn('Validator no disponible');
       return false;
     }
 
     // Test valid empresa
     const validResult = window.hardwareValidator.validateEmpresa('test-id', 'Test Company');
     if (!validResult.isValid) {
-      console.error('Validación de empresa válida falló');
+      //console.error('Validación de empresa válida falló');
       return false;
     }
 
     // Test invalid empresa - no ID
     const invalidResult1 = window.hardwareValidator.validateEmpresa('', 'Test Company');
     if (invalidResult1.isValid) {
-      console.error('Validación debería fallar con ID vacío');
+      //console.error('Validación debería fallar con ID vacío');
       return false;
     }
 
     // Test invalid empresa - no name
     const invalidResult2 = window.hardwareValidator.validateEmpresa('test-id', '');
     if (invalidResult2.isValid) {
-      console.error('Validación debería fallar con nombre vacío');
+      //console.error('Validación debería fallar con nombre vacío');
       return false;
     }
 
@@ -100,28 +100,28 @@ class HardwareTestSuite {
    */
   testSedeValidation() {
     if (!window.hardwareValidator) {
-      console.warn('Validator no disponible');
+      //console.warn('Validator no disponible');
       return false;
     }
 
     // Test valid sede
     const validResult = window.hardwareValidator.validateSede('Principal', 'test-empresa-id');
     if (!validResult.isValid) {
-      console.error('Validación de sede válida falló');
+      //console.error('Validación de sede válida falló');
       return false;
     }
 
     // Test invalid sede - no value
     const invalidResult1 = window.hardwareValidator.validateSede('', 'test-empresa-id');
     if (invalidResult1.isValid) {
-      console.error('Validación debería fallar con sede vacía');
+      //console.error('Validación debería fallar con sede vacía');
       return false;
     }
 
     // Test invalid sede - no empresa
     const invalidResult2 = window.hardwareValidator.validateSede('Principal', '');
     if (invalidResult2.isValid) {
-      console.error('Validación debería fallar sin empresa');
+      //console.error('Validación debería fallar sin empresa');
       return false;
     }
 
@@ -142,7 +142,7 @@ class HardwareTestSuite {
     for (const elementId of requiredElements) {
       const element = document.getElementById(elementId);
       if (!element) {
-        console.error(`Elemento requerido no encontrado: ${elementId}`);
+        //console.error(`Elemento requerido no encontrado: ${elementId}`);
         return false;
       }
     }
@@ -156,13 +156,13 @@ class HardwareTestSuite {
   testEmpresaDropdown() {
     const empresaSelect = document.getElementById('hardwareEmpresa');
     if (!empresaSelect) {
-      console.error('Dropdown de empresa no encontrado');
+      //console.error('Dropdown de empresa no encontrado');
       return false;
     }
 
     // Check if it has options
     if (empresaSelect.options.length < 2) { // At least default + one empresa
-      console.warn('Dropdown de empresa no tiene suficientes opciones');
+      //console.warn('Dropdown de empresa no tiene suficientes opciones');
       return false;
     }
 
@@ -170,7 +170,7 @@ class HardwareTestSuite {
     for (let i = 1; i < empresaSelect.options.length; i++) {
       const option = empresaSelect.options[i];
       if (!option.value || !option.dataset.nombre) {
-        console.error('Opción de empresa mal configurada:', option);
+        //console.error('Opción de empresa mal configurada:', option);
         return false;
       }
     }
@@ -183,7 +183,7 @@ class HardwareTestSuite {
    */
   testLoadSedesByEmpresa() {
     if (typeof window.loadSedesByEmpresa !== 'function') {
-      console.error('Función loadSedesByEmpresa no disponible');
+      //console.error('Función loadSedesByEmpresa no disponible');
       return false;
     }
 
@@ -192,7 +192,7 @@ class HardwareTestSuite {
       window.loadSedesByEmpresa();
       return true;
     } catch (error) {
-      console.error('Error al ejecutar loadSedesByEmpresa:', error);
+      //console.error('Error al ejecutar loadSedesByEmpresa:', error);
       return false;
     }
   }
@@ -202,7 +202,7 @@ class HardwareTestSuite {
    */
   testHardwareCoreInstance() {
     if (!window.hardwareCore) {
-      console.error('Instancia de hardwareCore no disponible');
+      //console.error('Instancia de hardwareCore no disponible');
       return false;
     }
 
@@ -216,7 +216,7 @@ class HardwareTestSuite {
 
     for (const method of requiredMethods) {
       if (typeof window.hardwareCore[method] !== 'function') {
-        console.error(`Método requerido no encontrado: ${method}`);
+        //console.error(`Método requerido no encontrado: ${method}`);
         return false;
       }
     }
@@ -229,12 +229,12 @@ class HardwareTestSuite {
    */
   testEmpresasData() {
     if (!window.empresas) {
-      console.warn('window.empresas no disponible');
+      //console.warn('window.empresas no disponible');
       return false;
     }
 
     if (!Array.isArray(window.empresas)) {
-      console.error('window.empresas no es un array');
+      //console.error('window.empresas no es un array');
       return false;
     }
 
@@ -245,7 +245,7 @@ class HardwareTestSuite {
       
       for (const field of requiredFields) {
         if (!empresa[field]) {
-          console.error(`Campo requerido faltante en empresa: ${field}`);
+          //console.error(`Campo requerido faltante en empresa: ${field}`);
           return false;
         }
       }
@@ -259,7 +259,7 @@ class HardwareTestSuite {
    */
   testFormSubmissionFlow() {
     if (!window.hardwareCore) {
-      console.error('hardwareCore no disponible');
+      //console.error('hardwareCore no disponible');
       return false;
     }
 
@@ -284,7 +284,7 @@ class HardwareTestSuite {
     if (window.hardwareValidator) {
       const validation = window.hardwareValidator.validateHardwareData(mockFormData);
       if (!validation.isValid) {
-        console.error('Validación de datos mock falló:', validation.errors);
+        //console.error('Validación de datos mock falló:', validation.errors);
         return false;
       }
     }
@@ -319,4 +319,4 @@ document.addEventListener('DOMContentLoaded', function() {
   }, 2000);
 });
 
-console.log('🧪 Suite de pruebas de hardware cargada. Añade ?test=true a la URL para ejecutar.');
+//console.log('🧪 Suite de pruebas de hardware cargada. Añade ?test=true a la URL para ejecutar.');

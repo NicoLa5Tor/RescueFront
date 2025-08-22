@@ -95,7 +95,7 @@ class ThemeManager {
     }
     
     updateChartsTheme(isDark) {
-        console.log('🎨 Actualizando tema de gráficas:', isDark ? 'oscuro' : 'claro');
+        //console.log('🎨 Actualizando tema de gráficas:', isDark ? 'oscuro' : 'claro');
         
         // Define colors for light and dark themes
         const textColor = isDark ? '#e5e7eb' : '#374151';
@@ -155,7 +155,7 @@ class ThemeManager {
     updateChartColors(chart, textColor, gridColor, backgroundColor) {
         if (!chart || !chart.options) return;
         
-        console.log('🎨 Actualizando colores de gráfica:', chart.config.type);
+        //console.log('🎨 Actualizando colores de gráfica:', chart.config.type);
         
         // Update text colors
         if (chart.options.plugins && chart.options.plugins.legend && chart.options.plugins.legend.labels) {
@@ -184,11 +184,11 @@ class ThemeManager {
         // Update the chart
         chart.update('none'); // Update without animation for instant theme change
         
-        console.log('✅ Gráfica actualizada con nuevo tema');
+        //console.log('✅ Gráfica actualizada con nuevo tema');
     }
     
     updateChartContainers(isDark) {
-        console.log('🎨 Actualizando contenedores de gráficas:', isDark ? 'oscuro' : 'claro');
+        //console.log('🎨 Actualizando contenedores de gráficas:', isDark ? 'oscuro' : 'claro');
         
         // Force glass-card elements to update by toggling a class that triggers recalculation
         const glassCards = document.querySelectorAll('.glass-card');
@@ -217,7 +217,7 @@ class ThemeManager {
             overlay.style.backgroundColor = isDark ? 'rgba(31, 41, 55, 0.8)' : 'rgba(255, 255, 255, 0.8)';
         });
         
-        console.log('✅ Contenedores de gráficas actualizados');
+        //console.log('✅ Contenedores de gráficas actualizados');
     }
 }
 

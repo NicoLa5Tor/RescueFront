@@ -32,7 +32,7 @@ class EmpresasMain {
    */
   async initializeComponents() {
     try {
-      console.log('🏢 Inicializando sistema de empresas...');
+      //console.log('🏢 Inicializando sistema de empresas...');
       
       // Setup API client
       await this.setupApiClient();
@@ -43,10 +43,10 @@ class EmpresasMain {
       // Load initial data
       await this.loadInitialData();
       
-      console.log('✅ Sistema de empresas inicializado correctamente');
+      //console.log('✅ Sistema de empresas inicializado correctamente');
       
     } catch (error) {
-      console.error('💥 Error al inicializar sistema de empresas:', error);
+      //console.error('💥 Error al inicializar sistema de empresas:', error);
       this.showFallbackError();
     }
   }
@@ -59,23 +59,23 @@ class EmpresasMain {
       // Use global API client if available
       if (window.apiClient) {
         this.apiClient = window.apiClient;
-        console.log('✅ API client global encontrado');
+        //console.log('✅ API client global encontrado');
         return;
       }
       
       // Check if we have the endpoint test client
       if (typeof EndpointTestClient !== 'undefined') {
         this.apiClient = new EndpointTestClient('/proxy');
-        console.log('✅ API client creado usando EndpointTestClient');
+        //console.log('✅ API client creado usando EndpointTestClient');
         return;
       }
       
       // Fallback: Create basic API client
       this.apiClient = this.createBasicApiClient();
-      console.log('⚠️ Usando API client básico como fallback');
+      //console.log('⚠️ Usando API client básico como fallback');
       
     } catch (error) {
-      console.error('❌ Error configurando API client:', error);
+      //console.error('❌ Error configurando API client:', error);
       throw error;
     }
   }
@@ -179,14 +179,14 @@ class EmpresasMain {
       tableViewBtn.addEventListener('click', () => this.switchToTableView());
     }
 
-    console.log('🎯 Event listeners configurados');
+    //console.log('🎯 Event listeners configurados');
   }
 
   /**
    * Load initial data
    */
   async loadInitialData() {
-    console.log('📍 DEBUG: Iniciando loadInitialData()');
+    //console.log('📍 DEBUG: Iniciando loadInitialData()');
     
     // Set initial filter states before loading data
     this.updateStatusFilterState();
@@ -200,23 +200,23 @@ class EmpresasMain {
     // TERCERO: Populate location filter after loading empresas
     this.populateLocationFilter();
     
-    console.log('📍 DEBUG: loadInitialData() terminado');
+    //console.log('📍 DEBUG: loadInitialData() terminado');
   }
 
   /**
    * Load empresas from backend
    */
   async loadEmpresas() {
-    console.log('📍 DEBUG: Iniciando loadEmpresas()');
+    //console.log('📍 DEBUG: Iniciando loadEmpresas()');
     
     if (this.isLoading) {
-      console.log('⏳ Ya hay una carga en progreso...');
+      //console.log('⏳ Ya hay una carga en progreso...');
       return;
     }
 
     try {
       this.isLoading = true;
-      console.log('🔄 Cargando empresas desde backend...');
+      //console.log('🔄 Cargando empresas desde backend...');
       
       this.showLoadingState();
 
@@ -230,7 +230,7 @@ class EmpresasMain {
           throw new Error('Dashboard endpoint not available');
         }
       } catch (dashboardError) {
-        console.log('⚠️ Dashboard endpoint failed, using regular endpoint...');
+        //console.log('⚠️ Dashboard endpoint failed, using regular endpoint...');
         // Fallback to regular empresas endpoint
         response = await this.apiClient.get_empresas();
       }
@@ -240,12 +240,12 @@ class EmpresasMain {
       }
 
       const data = await response.json();
-      console.log('📦 Respuesta de empresas:', data);
+      //console.log('📦 Respuesta de empresas:', data);
 
       if (data.success && Array.isArray(data.data)) {
         this.empresasAll = data.data;
         
-        console.log(`✅ ${data.data.length} empresas cargadas desde backend`);
+        //console.log(`✅ ${data.data.length} empresas cargadas desde backend`);
         
         // Renderizar empresas (igual que hardware)
         this.renderEmpresas();
@@ -258,12 +258,12 @@ class EmpresasMain {
         this.hideLoadingState();
         
       } else {
-        console.warn('⚠️ Respuesta inesperada del servidor:', data);
+        //console.warn('⚠️ Respuesta inesperada del servidor:', data);
         this.showError('Formato de respuesta inesperado del servidor');
       }
 
     } catch (error) {
-      console.error('💥 Error cargando empresas:', error);
+      //console.error('💥 Error cargando empresas:', error);
       this.showError('Error al cargar empresas: ' + error.message);
     } finally {
       this.isLoading = false;
@@ -275,7 +275,7 @@ class EmpresasMain {
    */
   async loadTiposEmpresa() {
     try {
-      console.log('🔄 Cargando tipos de empresa...');
+      //console.log('🔄 Cargando tipos de empresa...');
       
       const response = await this.apiClient.get_tipos_empresa();
       
@@ -284,11 +284,11 @@ class EmpresasMain {
         if (data.success && Array.isArray(data.data)) {
           this.tiposEmpresa = data.data;
           this.populateTipoDropdown();
-          console.log(`✅ ${this.tiposEmpresa.length} tipos de empresa cargados`);
+          //console.log(`✅ ${this.tiposEmpresa.length} tipos de empresa cargados`);
         }
       }
     } catch (error) {
-      console.error('⚠️ Error cargando tipos de empresa:', error);
+      //console.error('⚠️ Error cargando tipos de empresa:', error);
     }
   }
 
@@ -333,7 +333,7 @@ class EmpresasMain {
       dropdown.appendChild(option);
     });
 
-    console.log(`✅ ${locations.length} ubicaciones cargadas en filtro`);
+    //console.log(`✅ ${locations.length} ubicaciones cargadas en filtro`);
   }
 
 
@@ -341,8 +341,8 @@ class EmpresasMain {
    * Update statistics
    */
   updateEmpresaStats(data = null) {
-    console.log('📊 DEBUG updateEmpresaStats() en empresas:');
-    console.log('  - data recibida:', data);
+    //console.log('📊 DEBUG updateEmpresaStats() en empresas:');
+    //console.log('  - data recibida:', data);
     
     // Usar datos del backend si están disponibles
     if (data && data.success && data.data && Array.isArray(data.data)) {
@@ -370,13 +370,13 @@ class EmpresasMain {
         }
       }).length;
       
-      console.log('📊 Estadísticas calculadas desde backend:', {
-        total: totalCount,
-        activas: activasCount,
-        inactivas: inactivasCount,
-        ubicaciones: ubicaciones.size,
-        esteMes: esteMesCount
-      });
+      // console.log('📊 Estadísticas calculadas desde backend:', {
+      //   total: totalCount,
+      //   activas: activasCount,
+      //   inactivas: inactivasCount,
+      //   ubicaciones: ubicaciones.size,
+      //   esteMes: esteMesCount
+      // });
       
       // Actualizar directamente los elementos del DOM
       const elementos = {
@@ -386,16 +386,16 @@ class EmpresasMain {
         'empresasRecentCount': esteMesCount
       };
       
-      console.log('🎨 Actualizando elementos del DOM:', elementos);
+      //console.log('🎨 Actualizando elementos del DOM:', elementos);
       
       Object.entries(elementos).forEach(([elementId, value]) => {
         const element = document.getElementById(elementId);
-        console.log(`  - Buscando elemento ${elementId}:`, element ? 'ENCONTRADO' : 'NO ENCONTRADO');
+        //console.log(`  - Buscando elemento ${elementId}:`, element ? 'ENCONTRADO' : 'NO ENCONTRADO');
         if (element) {
           element.textContent = value;
-          console.log(`    ✓ Actualizado ${elementId} = ${value}`);
+          //console.log(`    ✓ Actualizado ${elementId} = ${value}`);
         } else {
-          console.warn(`    ⚠️ Elemento ${elementId} no encontrado en el DOM`);
+          //console.warn(`    ⚠️ Elemento ${elementId} no encontrado en el DOM`);
         }
       });
       
@@ -403,10 +403,10 @@ class EmpresasMain {
     }
     
     // Fallback: usar this.empresasAll si no hay data del backend
-    console.log('⚠️ Usando fallback con this.empresasAll');
-    console.log('  - this.empresasAll:', this.empresasAll);
-    console.log('  - this.empresasAll.length:', this.empresasAll ? this.empresasAll.length : 'null');
-    console.log('  - this.empresas.length:', this.empresas ? this.empresas.length : 'null');
+    //console.log('⚠️ Usando fallback con this.empresasAll');
+    //console.log('  - this.empresasAll:', this.empresasAll);
+    //console.log('  - this.empresasAll.length:', this.empresasAll ? this.empresasAll.length : 'null');
+    //console.log('  - this.empresas.length:', this.empresas ? this.empresas.length : 'null');
     
     const stats = {
       total: this.empresasAll ? this.empresasAll.length : 0,
@@ -415,7 +415,7 @@ class EmpresasMain {
       filtered: this.empresas ? this.empresas.length : 0
     };
     
-    console.log('📊 Estadísticas calculadas:', stats);
+    //console.log('📊 Estadísticas calculadas:', stats);
 
     // Update count in header
     const countElement = document.getElementById('empresasCount');
@@ -424,10 +424,10 @@ class EmpresasMain {
     }
 
     // Update stats cards if they exist
-    console.log('📊 Llamando updateStatsCards con:', stats);
+    //console.log('📊 Llamando updateStatsCards con:', stats);
     this.updateStatsCards(stats);
 
-    console.log('📊 Estadísticas actualizadas:', stats);
+    //console.log('📊 Estadísticas actualizadas:', stats);
   }
 
   /**
@@ -444,11 +444,11 @@ class EmpresasMain {
    * Update stats cards
    */
   updateStatsCards(stats) {
-    console.log('🎨 DEBUG updateStatsCards() en empresas:');
-    console.log('  - stats recibidas:', stats);
+    //console.log('🎨 DEBUG updateStatsCards() en empresas:');
+    //console.log('  - stats recibidas:', stats);
     
     // Imprimir TODOS los elementos disponibles en el DOM
-    console.log('🔍 Buscando elementos de estadísticas en el DOM:');
+    //console.log('🔍 Buscando elementos de estadísticas en el DOM:');
     const todosLosElementos = [
       'empresasTotalCount',
       'empresasActiveCount',
@@ -458,7 +458,7 @@ class EmpresasMain {
     
     todosLosElementos.forEach(id => {
       const elem = document.getElementById(id);
-      console.log(`  - ${id}:`, elem ? `ENCONTRADO (texto actual: "${elem.textContent}")` : 'NO ENCONTRADO');
+      //console.log(`  - ${id}:`, elem ? `ENCONTRADO (texto actual: "${elem.textContent}")` : 'NO ENCONTRADO');
     });
     
     // Calculate additional stats
@@ -478,14 +478,14 @@ class EmpresasMain {
       'empresasRecentCount': recentEmpresas.length
     };
     
-    console.log('🎨 Elementos a actualizar:', elements);
+    //console.log('🎨 Elementos a actualizar:', elements);
 
     Object.entries(elements).forEach(([elementId, value]) => {
       const element = document.getElementById(elementId);
-      console.log(`🔍 Procesando elemento ${elementId}:`);
-      console.log(`  - Elemento:`, element);
-      console.log(`  - Valor a asignar:`, value);
-      console.log(`  - Texto actual:`, element ? element.textContent : 'N/A');
+      //console.log(`🔍 Procesando elemento ${elementId}:`);
+      //console.log(`  - Elemento:`, element);
+      //console.log(`  - Valor a asignar:`, value);
+      //console.log(`  - Texto actual:`, element ? element.textContent : 'N/A');
       
       if (element) {
         const valorAnterior = element.textContent;
@@ -498,38 +498,38 @@ class EmpresasMain {
         
         // Verificar que realmente se actualizó
         const valorDespues = element.textContent;
-        console.log(`    ✓ ACTUALIZADO ${elementId}: "${valorAnterior}" -> "${value}"`);
-        console.log(`    ✓ VERIFICADO ${elementId}: contenido actual = "${valorDespues}"`);
+        //console.log(`    ✓ ACTUALIZADO ${elementId}: "${valorAnterior}" -> "${value}"`);
+        //console.log(`    ✓ VERIFICADO ${elementId}: contenido actual = "${valorDespues}"`);
         
         // Agregar clase para destacar el cambio
         element.classList.add('stat-updated');
         setTimeout(() => element.classList.remove('stat-updated'), 1000);
       } else {
-        console.error(`    ❌ ERROR: Elemento ${elementId} NO ENCONTRADO en el DOM`);
+        //console.error(`    ❌ ERROR: Elemento ${elementId} NO ENCONTRADO en el DOM`);
       }
     });
     
     // Verificar que se actualizaron los elementos
-    console.log('🔍 Verificando elementos actualizados:');
+    //console.log('🔍 Verificando elementos actualizados:');
     Object.keys(elements).forEach(elementId => {
       const element = document.getElementById(elementId);
-      if (element) {
-        console.log(`  - ${elementId}: "${element.textContent}"`);
-        console.log(`    - Visible: ${element.offsetWidth > 0 && element.offsetHeight > 0}`);
-        console.log(`    - CSS Display: ${getComputedStyle(element).display}`);
-        console.log(`    - CSS Visibility: ${getComputedStyle(element).visibility}`);
-        console.log(`    - CSS Opacity: ${getComputedStyle(element).opacity}`);
-      }
+      // if (element) {
+      //   //console.log(`  - ${elementId}: "${element.textContent}"`);
+      //   //console.log(`    - Visible: ${element.offsetWidth > 0 && element.offsetHeight > 0}`);
+      //   //console.log(`    - CSS Display: ${getComputedStyle(element).display}`);
+      //   //console.log(`    - CSS Visibility: ${getComputedStyle(element).visibility}`);
+      //   //console.log(`    - CSS Opacity: ${getComputedStyle(element).opacity}`);
+      // }
     });
     
     // Forzar repintado de toda la sección de estadísticas
     const statsGrid = document.getElementById('empresasStatsGrid');
     if (statsGrid) {
-      console.log('🔄 Forzando repintado de statsGrid...');
+      //console.log('🔄 Forzando repintado de statsGrid...');
       statsGrid.style.display = 'none';
       statsGrid.offsetHeight; // Trigger reflow
       statsGrid.style.display = 'grid';
-      console.log('🔄 Repintado forzado completado');
+      //console.log('🔄 Repintado forzado completado');
     }
 
     // Update header badge
@@ -545,7 +545,7 @@ class EmpresasMain {
                       document.getElementById('empresasContainer');
     
     if (!container) {
-      console.warn('⚠️ Contenedor de empresas no encontrado');
+      //console.warn('⚠️ Contenedor de empresas no encontrado');
       return;
     }
 
@@ -567,7 +567,7 @@ class EmpresasMain {
       this.renderEmpresasList(container);
     }
 
-    console.log(`🎨 Renderizadas ${this.empresas.length} empresas`);
+    //console.log(`🎨 Renderizadas ${this.empresas.length} empresas`);
   }
 
   /**
@@ -851,13 +851,13 @@ class EmpresasMain {
    * Apply filters to empresas list
    */
   applyFilters() {
-    console.log('🔍 DEBUG: Iniciando applyFilters() en empresas');
-    console.log('  - this.empresasAll:', this.empresasAll);
-    console.log('  - this.empresasAll.length:', this.empresasAll ? this.empresasAll.length : 'null');
-    console.log('  - this.currentFilters:', this.currentFilters);
+    //console.log('🔍 DEBUG: Iniciando applyFilters() en empresas');
+    //console.log('  - this.empresasAll:', this.empresasAll);
+    //console.log('  - this.empresasAll.length:', this.empresasAll ? this.empresasAll.length : 'null');
+    //console.log('  - this.currentFilters:', this.currentFilters);
     
     if (!this.empresasAll || this.empresasAll.length === 0) {
-      console.log('📋 No hay empresas para filtrar');
+      //console.log('📋 No hay empresas para filtrar');
       this.empresas = [];
       this.renderEmpresas();
       this.updateEmpresaStats();
@@ -913,14 +913,14 @@ class EmpresasMain {
     }
 
     this.empresas = filteredEmpresas;
-    console.log(`🔍 RESULTADO FINAL: ${filteredEmpresas.length} empresas filtradas de ${this.empresasAll.length} totales`);
-    console.log('🔍 Empresas finales:', filteredEmpresas.map(e => e.nombre));
+    //console.log(`🔍 RESULTADO FINAL: ${filteredEmpresas.length} empresas filtradas de ${this.empresasAll.length} totales`);
+    //console.log('🔍 Empresas finales:', filteredEmpresas.map(e => e.nombre));
     
     this.renderEmpresas();
     this.updateEmpresaStats();
 
-    console.log(`🔍 Filtros aplicados: ${filteredEmpresas.length}/${this.empresasAll.length} empresas`);
-    console.log('🔍 Filtros actuales:', this.currentFilters);
+    //console.log(`🔍 Filtros aplicados: ${filteredEmpresas.length}/${this.empresasAll.length} empresas`);
+    //console.log('🔍 Filtros actuales:', this.currentFilters);
   }
 
   /**
@@ -982,7 +982,7 @@ class EmpresasMain {
     if (tableBtn) tableBtn.classList.remove('active');
     
     // TODO: Implement view switching logic
-    console.log('📱 Cambiando a vista de tarjetas');
+    //console.log('📱 Cambiando a vista de tarjetas');
   }
 
   /**
@@ -996,7 +996,7 @@ class EmpresasMain {
     if (tableBtn) tableBtn.classList.add('active');
     
     // TODO: Implement view switching logic
-    console.log('📊 Cambiando a vista de tabla');
+    //console.log('📊 Cambiando a vista de tabla');
   }
 
   /**
@@ -1006,7 +1006,7 @@ class EmpresasMain {
     if (window.empresasModals) {
       window.empresasModals.openCreateModal();
     } else {
-      console.warn('⚠️ Empresas modals module not available');
+      //console.warn('⚠️ Empresas modals module not available');
       this.showEnhancedNotification('Función de creación no disponible', 'error');
     }
   }
@@ -1018,7 +1018,7 @@ class EmpresasMain {
     if (window.empresasModals) {
       window.empresasModals.openEditModal(id);
     } else {
-      console.warn('⚠️ Empresas modals module not available');
+      //console.warn('⚠️ Empresas modals module not available');
       this.showEnhancedNotification('Función de edición no disponible', 'error');
     }
   }
@@ -1030,7 +1030,7 @@ class EmpresasMain {
     if (window.empresasModals) {
       window.empresasModals.openViewModal(id);
     } else {
-      console.warn('⚠️ Empresas modals module not available');
+      //console.warn('⚠️ Empresas modals module not available');
       this.showEnhancedNotification('Función de visualización no disponible', 'error');
     }
   }
@@ -1042,7 +1042,7 @@ class EmpresasMain {
     if (window.empresasModals) {
       window.empresasModals.showToggleModal(id, currentStatus, empresaName);
     } else {
-      console.warn('⚠️ Empresas modals module not available');
+      //console.warn('⚠️ Empresas modals module not available');
       this.showEnhancedNotification('Función de cambio de estado no disponible', 'error');
     }
   }
@@ -1056,7 +1056,7 @@ class EmpresasMain {
       this.downloadCSV(csv, 'empresas.csv');
       this.showEnhancedNotification('Archivo CSV exportado exitosamente', 'success');
     } catch (error) {
-      console.error('💥 Error al exportar empresas:', error);
+      //console.error('💥 Error al exportar empresas:', error);
       this.showEnhancedNotification('Error al exportar empresas', 'error');
     }
   }
@@ -1129,7 +1129,7 @@ class EmpresasMain {
   deleteEmpresa(id) {
     // For now, just show a confirmation
     if (confirm('¿Estás seguro de que quieres eliminar esta empresa?')) {
-      console.log('🗑️ Eliminar empresa:', id);
+      //console.log('🗑️ Eliminar empresa:', id);
       this.showEnhancedNotification('Función de eliminación en desarrollo', 'info');
     }
   }
@@ -1236,7 +1236,7 @@ window.toggleEmpresaStatus = (id, currentStatus, empresaName) => {
   if (window.empresasModals && window.empresasModals.showToggleModal) {
     window.empresasModals.showToggleModal(id, currentStatus, empresaName);
   } else {
-    console.warn('Toggle modal not available');
+    //console.warn('Toggle modal not available');
   }
 };
 
@@ -1264,4 +1264,4 @@ window.editEmpresa = (id) => empresasMain.editEmpresa(id);
 window.viewEmpresa = (id) => empresasMain.viewEmpresa(id);
 window.clearFilters = () => empresasMain.clearFilters();
 
-console.log('🏢 Empresas main module loaded');
+//console.log('🏢 Empresas main module loaded');

@@ -37,10 +37,10 @@
             if (isHomePage) {
                 // Estamos en la página principal, añadir clase para mostrar preloader
                 document.documentElement.classList.add('show-simple-preloader');
-                console.log('🎬 PRELOADER: Habilitado para página principal');
+                //console.log('🎬 PRELOADER: Habilitado para página principal');
             } else {
                 // No estamos en página principal, asegurar que esté oculto
-                console.log(`🚫 PRELOADER: Deshabilitado para ruta: ${currentPath}`);
+                //console.log(`🚫 PRELOADER: Deshabilitado para ruta: ${currentPath}`);
             }
         })();
         
@@ -525,7 +525,7 @@
         });
         
         if (totalOptimized > 0) {
-            console.log(`🔧 GLOBAL: Optimized ${totalOptimized} cards for visibility`);
+            ////console.log(`🔧 GLOBAL: Optimized ${totalOptimized} cards for visibility`);
         }
         
         return totalOptimized;
@@ -549,7 +549,7 @@
             shimmer.style.opacity = '0';
         }
         
-        console.log('🔧 GLOBAL: Optimizaciones aplicadas a tarjeta individual');
+        //console.log('🔧 GLOBAL: Optimizaciones aplicadas a tarjeta individual');
     };
     
     // Función para aplicar optimizaciones a tarjetas existentes
@@ -558,7 +558,7 @@
         existingCards.forEach(card => {
             window.applyCardOptimizations(card);
         });
-        console.log(`🔧 GLOBAL: Optimizaciones aplicadas a ${existingCards.length} tarjetas existentes`);
+        //console.log(`🔧 GLOBAL: Optimizaciones aplicadas a ${existingCards.length} tarjetas existentes`);
         return existingCards.length;
     };
     
@@ -583,10 +583,10 @@
                 stagger: 0.1
             });
             
-            console.log('🎨 GLOBAL GSAP: Animaciones aplicadas a cards de estadísticas');
+            //console.log('🎨 GLOBAL GSAP: Animaciones aplicadas a cards de estadísticas');
         } else {
             // Fallback SIN GSAP: asegurar visibilidad inmediata
-            console.log('⚡ GLOBAL FALLBACK: Aplicando visibilidad directa a cards (sin GSAP)');
+            //console.log('⚡ GLOBAL FALLBACK: Aplicando visibilidad directa a cards (sin GSAP)');
             statCards.forEach(card => {
                 card.style.opacity = '1';
                 card.style.visibility = 'visible';
@@ -618,7 +618,7 @@
             window.ensureCardsVisibility();
         }, 1000);
         
-        console.log('🔧 GLOBAL: Sistema completo de visibilidad de tarjetas inicializado');
+        //console.log('🔧 GLOBAL: Sistema completo de visibilidad de tarjetas inicializado');
         
     });
     
@@ -640,11 +640,11 @@
         tunnelElement = document.getElementById('tunnel');
         
         if (!clampElement || !loginButton) {
-            console.warn('Elementos necesarios no encontrados para el botón de login');
+            //console.warn('Elementos necesarios no encontrados para el botón de login');
             return;
         }
         
-        console.log('✅ Sistema de visibilidad del botón de login inicializado');
+        //console.log('✅ Sistema de visibilidad del botón de login inicializado');
         
         // Configurar estado inicial
         setupInitialState();
@@ -741,7 +741,7 @@
             loginButton.classList.remove('animate-entrance');
         }, 400);
         
-        console.log('🔵 Botón de login mostrado (con scroll)');
+        //console.log('🔵 Botón de login mostrado (con scroll)');
     }
     
     function hideButton() {
@@ -762,7 +762,7 @@
             isAnimating = false;
         }, 300);
         
-        console.log('🔴 Botón de login ocultado');
+        //console.log('🔴 Botón de login ocultado');
     }
     
     function startVisibilityCheck() {

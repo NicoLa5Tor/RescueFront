@@ -15,7 +15,7 @@ class RescueContactForm {
 
     async init() {
         if (!this.form) {
-            console.error('Contact form not found');
+            ////console.error('Contact form not found');
             return;
         }
         
@@ -44,7 +44,7 @@ class RescueContactForm {
         
         // Prevenir múltiples envíos
         if (this.isSubmitting) {
-            console.log('⚠️ Formulario ya se está enviando, ignorando envío duplicado');
+            //console.log('⚠️ Formulario ya se está enviando, ignorando envío duplicado');
             return;
         }
         
@@ -76,7 +76,7 @@ class RescueContactForm {
             }
             
         } catch (error) {
-            console.error('Error sending email:', error);
+            //console.error('Error sending email:', error);
             this.showMessage(
                 'Hubo un error al enviar tu mensaje. Por favor, intenta nuevamente o contáctanos por WhatsApp.',
                 'error'
@@ -104,7 +104,7 @@ class RescueContactForm {
                 privacy: formData.privacy
             };
 
-            console.log('📧 Enviando datos del formulario al backend:', payload);
+            //console.log('📧 Enviando datos del formulario al backend:', payload);
             
             // Hacer la petición real al backend
             const response = await fetch('/proxy/api/contact/send', {
@@ -124,7 +124,7 @@ class RescueContactForm {
             }
 
             if (responseData.success) {
-                console.log('✅ Email enviado exitosamente:', responseData.data);
+                //console.log('✅ Email enviado exitosamente:', responseData.data);
                 return {
                     success: true,
                     data: responseData.data
@@ -134,7 +134,7 @@ class RescueContactForm {
             }
             
         } catch (error) {
-            console.error('❌ Error enviando formulario:', error);
+            //console.error('❌ Error enviando formulario:', error);
             
             // Proporcionar mensajes de error más específicos
             let errorMessage = 'Error al enviar el mensaje';
@@ -410,13 +410,13 @@ if (!window.rescueContactFormInitialized) {
         // Verificar que no exista ya una instancia
         if (!window.rescueContactFormInstance) {
             window.rescueContactFormInstance = new RescueContactForm();
-            console.log('✅ RescueContactForm inicializado por primera vez');
+            //console.log('✅ RescueContactForm inicializado por primera vez');
         } else {
-            console.log('⚠️ RescueContactForm ya existe, evitando duplicado');
+            //console.log('⚠️ RescueContactForm ya existe, evitando duplicado');
         }
     });
 } else {
-    console.log('⚠️ Script de RescueContactForm ya cargado, evitando duplicado');
+    //console.log('⚠️ Script de RescueContactForm ya cargado, evitando duplicado');
 }
 
 // Export for module usage (if needed)

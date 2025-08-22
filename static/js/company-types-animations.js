@@ -6,9 +6,9 @@
 
 // Verificar que GSAP esté disponible
 if (typeof gsap === 'undefined') {
-  console.error('❌ GSAP no está disponible. Asegúrate de que se cargue antes que este archivo.');
+  ////console.error('❌ GSAP no está disponible. Asegúrate de que se cargue antes que este archivo.');
 } else {
-  console.log('✅ GSAP disponible - Inicializando animaciones de tipos de empresa...');
+  //console.log('✅ GSAP disponible - Inicializando animaciones de tipos de empresa...');
 }
 
 // Namespace para las animaciones de tipos de empresa
@@ -16,7 +16,7 @@ window.CompanyTypesAnimations = {
   
   // Inicializar todas las animaciones al cargar la página
   init: function() {
-    console.log('🎬 Inicializando animaciones de tipos de empresa...');
+    //console.log('🎬 Inicializando animaciones de tipos de empresa...');
     
     this.animateHeader();
     this.animateStatsCards();
@@ -24,7 +24,7 @@ window.CompanyTypesAnimations = {
     this.setupScrollAnimations();
     this.initializeModalListeners();
     
-    console.log('✅ Animaciones de tipos de empresa inicializadas');
+    //console.log('✅ Animaciones de tipos de empresa inicializadas');
   },
 
   // Animar header
@@ -48,7 +48,7 @@ window.CompanyTypesAnimations = {
       }
     );
     
-    console.log('📱 Animando header iOS');
+    //console.log('📱 Animando header iOS');
   },
 
   // Animar tarjetas de estadísticas
@@ -83,7 +83,7 @@ window.CompanyTypesAnimations = {
     // Animar contadores
     this.animateCounters();
     
-    console.log(`📊 Animando ${statCards.length} tarjetas de estadísticas`);
+    //console.log(`📊 Animando ${statCards.length} tarjetas de estadísticas`);
   },
 
   // Animar contadores de estadísticas
@@ -129,7 +129,7 @@ window.CompanyTypesAnimations = {
       card.classList.add('gsap-animated');
     });
     
-    console.log(`🔧 Tarjetas de tipos mostradas directamente (sin scroll reveal como hardware): ${typeCards.length}`);
+    //console.log(`🔧 Tarjetas de tipos mostradas directamente (sin scroll reveal como hardware): ${typeCards.length}`);
   },
 
   // Animar nueva tarjeta (para tarjetas añadidas dinámicamente)
@@ -154,7 +154,7 @@ window.CompanyTypesAnimations = {
       }
     );
     
-    console.log('🆕 Animando nueva tarjeta de tipo');
+    //console.log('🆕 Animando nueva tarjeta de tipo');
   },
 
   // Animar modal
@@ -186,7 +186,7 @@ window.CompanyTypesAnimations = {
       });
     }
     
-    console.log(`🔲 Animando modal - ${show ? 'mostrar' : 'ocultar'}`);
+    //console.log(`🔲 Animando modal - ${show ? 'mostrar' : 'ocultar'}`);
   },
 
   // Animar tag de característica
@@ -224,7 +224,7 @@ window.CompanyTypesAnimations = {
       }
     });
     
-    console.log('🗑️ Animando eliminación de tarjeta');
+    //console.log('🗑️ Animando eliminación de tarjeta');
   },
 
   // Animar cambio de estado
@@ -239,12 +239,12 @@ window.CompanyTypesAnimations = {
       repeat: 1
     });
     
-    console.log('🔄 Animando cambio de estado');
+    //console.log('🔄 Animando cambio de estado');
   },
 
   // Configurar animaciones al hacer scroll (DESHABILITADO como hardware)
   setupScrollAnimations: function() {
-    console.log('📜 Animaciones de scroll deshabilitadas (como hardware)');
+    //console.log('📜 Animaciones de scroll deshabilitadas (como hardware)');
     // NO hacer scroll reveal - dejar las tarjetas visibles desde el inicio
     return;
   },
@@ -275,7 +275,7 @@ window.CompanyTypesAnimations = {
       }
     });
     
-    console.log('🎧 Listeners de modal configurados');
+    //console.log('🎧 Listeners de modal configurados');
   },
 
   // Función para refrescar animaciones al añadir contenido dinámico

@@ -6,9 +6,9 @@
  */
 
 // Verificar que la configuración global esté disponible
-if (typeof window.GSAPAnimations === 'undefined') {
-  console.error('❌ GSAP configuración global no encontrada. Asegúrate de cargar gsap-config.js primero.');
-}
+// if (typeof window.GSAPAnimations === 'undefined') {
+//   console.error('❌ GSAP configuración global no encontrada. Asegúrate de cargar gsap-config.js primero.');
+// }
 
 /**
  * Animaciones específicas para hardware
@@ -324,7 +324,7 @@ window.HardwareUtils = {
    * Inicializar todas las animaciones de hardware
    */
   initializeAnimations: () => {
-    console.log('🎬 Inicializando animaciones de hardware...');
+    //console.log('🎬 Inicializando animaciones de hardware...');
     
     // Esperar a que GSAP esté listo
     gsap.registerPlugin && gsap.ticker.lagSmoothing(0);
@@ -385,7 +385,7 @@ window.HardwareUtils = {
     window.GSAPUtils.killAnimations('.ios-header-container');
     window.GSAPUtils.killAnimations('.ios-filters-container');
     
-    console.log('🧹 Animaciones de hardware limpiadas');
+    //console.log('🧹 Animaciones de hardware limpiadas');
   }
 };
 

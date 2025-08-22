@@ -9,7 +9,7 @@ class LazyMapLoader {
     this.leafletLoaded = false;
     this.loadingPromise = null;
     
-    console.log('🗺️ LazyMapLoader inicializado');
+    ////console.log('🗺️ LazyMapLoader inicializado');
   }
   
   /**
@@ -25,7 +25,7 @@ class LazyMapLoader {
     }
     
     this.loadingPromise = new Promise((resolve, reject) => {
-      console.log('📦 Cargando Leaflet de manera diferida...');
+      //console.log('📦 Cargando Leaflet de manera diferida...');
       
       // Cargar CSS si no está cargado
       if (!document.querySelector('link[href*="leaflet.css"]')) {
@@ -46,12 +46,12 @@ class LazyMapLoader {
         
         script.onload = () => {
           this.leafletLoaded = true;
-          console.log('✅ Leaflet cargado exitosamente');
+          //console.log('✅ Leaflet cargado exitosamente');
           resolve();
         };
         
         script.onerror = () => {
-          console.error('❌ Error cargando Leaflet');
+          //console.error('❌ Error cargando Leaflet');
           reject(new Error('Failed to load Leaflet'));
         };
         
@@ -70,7 +70,7 @@ class LazyMapLoader {
    */
   async createMap(containerId, lat, lng, zoom = 15, hardwareName = 'Hardware') {
     try {
-      console.log(`🗺️ Creando mapa lazy para ${containerId}...`);
+      //console.log(`🗺️ Creando mapa lazy para ${containerId}...`);
       
       // Mostrar indicador de carga
       this.showLoadingIndicator(containerId);
@@ -114,12 +114,12 @@ class LazyMapLoader {
       // Marcar como cargado
       this.loadedMaps.add(containerId);
       
-      console.log(`✅ Mapa ${containerId} creado exitosamente`);
+      //console.log(`✅ Mapa ${containerId} creado exitosamente`);
       
       return { map, marker };
       
     } catch (error) {
-      console.error(`❌ Error creando mapa ${containerId}:`, error);
+      //console.error(`❌ Error creando mapa ${containerId}:`, error);
       this.showErrorIndicator(containerId);
       throw error;
     }
@@ -172,9 +172,9 @@ class LazyMapLoader {
    */
   preloadLeaflet() {
     if (!this.leafletLoaded && !this.loadingPromise) {
-      console.log('🔄 Precargando Leaflet...');
+      //console.log('🔄 Precargando Leaflet...');
       this.loadLeaflet().catch(err => {
-        console.warn('⚠️ Error precargando Leaflet:', err);
+        //console.warn('⚠️ Error precargando Leaflet:', err);
       });
     }
   }

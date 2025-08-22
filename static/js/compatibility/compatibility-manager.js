@@ -49,7 +49,7 @@
         // Registrar un módulo de compatibilidad
         registerModule: function(moduleId, moduleConfig) {
             if (this.modules.has(moduleId)) {
-                console.warn(`⚠️ COMPATIBILITY: Módulo ${moduleId} ya está registrado`);
+                ////console.warn(`⚠️ COMPATIBILITY: Módulo ${moduleId} ya está registrado`);
                 return false;
             }
             
@@ -67,7 +67,7 @@
             };
             
             this.modules.set(moduleId, module);
-            console.log(`📋 COMPATIBILITY: Módulo ${moduleId} registrado`);
+            //console.log(`📋 COMPATIBILITY: Módulo ${moduleId} registrado`);
             
             // Si ya estamos inicializados, cargar este módulo inmediatamente
             if (this.initialized) {
@@ -81,26 +81,26 @@
         loadModule: function(moduleId) {
             const module = this.modules.get(moduleId);
             if (!module) {
-                console.error(`❌ COMPATIBILITY: Módulo ${moduleId} no encontrado`);
+                //console.error(`❌ COMPATIBILITY: Módulo ${moduleId} no encontrado`);
                 return false;
             }
             
             if (!module.enabled) {
-                console.log(`⏸️ COMPATIBILITY: Módulo ${moduleId} está deshabilitado`);
+                //console.log(`⏸️ COMPATIBILITY: Módulo ${moduleId} está deshabilitado`);
                 return false;
             }
             
             // Verificar si el navegador necesita este módulo
             const needsModule = this.browserNeedsModule(module);
             if (!needsModule) {
-                console.log(`ℹ️ COMPATIBILITY: Módulo ${moduleId} no necesario para este navegador`);
+                //console.log(`ℹ️ COMPATIBILITY: Módulo ${moduleId} no necesario para este navegador`);
                 return false;
             }
             
             // Verificar dependencias
             const dependenciesOk = this.checkDependencies(module);
             if (!dependenciesOk) {
-                console.error(`❌ COMPATIBILITY: Dependencias no satisfechas para ${moduleId}`);
+                //console.error(`❌ COMPATIBILITY: Dependencias no satisfechas para ${moduleId}`);
                 return false;
             }
             
@@ -108,11 +108,11 @@
                 if (typeof module.init === 'function') {
                     const instance = module.init(this.browserInfo);
                     module.instance = instance;
-                    console.log(`✅ COMPATIBILITY: Módulo ${moduleId} cargado exitosamente`);
+                    //console.log(`✅ COMPATIBILITY: Módulo ${moduleId} cargado exitosamente`);
                     return true;
                 }
             } catch (error) {
-                console.error(`❌ COMPATIBILITY: Error cargando módulo ${moduleId}:`, error);
+                //console.error(`❌ COMPATIBILITY: Error cargando módulo ${moduleId}:`, error);
                 return false;
             }
             
@@ -163,10 +163,10 @@
                     module.cleanup(module.instance);
                 }
                 module.instance = null;
-                console.log(`🗑️ COMPATIBILITY: Módulo ${moduleId} descargado`);
+                //console.log(`🗑️ COMPATIBILITY: Módulo ${moduleId} descargado`);
                 return true;
             } catch (error) {
-                console.error(`❌ COMPATIBILITY: Error descargando módulo ${moduleId}:`, error);
+                //console.error(`❌ COMPATIBILITY: Error descargando módulo ${moduleId}:`, error);
                 return false;
             }
         },
@@ -186,7 +186,7 @@
                 this.unloadModule(moduleId);
             }
             
-            console.log(`🔄 COMPATIBILITY: Módulo ${moduleId} ${enabled ? 'habilitado' : 'deshabilitado'}`);
+            //console.log(`🔄 COMPATIBILITY: Módulo ${moduleId} ${enabled ? 'habilitado' : 'deshabilitado'}`);
             return true;
         },
         
@@ -212,15 +212,15 @@
         // Inicializar el gestor
         init: function() {
             if (this.initialized) {
-                console.warn('⚠️ COMPATIBILITY: Gestor ya inicializado');
+                //console.warn('⚠️ COMPATIBILITY: Gestor ya inicializado');
                 return;
             }
             
-            console.log('🚀 COMPATIBILITY: Iniciando gestor de compatibilidad');
+            //console.log('🚀 COMPATIBILITY: Iniciando gestor de compatibilidad');
             
             // Detectar información del navegador
             this.browserInfo = BrowserDetector.getInfo();
-            console.log('🔍 COMPATIBILITY: Navegador detectado:', this.browserInfo);
+            //console.log('🔍 COMPATIBILITY: Navegador detectado:', this.browserInfo);
             
             // Cargar módulos en orden de prioridad
             const sortedModules = Array.from(this.modules.entries())
@@ -240,12 +240,12 @@
                 }
             }));
             
-            console.log('✅ COMPATIBILITY: Gestor inicializado completamente');
+            //console.log('✅ COMPATIBILITY: Gestor inicializado completamente');
         },
         
         // Limpiar todos los módulos
         cleanup: function() {
-            console.log('🧹 COMPATIBILITY: Limpiando todos los módulos');
+            //console.log('🧹 COMPATIBILITY: Limpiando todos los módulos');
             
             this.modules.forEach((module, moduleId) => {
                 if (module.instance) {
@@ -267,8 +267,8 @@
         const info = BrowserDetector.getInfo();
         const modules = CompatibilityManager.getModulesInfo();
         
-        console.table(info);
-        console.table(modules);
+        //console.table(info);
+        //console.table(modules);
         
         return {
             browser: info,
@@ -306,7 +306,7 @@
         setTimeout(() => CompatibilityManager.init(), 100);
     }
     
-    console.log('🔧 COMPATIBILITY MANAGER: Sistema de compatibilidad cargado');
-    console.log('💡 Comandos disponibles: checkBrowserCompatibility(), CompatibilityManager');
+    //console.log('🔧 COMPATIBILITY MANAGER: Sistema de compatibilidad cargado');
+    //console.log('💡 Comandos disponibles: checkBrowserCompatibility(), CompatibilityManager');
     
 })();

@@ -6,13 +6,13 @@
 // ============ FUNCIÓN PARA SCROLL AL INICIO ============
 // Esta función lleva el scroll suavemente a la posición (0,0) al finalizar el preloader
 function scrollToTop() {
-    console.log('📍 SCROLL: Iniciando scroll suave al inicio de la página (0,0)');
+    //console.log('📍 SCROLL: Iniciando scroll suave al inicio de la página (0,0)');
     
     // Usar diferentes métodos según disponibilidad
     if (window.GSAPMain && window.GSAPMain.smoother) {
         // Si ScrollSmoother está disponible, usarlo para scroll suave
         window.GSAPMain.smoother.scrollTo(0, true);
-        console.log('✅ SCROLL: Usando ScrollSmoother para posición (0,0)');
+        //console.log('✅ SCROLL: Usando ScrollSmoother para posición (0,0)');
     } else if (window.gsap && window.gsap.to) {
         // Si GSAP está disponible pero no ScrollSmoother, usar ScrollToPlugin
         window.gsap.to(window, {
@@ -20,7 +20,7 @@ function scrollToTop() {
             scrollTo: { y: 0, x: 0 },
             ease: "power2.out"
         });
-        console.log('✅ SCROLL: Usando GSAP ScrollToPlugin para posición (0,0)');
+        //console.log('✅ SCROLL: Usando GSAP ScrollToPlugin para posición (0,0)');
     } else {
         // Fallback nativo del navegador
         window.scrollTo({
@@ -28,7 +28,7 @@ function scrollToTop() {
             left: 0,
             behavior: 'smooth'
         });
-        console.log('✅ SCROLL: Usando scrollTo nativo para posición (0,0)');
+        //console.log('✅ SCROLL: Usando scrollTo nativo para posición (0,0)');
     }
 }
 
@@ -52,7 +52,7 @@ function waitForStylesAndHidePreloader() {
     ];
     
     if (dashboardPaths.some(path => currentPath.startsWith(path))) {
-        console.log('🏢 PRELOADER: Saltando en vista de dashboard para evitar conflictos de scroll');
+        //console.log('🏢 PRELOADER: Saltando en vista de dashboard para evitar conflictos de scroll');
         return;
     }
     
@@ -60,11 +60,11 @@ function waitForStylesAndHidePreloader() {
         return;
     }
     
-    console.log('🎬 SIMPLE PRELOADER: Iniciado en página principal - Con letras RESCUE y barra de progreso');
+    //console.log('🎬 SIMPLE PRELOADER: Iniciado en página principal - Con letras RESCUE y barra de progreso');
     
     // ============ FIJAR SCROLL EN POSICIÓN 0,0 DESDE EL INICIO ============
     // Mantener el scroll fijo en la posición superior hasta que el preloader termine
-    console.log('📍 SCROLL: Fijando posición en (0,0) desde el inicio del preloader');
+    //console.log('📍 SCROLL: Fijando posición en (0,0) desde el inicio del preloader');
     
     // Fijar posición de scroll inmediatamente
     window.scrollTo(0, 0);
@@ -121,7 +121,7 @@ function waitForStylesAndHidePreloader() {
     
     window.addEventListener('keydown', keydownHandler);
     
-    console.log('🔒 SCROLL: Posición fijada en (0,0) - Todos los eventos de scroll bloqueados');
+    //console.log('🔒 SCROLL: Posición fijada en (0,0) - Todos los eventos de scroll bloqueados');
     
     // ============ SISTEMA DE BARRA DE PROGRESO ============
     const progressBar = simplePreloader.querySelector('.progress-fill');
@@ -154,7 +154,7 @@ function waitForStylesAndHidePreloader() {
             progressText.textContent = message;
         }
         
-        console.log(`📊 PROGRESO: ${Math.floor(currentProgress)}% - ${message || 'Cargando...'}`);
+        //console.log(`📊 PROGRESO: ${Math.floor(currentProgress)}% - ${message || 'Cargando...'}`);
     }
     
     // Progreso inicial
@@ -170,17 +170,17 @@ function waitForStylesAndHidePreloader() {
         
         // Si no hay links CSS, continuar inmediatamente
         if (totalLinks === 0) {
-            console.log('🎨 ESTILOS: No hay enlaces CSS externos detectados');
+            //console.log('🎨 ESTILOS: No hay enlaces CSS externos detectados');
             updateProgress(35, 'Estilos CSS listos');
             return Promise.resolve();
         }
         
-        console.log(`🎨 ESTILOS: Verificando carga de ${totalLinks} archivos CSS...`);
+        //console.log(`🎨 ESTILOS: Verificando carga de ${totalLinks} archivos CSS...`);
         
         return new Promise((resolve) => {
             function checkComplete() {
                 if (loadedCount >= totalLinks) {
-                    console.log('✅ ESTILOS: Todos los archivos CSS cargados correctamente');
+                    //console.log('✅ ESTILOS: Todos los archivos CSS cargados correctamente');
                     updateProgress(35, 'Estilos CSS cargados');
                     resolve();
                 }
@@ -190,7 +190,7 @@ function waitForStylesAndHidePreloader() {
                 // Si el link ya está cargado
                 if (link.sheet) {
                     loadedCount++;
-                    console.log(`✅ CSS ${index + 1}/${totalLinks}: ${link.href.split('/').pop()} ya estaba cargado`);
+                    //console.log(`✅ CSS ${index + 1}/${totalLinks}: ${link.href.split('/').pop()} ya estaba cargado`);
                     
                     // Actualizar progreso por cada archivo CSS cargado
                     const cssProgress = 15 + (loadedCount / totalLinks) * 20; // 15% a 35%
@@ -201,7 +201,7 @@ function waitForStylesAndHidePreloader() {
                     // Esperar a que el link se cargue
                     link.addEventListener('load', function() {
                         loadedCount++;
-                        console.log(`✅ CSS ${loadedCount}/${totalLinks}: ${this.href.split('/').pop()} cargado`);
+                        //console.log(`✅ CSS ${loadedCount}/${totalLinks}: ${this.href.split('/').pop()} cargado`);
                         
                         // Actualizar progreso por cada archivo CSS cargado
                         const cssProgress = 15 + (loadedCount / totalLinks) * 20; // 15% a 35%
@@ -213,7 +213,7 @@ function waitForStylesAndHidePreloader() {
                     // Manejar errores de carga
                     link.addEventListener('error', function() {
                         loadedCount++; // Contar como "cargado" para no bloquear
-                        console.warn(`⚠️ CSS ${loadedCount}/${totalLinks}: Error cargando ${this.href.split('/').pop()}`);
+                        //console.warn(`⚠️ CSS ${loadedCount}/${totalLinks}: Error cargando ${this.href.split('/').pop()}`);
                         
                         // Actualizar progreso incluso en caso de error
                         const cssProgress = 15 + (loadedCount / totalLinks) * 20; // 15% a 35%
@@ -227,7 +227,7 @@ function waitForStylesAndHidePreloader() {
             // Timeout de seguridad (3 segundos máximo)
             setTimeout(() => {
                 if (loadedCount < totalLinks) {
-                    console.warn(`⚠️ ESTILOS: Timeout - Solo ${loadedCount}/${totalLinks} archivos CSS cargados`);
+                    //console.warn(`⚠️ ESTILOS: Timeout - Solo ${loadedCount}/${totalLinks} archivos CSS cargados`);
                     updateProgress(35, 'Estilos CSS listos (timeout)');
                     resolve();
                 }
@@ -244,7 +244,7 @@ function waitForStylesAndHidePreloader() {
             // ya que la mayoría de scripts ya están cargados cuando el DOM está listo
             setTimeout(() => {
                 updateProgress(70, 'Scripts JavaScript cargados');
-                console.log('✅ SCRIPTS: Verificación completada');
+                //console.log('✅ SCRIPTS: Verificación completada');
                 resolve();
             }, 500);
         });
@@ -256,16 +256,16 @@ function waitForStylesAndHidePreloader() {
         
         return new Promise((resolve) => {
             // ============ ESPERAR A QUE LAS IMÁGENES PRELOAD ESTÉN REALMENTE CARGADAS ============
-            console.log('🖼️ PRELOADER: Esperando carga real de imágenes GSAP...');
+            //console.log('🖼️ PRELOADER: Esperando carga real de imágenes GSAP...');
             
             // Obtener todas las etiquetas preload de imágenes
             const preloadLinks = document.querySelectorAll('link[rel="preload"][as="image"]');
             const totalPreloadedImages = preloadLinks.length;
             
-            console.log(`🔍 PRELOADER: Encontradas ${totalPreloadedImages} imágenes con precarga nativa`);
+            //console.log(`🔍 PRELOADER: Encontradas ${totalPreloadedImages} imágenes con precarga nativa`);
             
             if (totalPreloadedImages === 0) {
-                console.log('📭 PRELOADER: No se encontraron imágenes con precarga nativa');
+                //console.log('📭 PRELOADER: No se encontraron imágenes con precarga nativa');
                 updateProgress(75, 'Sin recursos GSAP');
                 resolve();
                 return;
@@ -283,7 +283,7 @@ function waitForStylesAndHidePreloader() {
                     
                     img.onload = function() {
                         loadedImagesCount++;
-                        console.log(`✅ IMG ${loadedImagesCount}/${totalPreloadedImages}: ${imageUrl.split('/').pop()} cargada desde caché`);
+                        //console.log(`✅ IMG ${loadedImagesCount}/${totalPreloadedImages}: ${imageUrl.split('/').pop()} cargada desde caché`);
                         
                         // Actualizar progreso por cada imagen cargada
                         const imageProgress = 72 + (loadedImagesCount / totalPreloadedImages) * 8; // 72% a 80%
@@ -294,7 +294,7 @@ function waitForStylesAndHidePreloader() {
                     
                     img.onerror = function() {
                         loadedImagesCount++;
-                        console.warn(`⚠️ IMG ${loadedImagesCount}/${totalPreloadedImages}: Error cargando ${imageUrl.split('/').pop()}`);
+                        //console.warn(`⚠️ IMG ${loadedImagesCount}/${totalPreloadedImages}: Error cargando ${imageUrl.split('/').pop()}`);
                         
                         // Actualizar progreso incluso en caso de error
                         const imageProgress = 72 + (loadedImagesCount / totalPreloadedImages) * 8;
@@ -312,18 +312,18 @@ function waitForStylesAndHidePreloader() {
             
             // Esperar a que todas las imágenes se carguen
             Promise.all(imagePromises).then(() => {
-                console.log('✅ PRELOADER: Todas las imágenes GSAP cargadas desde caché');
+                //console.log('✅ PRELOADER: Todas las imágenes GSAP cargadas desde caché');
                 updateProgress(80, 'Recursos GSAP disponibles');
                 resolve();
             }).catch((error) => {
-                console.error('❌ PRELOADER: Error en carga de imágenes GSAP:', error);
+                //console.error('❌ PRELOADER: Error en carga de imágenes GSAP:', error);
                 updateProgress(80, 'Recursos GSAP listos (con errores)');
                 resolve(); // Resolver para no bloquear el preloader
             });
             
             // Timeout de seguridad más generoso para imágenes grandes
             setTimeout(() => {
-                console.log(`⚠️ PRELOADER: Timeout en carga de imágenes - ${loadedImagesCount}/${totalPreloadedImages} cargadas`);
+                //console.log(`⚠️ PRELOADER: Timeout en carga de imágenes - ${loadedImagesCount}/${totalPreloadedImages} cargadas`);
                 updateProgress(80, 'Recursos GSAP listos (timeout)');
                 resolve();
             }, 5000); // 5 segundos máximo para carga de imágenes
@@ -337,24 +337,24 @@ function waitForStylesAndHidePreloader() {
         return new Promise((resolve) => {
             // Si GSAP ya está disponible
             if (window.gsap && window.ScrollTrigger && window.GSAPMain) {
-                console.log('✅ GSAP: Ya está completamente inicializado');
+                //console.log('✅ GSAP: Ya está completamente inicializado');
                 updateProgress(95, 'GSAP inicializado');
                 resolve();
                 return;
             }
             
-            console.log('⏳ GSAP: Esperando inicialización completa...');
+            //console.log('⏳ GSAP: Esperando inicialización completa...');
             
             // Listener para cuando GSAP se inicialice
             window.addEventListener('gsap:initialized', function() {
-                console.log('✅ GSAP: Inicialización completa detectada');
+                //console.log('✅ GSAP: Inicialización completa detectada');
                 updateProgress(95, 'GSAP inicializado');
                 resolve();
             }, { once: true });
             
             // Timeout de seguridad (3 segundos)
             setTimeout(() => {
-                console.warn('⚠️ GSAP: Timeout en inicialización, continuando...');
+                //console.warn('⚠️ GSAP: Timeout en inicialización, continuando...');
                 updateProgress(95, 'GSAP listo (timeout)');
                 resolve();
             }, 3000);
@@ -368,13 +368,13 @@ function waitForStylesAndHidePreloader() {
         preloadGSAPImages(),
         checkGSAPReady()
     ]).then(() => {
-        console.log('🎆 PRELOADER: Todos los recursos cargados (CSS + JS + GSAP)');
+        //console.log('🎆 PRELOADER: Todos los recursos cargados (CSS + JS + GSAP)');
         
         updateProgress(100, progressMessages[5]); // "Finalizando carga..."
         
         // ============ OCULTAR SCROLL INSTANTÁNEAMENTE AL 100% ============
         // Desactivar scroll inmediatamente cuando la barra llega al 100%
-        console.log('🚫 SCROLL: Ocultando scroll instantáneamente al 100%');
+        //console.log('🚫 SCROLL: Ocultando scroll instantáneamente al 100%');
         
         // Ocultar scroll del body inmediatamente
         document.body.style.overflow = 'hidden';
@@ -384,23 +384,23 @@ function waitForStylesAndHidePreloader() {
         simplePreloader.style.pointerEvents = 'none';
         simplePreloader.style.zIndex = '-1';
         
-        console.log('✅ SCROLL: Desactivado instantáneamente - Clicks desbloqueados');
+        //console.log('✅ SCROLL: Desactivado instantáneamente - Clicks desbloqueados');
         
         // Esperar un tick adicional para que los event listeners se registren
         setTimeout(() => {
-            console.log('🔧 PRELOADER: Verificando que los botones funcionen...');
+            //console.log('🔧 PRELOADER: Verificando que los botones funcionen...');
             
             // Verificación adicional: comprobar que los botones tienen eventos
             const buttons = document.querySelectorAll('button, .btn, [role="button"], a[href]');
-            console.log(`🔘 PRELOADER: ${buttons.length} botones detectados en la página`);
+            //console.log(`🔘 PRELOADER: ${buttons.length} botones detectados en la página`);
             
             // Dar tiempo adicional para que se registren todos los event listeners
             setTimeout(function() {
-                console.log('🎬 PRELOADER: Iniciando cierre con animación');
+                //console.log('🎬 PRELOADER: Iniciando cierre con animación');
                 
                 // Añadir clase para activar la animación CSS suave del preloader
                 simplePreloader.classList.add('fade-out');
-                console.log('🌫️ PRELOADER: Transición visual iniciada');
+                //console.log('🌫️ PRELOADER: Transición visual iniciada');
                 
                 // Remover completamente después de la transición (1.2s + 0.3s buffer)
                 setTimeout(function() {
@@ -421,9 +421,9 @@ function waitForStylesAndHidePreloader() {
                     preloaderKeyListenerActive = false;
                     window.removeEventListener('keydown', keydownHandler);
                     
-                    console.log('⌨️ TECLADO: Event listener de bloqueo removido - Teclas funcionan normalmente');
+                    //console.log('⌨️ TECLADO: Event listener de bloqueo removido - Teclas funcionan normalmente');
                     
-                    console.log('🧹 SCROLL: Event listeners de bloqueo removidos');
+                    //console.log('🧹 SCROLL: Event listeners de bloqueo removidos');
                     
                     // ============ RESTAURAR SCROLL AL TERMINAR EL PRELOADER ============
                     // Restaurar el scroll normal del body
@@ -434,13 +434,13 @@ function waitForStylesAndHidePreloader() {
                     document.body.style.left = '';
                     document.body.style.width = '';
                     
-                    console.log('✅ SIMPLE PRELOADER: Ocultado completamente - Scroll restaurado - Event listeners limpiados - Interfaz completamente funcional');
+                    //console.log('✅ SIMPLE PRELOADER: Ocultado completamente - Scroll restaurado - Event listeners limpiados - Interfaz completamente funcional');
                 }, 1500); // 1.5 segundos para asegurar que la animación termine
                 
             }, 1500); // 1.5 segundos de duración mínima
         }, 100); // 100ms adicionales para event listeners
     }).catch((error) => {
-        console.error('❌ PRELOADER: Error en carga de recursos:', error);
+        //console.error('❌ PRELOADER: Error en carga de recursos:', error);
         // En caso de error, ocultar preloader de todos modos
         setTimeout(() => {
             simplePreloader.style.opacity = '0';
@@ -459,9 +459,9 @@ window.addEventListener('load', function() {
     // Si el preloader aún está visible después de window.load, forzar ocultación
     const simplePreloader = document.getElementById('simple-preloader');
     if (simplePreloader && simplePreloader.style.display !== 'none' && simplePreloader.style.opacity !== '0') {
-        console.log('🔄 PRELOADER: Forzando ocultación en window.load (respaldo)');
+        //console.log('🔄 PRELOADER: Forzando ocultación en window.load (respaldo)');
         setTimeout(() => {
-            console.log('🎬 PRELOADER RESPALDO: Iniciando cierre con ocultación instantánea de scroll');
+            //console.log('🎬 PRELOADER RESPALDO: Iniciando cierre con ocultación instantánea de scroll');
             
             // ============ OCULTAR SCROLL INSTANTÁNEAMENTE TAMBIÉN EN RESPALDO ============
             // Ocultar scroll del body inmediatamente
@@ -472,11 +472,11 @@ window.addEventListener('load', function() {
             simplePreloader.style.pointerEvents = 'none';
             simplePreloader.style.zIndex = '-1';
             
-            console.log('🚫 SCROLL RESPALDO: Desactivado instantáneamente');
+            //console.log('🚫 SCROLL RESPALDO: Desactivado instantáneamente');
             
             // Añadir clase para activar la animación CSS suave
             simplePreloader.classList.add('fade-out');
-            console.log('🌫️ PRELOADER RESPALDO: Transición visual iniciada');
+            //console.log('🌫️ PRELOADER RESPALDO: Transición visual iniciada');
             
             setTimeout(() => {
                 simplePreloader.style.display = 'none';
@@ -490,7 +490,7 @@ window.addEventListener('load', function() {
                 document.body.style.overflow = '';
                 document.documentElement.style.overflow = '';
                 
-                console.log('✅ PRELOADER RESPALDO: Ocultado completamente - Scroll restaurado');
+                //console.log('✅ PRELOADER RESPALDO: Ocultado completamente - Scroll restaurado');
             }, 1500); // 1.5 segundos pour asegurar que la animación termine
         }, 500);
     }
@@ -563,7 +563,7 @@ window.addEventListener('load', function() {
             // Busca elementos con IDs específicos para crear el contenedor de scroll
             // PERO NO se crea en vistas de dashboard para evitar problemas de scroll
             if (isDashboardView()) {
-                console.log('🚫 GSAP: ScrollSmoother NO creado - Vista de dashboard detectada');
+                //console.log('🚫 GSAP: ScrollSmoother NO creado - Vista de dashboard detectada');
                 this.smoother = null;
             } else {
                 this.smoother = ScrollSmoother.create({
@@ -574,7 +574,7 @@ window.addEventListener('load', function() {
                     smoothTouch: 0.1,                   // Suavizado en dispositivos táctiles
                     normalizeScroll: true               // Normalizar comportamiento entre navegadores
                 });
-                console.log('✅ GSAP: ScrollSmoother creado para página normal');
+                //console.log('✅ GSAP: ScrollSmoother creado para página normal');
             }
             
             // ============ CONFIGURAR LISTENERS GLOBALES ============
@@ -589,13 +589,13 @@ window.addEventListener('load', function() {
                 detail: { smoother: this.smoother }
             }));
             
-            console.log('✅ GSAP Main Controller inicializado - Sistema de renderizado listo');
+            //console.log('✅ GSAP Main Controller inicializado - Sistema de renderizado listo');
         },
         
         // Registrar un módulo
         registerModule: function(moduleId, moduleInstance) {
             if (this.modules.has(moduleId)) {
-                console.warn(`Módulo ${moduleId} ya está registrado`);
+                //console.warn(`Módulo ${moduleId} ya está registrado`);
                 return;
             }
             
@@ -606,7 +606,7 @@ window.addEventListener('load', function() {
                 moduleInstance.init(this);
             }
             
-            console.log(`Módulo ${moduleId} registrado`);
+            //console.log(`Módulo ${moduleId} registrado`);
         },
         
         // Desregistrar un módulo
@@ -618,7 +618,7 @@ window.addEventListener('load', function() {
                     module.destroy();
                 }
                 this.modules.delete(moduleId);
-                console.log(`Módulo ${moduleId} desregistrado`);
+                //console.log(`Módulo ${moduleId} desregistrado`);
             }
         },
         
@@ -633,7 +633,7 @@ window.addEventListener('load', function() {
                 this.smoother.refresh();
             }
             ScrollTrigger.refresh();
-            console.log('GSAP refreshed');
+            //console.log('GSAP refreshed');
         },
         
         // Crear animación con contexto

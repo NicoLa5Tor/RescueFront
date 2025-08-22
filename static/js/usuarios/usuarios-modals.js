@@ -75,7 +75,7 @@ class UsuariosModalScrollManager {
   }
 
   openModal(modalId, options = {}) {
-    console.log(`🔒 Opening usuarios modal: ${modalId}`);
+    //console.log(`🔒 Opening usuarios modal: ${modalId}`);
     
     if (this.openModals.size === 0) {
       this.scrollPosition = window.pageYOffset;
@@ -96,7 +96,7 @@ class UsuariosModalScrollManager {
   }
 
   closeModal(modalId) {
-    console.log(`🔓 Closing usuarios modal: ${modalId}`);
+    //console.log(`🔓 Closing usuarios modal: ${modalId}`);
     
     this.openModals.delete(modalId);
     
@@ -115,7 +115,7 @@ class UsuariosModalScrollManager {
   lockScroll() {
     if (this.isLocked) return;
     
-    console.log('🔒 Using CSS-only scroll lock to prevent white borders');
+    //console.log('🔒 Using CSS-only scroll lock to prevent white borders');
     
     const body = document.body;
     
@@ -123,13 +123,13 @@ class UsuariosModalScrollManager {
     body.classList.add('ios-modal-open');
     
     this.isLocked = true;
-    console.log('✅ CSS-only scroll lock applied');
+    //console.log('✅ CSS-only scroll lock applied');
   }
 
   unlockScroll() {
     if (!this.isLocked) return;
     
-    console.log('🔓 Using CSS-only scroll unlock to prevent white borders');
+    //console.log('🔓 Using CSS-only scroll unlock to prevent white borders');
     
     const body = document.body;
     
@@ -137,7 +137,7 @@ class UsuariosModalScrollManager {
     body.classList.remove('ios-modal-open');
     
     this.isLocked = false;
-    console.log('✅ CSS-only scroll unlock applied');
+    //console.log('✅ CSS-only scroll unlock applied');
   }
 
   preventScrollKeys = (e) => {
@@ -255,10 +255,10 @@ class UsuariosModals {
       // Setup event listeners
       this.setupEventListeners();
       
-      console.log('👥 Modales de usuarios inicializados correctamente');
+      //console.log('👥 Modales de usuarios inicializados correctamente');
       
     } catch (error) {
-      console.error('💥 Error al inicializar modales de usuarios:', error);
+      //console.error('💥 Error al inicializar modales de usuarios:', error);
     }
   }
 
@@ -316,11 +316,11 @@ class UsuariosModals {
   initIntlTelInput() {
     // Check if intl-tel-input library is available
     if (typeof window.intlTelInput === 'undefined') {
-      console.warn('⚠️ intl-tel-input library not loaded yet');
+      //console.warn('⚠️ intl-tel-input library not loaded yet');
       setTimeout(() => this.initIntlTelInput(), 500);
       return;
     }
-    console.log('🔄 Inicializando intl-tel-input plugin');
+    //console.log('🔄 Inicializando intl-tel-input plugin');
     
     const createPhoneInput = document.getElementById('createUserTelefono');
     if (createPhoneInput) {
@@ -329,7 +329,7 @@ class UsuariosModals {
         try {
           this.createPhoneInput.destroy();
         } catch (e) {
-          console.warn('Error destroying existing instance:', e);
+          //console.warn('Error destroying existing instance:', e);
         }
       }
       
@@ -344,9 +344,9 @@ class UsuariosModals {
           placeholderNumberType: 'MOBILE',
           utilsScript: 'https://cdn.jsdelivr.net/npm/intl-tel-input@18.5.3/build/js/utils.js'
         });
-        console.log('✅ Input de crear usuario inicializado');
+        //console.log('✅ Input de crear usuario inicializado');
       } catch (error) {
-        console.error('❌ Error inicializando intl-tel-input para crear:', error);
+        //console.error('❌ Error inicializando intl-tel-input para crear:', error);
       }
     }
     const editPhoneInput = document.getElementById('editUserTelefono');
@@ -356,7 +356,7 @@ class UsuariosModals {
         try {
           this.editPhoneInput.destroy();
         } catch (e) {
-          console.warn('Error destroying existing instance:', e);
+          //console.warn('Error destroying existing instance:', e);
         }
       }
       
@@ -371,9 +371,9 @@ class UsuariosModals {
           placeholderNumberType: 'MOBILE',
           utilsScript: 'https://cdn.jsdelivr.net/npm/intl-tel-input@18.5.3/build/js/utils.js'
         });
-        console.log('✅ Input de editar usuario inicializado');
+        //console.log('✅ Input de editar usuario inicializado');
       } catch (error) {
-        console.error('❌ Error inicializando intl-tel-input para editar:', error);
+        //console.error('❌ Error inicializando intl-tel-input para editar:', error);
       }
     }
   }
@@ -432,7 +432,7 @@ class UsuariosModals {
    * Abrir modal - USANDO MODALSCROLLMANAGER
    */
   openModal(modalId) {
-    console.log('🟢 Abriendo modal:', modalId);
+    //console.log('🟢 Abriendo modal:', modalId);
     
     // Usar nuestro ModalScrollManager siempre
     this.modalManager.openModal(modalId, { focusTrap: true });
@@ -445,7 +445,7 @@ class UsuariosModals {
         // Eliminar cualquier estilo inline que esté sobreescribiendo Tailwind
         container.style.maxWidth = '';
         container.style.width = '';
-        console.log('🧹 Limpiados estilos inline que interferían con Tailwind');
+        //console.log('🧹 Limpiados estilos inline que interferían con Tailwind');
       }
     }, 50);
     
@@ -460,14 +460,14 @@ class UsuariosModals {
       }
     }, 150);
     
-    console.log('✅ Modal abierto con ModalScrollManager:', modalId);
+    //console.log('✅ Modal abierto con ModalScrollManager:', modalId);
   }
 
   /**
    * Cerrar modal - USANDO MODALSCROLLMANAGER
    */
   closeModal(modalId) {
-    console.log('🔴 Cerrando modal:', modalId);
+    //console.log('🔴 Cerrando modal:', modalId);
     
     // Usar nuestro ModalScrollManager siempre
     this.modalManager.closeModal(modalId);
@@ -475,7 +475,7 @@ class UsuariosModals {
     // Limpiar datos del modal
     this.resetModalData(modalId);
     
-    console.log('✅ Modal cerrado con ModalScrollManager:', modalId);
+    //console.log('✅ Modal cerrado con ModalScrollManager:', modalId);
   }
 
   /**
@@ -519,7 +519,7 @@ class UsuariosModals {
    */
   async openViewModal(userId) {
     try {
-      console.log('👁️ Abriendo modal de vista para usuario:', userId);
+      //console.log('👁️ Abriendo modal de vista para usuario:', userId);
       
       // Set viewing state
       this.currentViewingUser = userId;
@@ -552,7 +552,7 @@ class UsuariosModals {
       }
       
     } catch (error) {
-      console.error('💥 Error al cargar detalles de usuario:', error);
+      //console.error('💥 Error al cargar detalles de usuario:', error);
       this.showNotification('Error al cargar los detalles del usuario', 'error');
     }
   }
@@ -626,7 +626,7 @@ class UsuariosModals {
    */
   async openEditModal(userId) {
     try {
-      console.log('✏️ Abriendo modal de edición para usuario:', userId);
+      //console.log('✏️ Abriendo modal de edición para usuario:', userId);
       
       // Set editing state
       this.currentEditingUser = userId;
@@ -651,7 +651,7 @@ class UsuariosModals {
       this.openModal('editUserModal');
       
     } catch (error) {
-      console.error('💥 Error al abrir modal de edición:', error);
+      //console.error('💥 Error al abrir modal de edición:', error);
       this.showNotification('Error al cargar datos del usuario', 'error');
     }
   }
@@ -661,31 +661,31 @@ class UsuariosModals {
    */
   async loadUserDataForEdit(empresaId, userId) {
     try {
-      console.log('🔄 Cargando datos de usuario para edición:', userId);
+      //console.log('🔄 Cargando datos de usuario para edición:', userId);
       
       const response = await this.apiClient.get_usuario(empresaId, userId);
       const result = await response.json();
       
-      console.log('📡 Respuesta del backend:', {
-        status: response.status,
-        statusText: response.statusText,
-        ok: response.ok
-      });
-      console.log('📦 Datos recibidos del backend:', result);
+      //console.log('📡 Respuesta del backend:', {
+      //   status: response.status,
+      //   statusText: response.statusText,
+      //   ok: response.ok
+      // });
+      //console.log('📦 Datos recibidos del backend:', result);
       
       if (response.ok && result.success && result.data) {
-        console.log('✅ Datos de usuario válidos, populando formulario...');
+        //console.log('✅ Datos de usuario válidos, populando formulario...');
         this.currentUser = result.data;
         this.currentUser.empresaId = empresaId;
         this.populateEditModal(result.data);
       } else {
-        console.error('❌ Respuesta del backend no válida:', result);
+        //console.error('❌ Respuesta del backend no válida:', result);
         const errorMessage = result.errors ? result.errors.join(', ') : 'Error al cargar datos del usuario';
         throw new Error(errorMessage);
       }
       
     } catch (error) {
-      console.error('💥 Error al cargar datos de usuario:', error);
+      //console.error('💥 Error al cargar datos de usuario:', error);
       this.showNotification('Error al cargar los datos del usuario desde el servidor', 'error');
       this.loadDummyUserDataIntoForm();
     }
@@ -730,7 +730,7 @@ class UsuariosModals {
           try {
             this.editPhoneInput.setNumber('+' + user.telefono);
           } catch (error) {
-            console.warn('⚠️ Error al establecer número con código de país:', error);
+            //console.warn('⚠️ Error al establecer número con código de país:', error);
           }
         }
       }, 300);
@@ -776,7 +776,7 @@ class UsuariosModals {
             telefonoValue = fullNumber.substring(1);
           }
         } catch (error) {
-          console.error('❌ Error al extraer número completo:', error);
+          //console.error('❌ Error al extraer número completo:', error);
         }
       }
       
@@ -856,7 +856,7 @@ class UsuariosModals {
         this.showNotification(errorMessage, 'error');
       }
     } catch (error) {
-      console.error('Error al actualizar usuario:', error);
+      //console.error('Error al actualizar usuario:', error);
       this.showNotification(`Error de conexión: ${error.message}`, 'error');
     } finally {
       this.isUpdating = false;
@@ -870,7 +870,7 @@ class UsuariosModals {
   // ===== TOGGLE USER STATUS MODAL =====
   
   showToggleModal(userId, currentStatus, userName) {
-    console.log('🔄 Opening toggle modal for usuario:', userId, 'current status:', currentStatus);
+    //console.log('🔄 Opening toggle modal for usuario:', userId, 'current status:', currentStatus);
     
     const newStatus = !currentStatus;
     
@@ -981,7 +981,7 @@ class UsuariosModals {
         }
         
       } catch (error) {
-        console.error('💥 Error al ejecutar toggle:', error);
+        //console.error('💥 Error al ejecutar toggle:', error);
         if (confirmBtn && originalContent) {
           confirmBtn.innerHTML = originalContent;
           confirmBtn.disabled = false;
@@ -1010,7 +1010,7 @@ class UsuariosModals {
    */
   openCreateModal() {
     try {
-      console.log('➕ Abriendo modal de creación de usuario');
+      //console.log('➕ Abriendo modal de creación de usuario');
       
       // Reset editing state
       this.currentEditingUser = null;
@@ -1046,7 +1046,7 @@ class UsuariosModals {
       }, 200);
       
     } catch (error) {
-      console.error('💥 Error al abrir modal de creación:', error);
+      //console.error('💥 Error al abrir modal de creación:', error);
       this.showNotification('Error al abrir modal de creación', 'error');
     }
   }
@@ -1118,7 +1118,7 @@ class UsuariosModals {
             telefonoValue = fullNumber.substring(1);
           }
         } catch (error) {
-          console.error('❌ Error al extraer número completo:', error);
+          //console.error('❌ Error al extraer número completo:', error);
         }
       }
       
@@ -1198,7 +1198,7 @@ class UsuariosModals {
         this.showNotification(errorMessage, 'error');
       }
     } catch (error) {
-      console.error('Error al crear usuario:', error);
+      //console.error('Error al crear usuario:', error);
       this.showNotification(`Error de conexión: ${error.message}`, 'error');
     } finally {
       this.isCreating = false;
@@ -1306,7 +1306,7 @@ class UsuariosModals {
           data.data.sedes.map(sede => `<option value="${sede}">${sede}</option>`).join('');
       }
     }).catch(error => {
-      console.error('Error loading sedes:', error);
+      //console.error('Error loading sedes:', error);
       selectElement.innerHTML = '<option value="">Error cargando sedes</option>';
     });
   }
@@ -1323,7 +1323,7 @@ class UsuariosModals {
         selectElement.innerHTML = '<option value="">No hay roles disponibles</option>';
       }
     }).catch(error => {
-      console.error('Error loading roles:', error);
+      //console.error('Error loading roles:', error);
       selectElement.innerHTML = '<option value="">Error cargando roles</option>';
     });
   }
@@ -1409,4 +1409,4 @@ window.toggleUser = (userId, currentStatus, userName) => usuariosModals.showTogg
 window.closeToggleModal = () => usuariosModals.closeToggleModal();
 window.confirmToggle = () => usuariosModals.confirmToggle();
 window.closeUpdateModal = () => usuariosModals.closeUpdateModal();
-console.log('👥 Usuarios modals module loaded - MODALSCROLLMANAGER VERSION');
+////console.log('👥 Usuarios modals module loaded - MODALSCROLLMANAGER VERSION');

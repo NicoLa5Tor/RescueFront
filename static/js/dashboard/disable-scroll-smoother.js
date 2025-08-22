@@ -28,9 +28,9 @@
             try {
                 window.GSAPMain.smoother.kill();
                 window.GSAPMain.smoother = null;
-                console.log('✅ ScrollSmoother desactivado');
+                //console.log('✅ ScrollSmoother desactivado');
             } catch (error) {
-                console.log('⚠️ Error desactivando ScrollSmoother:', error);
+                //console.log('⚠️ Error desactivando ScrollSmoother:', error);
             }
         }
     }
@@ -69,7 +69,7 @@
             }
         `;
         
-        console.log('✅ DASHBOARD: Estilos de layout aplicados');
+        //console.log('✅ DASHBOARD: Estilos de layout aplicados');
     }
     
     // ============ INTERCEPTAR GSAP SCROLLSMOOTHER ============
@@ -80,7 +80,7 @@
             
             window.ScrollSmoother.create = function(config) {
                 if (isDashboardView()) {
-                    console.log('🚫 DASHBOARD: ScrollSmoother.create() bloqueado en vista de dashboard');
+                    //console.log('🚫 DASHBOARD: ScrollSmoother.create() bloqueado en vista de dashboard');
                     return {
                         // Mock object para evitar errores
                         kill: () => {},
@@ -91,7 +91,7 @@
                 return originalCreate.call(this, config);
             };
             
-            console.log('✅ DASHBOARD: ScrollSmoother.create() interceptado');
+            //console.log('✅ DASHBOARD: ScrollSmoother.create() interceptado');
         }
     }
     
@@ -104,7 +104,7 @@
                 
                 window.GSAPMain.init = function() {
                     if (isDashboardView()) {
-                        console.log('🏢 DASHBOARD: Interceptando inicialización de GSAPMain');
+                        //console.log('🏢 DASHBOARD: Interceptando inicialización de GSAPMain');
                         
                         // Llamar init original pero sin ScrollSmoother
                         const originalSmoother = window.GSAPMain.smoother;
@@ -155,7 +155,7 @@
             return;
         }
         
-        console.log('🏢 DASHBOARD: Vista de dashboard detectada');
+        //console.log('🏢 DASHBOARD: Vista de dashboard detectada');
         
         // Interceptar ScrollSmoother
         preventScrollSmootherCreation();
@@ -181,6 +181,6 @@
         }
     });
     
-    console.log('📋 DASHBOARD SCROLL MANAGER: Cargado - Comandos disponibles: DashboardScrollManager');
+    //console.log('📋 DASHBOARD SCROLL MANAGER: Cargado - Comandos disponibles: DashboardScrollManager');
     
 })();

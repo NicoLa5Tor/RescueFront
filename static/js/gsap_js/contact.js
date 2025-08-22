@@ -13,11 +13,11 @@
             this.container = document.querySelector('.contact-wrapper, .contact-container');
             
             if (!this.container) {
-                console.warn('Contact container no encontrado');
+                //console.warn('Contact container no encontrado');
                 return;
             }
             
-            console.log('🎬 Inicializando animaciones de contacto...');
+            //console.log('🎬 Inicializando animaciones de contacto...');
             
             // Crear partículas de fondo
             this.createParticles();
@@ -27,7 +27,7 @@
             this.setupInteractions();
             this.setupResponsiveHandlers();
 
-            console.log('✅ Animaciones de contacto inicializadas');
+            //console.log('✅ Animaciones de contacto inicializadas');
         },
         
         // Crear partículas como en hero
@@ -673,7 +673,7 @@
             // Reset del estado
             this.hasAnimated = false;
             
-            console.log('🧹 Contact module destruido');
+            //console.log('🧹 Contact module destruido');
         }
     };
     

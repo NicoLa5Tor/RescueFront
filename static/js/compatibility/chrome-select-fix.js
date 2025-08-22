@@ -55,7 +55,7 @@
             });
         }
         
-        console.log(`🔧 SELECT FIX: Corrección aplicada a select (modo ${isDarkMode ? 'oscuro' : 'claro'})`);
+        //console.log(`🔧 SELECT FIX: Corrección aplicada a select (modo ${isDarkMode ? 'oscuro' : 'claro'})`);
     }
     
     // Función para aplicar correcciones a todos los selects
@@ -68,7 +68,7 @@
             fixedCount++;
         });
         
-        console.log(`✅ SELECT FIX: ${fixedCount} elementos select corregidos`);
+        //console.log(`✅ SELECT FIX: ${fixedCount} elementos select corregidos`);
     }
     
     // Observador para detectar cambios en el tema
@@ -93,7 +93,7 @@
             attributeFilter: ['class']
         });
         
-        console.log('👀 SELECT FIX: Observer de tema activado');
+        //console.log('👀 SELECT FIX: Observer de tema activado');
     }
     
     // Observador para detectar nuevos selects añadidos dinámicamente
@@ -125,7 +125,7 @@
             subtree: true
         });
         
-        console.log('🔍 SELECT FIX: Observer de nuevos elementos activado');
+        //console.log('🔍 SELECT FIX: Observer de nuevos elementos activado');
     }
     
     // Función para detectar si estamos en Chrome
@@ -154,7 +154,7 @@
             setTimeout(fixAllSelects, 200);
         });
         
-        console.log('🎯 SELECT FIX: Event listeners añadidos');
+        //console.log('🎯 SELECT FIX: Event listeners añadidos');
     }
     
     // ============ INTEGRACIÓN CON EL SISTEMA MODULAR ============
@@ -166,7 +166,7 @@
         
         // Función de inicialización del módulo
         init: function(browserInfo) {
-            console.log('🚀 CHROME SELECT FIX: Iniciando como módulo de compatibilidad');
+            //console.log('🚀 CHROME SELECT FIX: Iniciando como módulo de compatibilidad');
             
             // Aplicar correcciones iniciales
             fixAllSelects();
@@ -180,7 +180,7 @@
             // Programar re-aplicaciones
             this.scheduleRefreshes();
             
-            console.log('✅ CHROME SELECT FIX: Módulo inicializado correctamente');
+            //console.log('✅ CHROME SELECT FIX: Módulo inicializado correctamente');
             
             return this;
         },
@@ -236,7 +236,7 @@
             
             this.observers.push(newElementsObserver);
             
-            console.log('👀 CHROME SELECT FIX: Observers configurados');
+            //console.log('👀 CHROME SELECT FIX: Observers configurados');
         },
         
         // Configurar event listeners
@@ -268,7 +268,7 @@
                 { element: document, event: 'modal:opened', handler: modalHandler }
             );
             
-            console.log('🎯 CHROME SELECT FIX: Event listeners configurados');
+            //console.log('🎯 CHROME SELECT FIX: Event listeners configurados');
         },
         
         // Programar actualizaciones automáticas
@@ -290,7 +290,7 @@
         
         // Función de limpieza del módulo
         cleanup: function() {
-            console.log('🧹 CHROME SELECT FIX: Limpiando módulo');
+            //console.log('🧹 CHROME SELECT FIX: Limpiando módulo');
             
             // Limpiar observers
             this.observers.forEach(observer => {
@@ -304,14 +304,14 @@
             });
             this.eventListeners = [];
             
-            console.log('✅ CHROME SELECT FIX: Módulo limpiado');
+            //console.log('✅ CHROME SELECT FIX: Módulo limpiado');
         },
         
         // Función para corrección manual
         fixManually: function() {
             fixAllSelects();
             const selectCount = document.querySelectorAll('select.form-select, select[class*="form-"], select[class*="select-"]').length;
-            console.log(`🔧 CHROME SELECT FIX: Corrección manual aplicada a ${selectCount} selects`);
+            //console.log(`🔧 CHROME SELECT FIX: Corrección manual aplicada a ${selectCount} selects`);
             return selectCount;
         }
     };
@@ -324,10 +324,10 @@
                 init: ChromeSelectFixModule.init.bind(ChromeSelectFixModule),
                 cleanup: ChromeSelectFixModule.cleanup.bind(ChromeSelectFixModule)
             });
-            console.log('📋 CHROME SELECT FIX: Módulo registrado en CompatibilityManager');
+            //console.log('📋 CHROME SELECT FIX: Módulo registrado en CompatibilityManager');
         } else {
             // Fallback: ejecutar directamente si CompatibilityManager no está disponible
-            console.warn('⚠️ CHROME SELECT FIX: CompatibilityManager no disponible, ejecutando directamente');
+            //console.warn('⚠️ CHROME SELECT FIX: CompatibilityManager no disponible, ejecutando directamente');
             if (isChrome()) {
                 ChromeSelectFixModule.init({ chrome: true });
             }
@@ -357,4 +357,4 @@
 })();
 
 // Mensaje de confirmación
-console.log('📋 CHROME SELECT FIX: Script cargado - Comando disponible: fixSelectsManually()');
+//console.log('📋 CHROME SELECT FIX: Script cargado - Comando disponible: fixSelectsManually()');

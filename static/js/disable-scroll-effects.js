@@ -6,7 +6,7 @@
 (function() {
     'use strict';
     
-    console.log('🚫 ACTIVANDO DESACTIVADOR DE EFECTOS DE SCROLL PROBLEMÁTICOS');
+    ////console.log('🚫 ACTIVANDO DESACTIVADOR DE EFECTOS DE SCROLL PROBLEMÁTICOS');
     
     /**
      * Función para aplicar estilos anti-overscroll al body y html
@@ -28,7 +28,7 @@
             html.style.setProperty(property, value, 'important');
         });
         
-        console.log('✅ Estilos anti-overscroll aplicados al body y html');
+        ////console.log('✅ Estilos anti-overscroll aplicados al body y html');
     }
     
     /**
@@ -47,7 +47,7 @@
             
             document.body.style.setProperty = function(property, value, priority) {
                 if (property === 'overflow' || property === 'position') {
-                    console.log(`🚫 INTERCEPTADO: Intento de cambiar ${property} del body a "${value}" - BLOQUEADO`);
+                    ////console.log(`🚫 INTERCEPTADO: Intento de cambiar ${property} del body a "${value}" - BLOQUEADO`);
                     // Aplicar nuestros estilos seguros en lugar de los problemáticos
                     applyAntiOverscrollStyles();
                     return;
@@ -57,7 +57,7 @@
             
             document.body.setAttribute = function(name, value) {
                 if (name === 'style' && (value.includes('overflow') || value.includes('position'))) {
-                    console.log(`🚫 INTERCEPTADO: Intento de cambiar style del body a "${value}" - BLOQUEADO`);
+                    ////console.log(`🚫 INTERCEPTADO: Intento de cambiar style del body a "${value}" - BLOQUEADO`);
                     applyAntiOverscrollStyles();
                     return;
                 }
@@ -65,7 +65,7 @@
             };
         }
         
-        console.log('✅ Interceptores de DOM activados');
+        ////console.log('✅ Interceptores de DOM activados');
     }
     
     /**
@@ -84,7 +84,7 @@
                 
                 // Solo permitir si el listener no intenta prevenir el comportamiento predeterminado agresivamente
                 if (listener && listener.toString().includes('preventDefault')) {
-                    console.log(`🚫 INTERCEPTADO: Event listener problemático para "${type}" - BLOQUEADO`);
+                    ////console.log(`🚫 INTERCEPTADO: Event listener problemático para "${type}" - BLOQUEADO`);
                     return;
                 }
             }
@@ -92,7 +92,7 @@
             return originalAddEventListener.call(this, type, listener, options);
         };
         
-        console.log('✅ Interceptores de eventos activados');
+        ////console.log('✅ Interceptores de eventos activados');
     }
     
     /**
@@ -106,12 +106,12 @@
             
             if (body.style.overscrollBehavior !== 'none' || 
                 html.style.overscrollBehavior !== 'none') {
-                console.log('⚠️ Estilos anti-overscroll perdidos, reaplícando...');
+                ////console.log('⚠️ Estilos anti-overscroll perdidos, reaplícando...');
                 applyAntiOverscrollStyles();
             }
         }, 1000);
         
-        console.log('✅ Monitor periódico de estilos activado');
+        ////console.log('✅ Monitor periódico de estilos activado');
     }
     
     /**
@@ -126,7 +126,7 @@
                 trialWarn: false
             });
             
-            console.log('✅ GSAP configurado para no interferir');
+            ////console.log('✅ GSAP configurado para no interferir');
         }
     }
     
@@ -134,7 +134,7 @@
      * Función principal de inicialización
      */
     function init() {
-        console.log('🚀 Inicializando desactivador de efectos de scroll...');
+        ////console.log('🚀 Inicializando desactivador de efectos de scroll...');
         
         // Aplicar estilos inmediatamente
         applyAntiOverscrollStyles();
@@ -149,8 +149,8 @@
         // Configurar GSAP si está presente
         disableProblematicGSAPAnimations();
         
-        console.log('✅ Desactivador de efectos de scroll completamente inicializado');
-        console.log('🎯 Los bordes blancos deberían estar COMPLETAMENTE eliminados');
+        ////console.log('✅ Desactivador de efectos de scroll completamente inicializado');
+        //console.log('🎯 Los bordes blancos deberían estar COMPLETAMENTE eliminados');
     }
     
     // Ejecutar inmediatamente si el DOM ya está listo

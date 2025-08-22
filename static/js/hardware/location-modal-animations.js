@@ -13,7 +13,7 @@ window.LocationModalAnimations = {
    */
   openModal: function(modal, onComplete) {
 if (!modal) {
-      console.warn('⚠️ Modal no encontrado');
+      ////console.warn('⚠️ Modal no encontrado');
       if (onComplete) onComplete();
       return;
     }
@@ -22,14 +22,14 @@ if (!modal) {
     const container = modal.querySelector('.ios-blur-modal-container');
     const mapContainer = modal.querySelector('#locationMap');
     
-    console.log('🎬 Iniciando animación de apertura del modal de ubicación');
+    ////console.log('🎬 Iniciando animación de apertura del modal de ubicación');
     
     // Timeline principal
     const tl = gsap.timeline({
       onComplete: () => {
         modal.classList.add('modal-opening');
         if (onComplete) onComplete();
-        console.log('✅ Animación de apertura completada');
+        //console.log('✅ Animación de apertura completada');
       }
     });
     
@@ -89,7 +89,7 @@ if (!modal) {
   showMapLoading: function(mapContainer) {
 if (!mapContainer) return;
     
-    console.log('🔄 Mostrando loading del mapa');
+    //console.log('🔄 Mostrando loading del mapa');
     
     // Crear elementos de loading si no existen
     let loadingContainer = mapContainer.querySelector('.map-loading-container');
@@ -153,7 +153,7 @@ if (!mapContainer) {
       return;
     }
     
-    console.log('🗺️ Mostrando mapa cargado');
+    //console.log('🗺️ Mostrando mapa cargado');
     
     const loadingContainer = mapContainer.querySelector('.map-loading-container');
     
@@ -164,7 +164,7 @@ if (!mapContainer) {
         }
         mapContainer.classList.add('map-loaded');
         if (onComplete) onComplete();
-        console.log('✅ Mapa cargado y animación completada');
+        //console.log('✅ Mapa cargado y animación completada');
       }
     });
     
@@ -194,7 +194,7 @@ if (!mapContainer) {
    */
   closeModal: function(modal, onComplete) {
 if (!modal) {
-      console.warn('⚠️ Modal no encontrado');
+      //console.warn('⚠️ Modal no encontrado');
       if (onComplete) onComplete();
       return;
     }
@@ -202,7 +202,7 @@ if (!modal) {
     const backdrop = modal.querySelector('.ios-blur-modal-backdrop') || modal;
     const container = modal.querySelector('.ios-blur-modal-container');
     
-    console.log('🎬 Iniciando animación de cierre del modal de ubicación');
+    //console.log('🎬 Iniciando animación de cierre del modal de ubicación');
     
     // Timeline de cierre
     const tl = gsap.timeline({
@@ -210,7 +210,7 @@ if (!modal) {
         modal.classList.remove('modal-opening');
         gsap.set(modal, { display: 'none' });
         if (onComplete) onComplete();
-        console.log('✅ Animación de cierre completada');
+        //console.log('✅ Animación de cierre completada');
       }
     });
     
@@ -247,7 +247,7 @@ if (!modal) {
   showMapError: function(mapContainer, errorMessage = 'Error al cargar el mapa') {
 if (!mapContainer) return;
     
-    console.log('❌ Mostrando error del mapa');
+    //console.log('❌ Mostrando error del mapa');
     
     // Crear contenedor de error
     const errorContainer = document.createElement('div');
@@ -355,4 +355,4 @@ if (!button) return;
 // Hacer disponible globalmente
 window.locationModalAnimations = window.LocationModalAnimations;
 
-console.log('🎬 Location Modal Animations cargado correctamente');
+//console.log('🎬 Location Modal Animations cargado correctamente');

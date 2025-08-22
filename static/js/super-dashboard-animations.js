@@ -1,16 +1,9 @@
-/**
- * SUPER DASHBOARD ANIMATIONS - Animaciones específicas para el super dashboard
- * Utiliza la configuración global de GSAP para implementar animaciones
- * específicas de dashboard como tarjetas, modales, contadores, etc.
- * 
- * BASADO EXACTAMENTE EN hardware-animations.js
- */
 
 // Verificar que GSAP esté disponible
 if (typeof gsap === 'undefined') {
-  console.error('❌ GSAP no está disponible. Asegúrate de que se cargue antes que este archivo.');
+  //console.error('❌ GSAP no está disponible. Asegúrate de que se cargue antes que este archivo.');
 } else {
-  console.log('✅ GSAP disponible - Inicializando animaciones de super dashboard...');
+  //console.log('✅ GSAP disponible - Inicializando animaciones de super dashboard...');
 }
 
 // Namespace para las animaciones de super dashboard
@@ -18,7 +11,7 @@ window.SuperDashboardAnimations = {
   
   // Inicializar todas las animaciones al cargar la página
   init: function() {
-    console.log('🎬 Inicializando animaciones de super dashboard...');
+    //console.log('🎬 Inicializando animaciones de super dashboard...');
     
     this.animateStatsCards();
     this.animateDashboardCards();
@@ -26,7 +19,7 @@ window.SuperDashboardAnimations = {
     this.animateFilters();
     this.setupScrollAnimations();
     
-    console.log('✅ Animaciones de super dashboard inicializadas');
+    //console.log('✅ Animaciones de super dashboard inicializadas');
   },
 
   // Animar tarjetas de estadísticas
@@ -57,7 +50,7 @@ window.SuperDashboardAnimations = {
       }
     );
     
-    console.log(`📊 Animando ${statCards.length} tarjetas de estadísticas`);
+    //console.log(`📊 Animando ${statCards.length} tarjetas de estadísticas`);
   },
 
   // Animar tarjetas de dashboard (empresas recientes, usuarios, etc.)
@@ -88,7 +81,7 @@ window.SuperDashboardAnimations = {
       }
     );
     
-    console.log(`🔧 Animando ${dashboardCards.length} tarjetas de dashboard`);
+    //console.log(`🔧 Animando ${dashboardCards.length} tarjetas de dashboard`);
   },
 
   // Animar header
@@ -109,7 +102,7 @@ window.SuperDashboardAnimations = {
       }
     );
     
-    console.log('📱 Animando header iOS');
+    //console.log('📱 Animando header iOS');
   },
 
   // Animar filtros
@@ -132,13 +125,13 @@ window.SuperDashboardAnimations = {
       }
     );
     
-    console.log(`🔍 Animando ${filters.length} filtros`);
+    //console.log(`🔍 Animando ${filters.length} filtros`);
   },
 
   // Configurar animaciones al hacer scroll
   setupScrollAnimations: function() {
     if (typeof ScrollTrigger === 'undefined') {
-      console.warn('⚠️ ScrollTrigger no disponible, saltando animaciones de scroll');
+      //console.warn('⚠️ ScrollTrigger no disponible, saltando animaciones de scroll');
       return;
     }
     
@@ -164,7 +157,7 @@ window.SuperDashboardAnimations = {
       );
     });
     
-    console.log('📜 Configuradas animaciones de scroll');
+    //console.log('📜 Configuradas animaciones de scroll');
   },
 
   // Animar nueva tarjeta (para tarjetas añadidas dinámicamente)
@@ -189,7 +182,7 @@ window.SuperDashboardAnimations = {
       }
     );
     
-    console.log('🆕 Animando nueva tarjeta');
+    //console.log('🆕 Animando nueva tarjeta');
   },
 
   // Animar modal
@@ -221,7 +214,7 @@ window.SuperDashboardAnimations = {
       });
     }
     
-    console.log(`🔲 Animando modal - ${show ? 'mostrar' : 'ocultar'}`);
+    //console.log(`🔲 Animando modal - ${show ? 'mostrar' : 'ocultar'}`);
   },
 
   // Animar contador con efecto de números
@@ -243,7 +236,7 @@ window.SuperDashboardAnimations = {
       }
     });
     
-    console.log(`🔢 Animando contador de ${startValue} a ${finalValue}`);
+    //console.log(`🔢 Animando contador de ${startValue} a ${finalValue}`);
   },
 
   // Animar gráficos cuando se cargan datos
@@ -263,7 +256,7 @@ window.SuperDashboardAnimations = {
       }
     );
     
-    console.log('📈 Animando actualización de gráfico');
+    //console.log('📈 Animando actualización de gráfico');
   },
 
   // Animar empresa/usuario cards en las listas recientes
@@ -286,7 +279,7 @@ window.SuperDashboardAnimations = {
       }
     );
     
-    console.log(`👥 Animando ${items.length} items recientes`);
+    //console.log(`👥 Animando ${items.length} items recientes`);
   }
 };
 

@@ -4,7 +4,7 @@ let empresaData = null;
 let createModalManager = null;
 // ========== INICIALIZACIÓN ==========
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚨 Inicializando sistema de creación de alertas...');
+    ////console.log('🚨 Inicializando sistema de creación de alertas...');
     
     // Configurar modal manager
     if (window.modalManager) {
@@ -18,12 +18,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Configurar event listeners
     setupCreateAlertEventListeners();
     
-    console.log('✅ Sistema de creación de alertas inicializado');
+    //console.log('✅ Sistema de creación de alertas inicializado');
 });
 
 
 function showCreateAlertModal() {
-    console.log('📝 Abriendo modal de crear alerta...');
+    //console.log('📝 Abriendo modal de crear alerta...');
     
     // Resetear formulario
     resetCreateAlertForm();
@@ -45,14 +45,14 @@ function showCreateAlertModal() {
     // Actualizar fecha
     updateAlertDateTime();
     
-    console.log('✅ Modal de crear alerta abierto');
+    //console.log('✅ Modal de crear alerta abierto');
 }
 
 /**
  * Cerrar modal de crear alerta
  */
 function closeCreateAlertModal() {
-    console.log('❌ Cerrando modal de crear alerta...');
+    //console.log('❌ Cerrando modal de crear alerta...');
     
     if (createModalManager) {
         createModalManager.closeModal('createAlertModal');
@@ -107,14 +107,14 @@ function resetCreateAlertForm() {
  */
 async function loadEmpresaDataForAlert() {
     try {
-        console.log('🏢 Cargando datos de empresa para alerta...');
+        //console.log('🏢 Cargando datos de empresa para alerta...');
         
         // Obtener empresa actual desde el contexto global
         const empresaId = window.currentUser?.empresa_id || window.currentUser?.id;
         const empresaUsername = window.currentUser?.username;
         
         if (!empresaId) {
-            console.error('❌ No se pudo obtener ID de empresa');
+            //console.error('❌ No se pudo obtener ID de empresa');
             return;
         }
         
@@ -139,11 +139,11 @@ async function loadEmpresaDataForAlert() {
                     if (data.success && data.data) {
                         empresaData = data.data;
                         populateSedesDropdown(empresaData.sedes);
-                        console.log('✅ Datos de empresa cargados:', empresaData);
+                        //console.log('✅ Datos de empresa cargados:', empresaData);
                     }
                 }
             } catch (apiError) {
-                console.error('❌ Error cargando datos de empresa:', apiError);
+                //console.error('❌ Error cargando datos de empresa:', apiError);
                 // Fallback: sedes por defecto
                 populateSedesDropdown(['Principal']);
             }
@@ -153,7 +153,7 @@ async function loadEmpresaDataForAlert() {
         }
         
     } catch (error) {
-        console.error('💥 Error cargando datos de empresa:', error);
+        //console.error('💥 Error cargando datos de empresa:', error);
         // Fallback
         populateSedesDropdown(['Principal']);
     }
@@ -179,14 +179,14 @@ function populateSedesDropdown(sedes) {
             option.textContent = sede;
             sedeSelect.appendChild(option);
         });
-        console.log(`✅ ${sedes.length} sedes cargadas en dropdown`);
+        //console.log(`✅ ${sedes.length} sedes cargadas en dropdown`);
     } else {
         // Agregar sede por defecto si no hay sedes
         const option = document.createElement('option');
         option.value = 'Principal';
         option.textContent = 'Principal';
         sedeSelect.appendChild(option);
-        console.log('⚠️ No hay sedes definidas, usando "Principal" por defecto');
+        //console.log('⚠️ No hay sedes definidas, usando "Principal" por defecto');
     }
 }
 
@@ -268,7 +268,7 @@ function setupCreateAlertEventListeners() {
 async function handleCreateAlertSubmit(event) {
     event.preventDefault();
     
-    console.log('📤 Enviando formulario de crear alerta...');
+    //console.log('📤 Enviando formulario de crear alerta...');
     
     try {
         // Obtener datos del formulario
@@ -311,7 +311,7 @@ async function handleCreateAlertSubmit(event) {
         }
         
     } catch (error) {
-        console.error('💥 Error al crear alerta:', error);
+        //console.error('💥 Error al crear alerta:', error);
         showCreateAlertError('Error de conexión. Inténtalo de nuevo.');
     } finally {
         setCreateAlertLoadingState(false);
@@ -388,24 +388,24 @@ function validateCreateAlertData(data) {
  */
 async function sendCreateAlertRequest(alertData) {
     try {
-        console.log('📡 Enviando datos de alerta via API Client:', alertData);
+        //console.log('📡 Enviando datos de alerta via API Client:', alertData);
         
         // Verificar que tenemos el cliente API disponible
         if (!window.apiClient) {
-            console.error('❌ API Client no está disponible');
+            //console.error('❌ API Client no está disponible');
             return {
                 success: false,
                 error: 'Sistema de comunicación no disponible'
             };
         }
         
-        console.log('📤 Enviando petición usando API Client...');
-        console.log('📤 Datos a enviar:', JSON.stringify(alertData, null, 2));
+        //console.log('📤 Enviando petición usando API Client...');
+        //console.log('📤 Datos a enviar:', JSON.stringify(alertData, null, 2));
         
         // Usar el cliente API para enviar la petición
         const response = await window.apiClient.create_empresa_alert(alertData);
         
-        console.log('📨 Respuesta recibida:', response.status, response.statusText);
+        //console.log('📨 Respuesta recibida:', response.status, response.statusText);
         
         // Procesar respuesta
         if (!response.ok) {
@@ -414,7 +414,7 @@ async function sendCreateAlertRequest(alertData) {
             try {
                 // Intentar parsear la respuesta como JSON para obtener el mensaje específico
                 const errorData = await response.json();
-                console.error('❌ Error JSON del backend:', errorData);
+                //console.error('❌ Error JSON del backend:', errorData);
                 
                 // Extraer mensaje específico del backend
                 if (errorData.message) {
@@ -429,10 +429,10 @@ async function sendCreateAlertRequest(alertData) {
                 // Si no es JSON válido, usar respuesta como texto
                 try {
                     const errorText = await response.text();
-                    console.error('❌ Error texto del backend:', errorText);
+                    //console.error('❌ Error texto del backend:', errorText);
                     errorMessage = errorText || `Error HTTP ${response.status}: ${response.statusText}`;
                 } catch (textError) {
-                    console.error('❌ No se pudo leer respuesta de error:', textError);
+                    //console.error('❌ No se pudo leer respuesta de error:', textError);
                     errorMessage = `Error HTTP ${response.status}: ${response.statusText}`;
                 }
             }
@@ -444,7 +444,7 @@ async function sendCreateAlertRequest(alertData) {
         }
         
         const responseData = await response.json();
-        console.log('✅ Respuesta JSON procesada:', responseData);
+        //console.log('✅ Respuesta JSON procesada:', responseData);
         
         // Verificar si la respuesta indica éxito
         if (responseData.success) {
@@ -472,7 +472,7 @@ async function sendCreateAlertRequest(alertData) {
         }
         
     } catch (error) {
-        console.error('💥 Error en petición API:', error);
+        //console.error('💥 Error en petición API:', error);
         
         // Determinar tipo de error
         let errorMessage = 'Error de conexión';
@@ -501,12 +501,12 @@ async function sendCreateAlertRequest(alertData) {
  */
 function sendAlertCreatedWebSocketMessage(alertDataFromBackend) {
     try {
-        console.log('📡 Enviando notificación de alerta creada por WebSocket...');
-        console.log('📡 Datos recibidos del backend:', alertDataFromBackend);
+        //console.log('📡 Enviando notificación de alerta creada por WebSocket...');
+        //console.log('📡 Datos recibidos del backend:', alertDataFromBackend);
         
         // Verificar que tenemos WebSocket disponible
         if (!window.websocket || window.websocket.readyState !== WebSocket.OPEN) {
-            console.warn('⚠️ WebSocket no está conectado, omitiendo notificación');
+            //console.warn('⚠️ WebSocket no está conectado, omitiendo notificación');
             return;
         }
         
@@ -516,14 +516,14 @@ function sendAlertCreatedWebSocketMessage(alertDataFromBackend) {
             alert_data: alertDataFromBackend // El JSON limpio que devuelve el backend
         };
         
-        console.log('📤 Mensaje WebSocket a enviar:', JSON.stringify(message, null, 2));
+        //console.log('📤 Mensaje WebSocket a enviar:', JSON.stringify(message, null, 2));
         
         // Enviar por WebSocket
         window.websocket.send(JSON.stringify(message));
-        console.log('✅ Notificación WebSocket enviada exitosamente');
+        //console.log('✅ Notificación WebSocket enviada exitosamente');
         
     } catch (error) {
-        console.error('💥 Error enviando notificación WebSocket:', error);
+        //console.error('💥 Error enviando notificación WebSocket:', error);
         // No fallar la creación de la alerta por un error de WebSocket
     }
 }
@@ -592,4 +592,4 @@ function showCreateAlertError(errorMessage) {
 window.showCreateAlertModal = showCreateAlertModal;
 window.closeCreateAlertModal = closeCreateAlertModal;
 
-console.log('📁 Módulo de creación de alertas cargado');
+//console.log('📁 Módulo de creación de alertas cargado');

@@ -118,16 +118,16 @@
 // Inicializar cliente API (requerido por alerts-inactive-main.js)
 if (typeof EndpointTestClient !== 'undefined') {
     window.apiClient = new EndpointTestClient();
-    console.log('✅ API Client inicializado correctamente para alertas inactivas');
+    //console.log('✅ API Client inicializado correctamente para alertas inactivas');
 } else {
-    console.warn('⚠️ EndpointTestClient no está disponible');
+    //console.warn('⚠️ EndpointTestClient no está disponible');
 }
 
 // Auto-verificar el estado del sistema después de la carga
 window.addEventListener('load', () => {
     setTimeout(() => {
         if (window.testingTools) {
-            console.log('🔍 AUTO-CHECK: Verificando estado del sistema de alertas inactivas...');
+            //console.log('🔍 AUTO-CHECK: Verificando estado del sistema de alertas inactivas...');
             window.testingTools.quickCheck();
         }
     }, 2000);

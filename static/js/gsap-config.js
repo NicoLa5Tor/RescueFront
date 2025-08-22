@@ -1,3 +1,7 @@
+
+
+
+
 /**
  * ===== GSAP GLOBAL CONFIGURATION =====
  * 
@@ -8,9 +12,9 @@
 
 // Verificar que GSAP esté disponible
 if (typeof gsap === 'undefined') {
-  console.error('❌ GSAP no está disponible. Asegúrate de que se carga antes de este archivo.');
+  //console.error('❌ GSAP no está disponible. Asegúrate de que se carga antes de este archivo.');
 } else {
-  console.log('✅ GSAP configuración global iniciada');
+  //console.log('✅ GSAP configuración global iniciada');
 }
 
 // ===== CONFIGURACIONES GLOBALES =====
@@ -25,7 +29,7 @@ if (gsap.registerPlugin && typeof ScrollTrigger !== 'undefined') {
     ignoreMobileResize: true
   });
   
-  console.log('✅ ScrollTrigger configurado');
+  //console.log('✅ ScrollTrigger configurado');
 }
 
 // Configuración global de duración y ease optimizada para Chrome
@@ -278,7 +282,7 @@ window.GSAPUtils = {
    */
   scrollAnimation: (trigger, animation, options = {}) => {
     if (typeof ScrollTrigger === 'undefined') {
-      console.warn('ScrollTrigger no está disponible');
+      //console.warn('ScrollTrigger no está disponible');
       return;
     }
 
@@ -346,7 +350,7 @@ window.GSAPDevice = {
 // ===== INICIALIZACIÓN =====
 
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('🎬 GSAP configuración global lista');
+  //console.log('🎬 GSAP configuración global lista');
   
   // Configurar refresh de ScrollTrigger en resize
   const debounceResize = (() => {

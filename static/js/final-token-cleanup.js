@@ -8,11 +8,11 @@
 (function() {
     'use strict';
     
-    console.log('🔒 INICIANDO LIMPIEZA FINAL DE TOKENS...');
+    ////console.log('🔒 INICIANDO LIMPIEZA FINAL DE TOKENS...');
     
     // Función para limpiar todos los tokens residuales
     function eliminateAllTokens() {
-        console.log('🧹 Eliminando TODOS los tokens residuales...');
+        ////console.log('🧹 Eliminando TODOS los tokens residuales...');
         
         // 1. Eliminar de localStorage
         const localStorageKeysToRemove = [];
@@ -33,7 +33,7 @@
         }
         
         localStorageKeysToRemove.forEach(key => {
-            console.warn(`🗑️ Eliminando de localStorage: ${key}`);
+            ////console.warn(`🗑️ Eliminando de localStorage: ${key}`);
             localStorage.removeItem(key);
         });
         
@@ -56,7 +56,7 @@
         }
         
         sessionStorageKeysToRemove.forEach(key => {
-            console.warn(`🗑️ Eliminando de sessionStorage: ${key}`);
+            ////console.warn(`🗑️ Eliminando de sessionStorage: ${key}`);
             sessionStorage.removeItem(key);
         });
         
@@ -78,28 +78,28 @@
         }
         
         windowPropertiesToRemove.forEach(prop => {
-            console.warn(`🗑️ Eliminando de window: ${prop}`);
+            ////console.warn(`🗑️ Eliminando de window: ${prop}`);
             delete window[prop];
         });
         
         // 4. Eliminar específicamente sessionToken
         if (window.sessionToken) {
-            console.warn('🗑️ Eliminando window.sessionToken (CRÍTICO)');
+            ////console.warn('🗑️ Eliminando window.sessionToken (CRÍTICO)');
             delete window.sessionToken;
         }
         
         // 5. Reportar resultado
         const totalRemoved = localStorageKeysToRemove.length + sessionStorageKeysToRemove.length + windowPropertiesToRemove.length;
         if (totalRemoved > 0) {
-            console.warn(`🧹 LIMPIEZA COMPLETADA: ${totalRemoved} tokens eliminados`);
+            ////console.warn(`🧹 LIMPIEZA COMPLETADA: ${totalRemoved} tokens eliminados`);
         } else {
-            console.log('✅ No se encontraron tokens residuales');
+            ////console.log('✅ No se encontraron tokens residuales');
         }
     }
     
     // Función para verificar que no hay tokens accesibles
     function verifyNoAccessibleTokens() {
-        console.log('🔍 Verificando que no haya tokens accesibles...');
+        //console.log('🔍 Verificando que no haya tokens accesibles...');
         
         let tokensFound = [];
         
@@ -134,21 +134,21 @@
         });
         
         if (tokensFound.length > 0) {
-            console.error('❌ ¡TOKENS ACCESIBLES ENCONTRADOS!');
-            console.error('Los siguientes tokens son accesibles desde JavaScript:');
+            //console.error('❌ ¡TOKENS ACCESIBLES ENCONTRADOS!');
+            //console.error('Los siguientes tokens son accesibles desde JavaScript:');
             tokensFound.forEach(token => {
-                console.error(`  - ${token}`);
+                //console.error(`  - ${token}`);
             });
             return false;
         } else {
-            console.log('✅ No se encontraron tokens accesibles desde JavaScript');
+            //console.log('✅ No se encontraron tokens accesibles desde JavaScript');
             return true;
         }
     }
     
     // Función para verificar cookies HTTPOnly
     function verifyHTTPOnlyCookies() {
-        console.log('🍪 Verificando cookies HTTPOnly...');
+        //console.log('🍪 Verificando cookies HTTPOnly...');
         
         // Intentar hacer una petición para verificar que las cookies se envían automáticamente
         fetch('/proxy/health', {
@@ -157,20 +157,20 @@
         })
         .then(response => {
             if (response.ok) {
-                console.log('✅ Las cookies HTTPOnly funcionan correctamente');
-                console.log('✅ El backend puede leer las cookies de autenticación');
+                //console.log('✅ Las cookies HTTPOnly funcionan correctamente');
+                //console.log('✅ El backend puede leer las cookies de autenticación');
             } else {
-                console.warn('⚠️ Problema con las cookies HTTPOnly o sesión expirada');
+                //console.warn('⚠️ Problema con las cookies HTTPOnly o sesión expirada');
             }
         })
         .catch(error => {
-            console.error('❌ Error verificando cookies HTTPOnly:', error);
+            //console.error('❌ Error verificando cookies HTTPOnly:', error);
         });
     }
     
     // Función principal
     function finalCleanup() {
-        console.log('🔒 === LIMPIEZA FINAL DE TOKENS ===');
+        //console.log('🔒 === LIMPIEZA FINAL DE TOKENS ===');
         
         // Paso 1: Eliminar todos los tokens
         eliminateAllTokens();
@@ -183,32 +183,32 @@
         
         // Paso 4: Reportar estado final
         if (isClean) {
-            console.log('🎉 CONFIGURACIÓN SEGURA COMPLETADA');
-            console.log('✅ No hay tokens accesibles desde JavaScript');
-            console.log('✅ La autenticación funciona exclusivamente con cookies HTTPOnly');
+            //console.log('🎉 CONFIGURACIÓN SEGURA COMPLETADA');
+            //console.log('✅ No hay tokens accesibles desde JavaScript');
+            //console.log('✅ La autenticación funciona exclusivamente con cookies HTTPOnly');
         } else {
-            console.error('❌ CONFIGURACIÓN INSEGURA DETECTADA');
-            console.error('⚠️ HAY TOKENS ACCESIBLES DESDE JAVASCRIPT');
+            //console.error('❌ CONFIGURACIÓN INSEGURA DETECTADA');
+            //console.error('⚠️ HAY TOKENS ACCESIBLES DESDE JAVASCRIPT');
         }
         
-        console.log('🔒 === FIN DE LIMPIEZA FINAL ===');
+        //console.log('🔒 === FIN DE LIMPIEZA FINAL ===');
     }
     
     // Función para mostrar estado actual
     function showCurrentState() {
-        console.log('\n📊 ESTADO ACTUAL DE AUTENTICACIÓN:');
-        console.log('='.repeat(50));
+        //console.log('\n📊 ESTADO ACTUAL DE AUTENTICACIÓN:');
+        //console.log('='.repeat(50));
         
-        console.log('🔍 Verificaciones:');
-        console.log(`  - localStorage tokens: ${localStorage.length > 0 ? 'Verificando...' : 'Vacío'}`);
-        console.log(`  - sessionStorage tokens: ${sessionStorage.length > 0 ? 'Verificando...' : 'Vacío'}`);
-        console.log(`  - window.sessionToken: ${window.sessionToken ? '❌ PRESENTE' : '✅ No presente'}`);
-        console.log(`  - window.currentUser: ${window.currentUser ? '✅ Presente' : '❌ No presente'}`);
+        //console.log('🔍 Verificaciones:');
+        //console.log(`  - localStorage tokens: ${localStorage.length > 0 ? 'Verificando...' : 'Vacío'}`);
+        //console.log(`  - sessionStorage tokens: ${sessionStorage.length > 0 ? 'Verificando...' : 'Vacío'}`);
+        //console.log(`  - window.sessionToken: ${window.sessionToken ? '❌ PRESENTE' : '✅ No presente'}`);
+        //console.log(`  - window.currentUser: ${window.currentUser ? '✅ Presente' : '❌ No presente'}`);
         
         const cookies = document.cookie.split(';').filter(c => c.trim());
-        console.log(`  - Cookies visibles: ${cookies.length} encontradas`);
+        //console.log(`  - Cookies visibles: ${cookies.length} encontradas`);
         
-        console.log('='.repeat(50));
+        //console.log('='.repeat(50));
     }
     
     // Ejecutar limpieza automáticamente

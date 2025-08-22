@@ -22,22 +22,22 @@ class EmpresaAlertsGlobal {
     }
     
     async initializeSystem() {
-        console.log('🏢 GLOBAL ALERTS: Inicializando sistema global de alertas para empresa...');
+        ////console.log('🏢 GLOBAL ALERTS: Inicializando sistema global de alertas para empresa...');
         
         // Verificar si el usuario es empresa
         if (!this.isEmpresaUser()) {
-            console.log('🏢 GLOBAL ALERTS: Usuario no es empresa, omitiendo inicialización');
+            //console.log('🏢 GLOBAL ALERTS: Usuario no es empresa, omitiendo inicialización');
             return;
         }
         
         this.empresaId = window.currentUser?.empresa_id || window.currentUser?.id;
         
         if (!this.empresaId) {
-            console.error('🏢 GLOBAL ALERTS: No se pudo obtener ID de empresa');
+            //console.error('🏢 GLOBAL ALERTS: No se pudo obtener ID de empresa');
             return;
         }
         
-        console.log(`🏢 GLOBAL ALERTS: Sistema iniciado para empresa ${this.empresaId}`);
+        //console.log(`🏢 GLOBAL ALERTS: Sistema iniciado para empresa ${this.empresaId}`);
         this.isActive = true;
         
         // Cargar alertas ya mostradas desde localStorage
@@ -55,7 +55,7 @@ class EmpresaAlertsGlobal {
         // Configurar listeners globales
         this.setupGlobalListeners();
         
-        console.log('✅ GLOBAL ALERTS: Sistema completamente inicializado');
+        //console.log('✅ GLOBAL ALERTS: Sistema completamente inicializado');
     }
     
     isEmpresaUser() {
@@ -81,7 +81,7 @@ class EmpresaAlertsGlobal {
         const notificationBadge = document.querySelector('.navbar__notification-badge');
         
         if (!headerNotificationBtn || !notificationBadge) {
-            console.warn('🏢 GLOBAL ALERTS: No se encontró el icono de notificaciones del header');
+            //console.warn('🏢 GLOBAL ALERTS: No se encontró el icono de notificaciones del header');
             return;
         }
         
@@ -114,7 +114,7 @@ class EmpresaAlertsGlobal {
         this.notificationBadge = notificationBadge;
         this.headerNotificationBtn = headerNotificationBtn;
         
-        console.log('✅ GLOBAL ALERTS: Icono de notificaciones del header configurado');
+        //console.log('✅ GLOBAL ALERTS: Icono de notificaciones del header configurado');
     }
     
     createFloatingAlertsPanel() {
@@ -155,7 +155,7 @@ class EmpresaAlertsGlobal {
         document.body.insertAdjacentHTML('beforeend', panelHTML);
         this.alertsPanel = document.getElementById('globalAlertsPanel');
         
-        console.log('✅ GLOBAL ALERTS: Panel flotante de alertas creado');
+        //console.log('✅ GLOBAL ALERTS: Panel flotante de alertas creado');
     }
     
     injectStyles() {
@@ -485,7 +485,7 @@ class EmpresaAlertsGlobal {
     async loadAlerts() {
         if (!this.isActive) return;
         
-        console.log('🏢 GLOBAL ALERTS: Cargando alertas...');
+        //console.log('🏢 GLOBAL ALERTS: Cargando alertas...');
         
         try {
             const url = `/proxy/api/mqtt-alerts/empresa/${this.empresaId}/active-by-sede?limit=10`;
@@ -513,14 +513,14 @@ class EmpresaAlertsGlobal {
                 });
                 
                 this.updateUI(alerts);
-                console.log(`✅ GLOBAL ALERTS: ${alerts.length} alertas cargadas`);
+                //console.log(`✅ GLOBAL ALERTS: ${alerts.length} alertas cargadas`);
             } else {
                 this.updateUI([]);
-                console.log('🏢 GLOBAL ALERTS: No hay alertas activas');
+                //console.log('🏢 GLOBAL ALERTS: No hay alertas activas');
             }
             
         } catch (error) {
-            console.error('💥 GLOBAL ALERTS: Error cargando alertas:', error);
+            //console.error('💥 GLOBAL ALERTS: Error cargando alertas:', error);
             this.showError();
         }
     }
@@ -615,11 +615,11 @@ class EmpresaAlertsGlobal {
     startAutoRefresh() {
         // Actualizar cada 10 segundos
         this.refreshInterval = setInterval(() => {
-            console.log('🔄 AUTO-REFRESH: Cargando alertas automáticamente...');
+            //console.log('🔄 AUTO-REFRESH: Cargando alertas automáticamente...');
             this.loadAlerts();
         }, 10000);
         
-        console.log('🔄 GLOBAL ALERTS: Auto-refresh configurado (10s)');
+        //console.log('🔄 GLOBAL ALERTS: Auto-refresh configurado (10s)');
     }
     
     stopAutoRefresh() {
@@ -667,30 +667,30 @@ class EmpresaAlertsGlobal {
     }
     
     openAlertsPanel() {
-        console.log('🚨 DEBUG: openAlertsPanel() llamado');
+        //console.log('🚨 DEBUG: openAlertsPanel() llamado');
         const panel = this.alertsPanel;
         const overlay = document.getElementById('globalAlertsPanelOverlay');
         
-        console.log('🚨 DEBUG: elementos encontrados:', {
-            panel: !!panel,
-            overlay: !!overlay,
-            panelHidden: panel ? panel.classList.contains('hidden') : 'N/A'
-        });
+        //console.log('🚨 DEBUG: elementos encontrados:', {
+        //     panel: !!panel,
+        //     overlay: !!overlay,
+        //     panelHidden: panel ? panel.classList.contains('hidden') : 'N/A'
+        // });
         
         if (panel && overlay) {
-            console.log('🚨 ABRIENDO PANEL DE ALERTAS AUTOMÁTICAMENTE');
+            //console.log('🚨 ABRIENDO PANEL DE ALERTAS AUTOMÁTICAMENTE');
             panel.classList.remove('hidden');
             overlay.classList.remove('hidden');
             
             // Verificar si se abrió correctamente
             setTimeout(() => {
                 const isStillHidden = panel.classList.contains('hidden');
-                console.log('🚨 DEBUG: Panel abierto correctamente:', !isStillHidden);
+                //console.log('🚨 DEBUG: Panel abierto correctamente:', !isStillHidden);
             }, 100);
             
             // No necesita cargar alertas porque ya están actualizadas
         } else {
-            console.error('🚨 ERROR: No se encontraron elementos del panel');
+            //console.error('🚨 ERROR: No se encontraron elementos del panel');
         }
     }
     
@@ -724,67 +724,67 @@ class EmpresaAlertsGlobal {
     
     // Método para detectar alertas nuevas usando histórico de IDs
     checkForNewAlerts(currentAlerts) {
-        console.log('🔍 DEBUG: checkForNewAlerts llamado', {
-            currentAlerts: currentAlerts,
-            alertsLength: currentAlerts?.length,
-            currentAlertIdsSize: this.currentAlertIds.size,
-            seenAlertIdsSize: this.seenAlertIds.size,
-            isFirstLoad: this.isFirstLoad
-        });
+        //console.log('🔍 DEBUG: checkForNewAlerts llamado', {
+        //     currentAlerts: currentAlerts,
+        //     alertsLength: currentAlerts?.length,
+        //     currentAlertIdsSize: this.currentAlertIds.size,
+        //     seenAlertIdsSize: this.seenAlertIds.size,
+        //     isFirstLoad: this.isFirstLoad
+        // });
         
         // Si no hay alertas actuales, actualizar currentAlertIds pero mantener seenAlertIds
         if (!currentAlerts || currentAlerts.length === 0) {
-            console.log('🔍 DEBUG: No hay alertas actuales, limpiando solo currentAlertIds');
+            //console.log('🔍 DEBUG: No hay alertas actuales, limpiando solo currentAlertIds');
             this.currentAlertIds.clear();
             // NO limpiar seenAlertIds - mantener el histórico
             return;
         }
         
         const newCurrentAlertIds = new Set(currentAlerts.map(alert => alert._id));
-        console.log('🔍 DEBUG: IDs actuales:', Array.from(newCurrentAlertIds));
-        console.log('🔍 DEBUG: IDs histórico completo:', Array.from(this.seenAlertIds));
-        console.log('🔍 DEBUG: IDs activos previos:', Array.from(this.currentAlertIds));
+        //console.log('🔍 DEBUG: IDs actuales:', Array.from(newCurrentAlertIds));
+        //console.log('🔍 DEBUG: IDs histórico completo:', Array.from(this.seenAlertIds));
+        //console.log('🔍 DEBUG: IDs activos previos:', Array.from(this.currentAlertIds));
         
         // Primera carga: solo mostrar alertas que NUNCA hemos mostrado antes
         if (this.isFirstLoad) {
-            console.log('🔍 PRIMERA CARGA: Procesando alertas existentes');
+            //console.log('🔍 PRIMERA CARGA: Procesando alertas existentes');
             
             // Filtrar solo alertas que NUNCA fueron mostradas
             const neverShownAlerts = [...newCurrentAlertIds].filter(id => !this.shownAlertIds.has(id));
-            console.log('🔍 DEBUG: Alertas nunca mostradas:', neverShownAlerts);
+            //console.log('🔍 DEBUG: Alertas nunca mostradas:', neverShownAlerts);
             
             if (neverShownAlerts.length > 0) {
-                console.log(`🚨 PRIMERA CARGA: ${neverShownAlerts.length} alerta(s) nueva(s) - ABRIENDO PANEL`);
+                //console.log(`🚨 PRIMERA CARGA: ${neverShownAlerts.length} alerta(s) nueva(s) - ABRIENDO PANEL`);
                 this.openAlertsPanel();
                 // Marcar como mostradas
                 this.markAlertsAsShown(neverShownAlerts);
             } else {
-                console.log('ℹ️ PRIMERA CARGA: Todas las alertas ya fueron mostradas antes');
+                //console.log('ℹ️ PRIMERA CARGA: Todas las alertas ya fueron mostradas antes');
             }
             
             // Registrar todas las alertas existentes como conocidas
             this.currentAlertIds = new Set(newCurrentAlertIds);
             this.seenAlertIds = new Set([...this.seenAlertIds, ...newCurrentAlertIds]);
             this.isFirstLoad = false;
-            console.log('🔍 DEBUG: Primera carga procesada');
+            //console.log('🔍 DEBUG: Primera carga procesada');
             return;
         }
         
         // Buscar alertas REALMENTE nuevas: están en current pero NUNCA las hemos mostrado
         const trueNewAlertIds = [...newCurrentAlertIds].filter(id => !this.shownAlertIds.has(id));
-        console.log('🔍 DEBUG: Alertas REALMENTE nuevas (nunca mostradas):', trueNewAlertIds);
+        //console.log('🔍 DEBUG: Alertas REALMENTE nuevas (nunca mostradas):', trueNewAlertIds);
         
         if (trueNewAlertIds.length > 0) {
-            console.log(`🚨 NUEVA ALERTA DETECTADA: ${trueNewAlertIds.length} nueva(s) alerta(s)`, trueNewAlertIds);
+            //console.log(`🚨 NUEVA ALERTA DETECTADA: ${trueNewAlertIds.length} nueva(s) alerta(s)`, trueNewAlertIds);
             
             // Abrir el panel de alertas automáticamente
-            console.log('🚨 ABRIENDO PANEL DE ALERTAS PARA NUEVA ALERTA');
+            //console.log('🚨 ABRIENDO PANEL DE ALERTAS PARA NUEVA ALERTA');
             this.openAlertsPanel();
             
             // Marcar como mostradas
             this.markAlertsAsShown(trueNewAlertIds);
         } else {
-            console.log('ℹ️ No se encontraron alertas nuevas (todas ya mostradas)');
+            //console.log('ℹ️ No se encontraron alertas nuevas (todas ya mostradas)');
         }
         
         // Actualizar conjuntos:
@@ -793,19 +793,19 @@ class EmpresaAlertsGlobal {
         // 2. Añadir cualquier ID nuevo al histórico
         this.seenAlertIds = new Set([...this.seenAlertIds, ...newCurrentAlertIds]);
         
-        console.log('🔍 DEBUG: IDs activos actualizados:', Array.from(this.currentAlertIds));
-        console.log('🔍 DEBUG: Histórico actualizado:', Array.from(this.seenAlertIds));
+        //console.log('🔍 DEBUG: IDs activos actualizados:', Array.from(this.currentAlertIds));
+        //console.log('🔍 DEBUG: Histórico actualizado:', Array.from(this.seenAlertIds));
     }
     
     // ===== FUNCIONES DEL MODAL POPUP =====
     // Método para mostrar modal de nueva alerta
     showNewAlertModal(alert) {
         if (this.newAlertModalOpen) {
-            console.log('⏳ Modal de nueva alerta ya abierto, omitiendo...');
+            //console.log('⏳ Modal de nueva alerta ya abierto, omitiendo...');
             return;
         }
         
-        console.log('🚨 MOSTRANDO MODAL DE NUEVA ALERTA:', alert);
+        //console.log('🚨 MOSTRANDO MODAL DE NUEVA ALERTA:', alert);
         this.newAlertModalOpen = true;
         
         // Crear overlay y modal
@@ -972,7 +972,7 @@ class EmpresaAlertsGlobal {
     
     // Ir a detalles de la alerta
     goToAlertDetails(alertId) {
-        console.log('🔗 DEBUG: goToAlertDetails llamado con ID:', alertId);
+        //console.log('🔗 DEBUG: goToAlertDetails llamado con ID:', alertId);
         
         // Cerrar modal si está abierto
         this.dismissNewAlertModal();
@@ -982,16 +982,16 @@ class EmpresaAlertsGlobal {
         
         // Guardar el ID de la alerta para abrir automáticamente
         sessionStorage.setItem('openAlertId', alertId);
-        console.log('🔗 DEBUG: ID guardado en sessionStorage:', alertId);
+        //console.log('🔗 DEBUG: ID guardado en sessionStorage:', alertId);
         
         // Redirigir a la vista de alertas
-        console.log('🔗 DEBUG: Redirigiendo a /empresa/alertas');
+        //console.log('🔗 DEBUG: Redirigiendo a /empresa/alertas');
         window.location.href = '/empresa/alertas';
     }
     
     // MÉTODOS DE TESTING/DEBUGGING
     testNewAlert() {
-        console.log('🧪 TEST: Simulando nueva alerta...');
+        //console.log('🧪 TEST: Simulando nueva alerta...');
         
         // Crear una alerta falsa
         const fakeAlert = {
@@ -1012,32 +1012,32 @@ class EmpresaAlertsGlobal {
             }
         };
         
-        console.log('🧪 TEST: Mostrando modal directamente...');
+        //console.log('🧪 TEST: Mostrando modal directamente...');
         this.showNewAlertModal(fakeAlert);
     }
     
     // Función para probar el modal popup directamente
     testModalPopup() {
-        console.log('🧪 TEST MODAL: Probando modal popup de nueva alerta...');
+        //console.log('🧪 TEST MODAL: Probando modal popup de nueva alerta...');
         this.testNewAlert();
     }
     
     testOpenPanel() {
-        console.log('🧪 TEST: Abriendo panel manualmente...');
+        //console.log('🧪 TEST: Abriendo panel manualmente...');
         this.openAlertsPanel();
     }
     
     clearLastAlertIds() {
-        console.log('🧪 TEST: Limpiando IDs previos para forzar detección...');
+        //console.log('🧪 TEST: Limpiando IDs previos para forzar detección...');
         this.seenAlertIds.clear();
         this.currentAlertIds.clear();
         this.clearShownAlerts(); // Limpiar también el historial persistente
-        console.log('🧪 TEST: TODOS los IDs limpiados');
+        //console.log('🧪 TEST: TODOS los IDs limpiados');
     }
     
     // Función para simular que llega una nueva alerta via WebSocket/refresh
     simulateNewAlert() {
-        console.log('🧪 TEST: Simulando llegada de nueva alerta...');
+        //console.log('🧪 TEST: Simulando llegada de nueva alerta...');
         
         // Limpiar IDs para forzar detección
         this.clearLastAlertIds();
@@ -1068,7 +1068,7 @@ class EmpresaAlertsGlobal {
         
         // Simular que esta alerta viene en la siguiente carga
         setTimeout(() => {
-            console.log('🧪 TEST: Ejecutando checkForNewAlerts con alerta simulada...');
+            //console.log('🧪 TEST: Ejecutando checkForNewAlerts con alerta simulada...');
             this.checkForNewAlerts([fakeAlert]);
         }, 1000);
     }
@@ -1082,12 +1082,12 @@ class EmpresaAlertsGlobal {
             if (stored) {
                 const shownIds = JSON.parse(stored);
                 this.shownAlertIds = new Set(shownIds);
-                console.log('💾 STORAGE: Alertas ya mostradas cargadas:', Array.from(this.shownAlertIds));
+                //console.log('💾 STORAGE: Alertas ya mostradas cargadas:', Array.from(this.shownAlertIds));
             } else {
-                console.log('💾 STORAGE: No hay historial de alertas mostradas');
+                //console.log('💾 STORAGE: No hay historial de alertas mostradas');
             }
         } catch (error) {
-            console.error('💥 STORAGE: Error cargando historial:', error);
+            //console.error('💥 STORAGE: Error cargando historial:', error);
             this.shownAlertIds = new Set();
         }
     }
@@ -1097,15 +1097,15 @@ class EmpresaAlertsGlobal {
         try {
             const shownIds = Array.from(this.shownAlertIds);
             localStorage.setItem(this.localStorageKey, JSON.stringify(shownIds));
-            console.log('💾 STORAGE: Historial guardado:', shownIds.length);
+            //console.log('💾 STORAGE: Historial guardado:', shownIds.length);
         } catch (error) {
-            console.error('💥 STORAGE: Error guardando historial:', error);
+            //console.error('💥 STORAGE: Error guardando historial:', error);
         }
     }
     
     // Marcar alertas como ya mostradas
     markAlertsAsShown(alertIds) {
-        console.log('✅ MARCANDO COMO MOSTRADAS:', alertIds);
+        //console.log('✅ MARCANDO COMO MOSTRADAS:', alertIds);
         alertIds.forEach(id => {
             this.shownAlertIds.add(id);
         });
@@ -1114,10 +1114,10 @@ class EmpresaAlertsGlobal {
     
     // Limpiar historial (para testing)
     clearShownAlerts() {
-        console.log('🧹 LIMPIANDO HISTORIAL DE ALERTAS MOSTRADAS');
+        //console.log('🧹 LIMPIANDO HISTORIAL DE ALERTAS MOSTRADAS');
         this.shownAlertIds.clear();
         localStorage.removeItem(this.localStorageKey);
-        console.log('🧹 HISTORIAL LIMPIADO');
+        //console.log('🧹 HISTORIAL LIMPIADO');
     }
     
     // ===== FIN FUNCIONES localStorage =====
@@ -1143,7 +1143,7 @@ class EmpresaAlertsGlobal {
         
         this.isActive = false;
         
-        console.log('🏢 GLOBAL ALERTS: Sistema destruido');
+        //console.log('🏢 GLOBAL ALERTS: Sistema destruido');
     }
 }
 

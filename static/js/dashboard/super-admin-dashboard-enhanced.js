@@ -11,7 +11,7 @@ class SuperAdminDashboardEnhanced extends SuperAdminDashboard {
         try {
             // Verificar si tenemos datos de usuario
             if (!window.currentUser) {
-                console.log('❌ No hay datos de usuario');
+                ////console.log('❌ No hay datos de usuario');
                 return false;
             }
             
@@ -27,20 +27,20 @@ class SuperAdminDashboardEnhanced extends SuperAdminDashboard {
             
             const isValid = response.ok;
             if (!isValid) {
-                console.log('❌ Sesión inválida o expirada');
+                ////console.log('❌ Sesión inválida o expirada');
                 this.clearStoredAuth();
             }
             
             return isValid;
         } catch (error) {
-            console.error('❌ Error verificando autenticación:', error);
+            ////console.error('❌ Error verificando autenticación:', error);
             return false;
         }
     }
     
     // Método para limpiar autenticación
     clearStoredAuth() {
-        console.log('🧹 Limpiando datos de autenticación almacenados');
+        //console.log('🧹 Limpiando datos de autenticación almacenados');
         
         // Limpiar variables globales
         delete window.currentUser;
@@ -54,7 +54,7 @@ class SuperAdminDashboardEnhanced extends SuperAdminDashboard {
             return 'cookie_auth';
         }
         
-        console.warn('No session token found.');
+        //console.warn('No session token found.');
         return null;
     }
 
@@ -62,11 +62,11 @@ class SuperAdminDashboardEnhanced extends SuperAdminDashboard {
     async loadWithRetry(loadFunction, maxRetries = this.retryAttempts) {
         for (let attempt = 1; attempt <= maxRetries; attempt++) {
             try {
-                console.log(`🔄 Attempt ${attempt}/${maxRetries} for ${loadFunction.name}`);
+                //console.log(`🔄 Attempt ${attempt}/${maxRetries} for ${loadFunction.name}`);
                 const result = await loadFunction();
                 return result;
             } catch (error) {
-                console.warn(`❌ Attempt ${attempt}/${maxRetries} failed:`, error.message);
+                //console.warn(`❌ Attempt ${attempt}/${maxRetries} failed:`, error.message);
                 
                 if (attempt === maxRetries) {
                     throw error;
@@ -81,17 +81,17 @@ class SuperAdminDashboardEnhanced extends SuperAdminDashboard {
     // 4. MEJORA: Carga paralela mejorada
     async loadDashboardData() {
         if (this.isLoading) {
-            console.log('⏳ Dashboard already loading, skipping...');
+            //console.log('⏳ Dashboard already loading, skipping...');
             return;
         }
 
         this.isLoading = true;
-        console.log('🔄 Loading Super Admin Dashboard data...');
+        //console.log('🔄 Loading Super Admin Dashboard data...');
         
         // Check if user is authenticated
         const isAuth = await this.isAuthenticated();
         if (!isAuth) {
-            console.warn('⚠️ No valid authentication token found. Redirecting to login.');
+            //console.warn('⚠️ No valid authentication token found. Redirecting to login.');
             this.showLoginRequired();
             this.isLoading = false;
             // Redirigir al login después de un breve delay
@@ -105,7 +105,7 @@ class SuperAdminDashboardEnhanced extends SuperAdminDashboard {
         this.showLoadingSpinners();
 
         try {
-            console.log('🚀 Starting concurrent API calls...');
+            //console.log('🚀 Starting concurrent API calls...');
             
             // Usar Promise.allSettled para manejar fallos parciales mejor
             const promises = [
@@ -125,10 +125,10 @@ class SuperAdminDashboardEnhanced extends SuperAdminDashboard {
                 const { name } = promises[index];
                 
                 if (result.status === 'fulfilled') {
-                    console.log(`✅ ${name} loaded successfully:`, result.value);
+                    //console.log(`✅ ${name} loaded successfully:`, result.value);
                     this.processLoadedData(name, result.value);
                 } else {
-                    console.error(`❌ ${name} failed:`, result.reason);
+                    //console.error(`❌ ${name} failed:`, result.reason);
                     this.handlePartialFailure(name, result.reason);
                 }
             });
@@ -137,10 +137,10 @@ class SuperAdminDashboardEnhanced extends SuperAdminDashboard {
             this.hideLoginRequired();
             this.hideLoadingSpinners();
 
-            console.log('✅ Super Admin Dashboard data loading completed');
+            //console.log('✅ Super Admin Dashboard data loading completed');
             
         } catch (error) {
-            console.error('❌ Critical error loading dashboard:', error);
+            //console.error('❌ Critical error loading dashboard:', error);
             this.showErrorMessage('Error crítico cargando el dashboard. Por favor, recarga la página.');
             this.hideLoadingSpinners();
         } finally {
@@ -282,12 +282,12 @@ class SuperAdminDashboardEnhanced extends SuperAdminDashboard {
     // 10. MEJORA: Validación robusta de datos stats
     updateStatsSection(stats) {
         if (!stats || typeof stats !== 'object') {
-            console.warn('Invalid stats data received:', stats);
+            //console.warn('Invalid stats data received:', stats);
             this.showToast('Datos de estadísticas inválidos', 'warning');
             return;
         }
 
-        console.log('Updating stats section with:', stats);
+        //console.log('Updating stats section with:', stats);
 
         // Mapeo robusto con múltiples posibles nombres de campos
         const statMappings = [
@@ -354,7 +354,7 @@ class SuperAdminDashboardEnhanced extends SuperAdminDashboard {
             this.updateElementWithAnimation(selector, value + suffix);
         });
 
-        console.log('Stats section updated successfully');
+        //console.log('Stats section updated successfully');
     }
 
     // 11. MEJORA: Actualización de elementos con animación
@@ -368,7 +368,7 @@ class SuperAdminDashboardEnhanced extends SuperAdminDashboard {
             element.classList.add('stat-updated');
             setTimeout(() => element.classList.remove('stat-updated'), 1000);
         } else {
-            console.warn(`Element not found: ${selector}`);
+            //console.warn(`Element not found: ${selector}`);
         }
     }
 
@@ -377,7 +377,7 @@ class SuperAdminDashboardEnhanced extends SuperAdminDashboard {
         setInterval(() => {
             // Solo refrescar si la página está visible
             if (!document.hidden && this.isAuthenticated() && !this.isLoading) {
-                console.log('🔄 Auto-refreshing dashboard data...');
+                //console.log('🔄 Auto-refreshing dashboard data...');
                 this.loadDashboardData();
             }
         }, intervalMinutes * 60 * 1000);
@@ -446,7 +446,7 @@ function refreshDashboard() {
     if (window.superAdminDashboard && !window.superAdminDashboard.isLoading) {
         window.superAdminDashboard.loadDashboardData();
     } else {
-        console.log('Dashboard is already loading or not initialized');
+        //console.log('Dashboard is already loading or not initialized');
     }
 }
 
@@ -456,11 +456,11 @@ function checkConnectionStatus() {
         window.superAdminDashboard.testConnection()
             .then(isConnected => {
                 const status = isConnected ? 'online' : 'offline';
-                console.log(`Connection status: ${status}`);
+                //console.log(`Connection status: ${status}`);
                 return status;
             })
             .catch(error => {
-                console.error('Connection test failed:', error);
+                //console.error('Connection test failed:', error);
                 return 'offline';
             });
     }

@@ -39,7 +39,7 @@ class ModalScrollManager {
   }
 
   openModal(modalId, options = {}) {
-    console.log(`🔒 Opening modal: ${modalId}`);
+    //console.log(`🔒 Opening modal: ${modalId}`);
     
     if (this.openModals.size === 0) {
       this.scrollPosition = window.pageYOffset;
@@ -58,7 +58,7 @@ class ModalScrollManager {
   }
 
   closeModal(modalId) {
-    console.log(`🔓 Closing modal: ${modalId}`);
+    //console.log(`🔓 Closing modal: ${modalId}`);
     
     this.openModals.delete(modalId);
     
@@ -81,7 +81,7 @@ class ModalScrollManager {
 lockScroll() {
   if (this.isLocked) return;
   
-  console.log('🔒 Locking scroll effectively without visual jump');
+  //console.log('🔒 Locking scroll effectively without visual jump');
   
   const body = document.body;
   const html = document.documentElement;
@@ -114,7 +114,7 @@ lockScroll() {
   document.addEventListener('dragstart', this.preventDrag, { passive: false });
   
   this.isLocked = true;
-  console.log('✅ Scroll COMPLETAMENTE bloqueado sin salto visual');
+  //console.log('✅ Scroll COMPLETAMENTE bloqueado sin salto visual');
 }
 
 /**
@@ -164,7 +164,7 @@ preventDrag = (e) => {
 unlockScroll() {
   if (!this.isLocked) return;
   
-  console.log('🔓 Unlocking scroll and restoring exact position');
+  //console.log('🔓 Unlocking scroll and restoring exact position');
   
   const body = document.body;
   const html = document.documentElement;
@@ -192,7 +192,7 @@ unlockScroll() {
   //window.scrollTo(0, this.scrollPosition);
   
   this.isLocked = false;
-  console.log('✅ Scroll unlocked and position restored perfectly');
+  //console.log('✅ Scroll unlocked and position restored perfectly');
 }
 
   preventScroll = (e) => {
@@ -817,7 +817,7 @@ function init() {
     }).observe(grid, { childList: true, subtree: true });
   }
   
-  console.log('✅ Company Types optimized version loaded');
+  //console.log('✅ Company Types optimized version loaded');
 }
 
 // Inicialización automática

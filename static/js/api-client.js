@@ -43,9 +43,7 @@ class EndpointTestClient {
     async _request(method, endpoint, options = {}) {
         const url = `${this.baseUrl}${endpoint}`;
         
-        // DEBUG: Log the request being made
-        console.log(`🌐 API Request: ${method} ${url}`);
-        
+     
         const config = {
             method,
             headers: this._headers(),
@@ -277,11 +275,11 @@ async get_all_usuarios_including_inactive() {
     }
 
     // Utility methods
-    set_token(token) {
-        // Ya no necesitamos establecer tokens manualmente
-        // Las cookies se manejan automáticamente
-        console.log('Note: Tokens are now handled via secure cookies');
-    }
+    // set_token(token) {
+    //     // Ya no necesitamos establecer tokens manualmente
+    //     // Las cookies se manejan automáticamente
+    //     console.log('Note: Tokens are now handled via secure cookies');
+    // }
 
     async pretty_response(response) {
         try {

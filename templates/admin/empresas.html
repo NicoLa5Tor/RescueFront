@@ -273,7 +273,7 @@
   function applyCardOptimizations(card) {
     // Usar las animaciones GSAP globales ya disponibles
     if (window.HardwareAnimations) {
-      console.log('🔧 Optimizaciones GSAP aplicadas a tarjeta individual');
+      ////console.log('🔧 Optimizaciones GSAP aplicadas a tarjeta individual');
       return;
     }
     
@@ -282,7 +282,7 @@
     if (shimmer && !window.GSAPUtils?.prefersReducedMotion()) {
       shimmer.style.opacity = '0';
       shimmer.style.transform = 'rotate(45deg) translateX(-100%)';
-      console.log('🔧 Fallback aplicado a tarjeta individual');
+      //console.log('🔧 Fallback aplicado a tarjeta individual');
     }
   }
   
@@ -292,7 +292,7 @@
     existingCards.forEach(card => {
       applyCardOptimizations(card);
     });
-    console.log(`🔧 Optimizaciones aplicadas a ${existingCards.length} tarjetas existentes`);
+    //console.log(`🔧 Optimizaciones aplicadas a ${existingCards.length} tarjetas existentes`);
   }
   
   // Función para forzar visibilidad de elementos si GSAP falla
@@ -313,21 +313,21 @@
       });
     });
     
-    console.log('👁️ Forzada visibilidad de elementos');
+    //console.log('👁️ Forzada visibilidad de elementos');
   }
   
   document.addEventListener('DOMContentLoaded', function() {
-    console.log('🛠️ Empresas page loaded with GSAP optimizations');
+    //console.log('🛠️ Empresas page loaded with GSAP optimizations');
     
     // Asegurar que el contenido sea visible inmediatamente
     ensureContentVisibility();
     
     // Intentar usar animaciones de hardware
     if (window.HardwareAnimations) {
-      console.log('✅ Usando HardwareAnimations para empresas');
+      //console.log('✅ Usando HardwareAnimations para empresas');
       window.HardwareAnimations.init();
     } else {
-      console.warn('⚠️ HardwareAnimations no disponible, usando fallback');
+      //console.warn('⚠️ HardwareAnimations no disponible, usando fallback');
       // Fallback - asegurar que todo sea visible
       setTimeout(ensureContentVisibility, 100);
     }
@@ -339,7 +339,7 @@
         mutations.forEach(function(mutation) {
           mutation.addedNodes.forEach(function(node) {
             if (node.nodeType === 1 && (node.classList.contains('ios-hardware-card') || node.classList.contains('ios-empresa-card'))) {
-              console.log('👀 Nueva tarjeta detectada (hardware/empresa), aplicando animación GSAP...');
+              //console.log('👀 Nueva tarjeta detectada (hardware/empresa), aplicando animación GSAP...');
               
               // Usar animación GSAP para nueva tarjeta
               if (window.HardwareAnimations) {
@@ -357,10 +357,10 @@
         subtree: true
       });
       
-      console.log('👀 Observer configurado para detectar nuevas tarjetas');
+      //console.log('👀 Observer configurado para detectar nuevas tarjetas');
     }
     
-    console.log('✅ Empresas page optimizations applied successfully');
+    //console.log('✅ Empresas page optimizations applied successfully');
   });
 </script>
 {% endblock %}
@@ -375,7 +375,7 @@ function editEmpresa(id) {
   if (window.empresasModals) {
     window.empresasModals.openEditModal(id);
   } else {
-    console.log('📝 Editar empresa:', id);
+    //console.log('📝 Editar empresa:', id);
     alert(`Funcionalidad de edición: ${id}`);
   }
 }
@@ -384,7 +384,7 @@ function viewEmpresa(id) {
   if (window.empresasModals) {
     window.empresasModals.openViewModal(id);
   } else {
-    console.log('👁️ Ver empresa:', id);
+    //console.log('👁️ Ver empresa:', id);
     alert(`Funcionalidad de vista: ${id}`);
   }
 }
@@ -394,7 +394,7 @@ function exportEmpresas() {
   if (window.empresasMain) {
     window.empresasMain.exportEmpresas();
   } else {
-    console.log('📄 Exportar empresas');
+    //console.log('📄 Exportar empresas');
     alert('Funcionalidad de exportación en desarrollo');
   }
 }
@@ -404,7 +404,7 @@ function toggleEmpresasFilter() {
   if (window.empresasMain) {
     window.empresasMain.toggleFilter();
   } else {
-    console.log('🔍 Toggle filter');
+    //console.log('🔍 Toggle filter');
     alert('Funcionalidad de filtro en desarrollo');
   }
 }

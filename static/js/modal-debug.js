@@ -321,11 +321,11 @@ class ModalDebugger {
     /**
      * Log con prefijo
      */
-    log(...args) {
-        if (this.isDebugMode) {
-            console.log('[ModalDebugger]', ...args);
-        }
-    }
+    // log(...args) {
+    //     if (this.isDebugMode) {
+    //         //console.log('[ModalDebugger]', ...args);
+    //     }
+    // }
 }
 
 // Inicializar cuando el DOM esté listo

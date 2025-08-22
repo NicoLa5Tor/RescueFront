@@ -275,9 +275,9 @@ try {
   const summaryElement = document.getElementById('dashboardSummaryData');
   const summaryText = summaryElement.textContent;
   window.DASHBOARD_SUMMARY = summaryText && summaryText !== 'null' ? JSON.parse(summaryText) : null;
-  console.log('📊 Dashboard summary loaded:', window.DASHBOARD_SUMMARY);
+  //console.log('📊 Dashboard summary loaded:', window.DASHBOARD_SUMMARY);
 } catch (error) {
-  console.warn('⚠️ Error loading dashboard summary:', error);
+  //console.warn('⚠️ Error loading dashboard summary:', error);
   window.DASHBOARD_SUMMARY = null;
 }
 
@@ -389,10 +389,10 @@ document.addEventListener('DOMContentLoaded', function() {
   // Inicializar el modal del sistema
   initSystemInfoModal();
   
-  console.log('🏢 Dashboard principal de empresa inicializado');
-  console.log('👤 Usuario:', '{{ empresa_username }}');
-  console.log('🆔 Empresa ID:', '{{ empresa_id }}');
-  console.log('📋 Rol:', '{{ user_role }}');
+  //console.log('🏢 Dashboard principal de empresa inicializado');
+  //console.log('👤 Usuario:', '{{ empresa_username }}');
+  //console.log('🆔 Empresa ID:', '{{ empresa_id }}');
+  //console.log('📋 Rol:', '{{ user_role }}');
 });
 </script>
 {% endblock %}

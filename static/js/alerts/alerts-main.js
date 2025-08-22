@@ -28,7 +28,7 @@ let cacheMetadata = {
 
 // ========== INICIALIZACIÓN ==========
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚨 ALERTAS: Página de alertas inicializada');
+    ////console.log('🚨 ALERTAS: Página de alertas inicializada');
     
     // Inicializar sistema de cache silencioso
     initializeCacheSystem();
@@ -39,9 +39,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Configurar el modal manager para el modal de alertas
     if (window.modalManager) {
         window.modalManager.setupModal('alertDetailModal');
-        console.log('✅ Modal de alertas configurado correctamente');
+        ////console.log('✅ Modal de alertas configurado correctamente');
     } else {
-        console.warn('⚠️ ModalManager no está disponible');
+        ////console.warn('⚠️ ModalManager no está disponible');
     }
     
     // Configurar contador de caracteres para el textarea de mensaje
@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Verificar si debe abrir automáticamente el modal de una alerta específica
     checkForAutoOpenAlert();
     
-    console.log('✅ ALERTAS: Sistema completamente inicializado con cache inteligente y WebSocket');
+    //console.log('✅ ALERTAS: Sistema completamente inicializado con cache inteligente y WebSocket');
 });
 
 // ========== FUNCIONES DE WEBSOCKET ==========
@@ -62,35 +62,35 @@ function connectWebSocket() {
         websocket = new WebSocket(websocketUrl);
         
         websocket.onopen = function(event) {
-            console.log('✅ WebSocket conectado:', websocketUrl);
+            //console.log('✅ WebSocket conectado:', websocketUrl);
             reconnectAttempts = 0;
             // Exponer WebSocket globalmente para otros módulos
             window.websocket = websocket;
         };
         
         websocket.onclose = function(event) {
-            console.log('🔌 WebSocket desconectado');
+            //console.log('🔌 WebSocket desconectado');
             websocket = null;
             // Limpiar referencia global también
             window.websocket = null;
         };
         
         websocket.onerror = function(error) {
-            console.error('❌ Error en WebSocket:', error);
+            //console.error('❌ Error en WebSocket:', error);
         };
         
     } catch (error) {
-        console.error('💥 Error conectando WebSocket:', error);
+        //console.error('💥 Error conectando WebSocket:', error);
     }
 }
 
 function sendAlertDeactivationMessage(alertData) {
     return new Promise((resolve, reject) => {
         try {
-            console.log('🚀 [DEBUG] Iniciando sendAlertDeactivationMessage');
-            console.log('🚀 [DEBUG] AlertData recibida:', alertData);
-            console.log('🚀 [DEBUG] WebSocket state:', websocket ? websocket.readyState : 'no websocket');
-            console.log('🚀 [DEBUG] WebSocket URL:', websocketUrl);
+            //console.log('🚀 [DEBUG] Iniciando sendAlertDeactivationMessage');
+            //console.log('🚀 [DEBUG] AlertData recibida:', alertData);
+            //console.log('🚀 [DEBUG] WebSocket state:', websocket ? websocket.readyState : 'no websocket');
+            //console.log('🚀 [DEBUG] WebSocket URL:', websocketUrl);
             
             // Preparar el mensaje con la información de la alerta
             const message = {
@@ -132,41 +132,41 @@ function sendAlertDeactivationMessage(alertData) {
                 }
             };
             
-            console.log('📤 [DEBUG] Mensaje preparado para enviar:', JSON.stringify(message, null, 2));
+            //console.log('📤 [DEBUG] Mensaje preparado para enviar:', JSON.stringify(message, null, 2));
             
             // Si no hay conexión, intentar conectar
             if (!websocket || websocket.readyState !== WebSocket.OPEN) {
-                console.log('🔌 [DEBUG] WebSocket no conectado, estado:', websocket ? websocket.readyState : 'null');
-                console.log('🔌 [DEBUG] Estados WebSocket: CONNECTING=0, OPEN=1, CLOSING=2, CLOSED=3');
-                console.log('🔌 [DEBUG] Intentando conectar a:', websocketUrl);
+                //console.log('🔌 [DEBUG] WebSocket no conectado, estado:', websocket ? websocket.readyState : 'null');
+                //console.log('🔌 [DEBUG] Estados WebSocket: CONNECTING=0, OPEN=1, CLOSING=2, CLOSED=3');
+                //console.log('🔌 [DEBUG] Intentando conectar a:', websocketUrl);
                 
                 connectWebSocket();
                 
                 // Esperar un momento para la conexión y luego enviar
                 setTimeout(() => {
-                    console.log('⏰ [DEBUG] Después de timeout, WebSocket state:', websocket ? websocket.readyState : 'null');
+                    //console.log('⏰ [DEBUG] Después de timeout, WebSocket state:', websocket ? websocket.readyState : 'null');
                     if (websocket && websocket.readyState === WebSocket.OPEN) {
-                        console.log('✅ [DEBUG] WebSocket conectado, enviando mensaje...');
+                        //console.log('✅ [DEBUG] WebSocket conectado, enviando mensaje...');
                         websocket.send(JSON.stringify(message));
-                        console.log('✅ [DEBUG] Mensaje enviado vía WebSocket exitosamente');
+                        //console.log('✅ [DEBUG] Mensaje enviado vía WebSocket exitosamente');
                         resolve(true);
                     } else {
-                        console.warn('⚠️ [DEBUG] No se pudo establecer conexión WebSocket después de timeout');
-                        console.warn('⚠️ [DEBUG] WebSocket final state:', websocket ? websocket.readyState : 'null');
+                        //console.warn('⚠️ [DEBUG] No se pudo establecer conexión WebSocket después de timeout');
+                        //console.warn('⚠️ [DEBUG] WebSocket final state:', websocket ? websocket.readyState : 'null');
                         resolve(false);
                     }
                 }, 2000); // Aumenté el timeout a 2 segundos
             } else {
                 // Enviar directamente
-                console.log('✅ [DEBUG] WebSocket ya conectado, enviando mensaje directamente...');
+                //console.log('✅ [DEBUG] WebSocket ya conectado, enviando mensaje directamente...');
                 websocket.send(JSON.stringify(message));
-                console.log('✅ [DEBUG] Mensaje enviado vía WebSocket exitosamente');
+                //console.log('✅ [DEBUG] Mensaje enviado vía WebSocket exitosamente');
                 resolve(true);
             }
             
         } catch (error) {
-            console.error('💥 [DEBUG] Error enviando mensaje WebSocket:', error);
-            console.error('💥 [DEBUG] Stack trace:', error.stack);
+            //console.error('💥 [DEBUG] Error enviando mensaje WebSocket:', error);
+            //console.error('💥 [DEBUG] Stack trace:', error.stack);
             resolve(false);
         }
     });
@@ -175,22 +175,22 @@ function sendAlertDeactivationMessage(alertData) {
 // ========== FUNCIONES PRINCIPALES DE ALERTAS ==========
 async function loadActiveAlerts() {
     try {
-        console.log('🚨 INICIANDO CARGA DE ALERTAS');
+        //console.log('🚨 INICIANDO CARGA DE ALERTAS');
         showLoading(true);
         
         // Obtener empresa_id del usuario actual
         const empresaId = window.currentUser?.empresa_id || window.currentUser?.id;
-        console.log('👤 EmpresaId obtenido:', empresaId);
+        //console.log('👤 EmpresaId obtenido:', empresaId);
         
         if (!empresaId) {
-            console.error('❌ No se pudo obtener el ID de empresa');
+            //console.error('❌ No se pudo obtener el ID de empresa');
             showNoAlerts();
             return;
         }
         
         // Construir URL para obtener alertas
         let url = `/proxy/api/mqtt-alerts/empresa/${empresaId}/active-by-sede?limit=${alertsPerPage}&offset=${(currentPage - 1) * alertsPerPage}`;
-        console.log('🔗 URL a consultar:', url);
+        //console.log('🔗 URL a consultar:', url);
         
         // Llamar al endpoint específico de empresa
         const response = await fetch(url, {
@@ -201,26 +201,26 @@ async function loadActiveAlerts() {
             credentials: 'include'
         });
         
-        console.log('📡 Response status:', response.status);
+        //console.log('📡 Response status:', response.status);
         
         if (!response.ok) {
-            console.error('❌ Response not ok:', response.status, response.statusText);
+            //console.error('❌ Response not ok:', response.status, response.statusText);
             throw new Error('Error al cargar alertas: ' + response.status);
         }
         
         const data = await response.json();
-        console.log('📊 DATA RECIBIDA:', data);
+        //console.log('📊 DATA RECIBIDA:', data);
         
         if (data.success && data.data && Array.isArray(data.data)) {
-            console.log('✅ Data válida, procesando...');
+            //console.log('✅ Data válida, procesando...');
             
             const allAlerts = data.data;
-            console.log(`📋 Total alertas en esta página: ${allAlerts.length}`);
+            //console.log(`📋 Total alertas en esta página: ${allAlerts.length}`);
             
             // Usar la información de paginación del backend
             if (data.pagination) {
                 totalPages = data.pagination.total_pages || 1;
-                console.log(`📄 Paginación: página ${currentPage} de ${totalPages}`);
+                //console.log(`📄 Paginación: página ${currentPage} de ${totalPages}`);
             }
             
             // Guardar alertas actuales
@@ -234,13 +234,13 @@ async function loadActiveAlerts() {
             renderAlerts(allAlerts);
             updatePagination();
         } else {
-            console.log('⚠️ No hay alertas disponibles');
+            //console.log('⚠️ No hay alertas disponibles');
             currentAlerts = [];
             showNoAlerts();
         }
         
     } catch (error) {
-        console.error('💥 ERROR cargando alertas:', error);
+        //console.error('💥 ERROR cargando alertas:', error);
         showNoAlerts();
         throw error;
         
@@ -269,18 +269,18 @@ function updateStatsCards(alerts, pagination) {
 }
 
 function renderAlerts(alerts) {
-    console.log('🎨 RENDER ALERTS: Función renderAlerts llamada con:', alerts);
+    //console.log('🎨 RENDER ALERTS: Función renderAlerts llamada con:', alerts);
     
     const container = document.getElementById('alertsContainer');
     const noAlertsMsg = document.getElementById('noAlertsMessage');
     
     if (!container) {
-        console.error('❌ Container alertsContainer no encontrado');
+        //console.error('❌ Container alertsContainer no encontrado');
         return;
     }
     
     if (!alerts || alerts.length === 0) {
-        console.log('🎨 RENDER ALERTS: No hay alertas, mostrando mensaje');
+        //console.log('🎨 RENDER ALERTS: No hay alertas, mostrando mensaje');
         container.innerHTML = '';
         if (noAlertsMsg) {
             noAlertsMsg.classList.remove('hidden');
@@ -288,7 +288,7 @@ function renderAlerts(alerts) {
         return;
     }
     
-    console.log('🎨 RENDER ALERTS: Ocultando mensaje de no alertas');
+    //console.log('🎨 RENDER ALERTS: Ocultando mensaje de no alertas');
     if (noAlertsMsg) {
         noAlertsMsg.classList.add('hidden');
     }
@@ -431,7 +431,7 @@ function renderAlerts(alerts) {
         `;
     }).join('');
     
-    console.log('🎨 RENDER ALERTS: Inyectando HTML en container...');
+    //console.log('🎨 RENDER ALERTS: Inyectando HTML en container...');
     container.innerHTML = alertsHTML;
 }
 
@@ -472,26 +472,26 @@ function formatDate(dateString) {
 
 // ========== FUNCIONES DE MODAL ==========
 async function showAlertDetails(alertId) {
-    console.log('🔍 Intentando mostrar detalles de alerta:', alertId);
+    //console.log('🔍 Intentando mostrar detalles de alerta:', alertId);
     
     const alert = await findAlertById(alertId);
     if (!alert) {
-        console.warn('❌ No se encontró la alerta con ID:', alertId);
+        //console.warn('❌ No se encontró la alerta con ID:', alertId);
         showSimpleNotification('No se pudo cargar la información de esta alerta', 'error');
         return;
     }
     
-    console.log('✅ Alerta encontrada:', alert);
+    //console.log('✅ Alerta encontrada:', alert);
     selectedAlertId = alertId;
     
     const modal = document.getElementById('alertDetailModal');
     if (!modal) {
-        console.error('❌ Modal alertDetailModal no encontrado en DOM');
+        //console.error('❌ Modal alertDetailModal no encontrado en DOM');
         return;
     }
     
     if (window.modalManager && window.modalManager.isModalOpen('alertDetailModal')) {
-        console.log('🔄 Modal ya abierto, cerrándolo primero...');
+        //console.log('🔄 Modal ya abierto, cerrándolo primero...');
         window.modalManager.closeModal('alertDetailModal');
         setTimeout(() => showAlertDetails(alertId), 100);
         return;
@@ -503,7 +503,7 @@ async function showAlertDetails(alertId) {
     const toggleBtn = document.getElementById('toggleStatusBtn');
     
     if (!content || !subtitle || !toggleBtn) {
-        console.error('❌ Elementos del modal no encontrados');
+        //console.error('❌ Elementos del modal no encontrados');
         return;
     }
     
@@ -534,14 +534,14 @@ async function showAlertDetails(alertId) {
     // Abrir modal
     setTimeout(() => {
         window.modalManager.openModal('alertDetailModal');
-        console.log('✅ Modal abierto correctamente');
+        //console.log('✅ Modal abierto correctamente');
     }, 50);
 }
 
 function generateModalContent(alert, isUserOrigin, isHardwareOrigin) {
-    console.log('🔍 GENERANDO MODAL PARA ALERTA:', alert);
-    console.log('🔍 Topics otros hardware:', alert.topics_otros_hardware);
-    console.log('🔍 Data completa:', alert.data);
+    //console.log('🔍 GENERANDO MODAL PARA ALERTA:', alert);
+    //console.log('🔍 Topics otros hardware:', alert.topics_otros_hardware);
+    //console.log('🔍 Data completa:', alert.data);
     
     return `
         <!-- Header detallado con información del origen de la alerta -->
@@ -924,11 +924,11 @@ function generateModalContent(alert, isUserOrigin, isHardwareOrigin) {
                 
                 <!-- Hardware Relacionado en columna 2 - DEBUGGING MEJORADO -->
                 ${(() => {
-                    console.log('🔍 CHECKING TOPICS RELACIONADOS:');
-                    console.log('  - alert.topics_otros_hardware:', alert.topics_otros_hardware);
-                    console.log('  - alert.data?.topics_otros_hardware:', alert.data?.topics_otros_hardware);
-                    console.log('  - alert.data?.topics:', alert.data?.topics);
-                    console.log('  - alert.hardware_relacionado:', alert.hardware_relacionado);
+                    //console.log('🔍 CHECKING TOPICS RELACIONADOS:');
+                    //console.log('  - alert.topics_otros_hardware:', alert.topics_otros_hardware);
+                    //console.log('  - alert.data?.topics_otros_hardware:', alert.data?.topics_otros_hardware);
+                    //console.log('  - alert.data?.topics:', alert.data?.topics);
+                    //console.log('  - alert.hardware_relacionado:', alert.hardware_relacionado);
                     
                     // Intentar múltiples fuentes para hardware relacionado
                     const topicsRelacionados = alert.topics_otros_hardware || 
@@ -937,7 +937,7 @@ function generateModalContent(alert, isUserOrigin, isHardwareOrigin) {
                                              alert.hardware_relacionado || 
                                              [];
                     
-                    console.log('  - topicsRelacionados final:', topicsRelacionados);
+                    //console.log('  - topicsRelacionados final:', topicsRelacionados);
                     
                     if (topicsRelacionados && topicsRelacionados.length > 0) {
                         return `
@@ -1133,13 +1133,13 @@ function closeAlertModal() {
 // ========== FUNCIONES DE DESACTIVACIÓN ==========
 function showDeactivateConfirmation() {
     if (!selectedAlertId) {
-        console.error('❌ No hay alerta seleccionada');
+        //console.error('❌ No hay alerta seleccionada');
         return;
     }
     
     const alert = getAlertById(selectedAlertId);
     if (!alert) {
-        console.error('❌ No se encontró información de la alerta');
+        //console.error('❌ No se encontró información de la alerta');
         return;
     }
     
@@ -1148,7 +1148,7 @@ function showDeactivateConfirmation() {
         return;
     }
     
-    console.log('🔄 Mostrando modal de confirmación para desactivar alerta:', selectedAlertId);
+    //console.log('🔄 Mostrando modal de confirmación para desactivar alerta:', selectedAlertId);
     
     const modalMessage = document.getElementById('deactivateModalMessage');
     const mensajeTextarea = document.getElementById('mensajeDesactivacion');
@@ -1194,11 +1194,11 @@ function closeDeactivateModal() {
 
 async function confirmDeactivateAlert() {
     if (!selectedAlertId) {
-        console.error('❌ No hay alerta seleccionada');
+        //console.error('❌ No hay alerta seleccionada');
         return;
     }
     
-    console.log('🔄 Iniciando desactivación de alerta:', selectedAlertId);
+    //console.log('🔄 Iniciando desactivación de alerta:', selectedAlertId);
     
     const confirmBtn = document.getElementById('deactivateConfirmBtn');
     if (confirmBtn) {
@@ -1213,7 +1213,7 @@ async function confirmDeactivateAlert() {
             throw new Error('No se pudo obtener el ID de empresa del usuario actual');
         }
         
-        console.log('📤 Enviando petición de desactivación');
+        //console.log('📤 Enviando petición de desactivación');
         
         const mensajeDesactivacion = document.getElementById('mensajeDesactivacion')?.value?.trim() || '';
         
@@ -1232,7 +1232,7 @@ async function confirmDeactivateAlert() {
         const data = await response.json();
         
         if (data.success) {
-            console.log('✅ Alerta desactivada exitosamente');
+            //console.log('✅ Alerta desactivada exitosamente');
             
             const alertData = await findAlertById(selectedAlertId);
             if (alertData) {
@@ -1241,9 +1241,9 @@ async function confirmDeactivateAlert() {
                 
                 sendAlertDeactivationMessage(alertData).then(sent => {
                     if (sent) {
-                        console.log('✅ Notificación WebSocket enviada correctamente');
+                        //console.log('✅ Notificación WebSocket enviada correctamente');
                     } else {
-                        console.warn('⚠️ No se pudo enviar notificación WebSocket');
+                        //console.warn('⚠️ No se pudo enviar notificación WebSocket');
                     }
                 });
             }
@@ -1256,12 +1256,12 @@ async function confirmDeactivateAlert() {
             showSimpleNotification(data.message || 'Alerta desactivada exitosamente', 'success');
             
         } else {
-            console.error('❌ Error en la respuesta:', data);
+            //console.error('❌ Error en la respuesta:', data);
             throw new Error(data.error || 'Error desconocido al desactivar alerta');
         }
         
     } catch (error) {
-        console.error('💥 Error desactivando alerta:', error);
+        //console.error('💥 Error desactivando alerta:', error);
         
         closeDeactivateModal();
         
@@ -1340,14 +1340,14 @@ function showNoAlerts() {
 }
 
 async function refreshAlerts(skipSuccessPopup = false) {
-    console.log('🔄 REFRESH: Actualizando alertas manualmente...');
-    console.log('📢 REFRESH: skipSuccessPopup =', skipSuccessPopup);
+    //console.log('🔄 REFRESH: Actualizando alertas manualmente...');
+    //console.log('📢 REFRESH: skipSuccessPopup =', skipSuccessPopup);
     
     // Verificar si se debe omitir el popup por flag global
     const shouldSkipPopup = skipSuccessPopup || window.skipNextSuccessPopup;
     if (window.skipNextSuccessPopup) {
         window.skipNextSuccessPopup = false; // Resetear el flag
-        console.log('🔇 REFRESH: Omitiendo popup de éxito por flag global');
+        //console.log('🔇 REFRESH: Omitiendo popup de éxito por flag global');
     }
     
     try {
@@ -1360,10 +1360,10 @@ async function refreshAlerts(skipSuccessPopup = false) {
             showUpdateSuccessPopup();
         }
         
-        console.log('✅ REFRESH: Actualización completada exitosamente');
+        //console.log('✅ REFRESH: Actualización completada exitosamente');
         
     } catch (error) {
-        console.error('💥 REFRESH ERROR: Error actualizando alertas:', error);
+        //console.error('💥 REFRESH ERROR: Error actualizando alertas:', error);
         const friendlyMessage = getFriendlyErrorMessage(error);
         showUpdateErrorPopup(friendlyMessage);
     }
@@ -1406,14 +1406,14 @@ function getFriendlyErrorMessage(error) {
 }
 
 function showUpdateSuccessPopup() {
-    console.log('✅ UPDATE POPUP: Mostrando alerta de éxito personalizada');
+    //console.log('✅ UPDATE POPUP: Mostrando alerta de éxito personalizada');
     
     // Crear alerta personalizada con Tailwind (estilo iOS/hardware)
     createCustomSuccessAlert();
 }
 
 function showUpdateErrorPopup(errorMessage) {
-    console.log('❌ UPDATE ERROR POPUP: Mostrando alerta de error personalizada');
+    //console.log('❌ UPDATE ERROR POPUP: Mostrando alerta de error personalizada');
     
     // Crear alerta personalizada de error con Tailwind
     createCustomErrorAlert(errorMessage);
@@ -1611,7 +1611,7 @@ async function findAlertById(alertId) {
         if (!response.ok) return null;
         
         const data = await response.json();
-        console.log('📊 DATA COMPLETA DE ALERTA:', data); // Debug para ver qué llega
+        //console.log('📊 DATA COMPLETA DE ALERTA:', data); // Debug para ver qué llega
         
         if (data.success && data.alert) {
             const fullAlertData = {
@@ -1652,14 +1652,14 @@ async function findAlertById(alertId) {
             };
             
             // Debug específico para topics relacionados
-            console.log('🔍 DEBUG TOPICS RELACIONADOS:', {
-                'data.alert.topics_otros_hardware': data.alert.topics_otros_hardware,
-                'data.topics_otros_hardware': data.topics_otros_hardware,
-                'data.topics': data.topics,
-                'data.alert.topics': data.alert.topics,
-                'data.alert.hardware_relacionado': data.alert.hardware_relacionado,
-                'final_topics_otros_hardware': fullAlertData.topics_otros_hardware
-            });
+            //console.log('🔍 DEBUG TOPICS RELACIONADOS:', {
+            //     'data.alert.topics_otros_hardware': data.alert.topics_otros_hardware,
+            //     'data.topics_otros_hardware': data.topics_otros_hardware,
+            //     'data.topics': data.topics,
+            //     'data.alert.topics': data.alert.topics,
+            //     'data.alert.hardware_relacionado': data.alert.hardware_relacionado,
+            //     'final_topics_otros_hardware': fullAlertData.topics_otros_hardware
+            // });
             
             alertsCache.set(alertId, fullAlertData);
             return fullAlertData;
@@ -1668,7 +1668,7 @@ async function findAlertById(alertId) {
         return null;
         
     } catch (error) {
-        console.error(`Error buscando alerta ${alertId}:`, error);
+        //console.error(`Error buscando alerta ${alertId}:`, error);
         return null;
     }
 }
@@ -2044,14 +2044,14 @@ function toggleMapProvider(button) {
     const osmUrl = button.dataset.osmUrl;
     
     if (!googleUrl || !osmUrl) {
-        console.warn('⚠️ TOGGLE MAP: URLs no disponibles');
+        //console.warn('⚠️ TOGGLE MAP: URLs no disponibles');
         return;
     }
     
     // Buscar el iframe en la misma sección
     const iframe = button.closest('.modal-section').querySelector('iframe');
     if (!iframe) {
-        console.warn('⚠️ TOGGLE MAP: iframe no encontrado');
+        //console.warn('⚠️ TOGGLE MAP: iframe no encontrado');
         return;
     }
     
@@ -2066,7 +2066,7 @@ function toggleMapProvider(button) {
             newSrc = `https://maps.google.com/maps?q=${coords.lat},${coords.lng}&z=15&output=embed`;
             newProvider = 'Google Maps';
         } else {
-            console.warn('⚠️ TOGGLE MAP: No se pudieron extraer coordenadas de OSM');
+            //console.warn('⚠️ TOGGLE MAP: No se pudieron extraer coordenadas de OSM');
             return;
         }
     } else {
@@ -2076,7 +2076,7 @@ function toggleMapProvider(button) {
             newSrc = `https://www.openstreetmap.org/export/embed.html?bbox=${coords.lng-0.01},${coords.lat-0.01},${coords.lng+0.01},${coords.lat+0.01}&layer=mapnik&marker=${coords.lat},${coords.lng}`;
             newProvider = 'OpenStreetMaps';
         } else {
-            console.warn('⚠️ TOGGLE MAP: No se pudieron extraer coordenadas de Google Maps');
+            //console.warn('⚠️ TOGGLE MAP: No se pudieron extraer coordenadas de Google Maps');
             return;
         }
     }
@@ -2097,7 +2097,7 @@ function toggleMapProvider(button) {
         }
     }
     
-    console.log(`🗺️ MAP TOGGLE: Cambiado a ${newProvider}`);
+    //console.log(`🗺️ MAP TOGGLE: Cambiado a ${newProvider}`);
 }
 
 /**
@@ -2149,7 +2149,7 @@ function extractCoordsFromOSMEmbed(embedUrl) {
  * @param {string} imageTitle - Título de la imagen
  */
 function showImageModal(imageSrc, imageTitle = 'Imagen') {
-    console.log('🖼️ Mostrando modal de imagen:', imageSrc);
+    //console.log('🖼️ Mostrando modal de imagen:', imageSrc);
     
     // Crear el modal de imagen si no existe
     let imageModal = document.getElementById('imageDisplayModal');
@@ -2270,7 +2270,7 @@ function showImageModal(imageSrc, imageTitle = 'Imagen') {
     imageModal.classList.remove('hidden');
     document.body.style.overflow = 'hidden'; // Prevenir scroll del body
     
-    console.log('✅ Modal de imagen mostrado correctamente');
+    //console.log('✅ Modal de imagen mostrado correctamente');
 }
 
 /**
@@ -2281,7 +2281,7 @@ function closeImageModal() {
     if (imageModal) {
         imageModal.classList.add('hidden');
         document.body.style.overflow = ''; // Restaurar scroll del body
-        console.log('🖼️ Modal de imagen cerrado');
+        //console.log('🖼️ Modal de imagen cerrado');
     }
 }
 
@@ -2379,7 +2379,7 @@ window.openImageInNewTab = openImageInNewTab;
 function setupMessageCharacterCounter() {
     // Esta función se ejecuta cuando se carga la página
     // El event listener se añade dinámicamente cuando el modal se abre
-    console.log('✅ Sistema de contador de caracteres configurado');
+    //console.log('✅ Sistema de contador de caracteres configurado');
 }
 
 function updateCharacterCounter() {
@@ -2447,7 +2447,7 @@ function attachCharacterCounterListener() {
  * @param {number} duration - Duración en milisegundos (opcional, por defecto 4000)
  */
 function showSimpleNotification(message, type = 'info', duration = 4000) {
-    console.log(`📢 NOTIFICACIÓN ${type.toUpperCase()}: ${message}`);
+    //console.log(`📢 NOTIFICACIÓN ${type.toUpperCase()}: ${message}`);
     
     // Configuración de tipos
     const typeConfig = {
@@ -2566,7 +2566,7 @@ function checkForAutoOpenAlert() {
     const openAlertId = sessionStorage.getItem('openAlertId');
     
     if (openAlertId) {
-        console.log(`🎯 AUTO-OPEN: Detectado ID de alerta para abrir automáticamente: ${openAlertId}`);
+        //console.log(`🎯 AUTO-OPEN: Detectado ID de alerta para abrir automáticamente: ${openAlertId}`);
         
         // Limpiar la variable de sesión
         sessionStorage.removeItem('openAlertId');
@@ -2577,10 +2577,10 @@ function checkForAutoOpenAlert() {
             const alert = await findAlertById(openAlertId);
             
             if (alert) {
-                console.log(`✅ AUTO-OPEN: Alerta encontrada, abriendo modal...`);
+                //console.log(`✅ AUTO-OPEN: Alerta encontrada, abriendo modal...`);
                 showAlertDetails(openAlertId);
             } else {
-                console.warn(`⚠️ AUTO-OPEN: No se pudo encontrar la alerta ${openAlertId}`);
+                //console.warn(`⚠️ AUTO-OPEN: No se pudo encontrar la alerta ${openAlertId}`);
                 showSimpleNotification('La alerta seleccionada no se pudo cargar', 'warning');
             }
         }, 1500); // Esperar 1.5 segundos para asegurar que las alertas se carguen

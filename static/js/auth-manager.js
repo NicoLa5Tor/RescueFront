@@ -17,7 +17,7 @@ class AuthManager {
         try {
             // Verificar si tenemos datos de usuario
             if (!window.currentUser) {
-                console.log('❌ No hay datos de usuario');
+                //////console.log('❌ No hay datos de usuario');
                 return false;
             }
             
@@ -33,13 +33,13 @@ class AuthManager {
             
             const isValid = response.ok;
             if (!isValid) {
-                console.log('❌ Sesión inválida o expirada');
+                ////console.log('❌ Sesión inválida o expirada');
                 this.clearStoredAuth();
             }
             
             return isValid;
         } catch (error) {
-            console.error('❌ Error verificando autenticación:', error);
+            ////console.error('❌ Error verificando autenticación:', error);
             return false;
         }
     }
@@ -78,7 +78,7 @@ class AuthManager {
      * Limpia todos los datos de autenticación almacenados
      */
     clearStoredAuth() {
-        console.log('🧹 Limpiando datos de autenticación almacenados');
+        ////console.log('🧹 Limpiando datos de autenticación almacenados');
         
         // Limpiar variables globales
         delete window.currentUser;
@@ -89,7 +89,7 @@ class AuthManager {
      */
     async syncSession(user) {
         try {
-            console.log('🔄 Sincronizando sesión con Flask:', user);
+            //console.log('🔄 Sincronizando sesión con Flask:', user);
             const response = await fetch('/api/sync-session', {
                 method: 'POST',
                 headers: {
@@ -101,14 +101,14 @@ class AuthManager {
             
             const result = await response.json();
             if (response.ok && result.success) {
-                console.log('✅ Sesión Flask sincronizada');
+                //console.log('✅ Sesión Flask sincronizada');
                 return true;
             } else {
-                console.error('❌ Error sincronizando sesión:', result.error);
+                //console.error('❌ Error sincronizando sesión:', result.error);
                 return false;
             }
         } catch (error) {
-            console.error('❌ Error de conexión en sync:', error);
+            //console.error('❌ Error de conexión en sync:', error);
             return false;
         }
     }
@@ -118,15 +118,15 @@ class AuthManager {
      */
     async login(usuario, password) {
         try {
-            console.log('🚀 Iniciando login para:', usuario);
+            //console.log('🚀 Iniciando login para:', usuario);
             const response = await this.client.login(usuario, password);
-            console.log('🌐 Respuesta del servidor:', response.status, response.statusText);
+            //console.log('🌐 Respuesta del servidor:', response.status, response.statusText);
             
             const result = await response.json();
-            console.log('📝 Datos de respuesta:', result);
+            //console.log('📝 Datos de respuesta:', result);
             
             if (response.ok && result.success) {
-                console.log('✅ Login exitoso - almacenando token y datos de usuario');
+                //console.log('✅ Login exitoso - almacenando token y datos de usuario');
                 
                 // El token viene en cookie segura, no en la respuesta JSON
                 // Almacenar datos del usuario
@@ -143,11 +143,11 @@ class AuthManager {
                     return { success: false, errors: ['Error sincronizando sesión'] };
                 }
             } else {
-                console.error('❌ Error en login:', result.errors || result.message);
+                //console.error('❌ Error en login:', result.errors || result.message);
                 return { success: false, errors: result.errors || [result.message] || ['Error de autenticación'] };
             }
         } catch (error) {
-            console.error('❌ Error de conexión:', error);
+            //console.error('❌ Error de conexión:', error);
             return { success: false, errors: ['Error de conexión'] };
         }
     }
@@ -161,7 +161,7 @@ class AuthManager {
             const result = await response.json();
             
             if (response.ok && result.success) {
-                console.log('✅ Logout exitoso');
+                //console.log('✅ Logout exitoso');
                 // Limpiar datos de autenticación
                 this.clearStoredAuth();
                 
@@ -171,11 +171,11 @@ class AuthManager {
                 }, 500);
                 return { success: true };
             } else {
-                console.error('❌ Error en logout:', result.errors);
+                //console.error('❌ Error en logout:', result.errors);
                 return { success: false, errors: result.errors || ['Error al cerrar sesión'] };
             }
         } catch (error) {
-            console.error('❌ Error de conexión:', error);
+            //console.error('❌ Error de conexión:', error);
             // Limpiar datos locales aún si hay error de conexión
             this.clearStoredAuth();
             return { success: false, errors: ['Error de conexión'] };
@@ -197,7 +197,7 @@ class AuthManager {
      * Redirige al login
      */
     redirectToLogin() {
-        console.log('🔄 Redirigiendo al login...');
+        //console.log('🔄 Redirigiendo al login...');
         window.location.href = '/login';
     }
 
@@ -206,7 +206,7 @@ class AuthManager {
      */
     handleAuthError(response) {
         if (response.status === 401) {
-            console.warn('🚫 Token expirado o inválido');
+            //console.warn('🚫 Token expirado o inválido');
             this.showMessage('Sesión expirada. Redirigiendo al login...', 'error');
             setTimeout(() => {
                 this.redirectToLogin();
@@ -277,7 +277,7 @@ class AuthManager {
             const response = await this.client._request('GET', '/health');
             return response.ok;
         } catch (error) {
-            console.error('Error verificando autenticación:', error);
+            //console.error('Error verificando autenticación:', error);
             return false;
         }
     }
@@ -287,17 +287,17 @@ class AuthManager {
      */
     async testConnection() {
         try {
-            console.log('📌 Probando conexión directa al backend...');
+            //console.log('📌 Probando conexión directa al backend...');
             const response = await fetch('http://localhost:5002/health', {
                 method: 'GET',
                 credentials: 'include'
             });
-            console.log('🌐 Respuesta de conexión:', response.status, response.statusText);
+            //console.log('🌐 Respuesta de conexión:', response.status, response.statusText);
             const data = await response.json();
-            console.log('📝 Datos de health:', data);
+            //console.log('📝 Datos de health:', data);
             return response.ok;
         } catch (error) {
-            console.error('❌ Error de conexión:', error);
+            //console.error('❌ Error de conexión:', error);
             return false;
         }
     }
@@ -311,9 +311,9 @@ class AuthManager {
         // Probar conexión al backend
         const connected = await this.testConnection();
         if (connected) {
-            console.log('✅ AuthManager inicializado - Backend conectado');
+            //console.log('✅ AuthManager inicializado - Backend conectado');
         } else {
-            console.warn('⚠️ AuthManager inicializado - Backend NO conectado');
+            //console.warn('⚠️ AuthManager inicializado - Backend NO conectado');
         }
     }
 }

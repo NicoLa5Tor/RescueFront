@@ -794,9 +794,9 @@ try {
   const usuariosDataElement = document.getElementById('usuariosData');
   const usuariosDataText = usuariosDataElement.textContent;
   window.USUARIOS_DATA = usuariosDataText && usuariosDataText !== 'null' ? JSON.parse(usuariosDataText) : null;
-  console.log('👥 Usuarios data loaded:', window.USUARIOS_DATA);
+  ////console.log('👥 Usuarios data loaded:', window.USUARIOS_DATA);
 } catch (error) {
-  console.warn('⚠️ Error loading usuarios data:', error);
+  ////console.warn('⚠️ Error loading usuarios data:', error);
   window.USUARIOS_DATA = null;
 }
 </script>
@@ -818,7 +818,7 @@ try {
 function applyCardOptimizations(card) {
   // Usar las animaciones GSAP globales ya disponibles
   if (window.HardwareAnimations) {
-    console.log('🔧 Optimizaciones GSAP aplicadas a tarjeta individual');
+    //console.log('🔧 Optimizaciones GSAP aplicadas a tarjeta individual');
     return;
   }
   
@@ -827,7 +827,7 @@ function applyCardOptimizations(card) {
   if (shimmer && !window.GSAPUtils?.prefersReducedMotion()) {
     shimmer.style.opacity = '0';
     shimmer.style.transform = 'rotate(45deg) translateX(-100%)';
-    console.log('🔧 Fallback aplicado a tarjeta individual');
+    //console.log('🔧 Fallback aplicado a tarjeta individual');
   }
 }
 
@@ -837,7 +837,7 @@ function applyOptimizationsToExistingCards() {
   existingCards.forEach(card => {
     applyCardOptimizations(card);
   });
-  console.log(`🔧 Optimizaciones aplicadas a ${existingCards.length} tarjetas existentes`);
+  //console.log(`🔧 Optimizaciones aplicadas a ${existingCards.length} tarjetas existentes`);
 }
 
 // Global functions for backward compatibility
@@ -873,35 +873,35 @@ if (window.modalManager) {
     const modal = document.getElementById(modalId);
     if (modal) {
       window.modalManager.setupModal(modalId);
-      console.log('🔧 Modal configurado con modalManager:', modalId);
+      //console.log('🔧 Modal configurado con modalManager:', modalId);
     }
   });
-  console.log('✅ Todos los modales de usuarios configurados con modalManager');
+  //console.log('✅ Todos los modales de usuarios configurados con modalManager');
 } else {
-  console.warn('⚠️ modalManager no disponible');
+  //console.warn('⚠️ modalManager no disponible');
 }
 
-console.log('📻 Usuarios main module loaded');
+//console.log('📻 Usuarios main module loaded');
 
 // Definir variables globales para el rol y empresa
 window.userRole = '{{ user_role or "" }}';
 window.empresaId = '{{ empresa_id or "" }}';
 window.empresaNombre = '{{ empresa_username or "" }}';
 
-console.log('🔧 Variables globales definidas:', {
-  userRole: window.userRole,
-  empresaId: window.empresaId,
-  empresaNombre: window.empresaNombre
-});
+//console.log('🔧 Variables globales definidas:', {
+//   userRole: window.userRole,
+//   empresaId: window.empresaId,
+//   empresaNombre: window.empresaNombre
+// });
 
 // AUTO-INICIALIZAR EMPRESA Y CARGAR USUARIOS PARA VISTA DE EMPRESA
 if (window.userRole === 'empresa' && window.empresaId) {
-  console.log('🏢 Vista de empresa detectada - Auto-inicializando...');
+  //console.log('🏢 Vista de empresa detectada - Auto-inicializando...');
   
   // Esperar a que usuariosMain esté disponible
   const initEmpresaView = () => {
     if (window.usuariosMain) {
-      console.log('✅ UsuariosMain disponible, configurando empresa automáticamente');
+      //console.log('✅ UsuariosMain disponible, configurando empresa automáticamente');
       
       // Configurar la empresa actual directamente
       window.usuariosMain.currentEmpresa = {
@@ -915,9 +915,9 @@ if (window.userRole === 'empresa' && window.empresaId) {
       // Cargar usuarios automáticamente
       window.usuariosMain.loadUsuarios();
       
-      console.log('✅ Vista de empresa inicializada automáticamente');
+      //console.log('✅ Vista de empresa inicializada automáticamente');
     } else {
-      console.log('⏳ Esperando a que usuariosMain esté disponible...');
+      //console.log('⏳ Esperando a que usuariosMain esté disponible...');
       setTimeout(initEmpresaView, 100);
     }
   };
@@ -973,7 +973,7 @@ function selectCountry(option, event) {
   const dropdown = selector.querySelector('.phone-country-dropdown');
   dropdown.classList.remove('show');
   
-  console.log('País seleccionado:', { country, code, flag, text });
+  //console.log('País seleccionado:', { country, code, flag, text });
 }
 
 // Cerrar dropdowns al hacer click fuera

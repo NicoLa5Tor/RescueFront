@@ -45,7 +45,7 @@ class EmpresasModalScrollManager {
   }
 
   openModal(modalId, options = {}) {
-    console.log(`🔒 Opening empresas modal: ${modalId}`);
+    //consoleç.log(`🔒 Opening empresas modal: ${modalId}`);
     
     if (this.openModals.size === 0) {
       this.scrollPosition = window.pageYOffset;
@@ -66,7 +66,7 @@ class EmpresasModalScrollManager {
   }
 
   closeModal(modalId) {
-    console.log(`🔓 Closing empresas modal: ${modalId}`);
+    //consoleç.log(`🔓 Closing empresas modal: ${modalId}`);
     
     this.openModals.delete(modalId);
     
@@ -85,7 +85,7 @@ class EmpresasModalScrollManager {
   lockScroll() {
     if (this.isLocked) return;
     
-    console.log('🔒 Using CSS-only scroll lock to prevent white borders');
+    //consoleç.log('🔒 Using CSS-only scroll lock to prevent white borders');
     
     const body = document.body;
     
@@ -93,13 +93,13 @@ class EmpresasModalScrollManager {
     body.classList.add('empresas-modal-open');
     
     this.isLocked = true;
-    console.log('✅ CSS-only scroll lock applied');
+    //consoleç.log('✅ CSS-only scroll lock applied');
   }
 
   unlockScroll() {
     if (!this.isLocked) return;
     
-    console.log('🔓 Using CSS-only scroll unlock to prevent white borders');
+    //consoleç.log('🔓 Using CSS-only scroll unlock to prevent white borders');
     
     const body = document.body;
     
@@ -107,7 +107,7 @@ class EmpresasModalScrollManager {
     body.classList.remove('empresas-modal-open');
     
     this.isLocked = false;
-    console.log('✅ CSS-only scroll unlock applied');
+    //consoleç.log('✅ CSS-only scroll unlock applied');
   }
 
   setupFocusTrap(modalId) {
@@ -183,10 +183,10 @@ class EmpresasModals {
       // Load tipos de empresa
       this.loadTiposEmpresa();
       
-      console.log('🏢 Modales de empresas inicializados correctamente');
+      //consoleç.log('🏢 Modales de empresas inicializados correctamente');
       
     } catch (error) {
-      console.error('💥 Error al inicializar modales de empresas:', error);
+      //consoleç.error('💥 Error al inicializar modales de empresas:', error);
     }
   }
 
@@ -257,7 +257,7 @@ class EmpresasModals {
     // Solo verificar que existe
     const existingModal = document.getElementById('toggleEmpresaModal');
     if (existingModal) {
-      console.log('✅ Modal de toggle ya existe en el HTML');
+      //consoleç.log('✅ Modal de toggle ya existe en el HTML');
       return;
     }
     
@@ -598,7 +598,7 @@ class EmpresasModals {
       this.openModal('toggleEmpresaModal');
       
     } catch (error) {
-      console.error('💥 Error al mostrar modal de toggle:', error);
+      //consoleç.error('💥 Error al mostrar modal de toggle:', error);
       this.showNotification('Error al abrir el modal', 'error');
     }
   }
@@ -612,7 +612,7 @@ class EmpresasModals {
       
       const { id, newStatus } = this.currentToggleEmpresa;
       
-      console.log(`🔄 Cambiando estado de empresa ${id} a ${newStatus ? 'activa' : 'inactiva'}`);
+      //consoleç.log(`🔄 Cambiando estado de empresa ${id} a ${newStatus ? 'activa' : 'inactiva'}`);
       
       const response = await this.apiClient.toggle_empresa_status(id, newStatus);
       const data = await response.json();
@@ -630,7 +630,7 @@ class EmpresasModals {
       }
       
     } catch (error) {
-      console.error('💥 Error al cambiar estado de empresa:', error);
+      //consoleç.error('💥 Error al cambiar estado de empresa:', error);
       this.showNotification('Error de conexión', 'error');
     }
   }
@@ -660,7 +660,7 @@ class EmpresasModals {
       this.openModal('empresaModal');
       
     } catch (error) {
-      console.error('💥 Error al abrir modal de creación:', error);
+      //consoleç.error('💥 Error al abrir modal de creación:', error);
       this.showNotification('Error al abrir el modal', 'error');
     }
   }
@@ -690,7 +690,7 @@ class EmpresasModals {
       this.openModal('empresaModal');
       
     } catch (error) {
-      console.error('💥 Error al abrir modal de edición:', error);
+      //consoleç.error('💥 Error al abrir modal de edición:', error);
       this.showNotification('Error al cargar los datos de la empresa', 'error');
     }
   }
@@ -700,28 +700,28 @@ class EmpresasModals {
    */
   async loadEmpresaDataForEdit(empresaId) {
     try {
-      console.log('🔄 Cargando datos de empresa para edición:', empresaId);
+      //consoleç.log('🔄 Cargando datos de empresa para edición:', empresaId);
       const response = await this.apiClient.get_empresa(empresaId);
       
-      console.log('📡 Respuesta del backend:', {
-        status: response.status,
-        statusText: response.statusText,
-        ok: response.ok
-      });
+      //consoleç.log('📡 Respuesta del backend:', {
+      //   status: response.status,
+      //   statusText: response.statusText,
+      //   ok: response.ok
+      // });
       
       const data = await response.json();
-      console.log('📦 Datos recibidos del backend:', data);
+      //consoleç.log('📦 Datos recibidos del backend:', data);
       
       if (data.success && data.data) {
-        console.log('✅ Datos de empresa válidos, populando formulario...');
+        //console.log('✅ Datos de empresa válidos, populando formulario...');
         this.populateFormWithEmpresaData(data.data);
       } else {
-        console.error('❌ Respuesta del backend no válida:', data);
+        //console.error('❌ Respuesta del backend no válida:', data);
         throw new Error(data.errors?.[0] || 'Error al cargar datos');
       }
       
     } catch (error) {
-      console.error('💥 Error al cargar datos de empresa:', error);
+      //console.error('💥 Error al cargar datos de empresa:', error);
       this.showNotification('Error al cargar los datos de la empresa desde el servidor', 'error');
       this.loadDummyDataIntoForm();
     }
@@ -731,7 +731,7 @@ class EmpresasModals {
    * Populate form with empresa data
    */
   populateFormWithEmpresaData(empresa) {
-    console.log('📝 Populando formulario con datos de empresa:', empresa);
+    //console.log('📝 Populando formulario con datos de empresa:', empresa);
     
     document.getElementById('empresaNombre').value = empresa.nombre || '';
     document.getElementById('empresaUsername').value = empresa.username || '';
@@ -745,8 +745,8 @@ class EmpresasModals {
       // Check what tipo values are available in the empresa object
       // Backend returns 'tipo_empresa_id' as the ObjectId string
       const empresaTipoId = empresa.tipo_empresa_id || empresa.tipo || empresa.tipo_empresa || empresa.tipo_id;
-      console.log('🏷️ Tipo de empresa ID encontrado:', empresaTipoId);
-      console.log('🔍 Opciones disponibles en select:', Array.from(tipoSelect.options).map(opt => ({ value: opt.value, text: opt.text })));
+      //console.log('🏷️ Tipo de empresa ID encontrado:', empresaTipoId);
+      //console.log('🔍 Opciones disponibles en select:', Array.from(tipoSelect.options).map(opt => ({ value: opt.value, text: opt.text })));
       
       if (empresaTipoId) {
         // First try to set the value directly (this should match the option value which is the tipo ID)
@@ -754,20 +754,20 @@ class EmpresasModals {
         
         // Check if the option exists
         const optionExists = Array.from(tipoSelect.options).some(option => option.value === empresaTipoId);
-        console.log('✅ Opción existe en select:', optionExists);
+        //console.log('✅ Opción existe en select:', optionExists);
         
         if (!optionExists) {
           // If no option exists, this means we need to reload tipos de empresa
-          console.log('⚠️ El tipo de empresa no existe en las opciones disponibles. Recargando tipos...');
+          //console.log('⚠️ El tipo de empresa no existe en las opciones disponibles. Recargando tipos...');
           this.loadTiposEmpresa().then(() => {
             // After reloading, try to set the value again
             setTimeout(() => {
               const optionExistsAfterReload = Array.from(tipoSelect.options).some(option => option.value === empresaTipoId);
               if (optionExistsAfterReload) {
                 tipoSelect.value = empresaTipoId;
-                console.log('✅ Tipo de empresa seleccionado después de recargar:', empresaTipoId);
+                //console.log('✅ Tipo de empresa seleccionado después de recargar:', empresaTipoId);
               } else {
-                console.log('⚠️ El tipo de empresa sigue sin existir después de recargar. Puede estar inactivo.');
+                //console.log('⚠️ El tipo de empresa sigue sin existir después de recargar. Puede estar inactivo.');
                 // Create a placeholder option to show the current value
                 const newOption = document.createElement('option');
                 newOption.value = empresaTipoId;
@@ -775,18 +775,18 @@ class EmpresasModals {
                 newOption.style.color = '#999';
                 tipoSelect.add(newOption);
                 tipoSelect.value = empresaTipoId;
-                console.log('➕ Opción placeholder creada:', empresaTipoId);
+                //console.log('➕ Opción placeholder creada:', empresaTipoId);
               }
             }, 500);
           });
         } else {
-          console.log('✅ Tipo de empresa seleccionado:', empresaTipoId);
+          //console.log('✅ Tipo de empresa seleccionado:', empresaTipoId);
         }
       } else {
-        console.log('⚠️ No se encontró tipo de empresa en los datos');
+        //console.log('⚠️ No se encontró tipo de empresa en los datos');
       }
     } else {
-      console.error('❌ Select de tipo de empresa no encontrado');
+      //console.error('❌ Select de tipo de empresa no encontrado');
     }
     
     // Load sedes
@@ -835,7 +835,7 @@ class EmpresasModals {
       }
       
     } catch (error) {
-      console.error('💥 Error al cargar detalles de empresa:', error);
+      //console.error('💥 Error al cargar detalles de empresa:', error);
       this.showNotification('Error al cargar los detalles de la empresa', 'error');
     }
   }
@@ -996,7 +996,7 @@ class EmpresasModals {
       }
       
     } catch (error) {
-      console.error('💥 Error al procesar formulario:', error);
+      //console.error('💥 Error al procesar formulario:', error);
       this.showNotification('Error al procesar el formulario', 'error');
     }
   }
@@ -1045,7 +1045,7 @@ class EmpresasModals {
       }
       
     } catch (error) {
-      console.error('💥 Error al crear empresa:', error);
+      //console.error('💥 Error al crear empresa:', error);
       this.showNotification('Error de conexión', 'error');
     }
   }
@@ -1071,7 +1071,7 @@ class EmpresasModals {
       }
       
     } catch (error) {
-      console.error('💥 Error al actualizar empresa:', error);
+      //console.error('💥 Error al actualizar empresa:', error);
       this.showNotification('Error de conexión', 'error');
     }
   }
@@ -1168,7 +1168,7 @@ class EmpresasModals {
    * Abrir modal - USANDO MODALSCROLLMANAGER
    */
   openModal(modalId) {
-    console.log('🟢 Abriendo modal empresa:', modalId);
+    //console.log('🟢 Abriendo modal empresa:', modalId);
     
     // Usar nuestro ModalScrollManager siempre
     this.modalManager.openModal(modalId, { focusTrap: true });
@@ -1184,14 +1184,14 @@ class EmpresasModals {
       }
     }, 150);
     
-    console.log('✅ Modal empresa abierto con ModalScrollManager:', modalId);
+    //console.log('✅ Modal empresa abierto con ModalScrollManager:', modalId);
   }
 
   /**
    * Cerrar modal - USANDO MODALSCROLLMANAGER
    */
   closeModal(modalId) {
-    console.log('🔴 Cerrando modal empresa:', modalId);
+    //console.log('🔴 Cerrando modal empresa:', modalId);
     
     // Usar nuestro ModalScrollManager siempre
     this.modalManager.closeModal(modalId);
@@ -1199,7 +1199,7 @@ class EmpresasModals {
     // Limpiar datos del modal
     this.resetModalData(modalId);
     
-    console.log('✅ Modal empresa cerrado con ModalScrollManager:', modalId);
+    //console.log('✅ Modal empresa cerrado con ModalScrollManager:', modalId);
   }
 
   /**
@@ -1383,7 +1383,7 @@ class EmpresasModals {
    * Show toggle modal - SAME STYLE AS HARDWARE/COMPANY TYPES
    */
   showToggleModal(empresaId, currentStatus, empresaName) {
-    console.log('🔄 Opening toggle modal for empresa:', empresaId, 'current status:', currentStatus);
+    //console.log('🔄 Opening toggle modal for empresa:', empresaId, 'current status:', currentStatus);
     
     const newStatus = !currentStatus;
     const action = newStatus ? 'activar' : 'desactivar';
@@ -1406,7 +1406,7 @@ class EmpresasModals {
     const confirmIcon = document.getElementById('toggleConfirmIcon');
     
     if (!modal || !container || !title || !message) {
-      console.error('❌ Toggle modal elements missing!');
+      //console.error('❌ Toggle modal elements missing!');
       // Fallback to simple confirm
       if (confirm(`¿Estás seguro de que quieres ${action} esta empresa?`)) {
         this.confirmToggle();
@@ -1441,7 +1441,7 @@ class EmpresasModals {
       document.body.classList.add('modal-open');
     }
     
-    console.log('✅ Toggle modal should now be visible');
+    //console.log('✅ Toggle modal should now be visible');
     
     // GSAP animation
     if (typeof gsap !== 'undefined') {
@@ -1462,14 +1462,14 @@ class EmpresasModals {
    * Close toggle modal - SAME AS HARDWARE/COMPANY TYPES
    */
   closeToggleModal() {
-    console.log('🔄 Closing toggle modal');
+    //console.log('🔄 Closing toggle modal');
   
     const modal = document.getElementById('toggleEmpresaModal');
     const container = document.getElementById('toggleModalContainer');
     const confirmBtn = document.getElementById('toggleConfirmBtn');
   
     if (!modal) {
-      console.error('❌ Modal not found when trying to close');
+      //console.error('❌ Modal not found when trying to close');
       return;
     }
   
@@ -1493,7 +1493,7 @@ class EmpresasModals {
       // Reset data
       this.currentToggleEmpresa = null;
   
-      console.log('✅ Toggle modal closed and fully reset');
+      //console.log('✅ Toggle modal closed and fully reset');
     };
   
     // GSAP close animation
@@ -1525,7 +1525,7 @@ class EmpresasModals {
       try {
         const { id, newStatus } = this.currentToggleEmpresa;
   
-        console.log(`🔄 Executing toggle for empresa ${id} to ${newStatus ? 'active' : 'inactive'}`);
+        //console.log(`🔄 Executing toggle for empresa ${id} to ${newStatus ? 'active' : 'inactive'}`);
   
         const response = await this.apiClient.toggle_empresa_status(id, newStatus);
         const data = await response.json();
@@ -1545,7 +1545,7 @@ class EmpresasModals {
         }
   
       } catch (error) {
-        console.error('💥 Error al ejecutar toggle:', error);
+        //console.error('💥 Error al ejecutar toggle:', error);
         confirmBtn.innerHTML = originalContent;
         confirmBtn.disabled = false;
         this.showNotification('Error de conexión', 'error');
@@ -1558,7 +1558,7 @@ class EmpresasModals {
    */
   async loadTiposEmpresa() {
     try {
-      console.log('🔄 Cargando tipos de empresa...');
+      //console.log('🔄 Cargando tipos de empresa...');
       const response = await this.apiClient.get_tipos_empresa_activos();
       
       if (!response.ok) {
@@ -1566,12 +1566,12 @@ class EmpresasModals {
       }
       
       const data = await response.json();
-      console.log('📊 Respuesta tipos de empresa:', data);
+      //console.log('📊 Respuesta tipos de empresa:', data);
 
       if (data.success && data.data && Array.isArray(data.data)) {
         const tipoSelect = document.getElementById('empresaTipo');
         if (!tipoSelect) {
-          console.error('❌ Select de tipos de empresa no encontrado');
+          //console.error('❌ Select de tipos de empresa no encontrado');
           return;
         }
         
@@ -1603,13 +1603,13 @@ class EmpresasModals {
           }
         }
         
-        console.log(`✅ ${data.data.length} tipos de empresa cargados`);
-        console.log('📋 Tipos cargados:', data.data.map(t => `${t.nombre} (${t._id})`));
+        //console.log(`✅ ${data.data.length} tipos de empresa cargados`);
+        //console.log('📋 Tipos cargados:', data.data.map(t => `${t.nombre} (${t._id})`));
       } else {
         throw new Error(data.message || data.error || 'Respuesta inválida del servidor o datos vacíos');
       }
     } catch (error) {
-      console.error('💥 Error al cargar tipos de empresa:', error);
+      //console.error('💥 Error al cargar tipos de empresa:', error);
       
       // Provide fallback options with fake IDs
       const tipoSelect = document.getElementById('empresaTipo');
@@ -1653,4 +1653,4 @@ window.openEditEmpresaModal = (id) => empresasModals.openEditModal(id);
 window.openViewEmpresaModal = (id) => empresasModals.openViewModal(id);
 window.toggleEmpresaStatus = (id, activa) => empresasModals.showToggleModal(id, activa);
 
-console.log('🏢 Empresas modals module loaded');
+//console.log('🏢 Empresas modals module loaded');

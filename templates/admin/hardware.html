@@ -24,7 +24,7 @@
     // Usar las animaciones GSAP globales ya disponibles
     if (window.HardwareAnimations) {
       // Las animaciones de hover ya están configuradas en hardware-animations.js
-      console.log('🔧 Optimizaciones GSAP aplicadas a tarjeta individual');
+      ////console.log('🔧 Optimizaciones GSAP aplicadas a tarjeta individual');
       return;
     }
     
@@ -33,7 +33,7 @@
     if (shimmer && !window.GSAPUtils?.prefersReducedMotion()) {
       shimmer.style.opacity = '0';
       shimmer.style.transform = 'rotate(45deg) translateX(-100%)';
-      console.log('🔧 Fallback aplicado a tarjeta individual');
+      ////console.log('🔧 Fallback aplicado a tarjeta individual');
     }
   }
   
@@ -43,11 +43,11 @@
     existingCards.forEach(card => {
       applyCardOptimizations(card);
     });
-    console.log(`🔧 Optimizaciones aplicadas a ${existingCards.length} tarjetas existentes`);
+    ////console.log(`🔧 Optimizaciones aplicadas a ${existingCards.length} tarjetas existentes`);
   }
   
   document.addEventListener('DOMContentLoaded', function() {
-    console.log('🛠️ Hardware page loaded with GSAP optimizations');
+    ////console.log('🛠️ Hardware page loaded with GSAP optimizations');
     
     // Las animaciones principales ya se manejan en hardware-animations.js
     // Solo mantenemos funcionalidad específica que no está en GSAP
@@ -59,7 +59,7 @@
         mutations.forEach(function(mutation) {
           mutation.addedNodes.forEach(function(node) {
             if (node.nodeType === 1 && node.classList.contains('ios-hardware-card')) {
-              console.log('👀 Nueva tarjeta detectada, aplicando animación GSAP...');
+              ////console.log('👀 Nueva tarjeta detectada, aplicando animación GSAP...');
               
               // Usar animación GSAP para nueva tarjeta
               if (window.HardwareAnimations) {
@@ -77,10 +77,10 @@
         subtree: true
       });
       
-      console.log('👀 Observer configurado para detectar nuevas tarjetas');
+      ////console.log('👀 Observer configurado para detectar nuevas tarjetas');
     }
     
-    console.log('✅ Hardware page optimizations applied successfully');
+    ////console.log('✅ Hardware page optimizations applied successfully');
   });
 </script>
 {% endblock %}
@@ -633,22 +633,22 @@
 <script>
 // Initialize modals when page loads
 function initializeModals() {
-  console.log('🚀 Initializing modals...');
+  ////console.log('🚀 Initializing modals...');
   
   if (window.modalManager) {
     // Setup all modals in the page
     const modalIds = ['hardwareModal', 'viewHardwareModal', 'toggleHardwareModal', 'clientUpdateModal', 'locationModal'];
     modalIds.forEach(modalId => {
       window.modalManager.setupModal(modalId);
-      console.log(`✅ Modal ${modalId} configured`);
+      ////console.log(`✅ Modal ${modalId} configured`);
     });
   } else {
-    console.warn('⚠️ ModalManager not available');
+    ////console.warn('⚠️ ModalManager not available');
   }
   
   // Ensure theme is properly applied
   if (window.ThemeManager) {
-    console.log('✅ ThemeManager available, theme should be persistent');
+    ////console.log('✅ ThemeManager available, theme should be persistent');
   }
 }
 
@@ -659,7 +659,7 @@ window.currentLocationUrl = null;
 
 // Function to extract coordinates from different URL formats
 function extractCoordinates(url) {
-  console.log('🔍 Extracting coordinates from URL:', url);
+  ////console.log('🔍 Extracting coordinates from URL:', url);
   
   // OpenStreetMap format: https://www.openstreetmap.org/#map=15/40.7128/-74.0060
   let match = url.match(/#map=(\d+)\/([-\d\.]+)\/([-\d\.]+)/);
@@ -669,7 +669,7 @@ function extractCoordinates(url) {
       lng: parseFloat(match[3]),
       zoom: parseInt(match[1])
     };
-    console.log('✅ OpenStreetMap format matched:', result);
+    ////console.log('✅ OpenStreetMap format matched:', result);
     return result;
   }
   
@@ -681,7 +681,7 @@ function extractCoordinates(url) {
       lng: parseFloat(match[2]),
       zoom: parseInt(match[3])
     };
-    console.log('✅ Google Maps @ format matched:', result);
+    ////console.log('✅ Google Maps @ format matched:', result);
     return result;
   }
   
@@ -693,7 +693,7 @@ function extractCoordinates(url) {
       lng: parseFloat(match[2]),
       zoom: 15
     };
-    console.log('✅ Google Maps search format matched:', result);
+    ////console.log('✅ Google Maps search format matched:', result);
     return result;
   }
   
@@ -709,34 +709,34 @@ function extractCoordinates(url) {
         lng: lng,
         zoom: 15
       };
-      console.log('✅ Fallback lat,lng pattern matched:', result);
+      ////console.log('✅ Fallback lat,lng pattern matched:', result);
       return result;
     }
   }
   
-  console.log('❌ No coordinates found in URL');
+  ////console.log('❌ No coordinates found in URL');
   return null;
 }
 
 // Function to initialize Leaflet map
 function initializeLeafletMap(lat, lng, zoom = 15, hardwareName = 'Hardware') {
-  console.log('📍 Initializing Leaflet map with params:', { lat, lng, zoom, hardwareName });
+  //console.log('📍 Initializing Leaflet map with params:', { lat, lng, zoom, hardwareName });
   
   const mapContainer = document.getElementById('locationMap');
   if (!mapContainer) {
-    console.error('❌ Map container not found!');
+    //console.error('❌ Map container not found!');
     return;
   }
   
-  console.log('✅ Map container found:', mapContainer);
+  //console.log('✅ Map container found:', mapContainer);
   
   // Clear any existing map
   if (currentMap) {
-    console.log('🧹 Removing existing map');
+    //console.log('🧹 Removing existing map');
     try {
       currentMap.remove();
     } catch (e) {
-      console.warn('⚠️ Error removing previous map:', e);
+      //console.warn('⚠️ Error removing previous map:', e);
     }
     currentMap = null;
     currentMarker = null;
@@ -752,7 +752,7 @@ function initializeLeafletMap(lat, lng, zoom = 15, hardwareName = 'Hardware') {
     // Wait a bit for DOM to be ready
     setTimeout(() => {
       try {
-        console.log('🌐 Creating new Leaflet map...');
+        //console.log('🌐 Creating new Leaflet map...');
         
         // Ensure the container is visible and has dimensions
         mapContainer.style.height = '600px';
@@ -767,7 +767,7 @@ function initializeLeafletMap(lat, lng, zoom = 15, hardwareName = 'Hardware') {
           attributionControl: true
         });
         
-        console.log('🗺️ Adding OpenStreetMap tiles...');
+        //console.log('🗺️ Adding OpenStreetMap tiles...');
         
         // Add OpenStreetMap tiles with error handling
         const tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -777,13 +777,13 @@ function initializeLeafletMap(lat, lng, zoom = 15, hardwareName = 'Hardware') {
         });
         
         tileLayer.on('tileerror', function(error) {
-          console.warn('⚠️ Tile loading error:', error);
+          //console.warn('⚠️ Tile loading error:', error);
         });
         
         tileLayer.addTo(currentMap);
         
         // Add marker
-        console.log('📍 Adding marker...');
+        //console.log('📍 Adding marker...');
         currentMarker = L.marker([lat, lng], {
           title: hardwareName
         }).addTo(currentMap);
@@ -797,11 +797,11 @@ function initializeLeafletMap(lat, lng, zoom = 15, hardwareName = 'Hardware') {
           </div>
         `).openPopup();
         
-        console.log('✅ Leaflet map successfully initialized!');
+        //console.log('✅ Leaflet map successfully initialized!');
         
         // Hide loading spinner once map is ready
         setTimeout(() => {
-          console.log('🎯 Map fully loaded, hiding spinner...');
+          //console.log('🎯 Map fully loaded, hiding spinner...');
           // No need to call hideMapLoadingSpinner since the map is now replacing the content
         }, 50);
         
@@ -809,7 +809,7 @@ function initializeLeafletMap(lat, lng, zoom = 15, hardwareName = 'Hardware') {
         setTimeout(() => {
           if (currentMap) {
             currentMap.invalidateSize(true);
-            console.log('🔄 Map size invalidated (first time)');
+            //console.log('🔄 Map size invalidated (first time)');
           }
         }, 100);
         
@@ -817,7 +817,7 @@ function initializeLeafletMap(lat, lng, zoom = 15, hardwareName = 'Hardware') {
           if (currentMap) {
             currentMap.invalidateSize(true);
             currentMap.setView([lat, lng], zoom);
-            console.log('🔄 Map size invalidated (second time) and view reset');
+            //console.log('🔄 Map size invalidated (second time) and view reset');
           }
         }, 500);
         
@@ -825,12 +825,12 @@ function initializeLeafletMap(lat, lng, zoom = 15, hardwareName = 'Hardware') {
         setTimeout(() => {
           if (currentMap) {
             currentMap.invalidateSize(true);
-            console.log('🔄 Final map resize');
+            //console.log('🔄 Final map resize');
           }
         }, 1000);
         
       } catch (error) {
-        console.error('💥 Error creating Leaflet map:', error);
+        //console.error('💥 Error creating Leaflet map:', error);
         
         // Fallback: show error message in map container
         mapContainer.innerHTML = `
@@ -849,7 +849,7 @@ function initializeLeafletMap(lat, lng, zoom = 15, hardwareName = 'Hardware') {
     }, 200);
     
   } catch (error) {
-    console.error('💥 Error in map initialization wrapper:', error);
+    //console.error('💥 Error in map initialization wrapper:', error);
     
     // Show error in container
     mapContainer.innerHTML = `
@@ -868,10 +868,10 @@ function initializeLeafletMap(lat, lng, zoom = 15, hardwareName = 'Hardware') {
 
 // Function to show loading spinner for map
 function showMapLoadingSpinner(container) {
-  console.log('🔄 Showing map loading spinner...');
+  //console.log('🔄 Showing map loading spinner...');
   
   if (!container) {
-    console.error('❌ Container not provided for spinner');
+    //console.error('❌ Container not provided for spinner');
     return;
   }
   
@@ -958,28 +958,28 @@ function showMapLoadingSpinner(container) {
     document.head.appendChild(style);
   }
   
-  console.log('✅ Map loading spinner displayed');
+  //console.log('✅ Map loading spinner displayed');
 }
 
 // Function to hide loading spinner and show map
 function hideMapLoadingSpinner(container) {
-  console.log('🎯 Hiding map loading spinner...');
+  //console.log('🎯 Hiding map loading spinner...');
   
   if (!container) {
-    console.error('❌ Container not provided for hiding spinner');
+    //console.error('❌ Container not provided for hiding spinner');
     return;
   }
   
   // Clear the loading content
   container.innerHTML = '';
   
-  console.log('✅ Map loading spinner hidden');
+  //console.log('✅ Map loading spinner hidden');
 }
 
 // Function to open location modal - WITH PROFESSIONAL ANIMATIONS
 function openLocationModal() {
   if (!window.currentLocationUrl) {
-    console.error('No location URL available');
+    //console.error('No location URL available');
     return;
   }
   
@@ -1012,14 +1012,14 @@ function openLocationModal() {
                 window.locationModalAnimations.showMapLoaded(mapContainer);
               }, 500); // Wait for map to initialize
             } catch (error) {
-              console.error('Error initializing map:', error);
+              //console.error('Error initializing map:', error);
               window.locationModalAnimations.showMapError(mapContainer, 'Error al cargar el mapa');
             }
           }, 200);
         });
       } else {
         // Fallback to basic modal opening
-        console.warn('⚠️ Professional animations not available, using fallback');
+        //console.warn('⚠️ Professional animations not available, using fallback');
         if (window.modalManager) {
           window.modalManager.openModal('locationModal');
         } else {
@@ -1033,9 +1033,9 @@ function openLocationModal() {
         }, 200);
       }
       
-      console.log('📍 Location modal opened with coordinates:', coords);
+      //console.log('📍 Location modal opened with coordinates:', coords);
     } else {
-      console.error('Could not extract coordinates from URL:', window.currentLocationUrl);
+      //console.error('Could not extract coordinates from URL:', window.currentLocationUrl);
       // Fallback: open in new tab
       window.open(window.currentLocationUrl, '_blank', 'noopener,noreferrer');
     }
@@ -1069,7 +1069,7 @@ function closeLocationModal() {
       }
     }, 300);
     
-    console.log('📍 Location modal closed');
+    //console.log('📍 Location modal closed');
   }
 }
 
@@ -1077,21 +1077,21 @@ function closeLocationModal() {
 function openInNewTab() {
   if (window.currentLocationUrl) {
     window.open(window.currentLocationUrl, '_blank', 'noopener,noreferrer');
-    console.log('📍 Location opened in new tab:', window.currentLocationUrl);
+    //console.log('📍 Location opened in new tab:', window.currentLocationUrl);
   }
 }
 
 // Function to open location modal directly from card
 function openLocationModalFromCard(hardwareId, locationUrl) {
   if (!locationUrl || locationUrl.trim() === '') {
-    console.error('No location URL provided');
+    //console.error('No location URL provided');
     return;
   }
   
   // Decode HTML entities
   const decodedUrl = locationUrl.replace(/\\&quot;/g, '"').replace(/\\&#39;/g, "'");
   
-  console.log('📍 Opening location modal from card:', hardwareId, decodedUrl);
+  //console.log('📍 Opening location modal from card:', hardwareId, decodedUrl);
   
   // Store the URL globally
   window.currentLocationUrl = decodedUrl;
@@ -1111,7 +1111,7 @@ function openLocationModalFromCard(hardwareId, locationUrl) {
   
   // If no coordinates found, show error and don't open modal
   if (!coords) {
-    console.error('❌ No se pudieron extraer coordenadas de la URL:', decodedUrl);
+    //console.error('❌ No se pudieron extraer coordenadas de la URL:', decodedUrl);
     alert('Error: No se pudo determinar la ubicación del hardware.');
     return;
   }
@@ -1126,7 +1126,7 @@ function openLocationModalFromCard(hardwareId, locationUrl) {
       subtitle.textContent = coords ? `Ubicación de ${hardwareName}` : `${hardwareName} - Ubicación no disponible`;
     }
     
-    console.log('🗺️ Opening modal...');
+    //console.log('🗺️ Opening modal...');
     
     // USE MODAL MANAGER - SAME AS EDIT MODAL
     if (window.modalManager) {
@@ -1141,14 +1141,14 @@ function openLocationModalFromCard(hardwareId, locationUrl) {
     // Add fade-in animation and initialize map
     setTimeout(() => {
       modal.classList.add('modal-show');
-      console.log('🗺️ Initializing Leaflet map with coords:', coords);
+      //console.log('🗺️ Initializing Leaflet map with coords:', coords);
       // Initialize Leaflet map after modal is visible
       initializeLeafletMap(coords.lat, coords.lng, coords.zoom, hardwareName);
     }, 100);
     
-    console.log('📍 Location modal opened with Leaflet map:', coords);
+    //console.log('📍 Location modal opened with Leaflet map:', coords);
   } else {
-    console.error('❌ Modal not found!');
+    //console.error('❌ Modal not found!');
   }
 }
 
@@ -1189,10 +1189,10 @@ function loadHardwareDataIntoForm(hardware) {
         if (input) {
           input.value = value || '';
         } else {
-          console.warn(`Input con ID '${inputId}' no encontrado`);
+          //console.warn(`Input con ID '${inputId}' no encontrado`);
         }
       } catch (e) {
-        console.error(`Error al establecer valor en input '${inputId}':`, e);
+        //console.error(`Error al establecer valor en input '${inputId}':`, e);
       }
     };
     
@@ -1206,13 +1206,13 @@ function loadHardwareDataIntoForm(hardware) {
           const parsed = JSON.parse(hardware.datos);
           datos = parsed.datos || parsed;
         } catch (e) {
-          console.warn('Error parsing datos string:', e);
+          //console.warn('Error parsing datos string:', e);
           datos = {};
         }
       }
     }
     
-    console.log('📊 Datos extraídos para formulario:', datos);
+    //console.log('📊 Datos extraídos para formulario:', datos);
     
     // Llenar el formulario con los datos reales
     setInputValue('hardwareName', getSafeValue(hardware, 'nombre'));
@@ -1277,17 +1277,17 @@ function loadHardwareDataIntoForm(hardware) {
                        getSafeValue(hardware, 'descripcion');
     setInputValue('hardwareDescription', description);
     
-    console.log('✅ Datos cargados en el formulario correctamente');
+    //console.log('✅ Datos cargados en el formulario correctamente');
     
   } catch (error) {
-    console.error('💥 Error al cargar datos en el formulario:', error);
+    //console.error('💥 Error al cargar datos en el formulario:', error);
     loadDummyDataIntoForm(); // Fallback a datos dummy
   }
 }
 
 // Función para cargar datos dummy en caso de error
 function loadDummyDataIntoForm() {
-  console.log('⚠️ Cargando datos dummy en el formulario');
+  //console.log('⚠️ Cargando datos dummy en el formulario');
   
   const setInputValue = (inputId, value) => {
     const input = document.getElementById(inputId);
@@ -1338,51 +1338,51 @@ let currentViewingHardware = null;
 
 // Función de utilidad para debuggear estructuras de datos
 function debugHardwareStructure(hardware, context = 'Unknown') {
-  console.group(`🔍 Debug Hardware Structure - ${context}`);
-  console.log('📊 Objeto completo:', hardware);
-  console.log('📋 Tipo de objeto:', typeof hardware);
-  console.log('🔑 Claves principales:', Object.keys(hardware || {}));
+  //console.group(`🔍 Debug Hardware Structure - ${context}`);
+  //console.log('📊 Objeto completo:', hardware);
+  //console.log('📋 Tipo de objeto:', typeof hardware);
+  //console.log('🔑 Claves principales:', Object.keys(hardware || {}));
   
   if (hardware) {
     // Verificar estructura de datos
-    console.log('📝 Nombre:', hardware.nombre || hardware.name || 'No encontrado');
-    console.log('📂 Tipo:', hardware.tipo || hardware.type || 'No encontrado');
-    console.log('🏢 Empresa:', hardware.empresa_nombre || hardware.company || 'No encontrado');
-    console.log('📍 Sede:', hardware.sede || hardware.location || 'No encontrado');
-    console.log('✅ Activa:', hardware.activa || hardware.active || 'No encontrado');
+    //console.log('📝 Nombre:', hardware.nombre || hardware.name || 'No encontrado');
+    //console.log('📂 Tipo:', hardware.tipo || hardware.type || 'No encontrado');
+    //console.log('🏢 Empresa:', hardware.empresa_nombre || hardware.company || 'No encontrado');
+    //console.log('📍 Sede:', hardware.sede || hardware.location || 'No encontrado');
+    //console.log('✅ Activa:', hardware.activa || hardware.active || 'No encontrado');
     
     // Verificar estructura de datos anidados
     if (hardware.datos) {
-      console.log('📦 Datos anidados tipo:', typeof hardware.datos);
+      //console.log('📦 Datos anidados tipo:', typeof hardware.datos);
       if (typeof hardware.datos === 'string') {
         try {
           const parsed = JSON.parse(hardware.datos);
-          console.log('📝 Datos parseados:', parsed);
-          console.log('🔑 Claves de datos parseados:', Object.keys(parsed || {}));
+          //console.log('📝 Datos parseados:', parsed);
+          //console.log('🔑 Claves de datos parseados:', Object.keys(parsed || {}));
         } catch (e) {
-          console.warn('⚠️ Error al parsear datos string:', e);
+          //console.warn('⚠️ Error al parsear datos string:', e);
         }
       } else if (typeof hardware.datos === 'object') {
-        console.log('📦 Datos como objeto:', hardware.datos);
-        console.log('🔑 Claves de datos:', Object.keys(hardware.datos || {}));
+        //console.log('📦 Datos como objeto:', hardware.datos);
+        //console.log('🔑 Claves de datos:', Object.keys(hardware.datos || {}));
         
         if (hardware.datos.datos) {
-          console.log('📦 Datos.datos:', hardware.datos.datos);
-          console.log('🔑 Claves de datos.datos:', Object.keys(hardware.datos.datos || {}));
+          //console.log('📦 Datos.datos:', hardware.datos.datos);
+          //console.log('🔑 Claves de datos.datos:', Object.keys(hardware.datos.datos || {}));
         }
       }
     } else {
-      console.log('❌ No hay campo "datos"');
+      //console.log('❌ No hay campo "datos"');
     }
   }
   
-  console.groupEnd();
+  //console.groupEnd();
 }
 
 // Función para mostrar los detalles del hardware en el modal
 function showHardwareDetails(hardware) {
   try {
-    console.log('📋 Datos completos del hardware recibidos:', hardware);
+    //console.log('📋 Datos completos del hardware recibidos:', hardware);
     
     // Debug de la estructura de datos
     debugHardwareStructure(hardware, 'showHardwareDetails');
@@ -1402,7 +1402,7 @@ function showHardwareDetails(hardware) {
         }
         return current !== null && current !== undefined ? current : defaultValue;
       } catch (e) {
-        console.warn(`Error accessing path ${path}:`, e);
+        //console.warn(`Error accessing path ${path}:`, e);
         return defaultValue;
       }
     };
@@ -1414,10 +1414,10 @@ function showHardwareDetails(hardware) {
         if (element) {
           element.textContent = value;
         } else {
-          console.warn(`Element with ID '${elementId}' not found`);
+          //console.warn(`Element with ID '${elementId}' not found`);
         }
       } catch (e) {
-        console.error(`Error setting text for element '${elementId}':`, e);
+        //console.error(`Error setting text for element '${elementId}':`, e);
       }
     };
     
@@ -1433,13 +1433,13 @@ function showHardwareDetails(hardware) {
           const parsed = JSON.parse(hardware.datos);
           datos = parsed.datos || parsed;
         } catch (e) {
-          console.warn('Error parsing datos string:', e);
+          //console.warn('Error parsing datos string:', e);
           datos = {};
         }
       }
     }
     
-    console.log('📊 Datos extraídos para mostrar:', datos);
+    //console.log('📊 Datos extraídos para mostrar:', datos);
     
     // Llenar los campos del modal con validaciones defensivas
     setElementText('viewHardwareName', getSafeValue(hardware, 'nombre'));
@@ -1536,7 +1536,7 @@ function showHardwareDetails(hardware) {
           fechaCreacion = fechaRaw; // Usar valor original si no se puede parsear
         }
       } catch (e) {
-        console.warn('Error parsing date:', e);
+        //console.warn('Error parsing date:', e);
         fechaCreacion = fechaRaw; // Usar valor original en caso de error
       }
     }
@@ -1562,10 +1562,10 @@ function showHardwareDetails(hardware) {
       modal.classList.remove('hidden');
     }
     
-    console.log('✅ Modal de detalles mostrado correctamente');
+    //console.log('✅ Modal de detalles mostrado correctamente');
     
   } catch (error) {
-    console.error('💥 Error al mostrar detalles del hardware:', error);
+    //console.error('💥 Error al mostrar detalles del hardware:', error);
     
     // Mostrar un modal de error o alerta
     alert('Error al cargar los detalles del hardware. Por favor, inténtalo de nuevo.');
@@ -1605,7 +1605,7 @@ let toggleModalData = {
 };
 
 function showConfirmToggleModal(hardwareId, newStatus) {
-  console.log('🎯 Showing toggle modal for:', hardwareId, 'newStatus:', newStatus);
+  //console.log('🎯 Showing toggle modal for:', hardwareId, 'newStatus:', newStatus);
   
   toggleModalData.hardwareId = hardwareId;
   toggleModalData.newStatus = newStatus;
@@ -1620,17 +1620,17 @@ function showConfirmToggleModal(hardwareId, newStatus) {
   const confirmIcon = document.getElementById('toggleConfirmIcon');
   
   // Debug: log all elements
-  console.log('📋 Modal elements:', {
-    modal: modal ? 'Found' : 'NOT FOUND',
-    container: container ? 'Found' : 'NOT FOUND',
-    icon: icon ? 'Found' : 'NOT FOUND',
-    title: title ? 'Found' : 'NOT FOUND',
-    message: message ? 'Found' : 'NOT FOUND',
-    confirmText: confirmText ? 'Found' : 'NOT FOUND'
-  });
+  //console.log('📋 Modal elements:', {
+  //   modal: modal ? 'Found' : 'NOT FOUND',
+  //   container: container ? 'Found' : 'NOT FOUND',
+  //   icon: icon ? 'Found' : 'NOT FOUND',
+  //   title: title ? 'Found' : 'NOT FOUND',
+  //   message: message ? 'Found' : 'NOT FOUND',
+  //   confirmText: confirmText ? 'Found' : 'NOT FOUND'
+  // });
 
   if (!modal || !container || !title || !message) {
-    console.error('❌ Modal elements missing!');
+    //console.error('❌ Modal elements missing!');
     return;
   }
 
@@ -1661,9 +1661,9 @@ function showConfirmToggleModal(hardwareId, newStatus) {
     document.body.classList.add('modal-open');
   }
   
-  console.log('✅ Modal should now be visible');
-  console.log('📊 Modal classes:', modal.className);
-  console.log('📊 Modal display:', modal.style.display);
+  //console.log('✅ Modal should now be visible');
+  //console.log('📊 Modal classes:', modal.className);
+  //console.log('📊 Modal display:', modal.style.display);
 
   // Simple animation without complex GSAP for debugging
   if (typeof gsap !== 'undefined') {
@@ -1675,7 +1675,7 @@ function showConfirmToggleModal(hardwareId, newStatus) {
       ease: "power2.out"
     });
   } else {
-    console.warn('⚠️ GSAP not loaded, using CSS animation');
+    //console.warn('⚠️ GSAP not loaded, using CSS animation');
     container.style.transform = 'scale(1)';
     container.style.opacity = '1';
   }
@@ -1683,7 +1683,7 @@ function showConfirmToggleModal(hardwareId, newStatus) {
 
 // Close toggle modal with animation
 function closeToggleModal() {
-  console.log('🔄 Closing toggle modal');
+  //console.log('🔄 Closing toggle modal');
   
   const modal = document.getElementById('toggleHardwareModal');
   const container = document.getElementById('toggleModalContainer');
@@ -1691,7 +1691,7 @@ function closeToggleModal() {
   const confirmBtn = document.getElementById('toggleConfirmBtn');
   
   if (!modal) {
-    console.error('❌ Modal not found when trying to close');
+    //console.error('❌ Modal not found when trying to close');
     return;
   }
   
@@ -1749,7 +1749,7 @@ function closeToggleModal() {
     toggleModalData.hardwareId = null;
     toggleModalData.newStatus = null;
     
-    console.log('✅ Toggle modal closed and fully reset');
+    //console.log('✅ Toggle modal closed and fully reset');
   }
 }
 
@@ -1773,14 +1773,14 @@ function confirmToggleHardware() {
         // Restore button on error
         confirmBtn.innerHTML = originalContent;
         confirmBtn.disabled = false;
-        console.error('Error in toggle operation:', error);
+        //console.error('Error in toggle operation:', error);
       });
   }
 }
 
 // Show toggle success feedback
 function showToggleSuccess(activated) {
-  console.log('✅ Showing toggle success for:', activated ? 'activate' : 'deactivate');
+  //console.log('✅ Showing toggle success for:', activated ? 'activate' : 'deactivate');
   
   const container = document.getElementById('toggleModalContainer');
   const icon = document.getElementById('toggleModalIcon');
@@ -1790,7 +1790,7 @@ function showToggleSuccess(activated) {
   const buttons = document.querySelector('.toggle-modal-buttons');
   
   if (!icon || !title || !message || !buttons) {
-    console.error('❌ Toggle success elements missing!');
+    //console.error('❌ Toggle success elements missing!');
     closeToggleModal();
     return;
   }
@@ -1836,7 +1836,7 @@ function showToggleSuccess(activated) {
 
 // Client Update Modal Functions
 function showClientUpdateModal(message = 'El cliente se ha actualizado exitosamente.') {
-  console.log('🔄 Showing client update modal:', message);
+  //console.log('🔄 Showing client update modal:', message);
   
   const modal = document.getElementById('clientUpdateModal');
   const container = document.getElementById('updateModalContainer');
@@ -1846,7 +1846,7 @@ function showClientUpdateModal(message = 'El cliente se ha actualizado exitosame
   const messageEl = document.getElementById('updateModalMessage');
   
   if (!modal || !container || !title || !messageEl) {
-    console.error('❌ Client update modal elements missing!');
+    //console.error('❌ Client update modal elements missing!');
     return;
   }
   
@@ -1875,7 +1875,7 @@ function showClientUpdateModal(message = 'El cliente se ha actualizado exitosame
     document.body.classList.add('modal-open');
   }
   
-  console.log('✅ Client update modal should now be visible');
+  //console.log('✅ Client update modal should now be visible');
   
   // Simple animation
   if (typeof gsap !== 'undefined') {
@@ -1902,18 +1902,18 @@ function showClientUpdateModal(message = 'El cliente se ha actualizado exitosame
   }
   
   // NO auto-close - wait for user interaction
-  console.log('⏰ Modal will stay open until user clicks Aceptar or clicks outside');
+  //console.log('⏰ Modal will stay open until user clicks Aceptar or clicks outside');
 }
 
 // Close update modal
 function closeUpdateModal() {
-  console.log('🔄 Closing client update modal');
+  //console.log('🔄 Closing client update modal');
   
   const modal = document.getElementById('clientUpdateModal');
   const container = document.getElementById('updateModalContainer');
   
   if (!modal) {
-    console.error('❌ Client update modal not found when trying to close');
+    //console.error('❌ Client update modal not found when trying to close');
     return;
   }
   
@@ -1943,44 +1943,44 @@ function closeUpdateModal() {
       document.body.classList.remove('modal-open');
     }
     
-    console.log('✅ Client update modal closed');
+    //console.log('✅ Client update modal closed');
   }
 }
 
 // Test function for modal (debugging)
 function testToggleModal() {
-  console.log('🧪 Testing toggle modal...');
+  //console.log('🧪 Testing toggle modal...');
   showConfirmToggleModal('test-id', true);
 }
 
 // Test function for client update modal
 function testUpdateModal() {
-  console.log('🧪 Testing client update modal...');
+  //console.log('🧪 Testing client update modal...');
   showClientUpdateModal('Hardware actualizado exitosamente para prueba');
 }
 
 // Test function for location modal (debugging)
 function testLocationModal() {
-  console.log('🧪 Testing location modal...');
+  //console.log('🧪 Testing location modal...');
   
   // Set up test data
   window.currentLocationUrl = 'https://www.google.com/maps/@40.7128,-74.0060,15z';
   
   const modal = document.getElementById('locationModal');
-  console.log('🔍 Modal element:', modal);
-  console.log('🔍 Modal classes:', modal ? modal.className : 'NOT FOUND');
-  console.log('🔍 GSAP available:', typeof gsap !== 'undefined');
-  console.log('🔍 LocationModalAnimations available:', !!window.locationModalAnimations);
+  //console.log('🔍 Modal element:', modal);
+  //console.log('🔍 Modal classes:', modal ? modal.className : 'NOT FOUND');
+  //console.log('🔍 GSAP available:', typeof gsap !== 'undefined');
+  //console.log('🔍 LocationModalAnimations available:', !!window.locationModalAnimations);
   
   if (window.locationModalAnimations) {
-    console.log('🎬 Using professional animations');
+    //console.log('🎬 Using professional animations');
     const mapContainer = document.getElementById('locationMap');
     window.locationModalAnimations.showMapLoading(mapContainer);
     window.locationModalAnimations.openModal(modal, () => {
-      console.log('🎬 Modal animation completed');
+      //console.log('🎬 Modal animation completed');
     });
   } else {
-    console.log('⚠️ Fallback: opening modal directly');
+    //console.log('⚠️ Fallback: opening modal directly');
     modal.classList.remove('hidden');
     modal.style.display = 'flex';
     modal.style.opacity = '1';
@@ -1999,7 +1999,7 @@ let currentToken = null;
 
 // Check modal elements on page load
 function checkModalElements() {
-  console.log('🔍 Checking modal elements...');
+  //console.log('🔍 Checking modal elements...');
   
   const toggleElements = {
     toggleModal: document.getElementById('toggleHardwareModal'),
@@ -2018,21 +2018,21 @@ function checkModalElements() {
     updateButton: document.querySelector('.client-update-button')
   };
   
-  console.log('🔵 Toggle Modal Elements:');
+  //console.log('🔵 Toggle Modal Elements:');
   Object.entries(toggleElements).forEach(([name, element]) => {
     if (element) {
-      console.log(`  ✅ ${name}: Found`);
+      //console.log(`  ✅ ${name}: Found`);
     } else {
-      console.error(`  ❌ ${name}: NOT FOUND`);
+      //console.error(`  ❌ ${name}: NOT FOUND`);
     }
   });
   
-  console.log('🟢 Update Modal Elements:');
+  //console.log('🟢 Update Modal Elements:');
   Object.entries(updateElements).forEach(([name, element]) => {
     if (element) {
-      console.log(`  ✅ ${name}: Found`);
+      //console.log(`  ✅ ${name}: Found`);
     } else {
-      console.error(`  ❌ ${name}: NOT FOUND`);
+      //console.error(`  ❌ ${name}: NOT FOUND`);
     }
   });
   
@@ -2044,7 +2044,7 @@ fetch('/proxy/health')
   .then(response => {
     if (response.ok) {
       apiClient = new EndpointTestClient('/proxy');
-      console.log('API Client initialized');
+      //console.log('API Client initialized');
       
       // Check modal elements
       setTimeout(checkModalElements, 1000);
@@ -2053,7 +2053,7 @@ fetch('/proxy/health')
       initializeFilterListeners();
       
       // CARGAR HARDWARE INMEDIATAMENTE PARA ADMINISTRADOR
-      console.log('✅ API Client listo, cargando hardware de administrador...');
+      //console.log('✅ API Client listo, cargando hardware de administrador...');
       loadHardware();
     }
   })
@@ -2064,13 +2064,13 @@ let isLoadingHardware = false;
 
 async function loadHardware() {
   if (isLoadingHardware) {
-    console.warn('⚠️ loadHardware ya en progreso, saltando llamada duplicada...');
+    //console.warn('⚠️ loadHardware ya en progreso, saltando llamada duplicada...');
     return;
   }
   
   isLoadingHardware = true;
   try {
-    console.log('🔄 Cargando hardware...');
+    //console.log('🔄 Cargando hardware...');
     
     // Determinar qué endpoint usar basado en el filtro de inactivos
     const includeInactiveFilter = document.getElementById('includeInactiveFilter');
@@ -2078,18 +2078,18 @@ async function loadHardware() {
     
     let response;
     if (includeInactive) {
-      console.log('🌐 Haciendo petición a:', '/proxy/api/hardware/all-including-inactive');
+      //console.log('🌐 Haciendo petición a:', '/proxy/api/hardware/all-including-inactive');
       response = await apiClient.get_hardware_list_including_inactive();
     } else {
-      console.log('🌐 Haciendo petición a:', '/proxy/api/hardware');
+      //console.log('🌐 Haciendo petición a:', '/proxy/api/hardware');
       response = await apiClient.get_hardware_list();
     }
     
-    console.log('📡 Respuesta recibida - Status:', response.status, 'OK:', response.ok);
+    //console.log('📡 Respuesta recibida - Status:', response.status, 'OK:', response.ok);
     
     if (!response.ok) {
       if (response.status === 401) {
-        console.error('❌ Error 401: No autorizado. Redirigiendo al login...');
+        //console.error('❌ Error 401: No autorizado. Redirigiendo al login...');
         window.location.href = '/login';
         return;
       }
@@ -2098,27 +2098,27 @@ async function loadHardware() {
     
     const data = await response.json();
     
-    console.log('📦 Datos COMPLETOS recibidos del servidor:');
-    console.log(JSON.stringify(data, null, 2));
-    console.log('🔍 Tipo de dato recibido:', typeof data);
-    console.log('🔍 Es array data?:', Array.isArray(data));
-    console.log('🔍 Es array data.data?:', Array.isArray(data.data));
-    console.log('🔍 Incluye inactivos?:', includeInactive);
+    //console.log('📦 Datos COMPLETOS recibidos del servidor:');
+    //console.log(JSON.stringify(data, null, 2));
+    //console.log('🔍 Tipo de dato recibido:', typeof data);
+    //console.log('🔍 Es array data?:', Array.isArray(data));
+    //console.log('🔍 Es array data.data?:', Array.isArray(data.data));
+    //console.log('🔍 Incluye inactivos?:', includeInactive);
     
     if (data.success) {
-      console.log(`✅ Hardware cargado exitosamente: ${data.data.length} elementos`);
-      console.log('📋 Primer elemento de la lista (si existe):');
+      //console.log(`✅ Hardware cargado exitosamente: ${data.data.length} elementos`);
+      //console.log('📋 Primer elemento de la lista (si existe):');
       if (data.data && data.data.length > 0) {
-        console.log(JSON.stringify(data.data[0], null, 2));
+        //console.log(JSON.stringify(data.data[0], null, 2));
         
         // Verificar si realmente es hardware o empresas
         const firstItem = data.data[0];
         if (firstItem.hasOwnProperty('nombre') && firstItem.hasOwnProperty('tipo')) {
-          console.log('✅ Confirmado: Los datos son HARDWARE');
+          //console.log('✅ Confirmado: Los datos son HARDWARE');
         } else if (firstItem.hasOwnProperty('nombre') && firstItem.hasOwnProperty('ubicacion')) {
-          console.error('❌ ERROR: Los datos son EMPRESAS, no hardware!');
+          //console.error('❌ ERROR: Los datos son EMPRESAS, no hardware!');
         } else {
-          console.warn('⚠️ ADVERTENCIA: Estructura de datos desconocida');
+          //console.warn('⚠️ ADVERTENCIA: Estructura de datos desconocida');
         }
       }
       
@@ -2126,12 +2126,12 @@ async function loadHardware() {
       renderHardware(data.data);
       updateStats(data);
     } else {
-      console.error('❌ Error en la respuesta del servidor:', data.errors);
+      //console.error('❌ Error en la respuesta del servidor:', data.errors);
       // Mostrar mensaje de error al usuario
       renderHardware([]);
     }
   } catch (error) {
-    console.error('💥 Error al cargar hardware:', error);
+    //console.error('💥 Error al cargar hardware:', error);
     // Mostrar mensaje de error al usuario
     renderHardware([]);
   } finally {
@@ -2153,7 +2153,7 @@ async function createHardwareAPI(hardwareData) {
       showEnhancedNotification('Error: ' + (data.errors ? data.errors.join(', ') : 'Error desconocido'), 'error');
     }
   } catch (error) {
-    console.error('Error al crear hardware:', error);
+    //console.error('Error al crear hardware:', error);
     showEnhancedNotification('Error de conexión', 'error');
   }
 }
@@ -2172,7 +2172,7 @@ async function updateHardwareAPI(id, hardwareData) {
       showEnhancedNotification('Error: ' + (data.errors ? data.errors.join(', ') : 'Error desconocido'), 'error');
     }
   } catch (error) {
-    console.error('Error al actualizar hardware:', error);
+    //console.error('Error al actualizar hardware:', error);
     showEnhancedNotification('Error de conexión', 'error');
   }
 }
@@ -2190,20 +2190,20 @@ async function toggleHardwareStatusAPI(id, activa) {
     const data = await response.json();
     
     if (data.success) {
-      console.log(`✅ Hardware ${action}do exitosamente:`, data.message);
+      //console.log(`✅ Hardware ${action}do exitosamente:`, data.message);
       // Mostrar notificación mejorada
       showEnhancedNotification(data.message || `Hardware ${action}do exitosamente`, 'success');
       // Recargar hardware para reflejar el cambio
       loadHardware();
       return Promise.resolve(data);
     } else {
-      console.error('❌ Error al cambiar estado:', data.errors);
+      //console.error('❌ Error al cambiar estado:', data.errors);
       const errorMsg = 'Error: ' + (data.errors ? data.errors.join(', ') : 'Error desconocido');
       showEnhancedNotification(errorMsg, 'error');
       return Promise.reject(new Error(errorMsg));
     }
   } catch (error) {
-    console.error('💥 Error al cambiar estado del hardware:', error);
+    //console.error('💥 Error al cambiar estado del hardware:', error);
     showEnhancedNotification('Error de conexión', 'error');
     return Promise.reject(error);
   }
@@ -2297,21 +2297,21 @@ function closeNotification(button) {
 
 // Render hardware data
 function renderHardware(hardwareList) {
-    console.log('🎨 === INICIANDO RENDERIZADO DE HARDWARE ===');
-    console.log('⚙️ Estado inicial del DOM (por clase):', {
-      isHidden: document.getElementById('locationModal').classList.contains('hidden'),
-      isModalOpen: document.getElementById('locationModal').classList.contains('modal-open'),
-      isModalOpening: document.getElementById('locationModal').classList.contains('modal-opening')
-    });
-  console.log('📋 hardwareList recibida:', hardwareList);
-  console.log('🔢 Tipo de hardwareList:', typeof hardwareList);
-  console.log('🔢 Es array:', Array.isArray(hardwareList));
-  console.log('🔢 Longitud:', hardwareList ? hardwareList.length : 'N/A');
+    //console.log('🎨 === INICIANDO RENDERIZADO DE HARDWARE ===');
+    //console.log('⚙️ Estado inicial del DOM (por clase):', {
+    //   isHidden: document.getElementById('locationModal').classList.contains('hidden'),
+    //   isModalOpen: document.getElementById('locationModal').classList.contains('modal-open'),
+    //   isModalOpening: document.getElementById('locationModal').classList.contains('modal-opening')
+    // });
+  //console.log('📋 hardwareList recibida:', hardwareList);
+  //console.log('🔢 Tipo de hardwareList:', typeof hardwareList);
+  //console.log('🔢 Es array:', Array.isArray(hardwareList));
+  //console.log('🔢 Longitud:', hardwareList ? hardwareList.length : 'N/A');
   
   const gridContainer = document.getElementById('hardwareGrid');
   
   if (!gridContainer) {
-    console.error('❌ No se encontró el contenedor del grid');
+    //console.error('❌ No se encontró el contenedor del grid');
     return;
   }
   
@@ -2319,18 +2319,18 @@ function renderHardware(hardwareList) {
   gridContainer.className = 'ios-hardware-grid';
   
   // Clear existing content more thoroughly
-  console.log('🧹 Limpiando contenido existente...');
+  //console.log('🧹 Limpiando contenido existente...');
   gridContainer.innerHTML = '';
   
   // Remove any existing filter messages
   const existingFilterMessage = document.getElementById('filterEmptyMessage');
   if (existingFilterMessage) {
-    console.log('🧹 Removiendo mensaje de filtro existente');
+    //console.log('🧹 Removiendo mensaje de filtro existente');
     existingFilterMessage.remove();
   }
   const existingFilterMessageTable = document.getElementById('filterEmptyMessageTable');
   if (existingFilterMessageTable) {
-    console.log('🧹 Removiendo mensaje de tabla existente');
+    //console.log('🧹 Removiendo mensaje de tabla existente');
     existingFilterMessageTable.remove();
   }
   
@@ -2353,16 +2353,16 @@ function renderHardware(hardwareList) {
     return;
   }
   
-  console.log(`🔨 Creando ${hardwareList.length} elementos de hardware...`);
+  //console.log(`🔨 Creando ${hardwareList.length} elementos de hardware...`);
   
   hardwareList.forEach((hardware, index) => {
     try {
-      console.log(`📦 Procesando hardware ${index + 1}:`, hardware);
+      //console.log(`📦 Procesando hardware ${index + 1}:`, hardware);
       
       // Verificar si ya existe un elemento con este ID para evitar duplicados
       const existingGridItem = document.querySelector(`[data-hardware-id="${hardware._id}"]`);
       if (existingGridItem) {
-        console.warn(`⚠️ Hardware ${hardware._id} ya existe en el DOM, saltando...`);
+        //console.warn(`⚠️ Hardware ${hardware._id} ya existe en el DOM, saltando...`);
         return;
       }
       
@@ -2376,37 +2376,37 @@ function renderHardware(hardwareList) {
         gridCard.className = 'ios-hardware-card hardware-item';
         
         gridContainer.appendChild(gridCard);
-        console.log(`✅ Card ${index + 1} agregada al grid`);
+        //console.log(`✅ Card ${index + 1} agregada al grid`);
       } else {
-        console.error(`❌ No se pudo crear card para hardware ${index + 1}`);
+        //console.error(`❌ No se pudo crear card para hardware ${index + 1}`);
       }
     } catch (error) {
-      console.error(`💥 Error renderizando hardware ${index + 1}:`, error, hardware);
+      //console.error(`💥 Error renderizando hardware ${index + 1}:`, error, hardware);
     }
   });
   
-  console.log(`🎉 === RENDERIZADO COMPLETADO ===`);
-  console.log(`  - Grid tiene: ${gridContainer.children.length} elementos`);
+  //console.log(`🎉 === RENDERIZADO COMPLETADO ===`);
+  //console.log(`  - Grid tiene: ${gridContainer.children.length} elementos`);
   
   // Verificar que los elementos tengan las clases correctas
   const gridItems = document.querySelectorAll('.hardware-item');
-  console.log(`🔍 Elementos renderizados:`);
-  console.log(`  - Grid items (.hardware-item): ${gridItems.length}`);
+  //console.log(`🔍 Elementos renderizados:`);
+  //console.log(`  - Grid items (.hardware-item): ${gridItems.length}`);
   
   if (gridItems.length > 0) {
-    console.log('🔍 Primer elemento del grid:');
+    //console.log('🔍 Primer elemento del grid:');
     const firstGridItem = gridItems[0];
-    console.log('  - Clases:', firstGridItem.className);
-    console.log('  - data-name:', firstGridItem.dataset.name);
-    console.log('  - data-type:', firstGridItem.dataset.type);
-    console.log('  - data-status:', firstGridItem.dataset.status);
-    console.log('  - data-activa:', firstGridItem.dataset.activa);
+    //console.log('  - Clases:', firstGridItem.className);
+    //console.log('  - data-name:', firstGridItem.dataset.name);
+    //console.log('  - data-type:', firstGridItem.dataset.type);
+    //console.log('  - data-status:', firstGridItem.dataset.status);
+    //console.log('  - data-activa:', firstGridItem.dataset.activa);
   }
   
   // Apply current filters after rendering
-  console.log('🕰️ Programando aplicación de filtros en 100ms...');
+  //console.log('🕰️ Programando aplicación de filtros en 100ms...');
   setTimeout(() => {
-    console.log('🕰️ Aplicando filtros ahora...');
+    //console.log('🕰️ Aplicando filtros ahora...');
     applyCurrentFilters();
   }, 100);
 }
@@ -2414,7 +2414,7 @@ function renderHardware(hardwareList) {
 // Create hardware card for grid view
 function createHardwareCard(hardware) {
   try {
-    console.log('🏗️ Creando card para hardware:', hardware);
+    //console.log('🏗️ Creando card para hardware:', hardware);
     
     const div = document.createElement('div');
     div.className = 'ios-hardware-card hardware-item';
@@ -2424,7 +2424,7 @@ function createHardwareCard(hardware) {
     const status = datos.status || 'available';
     const stock = datos.stock || 0;
     
-    console.log('📊 Datos extraídos:', { datos, status, stock });
+    //console.log('📊 Datos extraídos:', { datos, status, stock });
     
     // Set data attributes for filtering
     div.setAttribute('data-type', hardware.tipo || '');
@@ -2436,12 +2436,12 @@ function createHardwareCard(hardware) {
     div.setAttribute('data-stock', stock);
     div.setAttribute('data-activa', hardware.activa !== false ? 'true' : 'false');
     
-    console.log('🔍 Atributos de filtro establecidos:', {
-      'data-type': hardware.tipo || '',
-      'data-status': status,
-      'data-name': (hardware.nombre || '').toLowerCase(),
-      'data-activa': hardware.activa !== false ? 'true' : 'false'
-    });
+    //console.log('🔍 Atributos de filtro establecidos:', {
+    //   'data-type': hardware.tipo || '',
+    //   'data-status': status,
+    //   'data-name': (hardware.nombre || '').toLowerCase(),
+    //   'data-activa': hardware.activa !== false ? 'true' : 'false'
+    // });
     
     // Determine status display and iOS classes
     let statusClass = 'ios-status-available';
@@ -2516,11 +2516,11 @@ function createHardwareCard(hardware) {
     // Aplicar optimizaciones de performance a la tarjeta creada
     applyCardOptimizations(div);
     
-    console.log('✅ Card creada exitosamente con optimizaciones');
+    //console.log('✅ Card creada exitosamente con optimizaciones');
     return div;
     
   } catch (error) {
-    console.error('💥 Error creando card:', error);
+    //console.error('💥 Error creando card:', error);
     return null;
   }
 }
@@ -2576,38 +2576,38 @@ async function loadHardwareTypes() {
     const data = await response.json();
     
     if (data.success) {
-      console.log('Hardware types loaded:', data);
+      //console.log('Hardware types loaded:', data);
       populateTypeDropdowns(data.data);
     } else {
-      console.error('Error loading hardware types:', data.errors);
+      //console.error('Error loading hardware types:', data.errors);
     }
   } catch (error) {
-    console.error('Error al cargar tipos de hardware:', error);
+    //console.error('Error al cargar tipos de hardware:', error);
   }
 }
 
 // Load empresas from backend
 async function loadEmpresas() {
   try {
-    console.log('🏢 Cargando empresas desde /proxy/api/empresas...');
+    //console.log('🏢 Cargando empresas desde /proxy/api/empresas...');
     const response = await apiClient.get_empresas();
     const data = await response.json();
     
     if (data.success) {
-      console.log('🏢 Empresas cargadas:', data.count, 'empresas');
-      console.log('🏢 Primera empresa (si existe):');
+      //console.log('🏢 Empresas cargadas:', data.count, 'empresas');
+      //console.log('🏢 Primera empresa (si existe):');
       if (data.data && data.data.length > 0) {
-        console.log(JSON.stringify(data.data[0], null, 2));
+        //console.log(JSON.stringify(data.data[0], null, 2));
       }
       // Store empresas for form usage
       window.empresas = data.data;
       // Populate empresa dropdown
       populateEmpresaDropdown(data.data);
     } else {
-      console.error('❌ Error loading empresas:', data.errors);
+      //console.error('❌ Error loading empresas:', data.errors);
     }
   } catch (error) {
-    console.error('💥 Error al cargar empresas:', error);
+    //console.error('💥 Error al cargar empresas:', error);
   }
 }
 
@@ -2616,7 +2616,7 @@ function populateEmpresaDropdown(empresas) {
   const empresaSelect = document.getElementById('hardwareEmpresa');
   
   if (!empresaSelect) {
-    console.warn('⚠️ Elemento hardwareEmpresa no encontrado');
+    //console.warn('⚠️ Elemento hardwareEmpresa no encontrado');
     return;
   }
   
@@ -2631,7 +2631,7 @@ function populateEmpresaDropdown(empresas) {
     empresaSelect.appendChild(option);
   });
   
-  console.log(`✅ ${empresas.length} empresas agregadas al dropdown`);
+  //console.log(`✅ ${empresas.length} empresas agregadas al dropdown`);
 }
 
 // Load sedes for selected empresa
@@ -2640,7 +2640,7 @@ function loadSedesByEmpresa() {
   const sedeSelect = document.getElementById('hardwareSede');
   
   if (!empresaSelect || !sedeSelect) {
-    console.warn('⚠️ Elementos de empresa o sede no encontrados');
+    //console.warn('⚠️ Elementos de empresa o sede no encontrados');
     return;
   }
   
@@ -2651,7 +2651,7 @@ function loadSedesByEmpresa() {
   sedeSelect.disabled = true;
   
   if (!selectedEmpresaId) {
-    console.log('🏢 No hay empresa seleccionada');
+    //console.log('🏢 No hay empresa seleccionada');
     return;
   }
   
@@ -2659,11 +2659,11 @@ function loadSedesByEmpresa() {
   const selectedEmpresa = window.empresas?.find(emp => emp._id === selectedEmpresaId);
   
   if (!selectedEmpresa) {
-    console.error('❌ Empresa seleccionada no encontrada:', selectedEmpresaId);
+    //console.error('❌ Empresa seleccionada no encontrada:', selectedEmpresaId);
     return;
   }
   
-  console.log('🏢 Empresa seleccionada:', selectedEmpresa);
+  //console.log('🏢 Empresa seleccionada:', selectedEmpresa);
   
   // Check if empresa has sedes
   if (selectedEmpresa.sedes && Array.isArray(selectedEmpresa.sedes)) {
@@ -2675,7 +2675,7 @@ function loadSedesByEmpresa() {
     });
     
     sedeSelect.disabled = false;
-    console.log(`✅ ${selectedEmpresa.sedes.length} sedes cargadas para ${selectedEmpresa.nombre}`);
+    //console.log(`✅ ${selectedEmpresa.sedes.length} sedes cargadas para ${selectedEmpresa.nombre}`);
   } else {
     // If no sedes array, create a default "Principal" option
     const defaultOption = document.createElement('option');
@@ -2684,7 +2684,7 @@ function loadSedesByEmpresa() {
     sedeSelect.appendChild(defaultOption);
     
     sedeSelect.disabled = false;
-    console.log('✅ Sede por defecto "Principal" agregada');
+    //console.log('✅ Sede por defecto "Principal" agregada');
   }
 }
 
@@ -2742,17 +2742,17 @@ function clearFilters() {
 }
 
 function filterHardware() {
-  console.log('🚀 === INICIANDO FILTRO DE HARDWARE ===');
+  //console.log('🚀 === INICIANDO FILTRO DE HARDWARE ===');
   
   const searchInput = document.getElementById('searchInput');
   const typeFilterEl = document.getElementById('typeFilter');
   const statusFilterEl = document.getElementById('statusFilter');
   
   if (!searchInput || !typeFilterEl || !statusFilterEl) {
-    console.error('❌ Elementos de filtro no encontrados:');
-    console.error('  - searchInput:', searchInput ? 'SI' : 'NO');
-    console.error('  - typeFilter:', typeFilterEl ? 'SI' : 'NO');
-    console.error('  - statusFilter:', statusFilterEl ? 'SI' : 'NO');
+    //console.error('❌ Elementos de filtro no encontrados:');
+    //console.error('  - searchInput:', searchInput ? 'SI' : 'NO');
+    //console.error('  - typeFilter:', typeFilterEl ? 'SI' : 'NO');
+    //console.error('  - statusFilter:', statusFilterEl ? 'SI' : 'NO');
     return;
   }
   
@@ -2760,25 +2760,25 @@ function filterHardware() {
   const type = typeFilterEl.value;
   const status = statusFilterEl.value;
   
-  console.log('🔍 Valores de filtros:');
-  console.log('  - search:', search);
-  console.log('  - type:', type);
-  console.log('  - status:', status);
+  //console.log('🔍 Valores de filtros:');
+  //console.log('  - search:', search);
+  //console.log('  - type:', type);
+  //console.log('  - status:', status);
   
   // Filtrar elementos del grid
   const gridItems = document.querySelectorAll('.hardware-item');
   const allItems = [...gridItems];
   let visibleCount = 0;
   
-  console.log(`🔍 Elementos encontrados:`);
-  console.log(`  - Grid items (.hardware-item): ${gridItems.length}`);
-  console.log(`  - Total elementos: ${allItems.length}`);
+  //console.log(`🔍 Elementos encontrados:`);
+  //console.log(`  - Grid items (.hardware-item): ${gridItems.length}`);
+  //console.log(`  - Total elementos: ${allItems.length}`);
   
   if (allItems.length === 0) {
-    console.error('❌ NO HAY ELEMENTOS DE HARDWARE EN EL DOM!');
-    console.log('🔍 Verificando contenedor de hardware...');
+    //console.error('❌ NO HAY ELEMENTOS DE HARDWARE EN EL DOM!');
+    //console.log('🔍 Verificando contenedor de hardware...');
     const gridContainer = document.getElementById('hardwareGrid');
-    console.log('  - gridContainer children:', gridContainer ? gridContainer.children.length : 'NO ENCONTRADO');
+    //console.log('  - gridContainer children:', gridContainer ? gridContainer.children.length : 'NO ENCONTRADO');
     return;
   }
   
@@ -2828,15 +2828,15 @@ function filterHardware() {
       item.style.display = '';
       item.classList.remove('hidden');
       visibleCount++;
-      console.log(`✅ Elemento ${index + 1} visible: ${name}`);
+      //console.log(`✅ Elemento ${index + 1} visible: ${name}`);
     } else {
       item.style.display = 'none';
       item.classList.add('hidden');
-      console.log(`❌ Elemento ${index + 1} oculto: ${name}`);
+      //console.log(`❌ Elemento ${index + 1} oculto: ${name}`);
     }
   });
   
-  console.log(`📊 Filtrado completado: ${visibleCount} de ${allItems.length} elementos visibles`);
+  //console.log(`📊 Filtrado completado: ${visibleCount} de ${allItems.length} elementos visibles`);
   
   // Show/hide empty message for filters
   showFilterEmptyMessage(visibleCount);
@@ -2888,19 +2888,19 @@ function updateFilterStatus(visibleCount, totalCount) {
   
   // You can add a status message here if needed
   if (hasFilters && visibleCount !== totalCount) {
-    console.log(`Filtering: ${visibleCount} of ${totalCount} items shown`);
+    ////console.log(`Filtering: ${visibleCount} of ${totalCount} items shown`);
   }
 }
 
 // Helper function to apply current filters (without triggering events)
 function applyCurrentFilters() {
-  console.log('🔄 Aplicando filtros actuales...');
+  ////console.log('🔄 Aplicando filtros actuales...');
   filterHardware();
 }
 
 // Función de recarga manual para debugging
 function reloadHardwareManual() {
-  console.log('🔄 RECARGA MANUAL DE HARDWARE INICIADA');
+  ////console.log('🔄 RECARGA MANUAL DE HARDWARE INICIADA');
   isLoadingHardware = false; // Reset flag
   loadHardware();
 }
@@ -2913,62 +2913,62 @@ let filtersInitialized = false;
 
 function initializeFilterListeners() {
   if (filtersInitialized) {
-    console.log('⚠️ Event listeners ya inicializados, saltando...');
+    ////console.log('⚠️ Event listeners ya inicializados, saltando...');
     return;
   }
   
-  console.log('🎯 Inicializando event listeners de filtros...');
+  ////console.log('🎯 Inicializando event listeners de filtros...');
   
   const searchInput = document.getElementById('searchInput');
   const typeFilter = document.getElementById('typeFilter');
   const statusFilter = document.getElementById('statusFilter');
   const includeInactiveFilter = document.getElementById('includeInactiveFilter');
   
-  console.log('🔍 Elementos encontrados:');
-  console.log('  - searchInput:', searchInput ? 'SI' : 'NO');
-  console.log('  - typeFilter:', typeFilter ? 'SI' : 'NO');
-  console.log('  - statusFilter:', statusFilter ? 'SI' : 'NO');
-  console.log('  - includeInactiveFilter:', includeInactiveFilter ? 'SI' : 'NO');
+  ////console.log('🔍 Elementos encontrados:');
+  ////console.log('  - searchInput:', searchInput ? 'SI' : 'NO');
+  ////console.log('  - typeFilter:', typeFilter ? 'SI' : 'NO');
+  ////console.log('  - statusFilter:', statusFilter ? 'SI' : 'NO');
+  ////console.log('  - includeInactiveFilter:', includeInactiveFilter ? 'SI' : 'NO');
   
   if (searchInput) {
     searchInput.addEventListener('input', function() {
-      console.log('🔍 TRIGGER: searchInput changed to:', searchInput.value);
+      ////console.log('🔍 TRIGGER: searchInput changed to:', searchInput.value);
       filterHardware();
     });
   } else {
-    console.error('❌ No se encontró searchInput');
+    ////console.error('❌ No se encontró searchInput');
   }
   
   if (typeFilter) {
     typeFilter.addEventListener('change', function() {
-      console.log('🔍 TRIGGER: typeFilter changed to:', typeFilter.value);
+      ////console.log('🔍 TRIGGER: typeFilter changed to:', typeFilter.value);
       filterHardware();
     });
   } else {
-    console.error('❌ No se encontró typeFilter');
+    ////console.error('❌ No se encontró typeFilter');
   }
   
   if (statusFilter) {
     statusFilter.addEventListener('change', function() {
-      console.log('🔍 TRIGGER: statusFilter changed to:', statusFilter.value);
+      ////console.log('🔍 TRIGGER: statusFilter changed to:', statusFilter.value);
       filterHardware();
     });
   } else {
-    console.error('❌ No se encontró statusFilter');
+    ////console.error('❌ No se encontró statusFilter');
   }
   
   if (includeInactiveFilter) {
     includeInactiveFilter.addEventListener('change', function() {
-      console.log('🔍 TRIGGER: includeInactiveFilter changed to:', includeInactiveFilter.value);
+      ////console.log('🔍 TRIGGER: includeInactiveFilter changed to:', includeInactiveFilter.value);
       // Forzar el uso de la función local `loadHardware` de este template
       loadHardware();
     });
   } else {
-    console.error('❌ No se encontró includeInactiveFilter');
+    ////console.error('❌ No se encontró includeInactiveFilter');
   }
   
   filtersInitialized = true;
-  console.log('✅ Event listeners de filtros inicializados');
+  ////console.log('✅ Event listeners de filtros inicializados');
 }
 
 // Initialize on DOM load

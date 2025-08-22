@@ -17,7 +17,7 @@ class SuperAdminDashboard {
         this.client = new EndpointTestClient('/proxy');
         
         // No necesitamos manejar tokens manualmente con cookies
-        console.log('Using cookie-based authentication');
+        ////console.log('Using cookie-based authentication');
     }
 
     isAuthenticated() {
@@ -27,17 +27,17 @@ class SuperAdminDashboard {
     }
 
     async loadDashboardData() {
-        console.log('🔄 Loading Super Admin Dashboard data...');
+        ////console.log('🔄 Loading Super Admin Dashboard data...');
         
         // Check if user is authenticated
         if (!this.isAuthenticated()) {
-            console.warn('⚠️ No valid authentication cookie found. Redirecting to login.');
+            //console.warn('⚠️ No valid authentication cookie found. Redirecting to login.');
             this.redirectToLogin();
             return;
         }
         
         try {
-            console.log('🚀 Starting concurrent API calls...');
+            //console.log('🚀 Starting concurrent API calls...');
             
             // Load all dashboard sections concurrently
             const [
@@ -58,16 +58,16 @@ class SuperAdminDashboard {
                 this.loadPerformanceMetrics()
             ]);
 
-            console.log('📦 All API calls completed. Results:');
-            console.log('Stats:', stats);
-            console.log('Recent Companies:', recentCompanies);
-            console.log('Recent Users:', recentUsers);
-            console.log('Activity Chart:', activityChart);
-            console.log('Distribution Chart:', distributionChart);
-            console.log('Hardware Stats:', hardwareStats);
-            console.log('Performance Metrics:', performanceMetrics);
+            //console.log('📦 All API calls completed. Results:');
+            //console.log('Stats:', stats);
+            //console.log('Recent Companies:', recentCompanies);
+            //console.log('Recent Users:', recentUsers);
+            //console.log('Activity Chart:', activityChart);
+            //console.log('Distribution Chart:', distributionChart);
+            //console.log('Hardware Stats:', hardwareStats);
+            //console.log('Performance Metrics:', performanceMetrics);
 
-            console.log('🔄 Updating UI sections...');
+            //console.log('🔄 Updating UI sections...');
             
             // Update all sections
             this.updateStatsSection(stats);
@@ -81,31 +81,31 @@ class SuperAdminDashboard {
             // Hide login required message if it's showing
             this.hideLoginRequired();
 
-            console.log('✅ Super Admin Dashboard data loaded successfully');
+            //console.log('✅ Super Admin Dashboard data loaded successfully');
             
         } catch (error) {
-            console.error('❌ Error loading dashboard data:', error);
+            //console.error('❌ Error loading dashboard data:', error);
             this.showErrorMessage('Error loading dashboard data. Please try again.');
         }
     }
 
     async loadStats() {
         try {
-            console.log('📊 Loading dashboard stats...');
+            //console.log('📊 Loading dashboard stats...');
             const response = await this.client.get_super_admin_dashboard_stats();
             if (response.ok) {
                 const result = await response.json();
-                console.log('📊 Dashboard stats response:', result);
+                //console.log('📊 Dashboard stats response:', result);
                 // Extract data from the wrapper object
                 const data = result.data || result;
-                console.log('📊 Extracted stats data:', data);
+                //console.log('📊 Extracted stats data:', data);
                 return data;
             }
-            console.error('📊 Stats API error:', response.status, response.statusText);
+            //console.error('📊 Stats API error:', response.status, response.statusText);
             this.handleApiError(response, 'loadStats');
             return null;
         } catch (error) {
-            console.error('📊 Error loading stats:', error);
+            //console.error('📊 Error loading stats:', error);
             this.showErrorMessage('Error de conexión cargando estadísticas.');
             return null;
         }
@@ -113,21 +113,21 @@ class SuperAdminDashboard {
 
     async loadRecentCompanies() {
         try {
-            console.log('🏢 Loading recent companies...');
+            //console.log('🏢 Loading recent companies...');
             const response = await this.client.get_super_admin_recent_companies();
             if (response.ok) {
                 const result = await response.json();
-                console.log('🏢 Recent companies response:', result);
+                //console.log('🏢 Recent companies response:', result);
                 // Extract data from the wrapper object
                 const data = result.data || result;
-                console.log('🏢 Extracted companies data:', data);
+                //console.log('🏢 Extracted companies data:', data);
                 return data;
             }
-            console.error('🏢 Recent companies API error:', response.status, response.statusText);
+            //console.error('🏢 Recent companies API error:', response.status, response.statusText);
             this.handleApiError(response, 'loadRecentCompanies');
             return [];
         } catch (error) {
-            console.error('🏢 Error loading recent companies:', error);
+            //console.error('🏢 Error loading recent companies:', error);
             this.showErrorMessage('Error de conexión cargando empresas recientes.');
             return [];
         }
@@ -135,21 +135,21 @@ class SuperAdminDashboard {
 
     async loadRecentUsers() {
         try {
-            console.log('👥 Loading recent users...');
+            //console.log('👥 Loading recent users...');
             const response = await this.client.get_super_admin_recent_users();
             if (response.ok) {
                 const result = await response.json();
-                console.log('👥 Recent users response:', result);
+                //console.log('👥 Recent users response:', result);
                 // Extract data from the wrapper object
                 const data = result.data || result;
-                console.log('👥 Extracted users data:', data);
+                //console.log('👥 Extracted users data:', data);
                 return data;
             }
-            console.error('👥 Recent users API error:', response.status, response.statusText);
+            //console.error('👥 Recent users API error:', response.status, response.statusText);
             this.handleApiError(response, 'loadRecentUsers');
             return [];
         } catch (error) {
-            console.error('👥 Error loading recent users:', error);
+            //console.error('👥 Error loading recent users:', error);
             this.showErrorMessage('Error de conexión cargando usuarios recientes.');
             return [];
         }
@@ -157,21 +157,21 @@ class SuperAdminDashboard {
 
     async loadActivityChart() {
         try {
-            console.log('📈 Loading activity chart...');
+            //console.log('📈 Loading activity chart...');
             const response = await this.client.get_super_admin_activity_chart();
             if (response.ok) {
                 const result = await response.json();
-                console.log('📈 Activity chart response:', result);
+                //console.log('📈 Activity chart response:', result);
                 // Extract data from the wrapper object
                 const data = result.data || result;
-                console.log('📈 Extracted activity chart data:', data);
+                //console.log('📈 Extracted activity chart data:', data);
                 return data;
             }
-            console.error('📈 Activity chart API error:', response.status, response.statusText);
+            //console.error('📈 Activity chart API error:', response.status, response.statusText);
             this.handleApiError(response, 'loadActivityChart');
             return null;
         } catch (error) {
-            console.error('📈 Error loading activity chart:', error);
+            //console.error('📈 Error loading activity chart:', error);
             this.showErrorMessage('Error de conexión cargando gráfico de actividad.');
             return null;
         }
@@ -179,21 +179,21 @@ class SuperAdminDashboard {
 
     async loadDistributionChart() {
         try {
-            console.log('🍩 Loading distribution chart...');
+            //console.log('🍩 Loading distribution chart...');
             const response = await this.client.get_super_admin_distribution_chart();
             if (response.ok) {
                 const result = await response.json();
-                console.log('🍩 Distribution chart response:', result);
+                //console.log('🍩 Distribution chart response:', result);
                 // Extract data from the wrapper object
                 const data = result.data || result;
-                console.log('🍩 Extracted distribution chart data:', data);
+                //console.log('🍩 Extracted distribution chart data:', data);
                 return data;
             }
-            console.error('🍩 Distribution chart API error:', response.status, response.statusText);
+            //console.error('🍩 Distribution chart API error:', response.status, response.statusText);
             this.handleApiError(response, 'loadDistributionChart');
             return null;
         } catch (error) {
-            console.error('🍩 Error loading distribution chart:', error);
+            //console.error('🍩 Error loading distribution chart:', error);
             this.showErrorMessage('Error de conexión cargando gráfico de distribución.');
             return null;
         }
@@ -201,21 +201,21 @@ class SuperAdminDashboard {
 
     async loadHardwareStats() {
         try {
-            console.log('💻 Loading hardware stats...');
+            //console.log('💻 Loading hardware stats...');
             const response = await this.client.get_super_admin_hardware_stats();
             if (response.ok) {
                 const result = await response.json();
-                console.log('💻 Hardware stats response:', result);
+                //console.log('💻 Hardware stats response:', result);
                 // Extract data from the wrapper object
                 const data = result.data || result;
-                console.log('💻 Extracted hardware stats data:', data);
+                //console.log('💻 Extracted hardware stats data:', data);
                 return data;
             }
-            console.error('💻 Hardware stats API error:', response.status, response.statusText);
+            //console.error('💻 Hardware stats API error:', response.status, response.statusText);
             this.handleApiError(response, 'loadHardwareStats');
             return null;
         } catch (error) {
-            console.error('💻 Error loading hardware stats:', error);
+            //console.error('💻 Error loading hardware stats:', error);
             this.showErrorMessage('Error de conexión cargando estadísticas de hardware.');
             return null;
         }
@@ -223,21 +223,21 @@ class SuperAdminDashboard {
 
     async loadPerformanceMetrics() {
         try {
-            console.log('⚡ Loading performance metrics...');
+            //console.log('⚡ Loading performance metrics...');
             const response = await this.client.get_super_admin_performance_metrics();
             if (response.ok) {
                 const result = await response.json();
-                console.log('⚡ Performance metrics response:', result);
+                //console.log('⚡ Performance metrics response:', result);
                 // Extract data from the wrapper object
                 const data = result.data || result;
-                console.log('⚡ Extracted performance metrics data:', data);
+                //console.log('⚡ Extracted performance metrics data:', data);
                 return data;
             }
-            console.error('⚡ Performance metrics API error:', response.status, response.statusText);
+            //console.error('⚡ Performance metrics API error:', response.status, response.statusText);
             this.handleApiError(response, 'loadPerformanceMetrics');
             return null;
         } catch (error) {
-            console.error('⚡ Error loading performance metrics:', error);
+            //console.error('⚡ Error loading performance metrics:', error);
             this.showErrorMessage('Error de conexión cargando métricas de rendimiento.');
             return null;
         }
@@ -247,7 +247,7 @@ class SuperAdminDashboard {
     updateStatsSection(stats) {
         if (!stats) return;
 
-        console.log('Updating stats section with:', stats);
+        //console.log('Updating stats section with:', stats);
 
        
         // Update summary statistics - support different naming conventions
@@ -297,24 +297,24 @@ class SuperAdminDashboard {
         this.updateElement('#totalHardwareCount', totalHardware);
         this.updateElement('#availableHardwareCount', availableHardware);
         
-        console.log('About to update performance metrics:', { performance, avgPerformance });
+        //console.log('About to update performance metrics:', { performance, avgPerformance });
         this.updateElement('#performanceCount', performance);
         this.updateElement('#avgPerformanceCount', avgPerformance);
         
-        console.log('Stats section update completed');
+        //console.log('Stats section update completed');
         
         // Force refresh to ensure values are visible
         setTimeout(() => {
-            console.log('Checking final values:');
-            console.log('performanceCount element:', document.querySelector('#performanceCount')?.textContent);
-            console.log('avgPerformanceCount element:', document.querySelector('#avgPerformanceCount')?.textContent);
+            //console.log('Checking final values:');
+            //console.log('performanceCount element:', document.querySelector('#performanceCount')?.textContent);
+            //console.log('avgPerformanceCount element:', document.querySelector('#avgPerformanceCount')?.textContent);
         }, 100);
     }
 
     updateRecentCompaniesSection(companies) {
         if (!companies || !Array.isArray(companies)) return;
 
-        console.log('Updating recent companies with:', companies);
+        //console.log('Updating recent companies with:', companies);
 
         const container = document.querySelector('#recentEmpresasContainer');
         if (!container) return;
@@ -360,7 +360,7 @@ class SuperAdminDashboard {
     updateRecentUsersSection(users) {
         if (!users || !Array.isArray(users)) return;
 
-        console.log('Updating recent users with:', users);
+        //console.log('Updating recent users with:', users);
 
         const container = document.querySelector('#recentUsersContainer');
         if (!container) return;
@@ -411,7 +411,7 @@ class SuperAdminDashboard {
     updateActivityChart(data) {
         if (!data) return;
 
-        console.log('Updating activity chart with:', data);
+        //console.log('Updating activity chart with:', data);
 
         // Update activity chart using Chart.js or similar
         const ctx = document.getElementById('dashboardChart');
@@ -470,7 +470,7 @@ class SuperAdminDashboard {
     updateDistributionChart(data) {
         if (!data) return;
 
-        console.log('Updating distribution chart with:', data);
+        //console.log('Updating distribution chart with:', data);
 
         // Update distribution chart using Chart.js or similar
         const ctx = document.getElementById('distributionChart');
@@ -561,10 +561,10 @@ class SuperAdminDashboard {
     updateElement(selector, value) {
         const element = document.querySelector(selector);
         if (element) {
-            console.log(`Updating ${selector} with value:`, value);
+            //console.log(`Updating ${selector} with value:`, value);
             element.textContent = value;
         } else {
-            console.warn(`Element not found: ${selector}`);
+            //console.warn(`Element not found: ${selector}`);
         }
     }
 
@@ -599,7 +599,7 @@ class SuperAdminDashboard {
     }
 
     redirectToLogin() {
-        console.warn('🙫 Authentication required. Redirecting to login...');
+        //console.warn('🙫 Authentication required. Redirecting to login...');
         
         // Show message to user
         this.showErrorMessage('Sesión requerida. Redirigiendo al login...');
@@ -612,7 +612,7 @@ class SuperAdminDashboard {
     }
 
     handleUnauthorized() {
-        console.warn('🙫 Unauthorized access detected. Redirecting to login...');
+        //console.warn('🙫 Unauthorized access detected. Redirecting to login...');
         
         // Show message to user
         this.showErrorMessage('Sesión expirada. Redirigiendo al login...');
@@ -632,7 +632,7 @@ class SuperAdminDashboard {
             const response = await this.client.health();
             return response.ok;
         } catch (error) {
-            console.error('Connection test failed:', error);
+            //console.error('Connection test failed:', error);
             return false;
         }
     }
@@ -641,23 +641,23 @@ class SuperAdminDashboard {
     handleApiError(response, context = '') {
         switch (response.status) {
             case 401:
-                console.warn(`🚫 Unauthorized access in ${context}`);
+                //console.warn(`🚫 Unauthorized access in ${context}`);
                 this.handleUnauthorized();
                 break;
             case 403:
-                console.warn(`🚫 Forbidden access in ${context}`);
+                //console.warn(`🚫 Forbidden access in ${context}`);
                 this.showErrorMessage('No tienes permisos para acceder a esta información.');
                 break;
             case 404:
-                console.warn(`🔍 Resource not found in ${context}`);
+                //console.warn(`🔍 Resource not found in ${context}`);
                 this.showErrorMessage('El recurso solicitado no fue encontrado.');
                 break;
             case 500:
-                console.error(`🔥 Server error in ${context}`);
+                //console.error(`🔥 Server error in ${context}`);
                 this.showErrorMessage('Error interno del servidor. Inténtalo más tarde.');
                 break;
             default:
-                console.error(`❌ API error ${response.status} in ${context}`);
+                //console.error(`❌ API error ${response.status} in ${context}`);
                 this.showErrorMessage(`Error del servidor (${response.status}). Inténtalo más tarde.`);
         }
     }

@@ -417,7 +417,7 @@
 {% block page_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🏢 EMPRESA DASHBOARD: Panel empresarial inicializado');
+    ////console.log('🏢 EMPRESA DASHBOARD: Panel empresarial inicializado');
     
     // Configuración específica para empresas
     window.EMPRESA_ROLE = 'empresa';
@@ -453,10 +453,10 @@ function animateStatCards() {
             stagger: 0.1
         });
         
-        console.log('🎨 GSAP: Animaciones aplicadas a cards de estadísticas');
+        ////console.log('🎨 GSAP: Animaciones aplicadas a cards de estadísticas');
     } else {
         // Fallback SIN GSAP: asegurar visibilidad inmediata
-        console.log('⚡ FALLBACK: Aplicando visibilidad directa a cards (sin GSAP)');
+        ////console.log('⚡ FALLBACK: Aplicando visibilidad directa a cards (sin GSAP)');
         statCards.forEach(card => {
             card.style.opacity = '1';
             card.style.visibility = 'visible';
@@ -469,21 +469,21 @@ function animateStatCards() {
 // Función para cargar estadísticas generales del dashboard
 async function loadDashboardStats() {
     try {
-        console.log('📊 DASHBOARD: Cargando estadísticas generales...');
+        ////console.log('📊 DASHBOARD: Cargando estadísticas generales...');
         
         const empresaId = window.currentUser?.empresa_id || window.currentUser?.id;
         if (!empresaId) {
-            console.log('❌ DASHBOARD: No se pudo obtener ID de empresa');
+            //console.log('❌ DASHBOARD: No se pudo obtener ID de empresa');
             return;
         }
 
         // Simular carga de datos (reemplazar con endpoint real cuando esté disponible)
         await simulateStatsLoading();
         
-        console.log('✅ DASHBOARD: Estadísticas cargadas correctamente');
+        //console.log('✅ DASHBOARD: Estadísticas cargadas correctamente');
         
     } catch (error) {
-        console.error('❌ DASHBOARD: Error cargando estadísticas:', error);
+        //console.error('❌ DASHBOARD: Error cargando estadísticas:', error);
         showStatsError();
     }
 }
@@ -548,21 +548,21 @@ function showStatsError() {
 
 async function loadActiveAlertsForDashboard() {
     try {
-        console.log('🏢 DASHBOARD: Iniciando carga de alertas para dashboard principal');
+        //console.log('🏢 DASHBOARD: Iniciando carga de alertas para dashboard principal');
         
         // Obtener empresa_id del usuario actual
         const empresaId = window.currentUser?.empresa_id || window.currentUser?.id;
-        console.log('🏢 DASHBOARD: EmpresaId:', empresaId);
-        console.log('🏢 DASHBOARD: currentUser:', window.currentUser);
+        //console.log('🏢 DASHBOARD: EmpresaId:', empresaId);
+        //console.log('🏢 DASHBOARD: currentUser:', window.currentUser);
         
         if (!empresaId) {
-            console.log('🏢 DASHBOARD: No se pudo obtener el ID de empresa');
+            //console.log('🏢 DASHBOARD: No se pudo obtener el ID de empresa');
             showNoAlertsMessage();
             return;
         }
         
         const url = `/proxy/api/mqtt-alerts/empresa/${empresaId}/active-by-sede`;
-        console.log('🏢 DASHBOARD: URL:', url);
+        //console.log('🏢 DASHBOARD: URL:', url);
         
         const response = await fetch(url, {
             method: 'GET',
@@ -572,27 +572,27 @@ async function loadActiveAlertsForDashboard() {
             credentials: 'include'
         });
         
-        console.log('🏢 DASHBOARD: Response status:', response.status);
-        console.log('🏢 DASHBOARD: Response ok:', response.ok);
+        //console.log('🏢 DASHBOARD: Response status:', response.status);
+        //console.log('🏢 DASHBOARD: Response ok:', response.ok);
         
         if (!response.ok) {
-            console.log('🏢 DASHBOARD: Response no ok:', response.status, response.statusText);
+            //console.log('🏢 DASHBOARD: Response no ok:', response.status, response.statusText);
             showNoAlertsMessage();
             return;
         }
         
         const data = await response.json();
-        console.log('🏢 DASHBOARD: Data recibida:', data);
-        console.log('🏢 DASHBOARD: data.success:', data.success);
-        console.log('🏢 DASHBOARD: data.alertas_por_sede:', data.alertas_por_sede);
+        //console.log('🏢 DASHBOARD: Data recibida:', data);
+        //console.log('🏢 DASHBOARD: data.success:', data.success);
+        //console.log('🏢 DASHBOARD: data.alertas_por_sede:', data.alertas_por_sede);
         
         if (data.success && data.alertas_por_sede && Object.keys(data.alertas_por_sede).length > 0) {
-            console.log('🏢 DASHBOARD: Procesando alertas...');
+            //console.log('🏢 DASHBOARD: Procesando alertas...');
             
             // Convertir el objeto de alertas por sede en un array plano
             const allAlerts = [];
             Object.entries(data.alertas_por_sede).forEach(([sede, alertas]) => {
-                console.log(`🏢 DASHBOARD: Sede ${sede}: ${alertas.length} alertas`);
+                //console.log(`🏢 DASHBOARD: Sede ${sede}: ${alertas.length} alertas`);
                 alertas.forEach(alerta => {
                     allAlerts.push({
                         ...alerta,
@@ -601,25 +601,25 @@ async function loadActiveAlertsForDashboard() {
                 });
             });
             
-            console.log(`🏢 DASHBOARD: Total alertas: ${allAlerts.length}`);
+            //console.log(`🏢 DASHBOARD: Total alertas: ${allAlerts.length}`);
             
             // Ordenar por prioridad (crítica > alta > media > baja) y tomar las primeras 3
             const priorityOrder = { 'critica': 4, 'alta': 3, 'media': 2, 'baja': 1 };
             allAlerts.sort((a, b) => (priorityOrder[b.prioridad] || 0) - (priorityOrder[a.prioridad] || 0));
             
             const top3 = allAlerts.slice(0, 3);
-            console.log(`🏢 DASHBOARD: Top 3 alertas:`, top3);
+            //console.log(`🏢 DASHBOARD: Top 3 alertas:`, top3);
             
             renderAlertsInDashboard(top3);
         } else {
-            console.log('🏢 DASHBOARD: No hay alertas o estructura incorrecta');
-            console.log('🏢 DASHBOARD: data.success:', data.success);
-            console.log('🏢 DASHBOARD: alertas_por_sede keys:', data.alertas_por_sede ? Object.keys(data.alertas_por_sede) : 'null');
+            //console.log('🏢 DASHBOARD: No hay alertas o estructura incorrecta');
+            //console.log('🏢 DASHBOARD: data.success:', data.success);
+            //console.log('🏢 DASHBOARD: alertas_por_sede keys:', data.alertas_por_sede ? Object.keys(data.alertas_por_sede) : 'null');
             showNoAlertsMessage();
         }
         
     } catch (error) {
-        console.log('🏢 DASHBOARD: ERROR cargando alertas:', error);
+        //console.log('🏢 DASHBOARD: ERROR cargando alertas:', error);
         showNoAlertsMessage();
     }
 }

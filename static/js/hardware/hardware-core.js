@@ -135,9 +135,9 @@ class HardwareCore {
    */
   async editHardware(id) {
     try {
-      console.log('🔄 INICIANDO EDICIÓN DE HARDWARE:', id);
+      //console.log('🔄 INICIANDO EDICIÓN DE HARDWARE:', id);
       this.editingHardware = id;
-      console.log('🔍 this.editingHardware establecido a:', this.editingHardware);
+      //console.log('🔍 this.editingHardware establecido a:', this.editingHardware);
       
       // Set modal title and button text
       this.setElementText('modalTitle', 'Editar Hardware');
@@ -147,16 +147,16 @@ class HardwareCore {
       await this.loadHardwareDataForEdit(id);
       
       // Verify editing state before opening modal
-      console.log('🔍 Antes de abrir modal - this.editingHardware:', this.editingHardware);
+      //console.log('🔍 Antes de abrir modal - this.editingHardware:', this.editingHardware);
       
       // Open modal
       this.openModalWithScroll('hardwareModal');
       
       // Verify editing state after opening modal
-      console.log('🔍 Después de abrir modal - this.editingHardware:', this.editingHardware);
+      //console.log('🔍 Después de abrir modal - this.editingHardware:', this.editingHardware);
       
     } catch (error) {
-      console.error('💥 Error al abrir modal de edición:', error);
+      //console.error('💥 Error al abrir modal de edición:', error);
       this.showNotification('Error al abrir el modal de edición. Por favor, inténtalo de nuevo.', 'error');
     }
   }
@@ -166,7 +166,7 @@ class HardwareCore {
    */
   async loadHardwareDataForEdit(id) {
     try {
-      console.log('🔄 Cargando datos para editar hardware:', id);
+      //console.log('🔄 Cargando datos para editar hardware:', id);
       
       if (!this.apiClient) {
         throw new Error('API client no disponible');
@@ -181,14 +181,14 @@ class HardwareCore {
       const data = await response.json();
       
       if (data.success) {
-        console.log('📋 Datos del hardware cargados para edición:', data.data);
+        //console.log('📋 Datos del hardware cargados para edición:', data.data);
         this.loadHardwareDataIntoForm(data.data);
       } else {
-        console.warn('⚠️ Error en respuesta del API:', data.errors);
+        //console.warn('⚠️ Error en respuesta del API:', data.errors);
         this.loadDummyDataIntoForm(); // Fallback
       }
     } catch (error) {
-      console.error('💥 Error al cargar datos del hardware:', error);
+      //console.error('💥 Error al cargar datos del hardware:', error);
       this.loadDummyDataIntoForm(); // Fallback
     }
   }
@@ -216,62 +216,62 @@ class HardwareCore {
       };
 
       // Extract nested data with detailed logging
-      console.log('🔍 ESTRUCTURA COMPLETA DE DATOS:', JSON.stringify(hardware, null, 2));
+      //console.log('🔍 ESTRUCTURA COMPLETA DE DATOS:', JSON.stringify(hardware, null, 2));
       
       let datos = {};
       if (hardware.datos) {
-        console.log('📦 Campo datos encontrado, tipo:', typeof hardware.datos);
-        console.log('📦 Contenido de hardware.datos:', hardware.datos);
+        //console.log('📦 Campo datos encontrado, tipo:', typeof hardware.datos);
+        //console.log('📦 Contenido de hardware.datos:', hardware.datos);
         
         if (typeof hardware.datos === 'object') {
           // Check for multiple levels of nesting
           if (hardware.datos.datos) {
-            console.log('📦 Estructura anidada: hardware.datos.datos encontrada');
-            console.log('📦 Contenido de hardware.datos.datos:', hardware.datos.datos);
+            //console.log('📦 Estructura anidada: hardware.datos.datos encontrada');
+            //console.log('📦 Contenido de hardware.datos.datos:', hardware.datos.datos);
             
             // Check for even deeper nesting: hardware.datos.datos.datos
             if (hardware.datos.datos.datos) {
-              console.log('📦 Estructura TRIPLE anidada: hardware.datos.datos.datos encontrada');
-              console.log('📦 Contenido de hardware.datos.datos.datos:', hardware.datos.datos.datos);
+              //console.log('📦 Estructura TRIPLE anidada: hardware.datos.datos.datos encontrada');
+              //console.log('📦 Contenido de hardware.datos.datos.datos:', hardware.datos.datos.datos);
               datos = hardware.datos.datos.datos;
             } else {
-              console.log('📦 Usando hardware.datos.datos (sin triple anidado)');
+              //console.log('📦 Usando hardware.datos.datos (sin triple anidado)');
               datos = hardware.datos.datos;
             }
           } else {
-            console.log('📦 Usando hardware.datos directamente');
+            //console.log('📦 Usando hardware.datos directamente');
             datos = hardware.datos;
           }
         } else if (typeof hardware.datos === 'string') {
           try {
-            console.log('📦 Parseando datos string:', hardware.datos);
+            //console.log('📦 Parseando datos string:', hardware.datos);
             const parsed = JSON.parse(hardware.datos);
-            console.log('📦 Datos parseados:', parsed);
+            //console.log('📦 Datos parseados:', parsed);
             
             if (parsed.datos) {
-              console.log('📦 Estructura anidada en string: parsed.datos encontrada');
+              //console.log('📦 Estructura anidada en string: parsed.datos encontrada');
               // Check for triple nesting in parsed data too
               if (parsed.datos.datos) {
-                console.log('📦 Estructura TRIPLE anidada en string: parsed.datos.datos encontrada');
+                //console.log('📦 Estructura TRIPLE anidada en string: parsed.datos.datos encontrada');
                 datos = parsed.datos.datos;
               } else {
                 datos = parsed.datos;
               }
             } else {
-              console.log('📦 Usando parsed directamente');
+              //console.log('📦 Usando parsed directamente');
               datos = parsed;
             }
           } catch (e) {
-            console.warn('Error parsing datos string:', e);
+            //console.warn('Error parsing datos string:', e);
             datos = {};
           }
         }
       } else {
-        console.warn('⚠️ No hay campo "datos" en el hardware');
+        //console.warn('⚠️ No hay campo "datos" en el hardware');
       }
 
-      console.log('📊 Datos extraídos FINALES para formulario:', datos);
-      console.log('📊 Hardware completo recibido:', hardware);
+      //console.log('📊 Datos extraídos FINALES para formulario:', datos);
+      //console.log('📊 Hardware completo recibido:', hardware);
 
       // Fill form fields
       this.setInputValue('hardwareName', getSafeValue(hardware, 'nombre'));
@@ -282,9 +282,9 @@ class HardwareCore {
       const sedeValue = getSafeValue(hardware, 'sede');
       const direccionValue = getSafeValue(hardware, 'direccion');
       
-      console.log('🏢 Empresa ID del hardware:', empresaId);
-      console.log('🏢 Sede del hardware:', sedeValue);
-      console.log('📍 Dirección del hardware:', direccionValue);
+      //console.log('🏢 Empresa ID del hardware:', empresaId);
+      //console.log('🏢 Sede del hardware:', sedeValue);
+      //console.log('📍 Dirección del hardware:', direccionValue);
       
       if (empresaId) {
         // First, set the empresa select
@@ -293,12 +293,12 @@ class HardwareCore {
         // Wait for empresas to be loaded, then trigger sede loading
         const waitForEmpresas = () => {
           if (window.empresas && window.empresas.length > 0) {
-            console.log('🏢 Empresas disponibles:', window.empresas.length);
+            //console.log('🏢 Empresas disponibles:', window.empresas.length);
             
             // Validate that the empresa_id exists in the empresas list
             const selectedEmpresa = window.empresas.find(emp => emp._id === empresaId);
             if (selectedEmpresa) {
-              console.log('✅ Empresa encontrada:', selectedEmpresa.nombre);
+              //console.log('✅ Empresa encontrada:', selectedEmpresa.nombre);
               
               // Load sedes for this empresa
               this.loadSedesByEmpresa();
@@ -307,20 +307,20 @@ class HardwareCore {
               setTimeout(() => {
                 if (sedeValue) {
                   this.setInputValue('hardwareSede', sedeValue);
-                  console.log('✅ Sede configurada:', sedeValue);
+                  //console.log('✅ Sede configurada:', sedeValue);
                 } else {
-                  console.warn('⚠️ No se encontró sede para el hardware');
+                  //console.warn('⚠️ No se encontró sede para el hardware');
                 }
                 
                 // Set direccion value
                 if (direccionValue) {
                   this.setInputValue('hardwareDireccion', direccionValue);
-                  console.log('✅ Dirección configurada:', direccionValue);
+                  //console.log('✅ Dirección configurada:', direccionValue);
                 }
               }, 200);
             } else {
-              console.error('❌ Empresa con ID', empresaId, 'no encontrada en la lista de empresas');
-              console.error('❌ Empresas disponibles:', window.empresas.map(e => ({ id: e._id, nombre: e.nombre })));
+              //console.error('❌ Empresa con ID', empresaId, 'no encontrada en la lista de empresas');
+              //console.error('❌ Empresas disponibles:', window.empresas.map(e => ({ id: e._id, nombre: e.nombre })));
               // Reset empresa if not found
               this.setInputValue('hardwareEmpresa', '');
             }
@@ -333,34 +333,34 @@ class HardwareCore {
         // Start waiting for empresas
         waitForEmpresas();
       } else {
-        console.warn('⚠️ No se encontró empresa_id en el hardware');
+        //console.warn('⚠️ No se encontró empresa_id en el hardware');
       }
 
       // Brand with logging
       const brandValue = getSafeValue(datos, 'brand') || 
                         getSafeValue(datos, 'marca') || 
                         getSafeValue(hardware, 'marca');
-      console.log('🏷️ Brand value:', brandValue, '(from datos.brand:', getSafeValue(datos, 'brand'), ', datos.marca:', getSafeValue(datos, 'marca'), ', hardware.marca:', getSafeValue(hardware, 'marca'), ')');
+      //console.log('🏷️ Brand value:', brandValue, '(from datos.brand:', getSafeValue(datos, 'brand'), ', datos.marca:', getSafeValue(datos, 'marca'), ', hardware.marca:', getSafeValue(hardware, 'marca'), ')');
       this.setInputValue('hardwareBrand', brandValue);
 
       // Model with logging
       const modelValue = getSafeValue(datos, 'model') || 
                         getSafeValue(datos, 'modelo') || 
                         getSafeValue(hardware, 'modelo');
-      console.log('📱 Model value:', modelValue, '(from datos.model:', getSafeValue(datos, 'model'), ', datos.modelo:', getSafeValue(datos, 'modelo'), ', hardware.modelo:', getSafeValue(hardware, 'modelo'), ')');
+      //console.log('📱 Model value:', modelValue, '(from datos.model:', getSafeValue(datos, 'model'), ', datos.modelo:', getSafeValue(datos, 'modelo'), ', hardware.modelo:', getSafeValue(hardware, 'modelo'), ')');
       this.setInputValue('hardwareModel', modelValue);
 
       // Price with logging
       const priceValue = getSafeValue(datos, 'price') || 
                         getSafeValue(datos, 'precio') || 
                         getSafeValue(hardware, 'precio');
-      console.log('💰 Price value:', priceValue, '(from datos.price:', getSafeValue(datos, 'price'), ', datos.precio:', getSafeValue(datos, 'precio'), ', hardware.precio:', getSafeValue(hardware, 'precio'), ')');
+      //console.log('💰 Price value:', priceValue, '(from datos.price:', getSafeValue(datos, 'price'), ', datos.precio:', getSafeValue(datos, 'precio'), ', hardware.precio:', getSafeValue(hardware, 'precio'), ')');
       this.setInputValue('hardwarePrice', priceValue);
 
       // Stock with logging
       const stockValue = getSafeValue(datos, 'stock') || 
                         getSafeValue(hardware, 'stock');
-      console.log('📦 Stock value:', stockValue, '(from datos.stock:', getSafeValue(datos, 'stock'), ', hardware.stock:', getSafeValue(hardware, 'stock'), ')');
+      //console.log('📦 Stock value:', stockValue, '(from datos.stock:', getSafeValue(datos, 'stock'), ', hardware.stock:', getSafeValue(hardware, 'stock'), ')');
       this.setInputValue('hardwareStock', stockValue);
 
       // Status
@@ -385,10 +385,10 @@ class HardwareCore {
                          getSafeValue(hardware, 'descripcion');
       this.setInputValue('hardwareDescription', description);
 
-      console.log('✅ Datos cargados en el formulario correctamente');
+      //console.log('✅ Datos cargados en el formulario correctamente');
 
     } catch (error) {
-      console.error('💥 Error al cargar datos en el formulario:', error);
+      //console.error('💥 Error al cargar datos en el formulario:', error);
       this.loadDummyDataIntoForm();
     }
   }
@@ -397,7 +397,7 @@ class HardwareCore {
    * Load dummy data into form (fallback)
    */
   loadDummyDataIntoForm() {
-    console.log('⚠️ Cargando datos dummy en el formulario');
+    //console.log('⚠️ Cargando datos dummy en el formulario');
     
     this.setInputValue('hardwareName', 'Hardware sin nombre');
     this.setInputValue('hardwareType', 'General');
@@ -415,16 +415,16 @@ class HardwareCore {
    */
   async viewHardware(id) {
     try {
-      console.log('🔍 Cargando detalles del hardware:', id);
+      //console.log('🔍 Cargando detalles del hardware:', id);
 
       if (!id) {
-        console.error('❌ ID de hardware no válido:', id);
+        //console.error('❌ ID de hardware no válido:', id);
         this.showNotification('Error: ID de hardware no válido', 'error');
         return;
       }
 
       if (!this.apiClient) {
-        console.error('❌ API client no disponible');
+        //console.error('❌ API client no disponible');
         this.showNotification('Error: Conexión con el servidor no disponible', 'error');
         return;
       }
@@ -437,25 +437,25 @@ class HardwareCore {
       }
 
       const data = await response.json();
-      console.log('📦 Respuesta completa del API:', data);
+      //console.log('📦 Respuesta completa del API:', data);
 
       if (data.success) {
-        console.log('📋 Detalles del hardware cargados:', data.data);
+        //console.log('📋 Detalles del hardware cargados:', data.data);
         
         if (!data.data) {
-          console.warn('⚠️ Datos del hardware vacíos');
+          //console.warn('⚠️ Datos del hardware vacíos');
           this.showNotification('No se encontraron datos para este hardware.', 'error');
           return;
         }
 
         this.showHardwareDetails(data.data);
       } else {
-        console.error('❌ Error en respuesta del API:', data.errors);
+        //console.error('❌ Error en respuesta del API:', data.errors);
         const errorMessage = this.getErrorMessage(data);
         this.showNotification('Error al cargar los detalles del hardware: ' + errorMessage, 'error');
       }
     } catch (error) {
-      console.error('💥 Error al cargar detalles del hardware:', error);
+      //console.error('💥 Error al cargar detalles del hardware:', error);
       this.handleViewError(error);
     }
   }
@@ -464,7 +464,7 @@ class HardwareCore {
    * Handle API errors
    */
   handleApiError(response) {
-    console.error('❌ Error HTTP:', response.status, response.statusText);
+    //console.error('❌ Error HTTP:', response.status, response.statusText);
     
     if (response.status === 404) {
       this.showNotification('Hardware no encontrado. Puede que haya sido eliminado.', 'error');
@@ -505,7 +505,7 @@ class HardwareCore {
    */
   showHardwareDetails(hardware) {
     try {
-      console.log('📋 Datos completos del hardware recibidos:', hardware);
+      //console.log('📋 Datos completos del hardware recibidos:', hardware);
       
       this.currentViewingHardware = hardware;
 
@@ -522,7 +522,7 @@ class HardwareCore {
           }
           return current !== null && current !== undefined ? current : defaultValue;
         } catch (e) {
-          console.warn(`Error accessing path ${path}:`, e);
+          //console.warn(`Error accessing path ${path}:`, e);
           return defaultValue;
         }
       };
@@ -537,13 +537,13 @@ class HardwareCore {
             const parsed = JSON.parse(hardware.datos);
             datos = parsed.datos || parsed;
           } catch (e) {
-            console.warn('Error parsing datos string:', e);
+            //console.warn('Error parsing datos string:', e);
             datos = {};
           }
         }
       }
 
-      console.log('📊 Datos extraídos para mostrar:', datos);
+      //console.log('📊 Datos extraídos para mostrar:', datos);
 
       // Fill modal fields
       this.setElementText('viewHardwareName', getSafeValue(hardware, 'nombre'));
@@ -615,10 +615,10 @@ class HardwareCore {
       // Open modal
       this.openModalWithScroll('viewHardwareModal');
 
-      console.log('✅ Modal de detalles mostrado correctamente');
+      //console.log('✅ Modal de detalles mostrado correctamente');
 
     } catch (error) {
-      console.error('💥 Error al mostrar detalles del hardware:', error);
+      //console.error('💥 Error al mostrar detalles del hardware:', error);
       this.showNotification('Error al cargar los detalles del hardware. Por favor, inténtalo de nuevo.', 'error');
       
       // Close modal if it was opened
@@ -690,7 +690,7 @@ class HardwareCore {
         return fechaRaw;
       }
     } catch (e) {
-      console.warn('Error parsing date:', e);
+      //console.warn('Error parsing date:', e);
       return fechaRaw;
     }
   }
@@ -731,7 +731,7 @@ class HardwareCore {
       empresaData = window.hardwareValidator.getSafeEmpresaData(empresaSelect);
       if (!empresaData.isValid) {
         this.showNotification(`Error de empresa: ${empresaData.error}`, 'error');
-        console.error('❌ Error al obtener datos de empresa:', empresaData.error);
+        //console.error('❌ Error al obtener datos de empresa:', empresaData.error);
         return;
       }
     } else {
@@ -744,14 +744,14 @@ class HardwareCore {
         const selectedEmpresa = window.empresas?.find(emp => emp._id === empresaSelect.value);
         if (selectedEmpresa) {
           empresaNombre = selectedEmpresa.nombre;
-          console.log('🏢 Nombre de empresa obtenido de window.empresas:', empresaNombre);
+          //console.log('🏢 Nombre de empresa obtenido de window.empresas:', empresaNombre);
         }
       }
       
       // Final validation of empresa name
       if (!empresaNombre) {
         this.showNotification('Error: No se pudo obtener el nombre de la empresa seleccionada', 'error');
-        console.error('❌ No se pudo obtener el nombre de la empresa. Empresa ID:', empresaSelect.value);
+        //console.error('❌ No se pudo obtener el nombre de la empresa. Empresa ID:', empresaSelect.value);
         return;
       }
       
@@ -770,34 +770,34 @@ class HardwareCore {
       if (!validation.isValid) {
         const errorMessage = validation.errors.join(', ');
         this.showNotification(`Errores de validación: ${errorMessage}`, 'error');
-        console.error('❌ Errores de validación:', validation.errors);
+        //console.error('❌ Errores de validación:', validation.errors);
         return;
       }
       
       // Show warnings if any
       if (validation.warnings && validation.warnings.length > 0) {
-        console.warn('⚠️ Advertencias de validación:', validation.warnings);
+        //console.warn('⚠️ Advertencias de validación:', validation.warnings);
       }
     }
     
-    console.log('📤 Enviando datos de hardware:', formData);
-    console.log('🏢 Empresa ID:', empresaData.empresaId);
-    console.log('🏢 Empresa Nombre:', empresaData.empresaNombre);
-    console.log('🏢 Sede:', sedeSelect.value);
+    //console.log('📤 Enviando datos de hardware:', formData);
+    //console.log('🏢 Empresa ID:', empresaData.empresaId);
+    //console.log('🏢 Empresa Nombre:', empresaData.empresaNombre);
+    //console.log('🏢 Sede:', sedeSelect.value);
     
     // Debug: Check editing state
-    console.log('🔍 DEBUG: Estado de edición:');
-    console.log('  - this.editingHardware:', this.editingHardware);
-    console.log('  - window.editingHardware:', window.editingHardware);
-    console.log('  - typeof this.editingHardware:', typeof this.editingHardware);
-    console.log('  - boolean check this.editingHardware:', !!this.editingHardware);
+    //console.log('🔍 DEBUG: Estado de edición:');
+    //console.log('  - this.editingHardware:', this.editingHardware);
+    //console.log('  - window.editingHardware:', window.editingHardware);
+    //console.log('  - typeof this.editingHardware:', typeof this.editingHardware);
+    //console.log('  - boolean check this.editingHardware:', !!this.editingHardware);
     
     // Submit
     if (this.editingHardware) {
-      console.log('🔄 Realizando ACTUALIZACIÓN (PUT) para ID:', this.editingHardware);
+      //console.log('🔄 Realizando ACTUALIZACIÓN (PUT) para ID:', this.editingHardware);
       await this.updateHardwareAPI(this.editingHardware, formData);
     } else {
-      console.log('🆕 Realizando CREACIÓN (POST)');
+      //console.log('🆕 Realizando CREACIÓN (POST)');
       await this.createHardwareAPI(formData);
     }
   }
@@ -834,7 +834,7 @@ class HardwareCore {
     if (window.createHardwareAPI) {
       return window.createHardwareAPI(hardwareData);
     } else {
-      console.error('❌ createHardwareAPI global function not available');
+      //console.error('❌ createHardwareAPI global function not available');
       this.showNotification('Error: Sistema no disponible', 'error');
     }
   }
@@ -846,7 +846,7 @@ class HardwareCore {
     if (window.updateHardwareAPI) {
       return window.updateHardwareAPI(id, hardwareData);
     } else {
-      console.error('❌ updateHardwareAPI global function not available');
+      //console.error('❌ updateHardwareAPI global function not available');
       this.showNotification('Error: Sistema no disponible', 'error');
     }
   }
@@ -925,7 +925,7 @@ class HardwareCore {
     if (element) {
       element.textContent = text;
     } else {
-      console.warn(`Element with ID '${elementId}' not found`);
+      //console.warn(`Element with ID '${elementId}' not found`);
     }
   }
 
@@ -933,10 +933,10 @@ class HardwareCore {
     const input = document.getElementById(inputId);
     if (input) {
       const finalValue = value || '';
-      console.log(`🔍 setInputValue: ${inputId} = "${finalValue}" (original: ${value})`);
+      //console.log(`🔍 setInputValue: ${inputId} = "${finalValue}" (original: ${value})`);
       input.value = finalValue;
     } else {
-      console.warn(`Input with ID '${inputId}' not found`);
+      //console.warn(`Input with ID '${inputId}' not found`);
     }
   }
 
@@ -975,7 +975,7 @@ class HardwareCore {
     if (window.hardwareData) {
       window.hardwareData.loadHardware();
     } else {
-      console.warn('Hardware data module not available');
+      //console.warn('Hardware data module not available');
     }
   }
 
@@ -986,7 +986,7 @@ class HardwareCore {
     if (window.hardwareData) {
       window.hardwareData.loadSedesByEmpresa();
     } else {
-      console.warn('Hardware data module not available');
+      //console.warn('Hardware data module not available');
     }
   }
 

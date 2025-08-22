@@ -6,9 +6,9 @@
 
 // Verificar que GSAP esté disponible
 if (typeof gsap === 'undefined') {
-  console.error('❌ GSAP no está disponible. Asegúrate de que se cargue antes que este archivo.');
+  ////console.error('❌ GSAP no está disponible. Asegúrate de que se cargue antes que este archivo.');
 } else {
-  console.log('✅ GSAP disponible - Inicializando animaciones de hardware...');
+  ////console.log('✅ GSAP disponible - Inicializando animaciones de hardware...');
 }
 
 // Namespace para las animaciones de hardware
@@ -16,7 +16,7 @@ window.HardwareAnimations = {
   
   // Inicializar todas las animaciones al cargar la página
   init: function() {
-    console.log('🎬 Inicializando animaciones de hardware...');
+    //console.log('🎬 Inicializando animaciones de hardware...');
     
     this.animateStatsCards();
     this.animateHardwareCards();
@@ -24,7 +24,7 @@ window.HardwareAnimations = {
     this.animateFilters();
     this.setupScrollAnimations();
     
-    console.log('✅ Animaciones de hardware inicializadas');
+    //console.log('✅ Animaciones de hardware inicializadas');
   },
 
   // Animar tarjetas de estadísticas (optimizado)
@@ -88,7 +88,7 @@ window.HardwareAnimations = {
       );
     }
     
-    console.log(`📊 Animando ${statCards.length} tarjetas de estadísticas (optimizado)`);
+    //console.log(`📊 Animando ${statCards.length} tarjetas de estadísticas (optimizado)`);
   },
 
   // Animar tarjetas de hardware (optimizado)
@@ -137,7 +137,7 @@ window.HardwareAnimations = {
       );
     });
     
-    console.log(`🔧 Animando ${hardwareCards.length} tarjetas de hardware en ${batches.length} lotes`);
+    //console.log(`🔧 Animando ${hardwareCards.length} tarjetas de hardware en ${batches.length} lotes`);
   },
 
   // Animar header
@@ -158,7 +158,7 @@ window.HardwareAnimations = {
       }
     );
     
-    console.log('📱 Animando header iOS');
+    //console.log('📱 Animando header iOS');
   },
 
   // Animar filtros
@@ -181,13 +181,13 @@ window.HardwareAnimations = {
       }
     );
     
-    console.log(`🔍 Animando ${filters.length} filtros`);
+    //console.log(`🔍 Animando ${filters.length} filtros`);
   },
 
   // Configurar animaciones al hacer scroll
   setupScrollAnimations: function() {
     if (typeof ScrollTrigger === 'undefined') {
-      console.warn('⚠️ ScrollTrigger no disponible, saltando animaciones de scroll');
+      //console.warn('⚠️ ScrollTrigger no disponible, saltando animaciones de scroll');
       return;
     }
     
@@ -213,7 +213,7 @@ window.HardwareAnimations = {
       );
     });
     
-    console.log('📜 Configuradas animaciones de scroll');
+    //console.log('📜 Configuradas animaciones de scroll');
   },
 
   // Animar nueva tarjeta (para tarjetas añadidas dinámicamente)
@@ -238,7 +238,7 @@ window.HardwareAnimations = {
       }
     );
     
-    console.log('🆕 Animando nueva tarjeta');
+    //console.log('🆕 Animando nueva tarjeta');
   },
 
   // Animar modal
@@ -270,7 +270,7 @@ window.HardwareAnimations = {
       });
     }
     
-    console.log(`🔲 Animando modal - ${show ? 'mostrar' : 'ocultar'}`);
+    //console.log(`🔲 Animando modal - ${show ? 'mostrar' : 'ocultar'}`);
   },
 
   // Animar contador con efecto de números
@@ -292,7 +292,7 @@ window.HardwareAnimations = {
       }
     });
     
-    console.log(`🔢 Animando contador de ${startValue} a ${finalValue}`);
+    //console.log(`🔢 Animando contador de ${startValue} a ${finalValue}`);
   }
 };
 

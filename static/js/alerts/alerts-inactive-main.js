@@ -21,7 +21,7 @@ let inactiveCacheMetadata = {
 
 // ========== INICIALIZACIÓN ==========
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚫 ALERTAS INACTIVAS: Página de alertas inactivas inicializada');
+    //console.log('🚫 ALERTAS INACTIVAS: Página de alertas inactivas inicializada');
     
     // Inicializar sistema de cache
     initializeInactiveCacheSystem();
@@ -29,9 +29,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Configurar el modal manager (reutilizando modales existentes)
     if (window.modalManager) {
         window.modalManager.setupModal('alertDetailModal');
-        console.log('✅ Modal de alertas configurado para alertas inactivas');
+        //console.log('✅ Modal de alertas configurado para alertas inactivas');
     } else {
-        console.warn('⚠️ ModalManager no está disponible');
+        //console.warn('⚠️ ModalManager no está disponible');
     }
     
     // Cargar alertas inactivas iniciales
@@ -42,21 +42,21 @@ document.addEventListener('DOMContentLoaded', function() {
         checkForAutoOpenInactiveAlert();
     }, 1500);
     
-    console.log('✅ ALERTAS INACTIVAS: Sistema completamente inicializado');
+    //console.log('✅ ALERTAS INACTIVAS: Sistema completamente inicializado');
 });
 
 // ========== FUNCIONES PRINCIPALES DE ALERTAS INACTIVAS ==========
 async function loadInactiveAlerts() {
     try {
-        console.log('🚫 INICIANDO CARGA DE ALERTAS INACTIVAS');
+        //console.log('🚫 INICIANDO CARGA DE ALERTAS INACTIVAS');
         showInactiveLoading(true);
         
         // Obtener empresa_id del usuario actual
         const empresaId = window.currentUser?.empresa_id || window.currentUser?.id;
-        console.log('👤 EmpresaId obtenido:', empresaId);
+        //console.log('👤 EmpresaId obtenido:', empresaId);
         
         if (!empresaId) {
-            console.error('❌ No se pudo obtener el ID de empresa');
+            //console.error('❌ No se pudo obtener el ID de empresa');
             showNoInactiveAlerts();
             return;
         }
@@ -66,7 +66,7 @@ async function loadInactiveAlerts() {
             window.apiClient = new EndpointTestClient();
         }
         
-        console.log('🔗 Consultando alertas inactivas usando API client');
+        //console.log('🔗 Consultando alertas inactivas usando API client');
         
         // Calcular el offset como en las alertas activas
         const offset = (currentInactivePage - 1) * inactiveAlertsPerPage;
@@ -78,30 +78,30 @@ async function loadInactiveAlerts() {
             offset
         );
         
-        console.log('📡 Response status:', response.status);
+        //console.log('📡 Response status:', response.status);
         
         if (!response.ok) {
-            console.error('❌ Response not ok:', response.status, response.statusText);
+            //console.error('❌ Response not ok:', response.status, response.statusText);
             throw new Error('Error al cargar alertas inactivas: ' + response.status);
         }
         
         const data = await response.json();
-        console.log('📊 DATA RECIBIDA (INACTIVAS):', data);
+        //console.log('📊 DATA RECIBIDA (INACTIVAS):', data);
         
         if (data.success === true && data.data && Array.isArray(data.data) && data.data.length > 0) {
-            console.log('✅ Data válida, procesando alertas inactivas...');
+            ////console.log('✅ Data válida, procesando alertas inactivas...');
             
             const allInactiveAlerts = data.data;
-            console.log(`📋 Total alertas inactivas en esta página: ${allInactiveAlerts.length}`);
+            ////console.log(`📋 Total alertas inactivas en esta página: ${allInactiveAlerts.length}`);
             
             // Usar la información de paginación del backend - los datos vienen en data.pagination
             if (data.pagination) {
                 totalInactivePages = data.pagination.total_pages || 1;
-                console.log(`📄 Paginación: página ${currentInactivePage} de ${totalInactivePages}`);
-                console.log(`📊 Total alertas: ${data.pagination.total_items}, Página actual: ${data.pagination.current_page}`);
+                ////console.log(`📄 Paginación: página ${currentInactivePage} de ${totalInactivePages}`);
+                //console.log(`📊 Total alertas: ${data.pagination.total_items}, Página actual: ${data.pagination.current_page}`);
             } else {
                 totalInactivePages = 1;
-                console.log('⚠️ No se recibió información de paginación del backend');
+                //console.log('⚠️ No se recibió información de paginación del backend');
             }
             
             // Guardar alertas inactivas actuales
@@ -114,13 +114,13 @@ async function loadInactiveAlerts() {
             renderInactiveAlerts(allInactiveAlerts);
             updateInactivePagination();
         } else {
-            console.log('⚠️ No hay alertas inactivas disponibles');
+            //console.log('⚠️ No hay alertas inactivas disponibles');
             currentInactiveAlerts = [];
             showNoInactiveAlerts();
         }
         
     } catch (error) {
-        console.error('💥 ERROR cargando alertas inactivas:', error);
+        //console.error('💥 ERROR cargando alertas inactivas:', error);
         showNoInactiveAlerts();
         throw error;
         
@@ -130,18 +130,18 @@ async function loadInactiveAlerts() {
 }
 
 function renderInactiveAlerts(alerts) {
-    console.log('🎨 RENDER INACTIVE ALERTS: Función renderInactiveAlerts llamada con:', alerts);
+    //console.log('🎨 RENDER INACTIVE ALERTS: Función renderInactiveAlerts llamada con:', alerts);
     
     const container = document.getElementById('inactiveAlertsContainer');
     const noAlertsMsg = document.getElementById('noInactiveAlertsMessage');
     
     if (!container) {
-        console.error('❌ Container inactiveAlertsContainer no encontrado');
+        //console.error('❌ Container inactiveAlertsContainer no encontrado');
         return;
     }
     
     if (!alerts || alerts.length === 0) {
-        console.log('🎨 RENDER INACTIVE ALERTS: No hay alertas inactivas, mostrando mensaje');
+        //console.log('🎨 RENDER INACTIVE ALERTS: No hay alertas inactivas, mostrando mensaje');
         container.innerHTML = '';
         if (noAlertsMsg) {
             noAlertsMsg.classList.remove('hidden');
@@ -149,7 +149,7 @@ function renderInactiveAlerts(alerts) {
         return;
     }
     
-    console.log('🎨 RENDER INACTIVE ALERTS: Ocultando mensaje de no alertas');
+    //console.log('🎨 RENDER INACTIVE ALERTS: Ocultando mensaje de no alertas');
     if (noAlertsMsg) {
         noAlertsMsg.classList.add('hidden');
     }
@@ -178,7 +178,7 @@ function renderInactiveAlerts(alerts) {
         }
         
         return `
-        <div class="alert-card ios-hardware-card alert-priority-${alert.prioridad} alert-status-inactive" onclick="console.log('🖱️ CLICK en alerta:', '${alert._id}'); window.showInactiveAlertDetails('${alert._id}');">
+        <div class="alert-card ios-hardware-card alert-priority-${alert.prioridad} alert-status-inactive" onclick="//console.log('🖱️ CLICK en alerta:', '${alert._id}'); window.showInactiveAlertDetails('${alert._id}');">
             <div class="flex items-start space-x-4">
                 <div class="flex-shrink-0">
                     <div class="w-16 h-16 rounded-xl flex items-center justify-center ${
@@ -264,13 +264,13 @@ function renderInactiveAlerts(alerts) {
         `;
     }).join('');
     
-    console.log('🎨 RENDER INACTIVE ALERTS: Inyectando HTML en container...');
+    //console.log('🎨 RENDER INACTIVE ALERTS: Inyectando HTML en container...');
     container.innerHTML = alertsHTML;
 }
 
 // ========== FUNCIONES DE CACHE PARA ALERTAS INACTIVAS ==========
 function initializeInactiveCacheSystem() {
-    console.log('💾 CACHE INACTIVO: Inicializando sistema de cache para alertas inactivas...');
+    //console.log('💾 CACHE INACTIVO: Inicializando sistema de cache para alertas inactivas...');
     inactiveAlertsCache.clear();
     inactiveCacheMetadata = {
         lastUpdate: new Date(),
@@ -278,7 +278,7 @@ function initializeInactiveCacheSystem() {
         cacheHits: 0,
         cacheMisses: 0
     };
-    console.log('✅ CACHE INACTIVO: Sistema de cache inicializado');
+    //console.log('✅ CACHE INACTIVO: Sistema de cache inicializado');
 }
 
 function cacheInactiveAlertsById(alerts) {
@@ -307,7 +307,7 @@ function cacheInactiveAlertsById(alerts) {
     inactiveCacheMetadata.lastUpdate = new Date();
     
     if (newCacheCount > 0) {
-        console.log(`💾 CACHE INACTIVO: ${newCacheCount} nuevas alertas inactivas guardadas en cache. Total: ${inactiveCacheMetadata.totalCachedAlerts}`);
+        //console.log(`💾 CACHE INACTIVO: ${newCacheCount} nuevas alertas inactivas guardadas en cache. Total: ${inactiveCacheMetadata.totalCachedAlerts}`);
     }
 }
 
@@ -330,15 +330,15 @@ function getInactiveAlertById(alertId) {
 
 async function findInactiveAlertById(alertId) {
     try {
-        console.log('🔍 CACHE INACTIVO: Buscando alerta inactiva por ID:', alertId);
+        //console.log('🔍 CACHE INACTIVO: Buscando alerta inactiva por ID:', alertId);
         
         const cachedAlert = getInactiveAlertById(alertId);
         if (cachedAlert && cachedAlert.is_full_data) {
-            console.log('✅ CACHE HIT: Datos completos encontrados en cache');
+            //console.log('✅ CACHE HIT: Datos completos encontrados en cache');
             return cachedAlert;
         }
         
-        console.log('📡 Haciendo petición al backend para alerta específica:', alertId);
+        //console.log('📡 Haciendo petición al backend para alerta específica:', alertId);
         const response = await fetch(`/proxy/api/mqtt-alerts/${alertId}`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
@@ -346,12 +346,12 @@ async function findInactiveAlertById(alertId) {
         });
         
         if (!response.ok) {
-            console.error(`❌ Error en petición: ${response.status} ${response.statusText}`);
+            //console.error(`❌ Error en petición: ${response.status} ${response.statusText}`);
             return null;
         }
         
         const data = await response.json();
-        console.log('📊 DATA COMPLETA DE ALERTA INACTIVA:', data);
+        //console.log('📊 DATA COMPLETA DE ALERTA INACTIVA:', data);
         
         if (data.success && data.alert) {
             const fullAlertData = {
@@ -392,8 +392,8 @@ async function findInactiveAlertById(alertId) {
                 is_full_data: true
             };
             
-            console.log('🔍 DEBUG ALERTA INACTIVA COMPLETA:', fullAlertData);
-            console.log('🔍 DEBUG DESACTIVADO POR:', fullAlertData.desactivado_por);
+            //console.log('🔍 DEBUG ALERTA INACTIVA COMPLETA:', fullAlertData);
+            //console.log('🔍 DEBUG DESACTIVADO POR:', fullAlertData.desactivado_por);
             
             inactiveAlertsCache.set(alertId, fullAlertData);
             return fullAlertData;
@@ -402,33 +402,33 @@ async function findInactiveAlertById(alertId) {
         return null;
         
     } catch (error) {
-        console.error(`💥 Error buscando alerta inactiva ${alertId}:`, error);
+        //console.error(`💥 Error buscando alerta inactiva ${alertId}:`, error);
         return null;
     }
 }
 
 // ========== FUNCIONES DE MODAL PARA ALERTAS INACTIVAS ==========
 async function showInactiveAlertDetails(alertId) {
-    console.log('🔍 Intentando mostrar detalles de alerta inactiva:', alertId);
+    //console.log('🔍 Intentando mostrar detalles de alerta inactiva:', alertId);
     
     const alert = await findInactiveAlertById(alertId);
     if (!alert) {
-        console.warn('❌ No se encontró la alerta inactiva con ID:', alertId);
+        //console.warn('❌ No se encontró la alerta inactiva con ID:', alertId);
         showSimpleNotification('No se pudo cargar la información de esta alerta inactiva', 'error');
         return;
     }
     
-    console.log('✅ Alerta inactiva encontrada:', alert);
+    //console.log('✅ Alerta inactiva encontrada:', alert);
     selectedInactiveAlertId = alertId;
     
     const modal = document.getElementById('alertDetailModal');
     if (!modal) {
-        console.error('❌ Modal alertDetailModal no encontrado en DOM');
+        //console.error('❌ Modal alertDetailModal no encontrado en DOM');
         return;
     }
     
     if (window.modalManager && window.modalManager.isModalOpen('alertDetailModal')) {
-        console.log('🔄 Modal ya abierto, cerrándolo primero...');
+        //console.log('🔄 Modal ya abierto, cerrándolo primero...');
         window.modalManager.closeModal('alertDetailModal');
         setTimeout(() => showInactiveAlertDetails(alertId), 100);
         return;
@@ -440,7 +440,7 @@ async function showInactiveAlertDetails(alertId) {
     const toggleBtn = document.getElementById('toggleStatusBtn');
     
     if (!content || !subtitle || !toggleBtn) {
-        console.error('❌ Elementos del modal no encontrados');
+        //console.error('❌ Elementos del modal no encontrados');
         return;
     }
     
@@ -472,11 +472,11 @@ async function showInactiveAlertDetails(alertId) {
     // Abrir modal
     setTimeout(() => {
         window.modalManager.openModal('alertDetailModal');
-        console.log('✅ Modal de alerta inactiva abierto correctamente');
+        //console.log('✅ Modal de alerta inactiva abierto correctamente');
     }, 50);
 }
 function generateInactiveModalContent(alert, isUserOrigin, isHardwareOrigin) {
-    console.log('🔍 GENERANDO MODAL PARA ALERTA INACTIVA:', alert);
+    //console.log('🔍 GENERANDO MODAL PARA ALERTA INACTIVA:', alert);
     
     return `
         <!-- GRILLA 1: HEADER DE ALERTA INACTIVA -->
@@ -850,7 +850,7 @@ function updateInactivePagination() {
     const pageInfo = document.getElementById('pageInfoInactive');
     
     if (!paginationContainer || !prevBtn || !nextBtn || !pageInfo) {
-        console.warn('⚠️ Elementos de paginación no encontrados');
+        //console.warn('⚠️ Elementos de paginación no encontrados');
         return;
     }
     
@@ -939,11 +939,11 @@ function closeAlertModal() {
     if (window.modalManager) {
         window.modalManager.closeModal('alertDetailModal');
     }
-    console.log('✅ Modal de alerta cerrado');
+    //console.log('✅ Modal de alerta cerrado');
 }
 
 function showDeactivateConfirmation() {
-    console.log('🚫 Esta función no está disponible para alertas inactivas');
+    //console.log('🚫 Esta función no está disponible para alertas inactivas');
     showSimpleNotification('Esta función no está disponible para alertas inactivas', 'info');
 }
 

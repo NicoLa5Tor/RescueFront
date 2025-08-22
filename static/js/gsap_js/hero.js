@@ -13,7 +13,7 @@
             this.container = document.querySelector('#hero');
             
             if (!this.container) {
-                console.warn('Hero container no encontrado');
+                //console.warn('Hero container no encontrado');
                 return;
             }
             
@@ -63,7 +63,7 @@
         
         // Establecer estados iniciales inmediatamente
         setInitialStates: function() {
-            console.log('🎭 HERO: Estableciendo estados iniciales');
+            //console.log('🎭 HERO: Estableciendo estados iniciales');
             
             // Ocultar elementos que se van a animar INMEDIATAMENTE
             gsap.set(['.title-word'], {
@@ -106,7 +106,7 @@
                 });
             }
             
-            console.log('✅ HERO: Estados iniciales establecidos');
+            //console.log('✅ HERO: Estados iniciales establecidos');
         },
         
         // Configurar animaciones que se activan con scroll
@@ -118,7 +118,7 @@
                 once: true, // Solo se ejecuta una vez
                 onEnter: () => {
                     if (!this.hasAnimated) {
-                        console.log('🎬 HERO: Iniciando animaciones de entrada');
+                        //console.log('🎬 HERO: Iniciando animaciones de entrada');
                         this.animateContent();
                         this.hasAnimated = true;
                     }
@@ -134,7 +134,7 @@
                         trigger: '#hero'
                     });
                 } else {
-                    console.warn('🚨 HERO: createParallax no disponible, usando ScrollTrigger directo');
+                    //console.warn('🚨 HERO: createParallax no disponible, usando ScrollTrigger directo');
                     // Fallback usando ScrollTrigger directamente
                     gsap.to('.gradient-orbs > div', {
                         yPercent: -50,
@@ -197,7 +197,7 @@
         
         // Animar contenido
         animateContent: function() {
-            console.log('🎨 HERO: Creando timeline de animaciones');
+            //console.log('🎨 HERO: Creando timeline de animaciones');
             
             // Timeline para las animaciones de entrada
             const tl = gsap.timeline();
@@ -278,7 +278,7 @@
                 this.animations.push(hubAnim);
             }
             
-            console.log('✅ HERO: Timeline de animaciones creado');
+            //console.log('✅ HERO: Timeline de animaciones creado');
         },
         
         // Setup interacciones mejoradas para táctil
@@ -400,7 +400,7 @@
             // Reset del estado
             this.hasAnimated = false;
             
-            console.log('Hero module destruido');
+            //console.log('Hero module destruido');
         }
     };
     
