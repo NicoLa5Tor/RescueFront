@@ -305,29 +305,33 @@ class HardwareMain {
     this.isLoadingHardware = true;
     
     try {
-      ////console.log('🔄 Cargando hardware específico para empresa...');
-      
-      // Obtener ID de empresa del contexto
-      const empresaId = window.EMPRESA_ID || document.body.dataset.empresaId;
-      if (!empresaId) {
-        ////console.error('❌ No se encontró ID de empresa');
-        this.renderHardware([]);
-        return;
-      }
-      
-      ////console.log('🏢 ID de empresa:', empresaId);
-      
+      ////console.log('🔄 Cargando hardware...');
+
       const includeInactiveFilter = document.getElementById('includeInactiveFilter');
       const includeInactive = includeInactiveFilter ? includeInactiveFilter.value === 'all' : false;
-      
+
+      // Obtener ID de empresa del contexto (si existe)
+      const empresaId = window.EMPRESA_ID || document.body.dataset.empresaId;
+
       let response;
-      // USAR ENDPOINTS ESPECÍFICOS DE EMPRESA - NO DE ADMIN
-      if (includeInactive) {
-        ////console.log('🌐 Usando endpoint de empresa con inactivos');
-        response = await this.apiClient.get_hardware_by_empresa_including_inactive(empresaId);
+      if (empresaId) {
+        ////console.log('🏢 ID de empresa:', empresaId);
+        // Cargar hardware específico de empresa
+        if (includeInactive) {
+          ////console.log('🌐 Usando endpoint de empresa con inactivos');
+          response = await this.apiClient.get_hardware_by_empresa_including_inactive(empresaId);
+        } else {
+          ////console.log('🌐 Usando endpoint de empresa activos');
+          response = await this.apiClient.get_hardware_by_empresa(empresaId);
+        }
       } else {
-        ////console.log('🌐 Usando endpoint de empresa activos');
-        response = await this.apiClient.get_hardware_by_empresa(empresaId);
+        ////console.log('🛠️ Modo administrador - cargando hardware global');
+        // Modo administrador: cargar todos los hardware
+        if (includeInactive) {
+          response = await this.apiClient.get_hardware_list_including_inactive();
+        } else {
+          response = await this.apiClient.get_hardware_list();
+        }
       }
       
       if (!response.ok) {
@@ -627,11 +631,14 @@ class HardwareMain {
    * Update stats
    */
   updateStats(data) {
-    if (data.count !== undefined) {
-      const totalElement = document.getElementById('totalItemsCount');
-      if (totalElement) totalElement.textContent = data.count;
+    const totalElement = document.getElementById('totalItemsCount');
+    if (totalElement) {
+      const totalCount = data.count !== undefined
+        ? data.count
+        : (Array.isArray(data.data) ? data.data.length : 0);
+      totalElement.textContent = totalCount;
     }
-    
+
     if (data.data && Array.isArray(data.data)) {
       const hardwareList = data.data;
       let availableCount = 0;
