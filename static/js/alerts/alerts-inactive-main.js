@@ -39,7 +39,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Verificar si debe abrir automáticamente una alerta específica
     setTimeout(() => {
-        checkForAutoOpenInactiveAlert();
+        if (typeof window.checkForAutoOpenInactiveAlert === 'function') {
+            window.checkForAutoOpenInactiveAlert();
+        }
     }, 1500);
     
     //console.log('✅ ALERTAS INACTIVAS: Sistema completamente inicializado');
@@ -1271,3 +1273,4 @@ window.showInactiveAlertDetails = showInactiveAlertDetails;
 window.closeAlertModal = closeAlertModal;
 window.showDeactivateConfirmation = showDeactivateConfirmation;
 window.changePageInactive = changePageInactive;
+window.checkForAutoOpenInactiveAlert = checkForAutoOpenInactiveAlert;
