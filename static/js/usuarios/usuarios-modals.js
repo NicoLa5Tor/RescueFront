@@ -966,7 +966,11 @@ class UsuariosModals {
         
         if (isSuccess) {
           this.closeToggleModal();
-          this.showSuccessModal(data.message || `Usuario ${newStatus ? 'activado' : 'desactivado'} exitosamente`);
+          const actionText = newStatus ? 'activado' : 'desactivado';
+          const message = data.message && data.message.toLowerCase().includes(actionText)
+            ? data.message
+            : `Usuario ${actionText} exitosamente`;
+          this.showSuccessModal(message);
           
           if (window.usuariosMain && window.usuariosMain.refreshUsers) {
             setTimeout(() => window.usuariosMain.refreshUsers(), 1000);
