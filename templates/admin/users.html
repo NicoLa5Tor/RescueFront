@@ -5,6 +5,10 @@
 {% block extra_css %}
 {{ super() }}
 <!-- Los scripts globales ya se cargan en dashboard.html -->
+<link href="{{ url_for('static', filename='css/modals.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/hardware/hardware-main.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/usuarios/usuarios-modal-fix.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/usuarios/usuarios-main.css') }}" rel="stylesheet">
 {% endblock %}
 
 {% block main_content %}
