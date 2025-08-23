@@ -46,14 +46,21 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Configurar contador de caracteres para el textarea de mensaje
     setupMessageCharacterCounter();
-    
+
     // Cargar alertas iniciales
     loadActiveAlerts();
 
-    // Actualizar alertas automáticamente cada 10 segundos
+    // Limitar transiciones del contenedor del listado
+    const alertsPanel = document.getElementById('alertsContainer');
+    if (alertsPanel) {
+        alertsPanel.classList.add('transition-opacity', 'duration-300');
+        alertsPanel.style.transitionProperty = 'opacity, transform';
+    }
+
+    // Actualizar alertas automáticamente cada 5 segundos
     setInterval(() => {
         refreshAlertsQuietly();
-    }, 10000);
+    }, 5000);
 
     // Verificar si debe abrir automáticamente el modal de una alerta específica
     checkForAutoOpenAlert();
@@ -431,13 +438,34 @@ function renderAlerts(alerts) {
                 </div>
             </div>
             
-            <div class="ios-card-shimmer"></div>
+        <div class="ios-card-shimmer"></div>
         </div>
         `;
     }).join('');
-    
+
+    // Guardar posición actual del scroll y deshabilitar transiciones
+    const scrollTop = container.scrollTop;
+    container.classList.add('transition-none');
+
+    // Inyectar alertas en el contenedor
     //console.log('🎨 RENDER ALERTS: Inyectando HTML en container...');
     container.innerHTML = alertsHTML;
+
+    // Limitar transiciones de los elementos de alerta
+    const alertElements = container.querySelectorAll('.alert-card');
+    alertElements.forEach(el => {
+        el.classList.add('transition-none');
+        el.style.transitionProperty = 'background-color';
+    });
+
+    // Restaurar posición del scroll
+    container.scrollTop = scrollTop;
+
+    // Rehabilitar transiciones en el siguiente frame
+    requestAnimationFrame(() => {
+        container.classList.remove('transition-none');
+        alertElements.forEach(el => el.classList.remove('transition-none'));
+    });
 }
 
 // ========== FUNCIONES DE UTILIDAD ==========

@@ -258,7 +258,7 @@ class EmpresaAlertsGlobal {
                     z-index: 1001;
                     display: flex;
                     flex-direction: column;
-                    transition: opacity 0.3s ease, transform 0.3s ease;
+                    transition: all 0.3s ease;
                 }
                 
                 .empresa-alerts-panel.hidden {
@@ -328,7 +328,7 @@ class EmpresaAlertsGlobal {
                 .alert-item {
                     padding: 16px 20px;
                     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-                    transition: background-color 0.2s ease;
+                    transition: all 0.2s ease;
                     cursor: pointer;
                 }
                 
@@ -551,10 +551,7 @@ class EmpresaAlertsGlobal {
     updateAlertsPanel(alerts) {
         const panel = document.getElementById('globalAlertsList');
         if (!panel) return;
-
-        // Guardar la posición de scroll actual para evitar saltos
-        const currentScroll = panel.scrollTop;
-
+        
         if (alerts.length === 0) {
             panel.innerHTML = `
                 <div class="no-alerts-state">
@@ -563,14 +560,13 @@ class EmpresaAlertsGlobal {
                     <p style="font-size: 14px;">No hay alertas activas en este momento</p>
                 </div>
             `;
-            panel.scrollTop = currentScroll;
             return;
         }
-
+        
         const alertsHTML = alerts.map(alert => {
             const timeAgo = this.getTimeAgo(alert.fecha_creacion);
             const priorityClass = alert.prioridad || 'media';
-
+            
             return `
                 <div class="alert-item" onclick="window.empresaAlertsGlobal.goToAlertDetails('${alert._id}')">
                     <div class="alert-header">
@@ -587,9 +583,8 @@ class EmpresaAlertsGlobal {
                 </div>
             `;
         }).join('');
-
+        
         panel.innerHTML = alertsHTML;
-        panel.scrollTop = currentScroll;
     }
     
     getTimeAgo(dateString) {
@@ -618,13 +613,13 @@ class EmpresaAlertsGlobal {
     }
     
     startAutoRefresh() {
-        // Actualizar cada 5 segundos
+        // Actualizar cada 10 segundos
         this.refreshInterval = setInterval(() => {
             //console.log('🔄 AUTO-REFRESH: Cargando alertas automáticamente...');
             this.loadAlerts();
-        }, 5000);
-
-        //console.log('🔄 GLOBAL ALERTS: Auto-refresh configurado (5s)');
+        }, 10000);
+        
+        //console.log('🔄 GLOBAL ALERTS: Auto-refresh configurado (10s)');
     }
     
     stopAutoRefresh() {
