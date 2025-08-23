@@ -1220,14 +1220,15 @@ class UsuariosModals {
     const messageEl = document.getElementById('userUpdateModalMessage');
     
     if (title) {
-      if (message.includes('creado')) {
+      const normalizedMessage = message.toLowerCase();
+      if (normalizedMessage.includes('creado')) {
         title.textContent = '¡Usuario Creado!';
-      } else if (message.includes('actualizado')) {
+      } else if (normalizedMessage.includes('actualizado')) {
         title.textContent = '¡Usuario Actualizado!';
-      } else if (message.includes('activado')) {
-        title.textContent = '¡Usuario Activado!';
-      } else if (message.includes('desactivado')) {
+      } else if (normalizedMessage.includes('desactivado')) {
         title.textContent = '¡Usuario Desactivado!';
+      } else if (normalizedMessage.includes('activado')) {
+        title.textContent = '¡Usuario Activado!';
       } else {
         title.textContent = '¡Operación Exitosa!';
       }
