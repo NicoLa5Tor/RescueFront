@@ -49,7 +49,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Cargar alertas iniciales
     loadActiveAlerts();
-    
+
+    // Actualizar alertas automáticamente cada 10 segundos
+    setInterval(() => {
+        refreshAlertsQuietly();
+    }, 10000);
+
     // Verificar si debe abrir automáticamente el modal de una alerta específica
     checkForAutoOpenAlert();
     
@@ -536,6 +541,42 @@ async function showAlertDetails(alertId) {
         window.modalManager.openModal('alertDetailModal');
         //console.log('✅ Modal abierto correctamente');
     }, 50);
+}
+
+async function refreshOpenAlertModal() {
+    if (!window.modalManager || !window.modalManager.isModalOpen('alertDetailModal') || !selectedAlertId) {
+        return;
+    }
+
+    const alert = await findAlertById(selectedAlertId);
+    if (!alert) return;
+
+    const content = document.getElementById('alertDetailsContent');
+    const subtitle = document.getElementById('modalAlertSubtitle');
+    const toggleBtn = document.getElementById('toggleStatusBtn');
+    if (!content || !subtitle || !toggleBtn) return;
+
+    const isUserOrigin = alert.data?.origen === 'usuario_movil' || alert.activacion_alerta?.tipo_activacion === 'usuario';
+    const isHardwareOrigin = alert.data?.tipo_mensaje === 'alarma' || alert.activacion_alerta?.tipo_activacion === 'hardware';
+    const isEmpresaOrigin = alert.data?.origen === 'empresa_web' || alert.activacion_alerta?.tipo_activacion === 'empresa';
+
+    let displayName = '';
+    if (isUserOrigin) {
+        displayName = alert.activacion_alerta?.nombre || alert.data?.botonera_ubicacion?.hardware_nombre || 'Usuario Móvil';
+    } else if (isHardwareOrigin) {
+        displayName = alert.activacion_alerta?.nombre || alert.hardware_nombre || 'Hardware';
+    } else if (isEmpresaOrigin) {
+        displayName = alert.activacion_alerta?.nombre || alert.nombre_alerta || 'Alerta de Empresa';
+    } else {
+        displayName = alert.hardware_nombre || alert.activacion_alerta?.nombre || 'Sistema';
+    }
+
+    const empresaName = alert.empresa_nombre || 'Empresa';
+    subtitle.textContent = `${displayName} - ${empresaName}`;
+
+    content.innerHTML = generateModalContent(alert, isUserOrigin, isHardwareOrigin);
+
+    toggleBtn.innerHTML = `<i class="fas fa-${alert.activo ? 'toggle-off' : 'toggle-on'} mr-2"></i><span id="toggleStatusText">${alert.activo ? 'Desactivar' : 'Activar'}</span>`;
 }
 
 function generateModalContent(alert, isUserOrigin, isHardwareOrigin) {
@@ -1339,7 +1380,7 @@ function showNoAlerts() {
     }
 }
 
-async function refreshAlerts(skipSuccessPopup = false) {
+async function refreshAlerts(skipSuccessPopup = false, preservePage = false) {
     //console.log('🔄 REFRESH: Actualizando alertas manualmente...');
     //console.log('📢 REFRESH: skipSuccessPopup =', skipSuccessPopup);
     
@@ -1352,9 +1393,13 @@ async function refreshAlerts(skipSuccessPopup = false) {
     
     try {
         clearAlertsCache(false);
-        currentPage = 1;
+        if (!preservePage) {
+            currentPage = 1;
+        }
         await loadActiveAlerts();
-        
+
+        await refreshOpenAlertModal();
+
         // Solo mostrar popup si no se debe omitir
         if (!shouldSkipPopup) {
             showUpdateSuccessPopup();
@@ -1367,6 +1412,10 @@ async function refreshAlerts(skipSuccessPopup = false) {
         const friendlyMessage = getFriendlyErrorMessage(error);
         showUpdateErrorPopup(friendlyMessage);
     }
+}
+
+function refreshAlertsQuietly() {
+    refreshAlerts(true, true);
 }
 
 function getFriendlyErrorMessage(error) {
@@ -2365,6 +2414,7 @@ window.showDeactivateConfirmation = showDeactivateConfirmation;
 window.closeDeactivateModal = closeDeactivateModal;
 window.confirmDeactivateAlert = confirmDeactivateAlert;
 window.refreshAlerts = refreshAlerts;
+window.refreshAlertsQuietly = refreshAlertsQuietly;
 window.changePage = changePage;
 window.connectWebSocket = connectWebSocket;
 window.showImageModal = showImageModal;
