@@ -137,7 +137,12 @@ window.SuperDashboardAnimations = {
     
     // Animar elementos al entrar en vista
     gsap.utils.toArray('.ios-dashboard-card, .ios-stat-card, .glass-card').forEach(card => {
-      gsap.fromTo(card, 
+      // Omitir scroll reveal en tarjetas de empresas y usuarios recientes
+      if (card.querySelector('#recentEmpresasContainer') || card.querySelector('#recentUsersContainer')) {
+        return;
+      }
+
+      gsap.fromTo(card,
         {
           opacity: 0,
           y: 20
