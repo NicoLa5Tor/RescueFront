@@ -16,6 +16,7 @@ class EmpresaAlertsGlobal {
         this.shownAlertIds = new Set(); // IDs de alertas YA MOSTRADAS (persistente)
         this.newAlertModalOpen = false; // Para evitar múltiples modales
         this.isFirstLoad = true; // Flag para saber si es la primera carga
+        this.listRenderedOnce = false; // Controla si el listado ya fue renderizado para evitar reveals
         this.localStorageKey = 'empresa_alerts_shown'; // Clave localStorage
         
         this.initializeSystem();
@@ -551,7 +552,7 @@ class EmpresaAlertsGlobal {
     updateAlertsPanel(alerts) {
         const panel = document.getElementById('globalAlertsList');
         if (!panel) return;
-        
+
         if (alerts.length === 0) {
             panel.innerHTML = `
                 <div class="no-alerts-state">
@@ -560,13 +561,19 @@ class EmpresaAlertsGlobal {
                     <p style="font-size: 14px;">No hay alertas activas en este momento</p>
                 </div>
             `;
+            this.listRenderedOnce = true;
             return;
         }
-        
+
+        const scrollTop = panel.scrollTop;
+        if (this.listRenderedOnce) {
+            panel.style.transition = 'none';
+        }
+
         const alertsHTML = alerts.map(alert => {
             const timeAgo = this.getTimeAgo(alert.fecha_creacion);
             const priorityClass = alert.prioridad || 'media';
-            
+
             return `
                 <div class="alert-item" onclick="window.empresaAlertsGlobal.goToAlertDetails('${alert._id}')">
                     <div class="alert-header">
@@ -583,8 +590,23 @@ class EmpresaAlertsGlobal {
                 </div>
             `;
         }).join('');
-        
+
         panel.innerHTML = alertsHTML;
+
+        if (this.listRenderedOnce) {
+            const items = panel.querySelectorAll('.alert-item');
+            items.forEach(item => {
+                item.style.transition = 'none';
+                item.style.transitionProperty = 'background-color';
+            });
+            panel.scrollTop = scrollTop;
+            requestAnimationFrame(() => {
+                panel.style.transition = '';
+                items.forEach(item => item.style.transition = '');
+            });
+        }
+
+        this.listRenderedOnce = true;
     }
     
     getTimeAgo(dateString) {
@@ -655,6 +677,7 @@ class EmpresaAlertsGlobal {
             const isHidden = panel.classList.contains('hidden');
             
             if (isHidden) {
+                this.listRenderedOnce = false;
                 panel.classList.remove('hidden');
                 overlay.classList.remove('hidden');
                 // Cargar alertas frescas al abrir
@@ -679,15 +702,16 @@ class EmpresaAlertsGlobal {
         
         if (panel && overlay) {
             //console.log('🚨 ABRIENDO PANEL DE ALERTAS AUTOMÁTICAMENTE');
+            this.listRenderedOnce = false;
             panel.classList.remove('hidden');
             overlay.classList.remove('hidden');
-            
+
             // Verificar si se abrió correctamente
             setTimeout(() => {
                 const isStillHidden = panel.classList.contains('hidden');
                 //console.log('🚨 DEBUG: Panel abierto correctamente:', !isStillHidden);
             }, 100);
-            
+
             // No necesita cargar alertas porque ya están actualizadas
         } else {
             //console.error('🚨 ERROR: No se encontraron elementos del panel');
@@ -697,10 +721,11 @@ class EmpresaAlertsGlobal {
     closeAlertsPanel() {
         const panel = this.alertsPanel;
         const overlay = document.getElementById('globalAlertsPanelOverlay');
-        
+
         if (panel && overlay) {
             panel.classList.add('hidden');
             overlay.classList.add('hidden');
+            this.listRenderedOnce = false;
         }
     }
     
