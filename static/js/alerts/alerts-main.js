@@ -584,6 +584,10 @@ async function refreshOpenAlertModal() {
     const toggleBtn = document.getElementById('toggleStatusBtn');
     if (!content || !subtitle || !toggleBtn) return;
 
+    // Preserve current scroll and avoid transition glitches during refresh
+    const scrollTop = content.scrollTop;
+    content.classList.add('transition-none');
+
     const isUserOrigin = alert.data?.origen === 'usuario_movil' || alert.activacion_alerta?.tipo_activacion === 'usuario';
     const isHardwareOrigin = alert.data?.tipo_mensaje === 'alarma' || alert.activacion_alerta?.tipo_activacion === 'hardware';
     const isEmpresaOrigin = alert.data?.origen === 'empresa_web' || alert.activacion_alerta?.tipo_activacion === 'empresa';
@@ -604,7 +608,20 @@ async function refreshOpenAlertModal() {
 
     content.innerHTML = generateModalContent(alert, isUserOrigin, isHardwareOrigin);
 
+    // Remove reveal animations and transitions on refresh
+    const sections = content.querySelectorAll('.modal-section');
+    sections.forEach(section => {
+        section.style.animation = 'none';
+        section.style.transition = 'none';
+    });
+
     toggleBtn.innerHTML = `<i class="fas fa-${alert.activo ? 'toggle-off' : 'toggle-on'} mr-2"></i><span id="toggleStatusText">${alert.activo ? 'Desactivar' : 'Activar'}</span>`;
+
+    // Restore scroll position and transitions
+    content.scrollTop = scrollTop;
+    requestAnimationFrame(() => {
+        content.classList.remove('transition-none');
+    });
 }
 
 function generateModalContent(alert, isUserOrigin, isHardwareOrigin) {
