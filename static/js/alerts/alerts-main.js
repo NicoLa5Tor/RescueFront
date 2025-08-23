@@ -49,12 +49,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Cargar alertas iniciales
     loadActiveAlerts();
-
-    // Actualizar alertas automáticamente cada 5 segundos
-    setInterval(() => {
-        refreshAlertsQuietly();
-    }, 5000);
-
+    
     // Verificar si debe abrir automáticamente el modal de una alerta específica
     checkForAutoOpenAlert();
     
@@ -541,57 +536,6 @@ async function showAlertDetails(alertId) {
         window.modalManager.openModal('alertDetailModal');
         //console.log('✅ Modal abierto correctamente');
     }, 50);
-}
-
-async function refreshOpenAlertModal() {
-    if (!window.modalManager || !window.modalManager.isModalOpen('alertDetailModal') || !selectedAlertId) {
-        return;
-    }
-
-    const alert = await findAlertById(selectedAlertId);
-    if (!alert) return;
-
-    const content = document.getElementById('alertDetailsContent');
-    const subtitle = document.getElementById('modalAlertSubtitle');
-    const toggleBtn = document.getElementById('toggleStatusBtn');
-    if (!content || !subtitle || !toggleBtn) return;
-
-    // Preservar posición de scroll para evitar "flicker" al actualizar
-    const previousScroll = content.scrollTop;
-
-    const isUserOrigin = alert.data?.origen === 'usuario_movil' || alert.activacion_alerta?.tipo_activacion === 'usuario';
-    const isHardwareOrigin = alert.data?.tipo_mensaje === 'alarma' || alert.activacion_alerta?.tipo_activacion === 'hardware';
-    const isEmpresaOrigin = alert.data?.origen === 'empresa_web' || alert.activacion_alerta?.tipo_activacion === 'empresa';
-
-    let displayName = '';
-    if (isUserOrigin) {
-        displayName = alert.activacion_alerta?.nombre || alert.data?.botonera_ubicacion?.hardware_nombre || 'Usuario Móvil';
-    } else if (isHardwareOrigin) {
-        displayName = alert.activacion_alerta?.nombre || alert.hardware_nombre || 'Hardware';
-    } else if (isEmpresaOrigin) {
-        displayName = alert.activacion_alerta?.nombre || alert.nombre_alerta || 'Alerta de Empresa';
-    } else {
-        displayName = alert.hardware_nombre || alert.activacion_alerta?.nombre || 'Sistema';
-    }
-
-    const empresaName = alert.empresa_nombre || 'Empresa';
-    const newSubtitle = `${displayName} - ${empresaName}`;
-    if (subtitle.textContent !== newSubtitle) {
-        subtitle.textContent = newSubtitle;
-    }
-
-    const newContent = generateModalContent(alert, isUserOrigin, isHardwareOrigin);
-    if (content.innerHTML !== newContent) {
-        content.innerHTML = newContent;
-    }
-
-    // Restaurar la posición de scroll
-    content.scrollTop = previousScroll;
-
-    const newToggle = `<i class="fas fa-${alert.activo ? 'toggle-off' : 'toggle-on'} mr-2"></i><span id="toggleStatusText">${alert.activo ? 'Desactivar' : 'Activar'}</span>`;
-    if (toggleBtn.innerHTML !== newToggle) {
-        toggleBtn.innerHTML = newToggle;
-    }
 }
 
 function generateModalContent(alert, isUserOrigin, isHardwareOrigin) {
