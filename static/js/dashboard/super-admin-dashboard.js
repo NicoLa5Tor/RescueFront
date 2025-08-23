@@ -323,7 +323,7 @@ class SuperAdminDashboard {
 
         companies.forEach(company => {
             const companyElement = document.createElement('div');
-            companyElement.className = 'flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg mb-3';
+            companyElement.className = 'flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg mb-3';
             
             // Handle different data structures
             const companyName = company.nombre || company.name || 'Sin nombre';
@@ -333,19 +333,19 @@ class SuperAdminDashboard {
             const createdDate = company.fecha_creacion || company.created_at || new Date();
             
             companyElement.innerHTML = `
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center">
+                <div class="flex items-center space-x-3 flex-1 min-w-0">
+                    <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center flex-shrink-0">
                         <i class="fas fa-building text-purple-600 dark:text-purple-400"></i>
                     </div>
-                    <div>
-                        <p class="font-medium text-black dark:text-white">${companyName}</p>
+                    <div class="min-w-0">
+                        <p class="font-medium text-black dark:text-white truncate">${companyName}</p>
                         <p class="text-sm text-gray-500 dark:text-gray-400">${companyType} • ${userCount} usuarios</p>
                     </div>
                 </div>
-                <div class="text-right">
+                <div class="flex-shrink-0 w-full sm:w-auto text-left sm:text-right mt-3 sm:mt-0">
                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        isActive 
-                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
+                        isActive
+                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
                             : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
                     }">
                         ${isActive ? 'Activa' : 'Inactiva'}
@@ -369,7 +369,7 @@ class SuperAdminDashboard {
 
         users.forEach(user => {
             const userElement = document.createElement('div');
-            userElement.className = 'flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg mb-3';
+            userElement.className = 'flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg mb-3';
             
             // Handle different data structures
             const userName = user.nombre || user.name || 'Sin nombre';
@@ -383,20 +383,20 @@ class SuperAdminDashboard {
             const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase();
             
             userElement.innerHTML = `
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                <div class="flex items-center space-x-3 flex-1 min-w-0">
+                    <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center flex-shrink-0">
                         <span class="font-medium text-blue-600 dark:text-blue-400">${initials}</span>
                     </div>
-                    <div>
-                        <p class="font-medium text-black dark:text-white">${userName}</p>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">${userEmail}</p>
+                    <div class="min-w-0">
+                        <p class="font-medium text-black dark:text-white truncate">${userName}</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 truncate">${userEmail}</p>
                         <p class="text-xs text-gray-500 dark:text-gray-400">${userCompany}</p>
                     </div>
                 </div>
-                <div class="text-right">
+                <div class="flex-shrink-0 w-full sm:w-auto text-left sm:text-right mt-3 sm:mt-0">
                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        isActive 
-                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
+                        isActive
+                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
                             : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
                     }">
                         ${userRole}
