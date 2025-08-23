@@ -19,8 +19,9 @@
 .fixed.top-4.right-4.z-50,
 .notification,
 .toast,
+.toast-notification,
 .popup-notification {
-    z-index: 99999 !important; /* Super alto para estar encima de todos los modales */
+    z-index: 999999 !important;
 }
 
 /* Notificaciones específicas de auth-manager */
@@ -156,6 +157,7 @@ div[class*="dialog"] {
 /* Pero para notificaciones, siempre usar el z-index alto */
 .notification.z-50,
 .toast.z-50,
+.toast-notification.z-50,
 .popup.z-50 {
     z-index: 99999 !important;
 }
