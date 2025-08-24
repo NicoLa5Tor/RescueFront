@@ -679,224 +679,56 @@ function generateModalContent(alert, isUserOrigin, isHardwareOrigin) {
         
         <!-- Layout optimizado: Fila principal con imagen/estado + mapa más grande -->
         <div class="space-y-4">
-            <!-- Fila superior: Imagen/Tipo + Estado y Prioridad + Información del origen (3 columnas) -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                <!-- Imagen y tipo de alerta con diferenciación por origen -->
-                <div class="lg:col-span-1">
+            <!-- Fila superior: Solo imagen y tipo de alerta -->
+            <div class="grid grid-cols-1 gap-4">
+                <div>
                     ${alert.image_alert ? `
                         <div class="modal-section bg-gradient-to-br ${
-                            isUserOrigin ? 'from-purple-500 to-pink-600' : 
-                            isHardwareOrigin ? 'from-blue-500 to-cyan-600' : 
+                            isUserOrigin ? 'from-purple-500 to-pink-600' :
+                            isHardwareOrigin ? 'from-blue-500 to-cyan-600' :
                             'from-gray-500 to-gray-600'
-                        } rounded-lg p-4 text-center h-full">
-                            <img src="${alert.image_alert}" 
-                                 alt="${alert.nombre_alerta || 'Tipo de alerta'}" 
-                                 class="w-1/2 sm:w-2/5 lg:w-1/3 xl:w-1/4 max-w-xs max-h-32 object-contain rounded-lg mb-3 border-2 border-white/20 modal-image mx-auto"
-                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                            <div class="w-16 h-16 bg-gradient-to-br ${
-                                isUserOrigin ? 'from-purple-400 to-pink-500' : 
-                                isHardwareOrigin ? 'from-blue-400 to-cyan-500' : 
+                        } rounded-lg p-4 text-center">
+                            <img src="${alert.image_alert}"
+                                 alt="${alert.nombre_alerta || 'Tipo de alerta'}"
+                                 class="w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 object-contain rounded-lg mb-4 border-2 border-white/20 modal-image mx-auto"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 bg-gradient-to-br ${
+                                isUserOrigin ? 'from-purple-400 to-pink-500' :
+                                isHardwareOrigin ? 'from-blue-400 to-cyan-500' :
                                 'from-gray-400 to-gray-500'
-                            } rounded-full mx-auto mb-3 flex items-center justify-center shadow-lg" style="display: none;">
+                            } rounded-lg mx-auto mb-4 flex items-center justify-center shadow-lg" style="display: none;">
                                 <i class="fas fa-${
-                                    isUserOrigin ? 'user-shield' : 
+                                    isUserOrigin ? 'user-shield' :
                                     isHardwareOrigin ? 'microchip' : 'exclamation-triangle'
-                                } text-white text-xl"></i>
+                                } text-white text-3xl"></i>
                             </div>
-                            <h3 class="text-lg font-bold text-white mb-2">
-                                ${alert.nombre_alerta || 'Alerta'}
-                            </h3>
-                            <div class="space-y-2">
-                                <div class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold" 
-                                     style="background-color: ${getAlertTypeColor(alert.tipo_alerta)}40; color: ${getAlertTypeColor(alert.tipo_alerta)}; border: 1px solid ${getAlertTypeColor(alert.tipo_alerta)}60;">
-                                    ${alert.tipo_alerta || 'N/A'}
-                                </div>
-                                <div class="block">
-                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-white/20 text-white">
-                                        <i class="fas fa-${
-                                            isUserOrigin ? 'mobile-alt' : 
-                                            isHardwareOrigin ? 'microchip' : 'cog'
-                                        } mr-1"></i>
-                                        ${isUserOrigin ? 'Móvil' : isHardwareOrigin ? 'Hardware' : 'Sistema'}
-                                    </span>
-                                </div>
+                            <div class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold"
+                                 style="background-color: ${getAlertTypeColor(alert.tipo_alerta)}40; color: ${getAlertTypeColor(alert.tipo_alerta)}; border: 1px solid ${getAlertTypeColor(alert.tipo_alerta)}60;">
+                                ${alert.tipo_alerta || 'N/A'}
                             </div>
                         </div>
                     ` : `
                         <div class="modal-section bg-gradient-to-br ${
-                            isUserOrigin ? 'from-purple-600 to-indigo-800' : 
-                            isHardwareOrigin ? 'from-blue-600 to-cyan-800' : 
+                            isUserOrigin ? 'from-purple-600 to-indigo-800' :
+                            isHardwareOrigin ? 'from-blue-600 to-cyan-800' :
                             'from-gray-600 to-gray-800'
-                        } rounded-lg p-4 text-center h-full flex flex-col justify-center">
-                            <div class="w-16 h-16 bg-gradient-to-br ${
-                                isUserOrigin ? 'from-purple-400 to-pink-500' : 
-                                isHardwareOrigin ? 'from-blue-400 to-cyan-500' : 
+                        } rounded-lg p-4 text-center flex flex-col items-center justify-center">
+                            <div class="w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 bg-gradient-to-br ${
+                                isUserOrigin ? 'from-purple-400 to-pink-500' :
+                                isHardwareOrigin ? 'from-blue-400 to-cyan-500' :
                                 'from-gray-400 to-gray-500'
-                            } rounded-full mx-auto mb-3 flex items-center justify-center shadow-lg">
+                            } rounded-lg flex items-center justify-center shadow-lg mb-4">
                                 <i class="fas fa-${
-                                    isUserOrigin ? 'user-shield' : 
+                                    isUserOrigin ? 'user-shield' :
                                     isHardwareOrigin ? 'microchip' : 'exclamation-triangle'
-                                } text-white text-xl"></i>
+                                } text-white text-3xl"></i>
                             </div>
-                            <h3 class="text-lg font-bold text-white mb-2">
-                                ${isUserOrigin ? 'Alerta de Usuario' : 
-                                  isHardwareOrigin ? 'Alerta de Hardware' : 
-                                  'Alerta del Sistema'}
-                            </h3>
-                            <div class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-white/20 text-white">
-                                <i class="fas fa-${
-                                    isUserOrigin ? 'mobile-alt' : 
-                                    isHardwareOrigin ? 'microchip' : 'cog'
-                                } mr-1"></i>
-                                ${isUserOrigin ? 'App Móvil' : isHardwareOrigin ? 'Automático' : 'Sistema'}
+                            <div class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold"
+                                 style="background-color: ${getAlertTypeColor(alert.tipo_alerta)}40; color: ${getAlertTypeColor(alert.tipo_alerta)}; border: 1px solid ${getAlertTypeColor(alert.tipo_alerta)}60;">
+                                ${alert.tipo_alerta || 'N/A'}
                             </div>
                         </div>
                     `}
-                </div>
-                
-                <!-- Estado y prioridad en columna -->
-                <div class="lg:col-span-1 space-y-3">
-                    <div class="modal-section bg-gradient-to-r from-gray-700 to-gray-800 rounded-lg p-3">
-                        <h4 class="text-sm font-medium text-gray-300 mb-2">Estado</h4>
-                        <div class="flex items-center">
-                            <div class="w-3 h-3 rounded-full mr-2 ${alert.activo ? 'bg-green-400' : 'bg-red-400'}"></div>
-                            <span class="text-lg font-bold ${alert.activo ? 'text-green-400' : 'text-red-400'}">
-                                ${alert.activo ? 'ACTIVA' : 'INACTIVA'}
-                            </span>
-                        </div>
-                        ${!alert.activo && alert.fecha_desactivacion ? `
-                            <div class="mt-2 pt-2 border-t border-gray-600">
-                                <p class="text-xs text-gray-400 mb-1">
-                                    <i class="fas fa-calendar-times mr-1"></i>
-                                    Desactivada: ${formatDateTimeForUser(alert.fecha_desactivacion)}
-                                    <span class="block">${getTimeAgo(alert.fecha_desactivacion)}</span>
-                                </p>
-                                ${alert.desactivado_por ? `
-                                    <p class="text-xs text-gray-400">
-                                        <i class="fas fa-user-times mr-1"></i>
-                                        Por: ${alert.desactivado_por.tipo === 'empresa' ? 'Empresa' : 'Sistema'}
-                                    </p>
-                                ` : ''}
-                            </div>
-                        ` : ''}
-                    </div>
-                    <div class="modal-section bg-gradient-to-r from-gray-700 to-gray-800 rounded-lg p-3">
-                        <h4 class="text-sm font-medium text-gray-300 mb-2">Prioridad</h4>
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold ${getPriorityClass(alert.prioridad)}">
-                            ${alert.prioridad.toUpperCase()}
-                        </span>
-                    </div>
-                </div>
-
-                <!-- Información del origen (Usuario, Hardware o Empresa) -->
-                <div class="lg:col-span-1">
-                    ${(() => {
-                        const isEmpresaOrigin = alert.data?.origen === 'empresa_web' || alert.activacion_alerta?.tipo_activacion === 'empresa';
-                        
-                        if (isUserOrigin) {
-                            return `
-                                <div class="modal-section bg-gradient-to-r from-purple-700 to-indigo-800 rounded-lg p-3 h-full">
-                                    <h4 class="text-sm font-semibold text-white mb-2 flex items-center">
-                                        <i class="fas fa-user-shield mr-1 text-xs"></i>Usuario Origen
-                                    </h4>
-                                    <div class="space-y-1 text-xs">
-                                        <div class="flex justify-between">
-                                            <span class="text-purple-200">Usuario:</span>
-                                            <span class="text-white font-medium truncate ml-2">${alert.activacion_alerta?.nombre || 'Usuario no especificado'}</span>
-                                        </div>
-                                        ${alert.activacion_alerta?.id ? `
-                                            <div class="flex justify-between">
-                                                <span class="text-purple-200">ID:</span>
-                                                <span class="text-white font-medium font-mono text-xs">${alert.activacion_alerta.id}</span>
-                                            </div>
-                                        ` : ''}
-                                        ${alert.data?.metadatos?.plataforma ? `
-                                            <div class="pt-1">
-                                                <span class="text-purple-200 block mb-1">Plataforma:</span>
-                                                <span class="inline-flex items-center px-2 py-1 bg-purple-600/30 text-purple-100 rounded text-xs">
-                                                    <i class="fas fa-mobile-alt mr-1"></i>
-                                                    ${alert.data.metadatos.plataforma === 'mobile_app' ? 'App Móvil' : alert.data.metadatos.plataforma}
-                                                </span>
-                                            </div>
-                                        ` : ''}
-                                    </div>
-                                </div>
-                            `;
-                        } else if (isHardwareOrigin) {
-                            return `
-                                <div class="modal-section bg-gradient-to-r from-blue-700 to-cyan-800 rounded-lg p-3 h-full">
-                                    <h4 class="text-sm font-semibold text-white mb-2 flex items-center">
-                                        <i class="fas fa-microchip mr-1 text-xs"></i>Hardware Origen
-                                    </h4>
-                                    <div class="space-y-1 text-xs">
-                                        <div class="flex justify-between">
-                                            <span class="text-blue-200">Nombre:</span>
-                                            <span class="text-white font-medium truncate ml-2">${alert.activacion_alerta?.nombre || alert.hardware_nombre || 'Hardware no especificado'}</span>
-                                        </div>
-                                        ${alert.data?.id_origen ? `
-                                            <div class="flex justify-between">
-                                                <span class="text-blue-200">ID Origen:</span>
-                                                <span class="text-white font-medium font-mono text-xs">${alert.data.id_origen}</span>
-                                            </div>
-                                        ` : ''}
-                                        ${alert.topic ? `
-                                            <div class="pt-1">
-                                                <span class="text-blue-200 block mb-1">Topic MQTT:</span>
-                                                <code class="text-blue-100 font-mono text-xs bg-black/20 px-1 py-1 rounded block break-all">${alert.topic}</code>
-                                            </div>
-                                        ` : ''}
-                                    </div>
-                                </div>
-                            `;
-                        } else if (isEmpresaOrigin) {
-                            return `
-                                <div class="modal-section bg-gradient-to-r from-emerald-700 to-teal-800 rounded-lg p-3 h-full">
-                                    <h4 class="text-sm font-semibold text-white mb-2 flex items-center">
-                                        <i class="fas fa-building mr-1 text-xs"></i>Empresa Origen
-                                    </h4>
-                                    <div class="space-y-1 text-xs">
-                                        <div class="flex justify-between">
-                                            <span class="text-teal-200">Empresa:</span>
-                                            <span class="text-white font-medium truncate ml-2">${alert.activacion_alerta?.nombre || alert.empresa_nombre || 'Empresa no especificada'}</span>
-                                        </div>
-                                        ${alert.activacion_alerta?.id ? `
-                                            <div class="flex justify-between">
-                                                <span class="text-teal-200">ID:</span>
-                                                <span class="text-white font-medium font-mono text-xs">${alert.activacion_alerta.id}</span>
-                                            </div>
-                                        ` : ''}
-                                        ${alert.data?.origen ? `
-                                            <div class="pt-1">
-                                                <span class="text-teal-200 block mb-1">Origen:</span>
-                                                <span class="inline-flex items-center px-2 py-1 bg-teal-600/30 text-teal-100 rounded text-xs">
-                                                    <i class="fas fa-globe-americas mr-1"></i>
-                                                    ${alert.data.origen === 'empresa_web' ? 'Portal Web Empresa' : alert.data.origen}
-                                                </span>
-                                            </div>
-                                        ` : ''}
-                                        ${alert.data?.metadatos?.plataforma ? `
-                                            <div class="pt-1">
-                                                <span class="text-teal-200 block mb-1">Plataforma:</span>
-                                                <span class="inline-flex items-center px-2 py-1 bg-emerald-600/30 text-emerald-100 rounded text-xs">
-                                                    <i class="fas fa-desktop mr-1"></i>
-                                                    ${alert.data.metadatos.plataforma === 'web_app' ? 'Aplicación Web' : alert.data.metadatos.plataforma}
-                                                </span>
-                                            </div>
-                                        ` : ''}
-                                    </div>
-                                </div>
-                            `;
-                        } else {
-                            return `
-                                <div class="modal-section bg-gradient-to-r from-gray-700 to-gray-800 rounded-lg p-3 h-full flex items-center justify-center">
-                                    <div class="text-center">
-                                        <i class="fas fa-question-circle text-gray-400 text-2xl mb-2"></i>
-                                        <p class="text-gray-300 text-sm">Origen no especificado</p>
-                                    </div>
-                                </div>
-                            `;
-                        }
-                    })()}
                 </div>
             </div>
             
