@@ -706,21 +706,7 @@ function generateModalContent(alert, isUserOrigin, isHardwareOrigin) {
                             <h3 class="text-lg font-bold text-white mb-2">
                                 ${alert.nombre_alerta || 'Alerta'}
                             </h3>
-                            <div class="space-y-2">
-                                <div class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold" 
-                                     style="background-color: ${getAlertTypeColor(alert.tipo_alerta)}40; color: ${getAlertTypeColor(alert.tipo_alerta)}; border: 1px solid ${getAlertTypeColor(alert.tipo_alerta)}60;">
-                                    ${alert.tipo_alerta || 'N/A'}
-                                </div>
-                                <div class="block">
-                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-white/20 text-white">
-                                        <i class="fas fa-${
-                                            isUserOrigin ? 'mobile-alt' : 
-                                            isHardwareOrigin ? 'microchip' : 'cog'
-                                        } mr-1"></i>
-                                        ${isUserOrigin ? 'Móvil' : isHardwareOrigin ? 'Hardware' : 'Sistema'}
-                                    </span>
-                                </div>
-                            </div>
+                          
                         </div>
                     ` : `
                         <div class="modal-section bg-gradient-to-br ${
