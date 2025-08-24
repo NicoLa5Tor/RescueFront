@@ -850,7 +850,7 @@ function generateInactiveModalContent(alert, isUserOrigin, isHardwareOrigin) {
                                 <div class="flex items-center space-x-2 mt-1">
                                     <span class="w-2 h-2 rounded-full ${contacto.disponible ? 'bg-green-400' : 'bg-red-400'}"></span>
                                     <span class="text-xs ${contacto.disponible ? 'text-green-300' : 'text-red-300'}">
-                                        ${contacto.disponible ? 'Disponible' : 'No disponible'}
+                                        ${contacto.disponible ? 'Estaba disponible' : 'No estaba disponible'}
                                     </span>
                                 </div>
                                 ${(() => {
@@ -859,8 +859,8 @@ function generateInactiveModalContent(alert, isUserOrigin, isHardwareOrigin) {
                                             <div class="mt-2 flex items-center text-orange-400">
                                                 <i class="fas fa-map-marked-alt mr-2 text-xs"></i>
                                                 <div>
-                                                    <p class="text-orange-400 text-xs font-medium">En Ruta al incidente</p>
-                                                    <p class="text-teal-300 text-xs italic">Desplazándose al lugar</p>
+                                                    <p class="text-orange-400 text-xs font-medium">Se movilizó al incidente</p>
+                                                    <p class="text-teal-300 text-xs italic">En ruta durante la alerta</p>
                                                 </div>
                                             </div>
                                         `;
@@ -870,8 +870,8 @@ function generateInactiveModalContent(alert, isUserOrigin, isHardwareOrigin) {
                                                 <div class="mt-2 flex items-center text-blue-400">
                                                     <i class="fas fa-home mr-2 text-xs"></i>
                                                     <div>
-                                                        <p class="text-blue-400 text-xs font-medium">En Espera</p>
-                                                        <p class="text-teal-300 text-xs italic">Disponible pero no en camino</p>
+                                                        <p class="text-blue-400 text-xs font-medium">No se movilizó</p>
+                                                        <p class="text-teal-300 text-xs italic">Disponible pero permaneció en espera</p>
                                                     </div>
                                                 </div>
                                             `;
@@ -880,8 +880,8 @@ function generateInactiveModalContent(alert, isUserOrigin, isHardwareOrigin) {
                                                 <div class="mt-2 flex items-center text-red-400">
                                                     <i class="fas fa-times-circle mr-2 text-xs"></i>
                                                     <div>
-                                                        <p class="text-red-400 text-xs font-medium">No Disponible</p>
-                                                        <p class="text-gray-400 text-xs italic">No puede responder al incidente</p>
+                                                        <p class="text-red-400 text-xs font-medium">No estaba disponible</p>
+                                                        <p class="text-gray-400 text-xs italic">No respondió al incidente</p>
                                                     </div>
                                                 </div>
                                             `;
@@ -892,8 +892,8 @@ function generateInactiveModalContent(alert, isUserOrigin, isHardwareOrigin) {
                                                 <div class="mt-2 flex items-center text-green-400">
                                                     <i class="fas fa-check-circle mr-2 text-xs"></i>
                                                     <div>
-                                                        <p class="text-green-400 text-xs font-medium">Disponible</p>
-                                                        <p class="text-teal-300 text-xs italic">Listo para responder</p>
+                                                        <p class="text-green-400 text-xs font-medium">Estaba disponible</p>
+                                                        <p class="text-teal-300 text-xs italic">Listo para responder durante la alerta</p>
                                                     </div>
                                                 </div>
                                             `;
@@ -902,8 +902,8 @@ function generateInactiveModalContent(alert, isUserOrigin, isHardwareOrigin) {
                                                 <div class="mt-2 flex items-center text-red-400">
                                                     <i class="fas fa-exclamation-triangle mr-2 text-xs"></i>
                                                     <div>
-                                                        <p class="text-red-400 text-xs font-medium">No Disponible</p>
-                                                        <p class="text-gray-400 text-xs italic">No puede responder</p>
+                                                        <p class="text-red-400 text-xs font-medium">No estaba disponible</p>
+                                                        <p class="text-gray-400 text-xs italic">No pudo responder</p>
                                                     </div>
                                                 </div>
                                             `;
@@ -1255,7 +1255,7 @@ function generateContactsContent(alert) {
                             <div class="flex items-center space-x-2 mt-1">
                                 <span class="w-2 h-2 rounded-full ${contacto.disponible ? 'bg-green-400' : 'bg-red-400'}"></span>
                                 <span class="text-xs ${contacto.disponible ? 'text-green-300' : 'text-red-300'}">
-                                    ${contacto.disponible ? 'Disponible' : 'No disponible'}
+                                    ${contacto.disponible ? 'Estaba disponible' : 'No estaba disponible'}
                                 </span>
                             </div>
                             ${(() => {
@@ -1264,8 +1264,8 @@ function generateContactsContent(alert) {
                                         <div class="mt-2 flex items-center text-orange-400">
                                             <i class="fas fa-map-marked-alt mr-2 text-xs"></i>
                                             <div>
-                                                <p class="text-orange-400 text-xs font-medium">En Ruta al incidente</p>
-                                                <p class="text-teal-300 text-xs italic">Desplazándose al lugar</p>
+                                                <p class="text-orange-400 text-xs font-medium">Se movilizó al incidente</p>
+                                                <p class="text-teal-300 text-xs italic">En ruta durante la alerta</p>
                                             </div>
                                         </div>
                                     `;
@@ -1275,8 +1275,8 @@ function generateContactsContent(alert) {
                                             <div class="mt-2 flex items-center text-blue-400">
                                                 <i class="fas fa-home mr-2 text-xs"></i>
                                                 <div>
-                                                    <p class="text-blue-400 text-xs font-medium">En Espera</p>
-                                                    <p class="text-teal-300 text-xs italic">Disponible pero no en camino</p>
+                                                    <p class="text-blue-400 text-xs font-medium">No se movilizó</p>
+                                                    <p class="text-teal-300 text-xs italic">Disponible pero permaneció en espera</p>
                                                 </div>
                                             </div>
                                         `;
@@ -1285,8 +1285,8 @@ function generateContactsContent(alert) {
                                             <div class="mt-2 flex items-center text-red-400">
                                                 <i class="fas fa-times-circle mr-2 text-xs"></i>
                                                 <div>
-                                                    <p class="text-red-400 text-xs font-medium">No Disponible</p>
-                                                    <p class="text-gray-400 text-xs italic">No puede responder al incidente</p>
+                                                    <p class="text-red-400 text-xs font-medium">No estaba disponible</p>
+                                                    <p class="text-gray-400 text-xs italic">No respondió al incidente</p>
                                                 </div>
                                             </div>
                                         `;
@@ -1297,8 +1297,8 @@ function generateContactsContent(alert) {
                                             <div class="mt-2 flex items-center text-green-400">
                                                 <i class="fas fa-check-circle mr-2 text-xs"></i>
                                                 <div>
-                                                    <p class="text-green-400 text-xs font-medium">Disponible</p>
-                                                    <p class="text-teal-300 text-xs italic">Listo para responder</p>
+                                                    <p class="text-green-400 text-xs font-medium">Estaba disponible</p>
+                                                    <p class="text-teal-300 text-xs italic">Listo para responder durante la alerta</p>
                                                 </div>
                                             </div>
                                         `;
@@ -1307,8 +1307,8 @@ function generateContactsContent(alert) {
                                             <div class="mt-2 flex items-center text-red-400">
                                                 <i class="fas fa-exclamation-triangle mr-2 text-xs"></i>
                                                 <div>
-                                                    <p class="text-red-400 text-xs font-medium">No Disponible</p>
-                                                    <p class="text-gray-400 text-xs italic">No puede responder</p>
+                                                    <p class="text-red-400 text-xs font-medium">No estaba disponible</p>
+                                                    <p class="text-gray-400 text-xs italic">No pudo responder</p>
                                                 </div>
                                             </div>
                                         `;
