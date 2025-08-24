@@ -714,6 +714,12 @@ function generateInactiveModalContent(alert, isUserOrigin, isHardwareOrigin, isE
                             ${alert.prioridad.toUpperCase()}
                         </span>
                     </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Creada:</span>
+                        <span class="text-white">${formatDateTimeForUser(alert.fecha_creacion)}
+                            <span class="block text-gray-500 text-xs">${getTimeAgo(alert.fecha_creacion)}</span>
+                        </span>
+                    </div>
                 </div>
             </div>
 

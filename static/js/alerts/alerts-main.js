@@ -767,7 +767,8 @@ function generateModalContent(alert, isUserOrigin, isHardwareOrigin) {
                             <div class="mt-2 pt-2 border-t border-gray-600">
                                 <p class="text-xs text-gray-400 mb-1">
                                     <i class="fas fa-calendar-times mr-1"></i>
-                                    Desactivada: ${getTimeAgo(alert.fecha_desactivacion)}
+                                    Desactivada: ${formatDateTimeForUser(alert.fecha_desactivacion)}
+                                    <span class="block">${getTimeAgo(alert.fecha_desactivacion)}</span>
                                 </p>
                                 ${alert.desactivado_por ? `
                                     <p class="text-xs text-gray-400">
