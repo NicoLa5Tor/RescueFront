@@ -768,32 +768,10 @@ function generateInactiveModalContent(alert, isUserOrigin, isHardwareOrigin) {
             ${generateLocationContent(alert)}
         </div>
 
-        <!-- Grid inferior: 2 columnas -->
+        <!-- Información del origen y hardware relacionado -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            
-            <!-- Descripción -->
-            <div class="space-y-4">
-                ${alert.data?.tipo_alarma_info?.descripcion ? `
-                    <div class="modal-section bg-orange-600/10 border border-orange-500/20 rounded-xl p-4">
-                        <h4 class="text-orange-300 font-semibold mb-3 flex items-center">
-                            <i class="fas fa-info-circle mr-2"></i>Descripción
-                        </h4>
-                        <p class="text-orange-200 text-sm leading-relaxed">${alert.data.tipo_alarma_info.descripcion}</p>
-                    </div>
-                ` : ''}
-                
-                ${alert.topic ? `
-                    <div class="modal-section bg-teal-600/10 border border-teal-500/20 rounded-xl p-4">
-                        <h4 class="text-teal-300 font-semibold mb-3 flex items-center">
-                            <i class="fas fa-code-branch mr-2"></i>Topic MQTT
-                        </h4>
-                        <code class="text-teal-100 font-mono text-sm bg-black/20 px-3 py-2 rounded-lg block break-all">${alert.topic}</code>
-                        <p class="text-teal-200 text-xs mt-2">Empresa/Sede/Tipo/Hardware</p>
-                    </div>
-                ` : ''}
-            </div>
+            ${generateOriginDetailsContent(alert, isUserOrigin, isHardwareOrigin)}
 
-            <!-- Hardware relacionado -->
             <div class="modal-section bg-slate-700/20 border border-slate-500/20 rounded-xl p-4">
                 <h4 class="text-slate-300 font-semibold mb-3 flex items-center justify-between">
                     <span><i class="fas fa-network-wired mr-2"></i>Hardware Relacionado</span>
@@ -830,6 +808,30 @@ function generateInactiveModalContent(alert, isUserOrigin, isHardwareOrigin) {
                 })()}
             </div>
         </div>
+
+        <!-- Descripción y Topic -->
+        ${(alert.data?.tipo_alarma_info?.descripcion || alert.topic) ? `
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                ${alert.data?.tipo_alarma_info?.descripcion ? `
+                    <div class="modal-section bg-orange-600/10 border border-orange-500/20 rounded-xl p-4">
+                        <h4 class="text-orange-300 font-semibold mb-3 flex items-center">
+                            <i class="fas fa-info-circle mr-2"></i>Descripción
+                        </h4>
+                        <p class="text-orange-200 text-sm leading-relaxed">${alert.data.tipo_alarma_info.descripcion}</p>
+                    </div>
+                ` : ''}
+
+                ${alert.topic ? `
+                    <div class="modal-section bg-teal-600/10 border border-teal-500/20 rounded-xl p-4">
+                        <h4 class="text-teal-300 font-semibold mb-3 flex items-center">
+                            <i class="fas fa-code-branch mr-2"></i>Topic MQTT
+                        </h4>
+                        <code class="text-teal-100 font-mono text-sm bg-black/20 px-3 py-2 rounded-lg block break-all">${alert.topic}</code>
+                        <p class="text-teal-200 text-xs mt-2">Empresa/Sede/Tipo/Hardware</p>
+                    </div>
+                ` : ''}
+            </div>
+        ` : ''}
 
         <!-- Contactos: Grid responsivo -->
         ${alert.numeros_telefonicos?.length > 0 ? `
