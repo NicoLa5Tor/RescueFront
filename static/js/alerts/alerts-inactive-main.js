@@ -507,12 +507,15 @@ async function showInactiveAlertDetails(alertId) {
     
     const isUserOrigin = alert.data?.origen === 'usuario_movil' || alert.activacion_alerta?.tipo_activacion === 'usuario';
     const isHardwareOrigin = alert.data?.tipo_mensaje === 'alarma' || alert.activacion_alerta?.tipo_activacion === 'hardware';
-    
+    const isEmpresaOrigin = alert.data?.origen === 'empresa_web' || alert.activacion_alerta?.tipo_activacion === 'empresa';
+
     let displayName = '';
     if (isUserOrigin) {
         displayName = alert.activacion_alerta?.nombre || alert.data?.botonera_ubicacion?.hardware_nombre || 'Usuario Móvil';
     } else if (isHardwareOrigin) {
         displayName = alert.activacion_alerta?.nombre || alert.hardware_nombre || 'Hardware';
+    } else if (isEmpresaOrigin) {
+        displayName = alert.activacion_alerta?.nombre || alert.empresa_nombre || 'Empresa';
     } else {
         displayName = alert.hardware_nombre || alert.activacion_alerta?.nombre || 'Sistema';
     }
@@ -522,9 +525,9 @@ async function showInactiveAlertDetails(alertId) {
     
     // Generar contenido del modal (reutilizando función existente si está disponible)
     if (typeof generateModalContent === 'function') {
-        content.innerHTML = generateModalContent(alert, isUserOrigin, isHardwareOrigin);
+        content.innerHTML = generateModalContent(alert, isUserOrigin, isHardwareOrigin, isEmpresaOrigin);
     } else {
-        content.innerHTML = generateInactiveModalContent(alert, isUserOrigin, isHardwareOrigin);
+        content.innerHTML = generateInactiveModalContent(alert, isUserOrigin, isHardwareOrigin, isEmpresaOrigin);
     }
     
     // Para alertas inactivas, ocultar el botón de reactivar
@@ -536,14 +539,15 @@ async function showInactiveAlertDetails(alertId) {
         //console.log('✅ Modal de alerta inactiva abierto correctamente');
     }, 50);
 }
-function generateInactiveModalContent(alert, isUserOrigin, isHardwareOrigin) {
+function generateInactiveModalContent(alert, isUserOrigin, isHardwareOrigin, isEmpresaOrigin) {
     //console.log('🔍 GENERANDO MODAL PARA ALERTA INACTIVA:', alert);
     
     return `
         <!-- GRILLA 1: HEADER DE ALERTA INACTIVA -->
         <div class="mb-6 p-4 rounded-xl ${
-            isUserOrigin ? 'bg-gradient-to-r from-purple-600 to-indigo-700' : 
-            isHardwareOrigin ? 'bg-gradient-to-r from-blue-600 to-cyan-700' : 
+            isUserOrigin ? 'bg-gradient-to-r from-purple-600 to-indigo-700' :
+            isHardwareOrigin ? 'bg-gradient-to-r from-blue-600 to-cyan-700' :
+            isEmpresaOrigin ? 'bg-gradient-to-r from-amber-600 to-yellow-700' :
             'bg-gradient-to-r from-gray-600 to-gray-700'
         }">
             <div class="flex items-center justify-between">
@@ -770,7 +774,7 @@ function generateInactiveModalContent(alert, isUserOrigin, isHardwareOrigin) {
 
         <!-- Información del origen y hardware relacionado -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            ${generateOriginDetailsContent(alert, isUserOrigin, isHardwareOrigin)}
+            ${generateOriginDetailsContent(alert, isUserOrigin, isHardwareOrigin, isEmpresaOrigin)}
 
             <div class="modal-section bg-slate-700/20 border border-slate-500/20 rounded-xl p-4">
                 <h4 class="text-slate-300 font-semibold mb-3 flex items-center justify-between">
@@ -1142,7 +1146,7 @@ function generateAssociatedHardwareContent(alert) {
     return '<div class="bg-black/20 rounded p-2 text-center"><p class="text-gray-300 text-xs">Sin hardware asociado específico</p></div>';
 }
 
-function generateOriginDetailsContent(alert, isUserOrigin, isHardwareOrigin) {
+function generateOriginDetailsContent(alert, isUserOrigin, isHardwareOrigin, isEmpresaOrigin) {
     if (isUserOrigin) {
         return `
             <div class="modal-section bg-gradient-to-r from-violet-700 to-purple-800 rounded-lg p-3">
@@ -1225,6 +1229,54 @@ function generateOriginDetailsContent(alert, isUserOrigin, isHardwareOrigin) {
                             <div class="flex justify-between">
                                 <span class="text-blue-200">ID Origen:</span>
                                 <span class="text-white font-mono text-xs">${alert.data.id_origen}</span>
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    } else if (isEmpresaOrigin) {
+        return `
+            <div class="modal-section bg-gradient-to-r from-amber-700 to-yellow-800 rounded-lg p-3">
+                <h4 class="text-sm font-semibold text-white mb-2 flex items-center">
+                    <i class="fas fa-building mr-1 text-xs"></i>Detalles de Empresa
+                </h4>
+                <div class="space-y-2 text-xs">
+                    <div class="bg-black/20 rounded p-2">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-amber-200">Empresa:</span>
+                            <span class="text-white font-medium">${alert.activacion_alerta?.nombre || alert.empresa_nombre || 'Empresa no especificada'}</span>
+                        </div>
+                        ${alert.activacion_alerta?.id ? `
+                            <p class="text-amber-300 text-xs font-mono">ID: ${alert.activacion_alerta.id}</p>
+                        ` : ''}
+                    </div>
+
+                    ${alert.data?.metadatos ? `
+                        <div class="bg-black/20 rounded p-2">
+                            <p class="text-amber-200 mb-1">Metadatos:</p>
+                            <div class="flex flex-wrap gap-1">
+                                ${alert.data.metadatos.plataforma ? `
+                                    <span class="inline-flex items-center px-2 py-1 bg-amber-600/50 text-white text-xs rounded">
+                                        <i class="fas fa-desktop mr-1"></i>
+                                        ${alert.data.metadatos.plataforma === 'web' ? 'Web' : alert.data.metadatos.plataforma}
+                                    </span>
+                                ` : ''}
+                                ${alert.data.metadatos.tipo_procesamiento ? `
+                                    <span class="inline-flex items-center px-2 py-1 bg-amber-500/50 text-white text-xs rounded">
+                                        <i class="fas fa-${alert.data.metadatos.tipo_procesamiento === 'manual' ? 'hand-paper' : 'cogs'} mr-1"></i>
+                                        ${alert.data.metadatos.tipo_procesamiento === 'manual' ? 'Manual' : 'Automático'}
+                                    </span>
+                                ` : ''}
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    ${alert.data?.timestamp_creacion ? `
+                        <div class="bg-black/20 rounded p-2">
+                            <div class="flex justify-between">
+                                <span class="text-amber-200">Timestamp:</span>
+                                <span class="text-white font-mono text-xs">${new Date(alert.data.timestamp_creacion).toLocaleString()}</span>
                             </div>
                         </div>
                     ` : ''}
