@@ -526,7 +526,7 @@ function generateInactiveModalContent(alert, isUserOrigin, isHardwareOrigin) {
                                 const tipo = alert.desactivado_por.tipo;
                                 const isEmpresa = tipo === 'empresa';
                                 const isUsuario = tipo === 'usuario';
-                                
+
                                 return `
                                     <div class="flex items-center space-x-2">
                                         <div class="w-6 h-6 ${isEmpresa ? 'bg-blue-500' : isUsuario ? 'bg-purple-500' : 'bg-gray-500'} rounded-full flex items-center justify-center">
@@ -534,6 +534,9 @@ function generateInactiveModalContent(alert, isUserOrigin, isHardwareOrigin) {
                                         </div>
                                         <div>
                                             <span class="text-white font-medium capitalize">${tipo}</span>
+                                            ${alert.desactivado_por.nombre ? `
+                                                <p class="text-red-200 text-xs">${alert.desactivado_por.nombre}</p>
+                                            ` : ''}
                                             ${alert.desactivado_por.id ? `
                                                 <p class="text-red-300 text-xs font-mono">ID: ${alert.desactivado_por.id}</p>
                                             ` : ''}
@@ -791,6 +794,63 @@ function generateInactiveModalContent(alert, isUserOrigin, isHardwareOrigin) {
                                         ${contacto.disponible ? 'Disponible' : 'No disponible'}
                                     </span>
                                 </div>
+                                ${(() => {
+                                    if (contacto.embarcado === true) {
+                                        return `
+                                            <div class="mt-2 flex items-center text-orange-400">
+                                                <i class="fas fa-map-marked-alt mr-2 text-xs"></i>
+                                                <div>
+                                                    <p class="text-orange-400 text-xs font-medium">En Ruta al incidente</p>
+                                                    <p class="text-teal-300 text-xs italic">Desplazándose al lugar</p>
+                                                </div>
+                                            </div>
+                                        `;
+                                    } else if (contacto.embarcado === false) {
+                                        if (contacto.disponible) {
+                                            return `
+                                                <div class="mt-2 flex items-center text-blue-400">
+                                                    <i class="fas fa-home mr-2 text-xs"></i>
+                                                    <div>
+                                                        <p class="text-blue-400 text-xs font-medium">En Espera</p>
+                                                        <p class="text-teal-300 text-xs italic">Disponible pero no en camino</p>
+                                                    </div>
+                                                </div>
+                                            `;
+                                        } else {
+                                            return `
+                                                <div class="mt-2 flex items-center text-red-400">
+                                                    <i class="fas fa-times-circle mr-2 text-xs"></i>
+                                                    <div>
+                                                        <p class="text-red-400 text-xs font-medium">No Disponible</p>
+                                                        <p class="text-gray-400 text-xs italic">No puede responder al incidente</p>
+                                                    </div>
+                                                </div>
+                                            `;
+                                        }
+                                    } else {
+                                        if (contacto.disponible) {
+                                            return `
+                                                <div class="mt-2 flex items-center text-green-400">
+                                                    <i class="fas fa-check-circle mr-2 text-xs"></i>
+                                                    <div>
+                                                        <p class="text-green-400 text-xs font-medium">Disponible</p>
+                                                        <p class="text-teal-300 text-xs italic">Listo para responder</p>
+                                                    </div>
+                                                </div>
+                                            `;
+                                        } else {
+                                            return `
+                                                <div class="mt-2 flex items-center text-red-400">
+                                                    <i class="fas fa-exclamation-triangle mr-2 text-xs"></i>
+                                                    <div>
+                                                        <p class="text-red-400 text-xs font-medium">No Disponible</p>
+                                                        <p class="text-gray-400 text-xs italic">No puede responder</p>
+                                                    </div>
+                                                </div>
+                                            `;
+                                        }
+                                    }
+                                })()}
                             </div>
                         </div>
                     `).join('')}
@@ -1139,6 +1199,63 @@ function generateContactsContent(alert) {
                                     ${contacto.disponible ? 'Disponible' : 'No disponible'}
                                 </span>
                             </div>
+                            ${(() => {
+                                if (contacto.embarcado === true) {
+                                    return `
+                                        <div class="mt-2 flex items-center text-orange-400">
+                                            <i class="fas fa-map-marked-alt mr-2 text-xs"></i>
+                                            <div>
+                                                <p class="text-orange-400 text-xs font-medium">En Ruta al incidente</p>
+                                                <p class="text-teal-300 text-xs italic">Desplazándose al lugar</p>
+                                            </div>
+                                        </div>
+                                    `;
+                                } else if (contacto.embarcado === false) {
+                                    if (contacto.disponible) {
+                                        return `
+                                            <div class="mt-2 flex items-center text-blue-400">
+                                                <i class="fas fa-home mr-2 text-xs"></i>
+                                                <div>
+                                                    <p class="text-blue-400 text-xs font-medium">En Espera</p>
+                                                    <p class="text-teal-300 text-xs italic">Disponible pero no en camino</p>
+                                                </div>
+                                            </div>
+                                        `;
+                                    } else {
+                                        return `
+                                            <div class="mt-2 flex items-center text-red-400">
+                                                <i class="fas fa-times-circle mr-2 text-xs"></i>
+                                                <div>
+                                                    <p class="text-red-400 text-xs font-medium">No Disponible</p>
+                                                    <p class="text-gray-400 text-xs italic">No puede responder al incidente</p>
+                                                </div>
+                                            </div>
+                                        `;
+                                    }
+                                } else {
+                                    if (contacto.disponible) {
+                                        return `
+                                            <div class="mt-2 flex items-center text-green-400">
+                                                <i class="fas fa-check-circle mr-2 text-xs"></i>
+                                                <div>
+                                                    <p class="text-green-400 text-xs font-medium">Disponible</p>
+                                                    <p class="text-teal-300 text-xs italic">Listo para responder</p>
+                                                </div>
+                                            </div>
+                                        `;
+                                    } else {
+                                        return `
+                                            <div class="mt-2 flex items-center text-red-400">
+                                                <i class="fas fa-exclamation-triangle mr-2 text-xs"></i>
+                                                <div>
+                                                    <p class="text-red-400 text-xs font-medium">No Disponible</p>
+                                                    <p class="text-gray-400 text-xs italic">No puede responder</p>
+                                                </div>
+                                            </div>
+                                        `;
+                                    }
+                                }
+                            })()}
                         </div>
                     </div>
                 `).join('')}
