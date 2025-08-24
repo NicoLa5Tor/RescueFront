@@ -481,6 +481,8 @@ async function showInactiveAlertDetails(alertId) {
 
     //console.log('✅ Alerta inactiva encontrada:', alert);
     selectedInactiveAlertId = alertId;
+
+    console.log('[alerts-inactive] Opening alert modal. Locale:', window.detectedUserLocale, 'Timezone:', window.detectedUserZone, 'ISO:', alert.fecha_desactivacion || alert.fecha_creacion);
     
     const modal = document.getElementById('alertDetailModal');
     if (!modal) {

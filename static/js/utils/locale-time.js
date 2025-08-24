@@ -2,6 +2,10 @@
   const userLocale = navigator.language || 'es-ES';
   const userZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
+  console.log('[locale-time] Browser locale:', userLocale, 'timezone:', userZone);
+  window.detectedUserLocale = userLocale;
+  window.detectedUserZone = userZone;
+
   function formatDateTimeForUser(isoString, options = { dateStyle: 'short', timeStyle: 'short' }) {
     if (!isoString) return '';
     try {
