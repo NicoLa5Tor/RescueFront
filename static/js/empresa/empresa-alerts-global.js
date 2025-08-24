@@ -564,7 +564,7 @@ class EmpresaAlertsGlobal {
         }
         
         const alertsHTML = alerts.map(alert => {
-            const timeAgo = this.getTimeAgo(alert.fecha_creacion);
+            const timeAgo = getTimeAgo(alert.fecha_creacion);
             const priorityClass = alert.prioridad || 'media';
             
             return `
@@ -585,19 +585,6 @@ class EmpresaAlertsGlobal {
         }).join('');
         
         panel.innerHTML = alertsHTML;
-    }
-    
-    getTimeAgo(dateString) {
-        const date = new Date(dateString);
-        const now = new Date();
-        const diff = now - date;
-        const minutes = Math.floor(diff / 60000);
-        const hours = Math.floor(diff / 3600000);
-        const days = Math.floor(diff / 86400000);
-        
-        if (minutes < 60) return `Hace ${minutes} min`;
-        if (hours < 24) return `Hace ${hours} horas`;
-        return `Hace ${days} días`;
     }
     
     showError() {
@@ -902,7 +889,7 @@ class EmpresaAlertsGlobal {
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center text-white/90">
                                         <i class="fas fa-clock w-5 text-white/70"></i>
-                                        <span>${this.getTimeAgo(alert.fecha_creacion)}</span>
+                                        <span>${getTimeAgo(alert.fecha_creacion)}</span>
                                     </div>
                                     
                                     <span class="px-2 py-1 rounded-full text-xs font-bold ${

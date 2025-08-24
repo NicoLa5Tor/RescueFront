@@ -925,7 +925,7 @@ def empresa_stats():
                             },
                             'actividad_reciente': {
                                 'logs_ultimos_30_dias': backend_data.get('alertas', {}).get('alertas_recientes_30d', 0),
-                                'ultima_actividad': backend_data.get('empresa', {}).get('fecha_creacion', '2024-07-20T10:30:00Z')
+                                'ultima_actividad': backend_data.get('empresa', {}).get('ultima_actividad', '2024-07-20T10:30:00Z')
                             }
                         }
                         print(f"✅ Loaded and mapped empresa statistics")
@@ -1109,7 +1109,7 @@ def date_format_filter(value, format='%d/%m/%Y'):
                 return value.strftime(format)
             else:
                 from datetime import datetime
-                return datetime.fromisoformat(str(value)).strftime(format)
+                return datetime.fromisoformat(str(value).replace('Z', '+00:00')).strftime(format)
         except (AttributeError, ValueError, TypeError):
             return str(value)
     return ''

@@ -9,6 +9,7 @@ más comunes al backend de forma consistente y reutilizable.
 import requests
 from typing import Dict, Any, Optional
 from flask import request
+from datetime import datetime
 
 
 class APIClient:
@@ -20,6 +21,14 @@ class APIClient:
     def _get_auth_cookies(self) -> Dict[str, str]:
         """Obtiene las cookies de autenticación de la petición actual"""
         return {'auth_token': request.cookies.get('auth_token')} if request.cookies.get('auth_token') else {}
+
+    def _normalize_date(self, value: Any) -> str:
+        if not value:
+            return ''
+        try:
+            return datetime.fromisoformat(str(value).replace('Z', '+00:00')).isoformat()
+        except (ValueError, TypeError):
+            return str(value)
     
     def _make_request(self, method: str, endpoint: str, **kwargs) -> requests.Response:
         """Hace una petición HTTP con autenticación automática"""
@@ -231,7 +240,7 @@ class APIClient:
                             'active': raw_type.get('activo', True),
                             'companies_count': raw_type.get('empresas_count', 0),
                             'features': raw_type.get('caracteristicas', []),
-                            'created_at': raw_type.get('fecha_creacion', ''),
+                            'created_at': self._normalize_date(raw_type.get('fecha_creacion')),
                             'color': '#8b5cf6',  # Default purple
                             'icon': 'fas fa-building'  # Default icon
                         }

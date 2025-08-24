@@ -197,13 +197,7 @@ function updateAlertDateTime() {
     const alertFechaInfo = document.getElementById('alertFechaInfo');
     if (alertFechaInfo) {
         const now = new Date();
-        alertFechaInfo.textContent = now.toLocaleString('es-CO', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
+        alertFechaInfo.textContent = formatDateTimeForUser(now.toISOString());
     }
 }
 

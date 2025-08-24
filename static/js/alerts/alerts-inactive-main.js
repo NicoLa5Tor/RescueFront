@@ -234,14 +234,14 @@ function renderInactiveAlerts(alerts) {
                     ${alert.fecha_desactivacion ? `
                         <div class="mt-2 text-xs text-red-300">
                             <i class="fas fa-power-off mr-1"></i>
-                            Desactivada: ${formatDate(alert.fecha_desactivacion)}
+                            Desactivada: ${getTimeAgo(alert.fecha_desactivacion)}
                         </div>
                     ` : ''}
                     
                     <div class="mt-3 flex items-center justify-between">
                         <span class="alert-timestamp text-gray-400">
                             <i class="fas fa-clock mr-1"></i>
-                            Creada: ${formatDate(alert.fecha_creacion)}
+                            Creada: ${getTimeAgo(alert.fecha_creacion)}
                         </span>
                         
                         <div class="flex items-center space-x-2 text-xs">
@@ -577,9 +577,9 @@ function generateInactiveModalContent(alert, isUserOrigin, isHardwareOrigin, isE
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="bg-black/20 rounded-lg p-3">
                         <span class="text-red-200 text-sm block mb-1">Fecha de Desactivación:</span>
-                        <span class="text-white font-medium">${alert.fecha_desactivacion ? formatDate(alert.fecha_desactivacion) : 'No disponible'}</span>
+                        <span class="text-white font-medium">${alert.fecha_desactivacion ? formatDateTimeForUser(alert.fecha_desactivacion) : 'No disponible'}</span>
                         ${alert.desactivado_por?.fecha_desactivacion ? `
-                            <p class="text-red-300 text-xs mt-1 font-mono">${new Date(alert.desactivado_por.fecha_desactivacion).toLocaleString()}</p>
+                            <p class="text-red-300 text-xs mt-1 font-mono">${formatDateTimeForUser(alert.desactivado_por.fecha_desactivacion)}</p>
                         ` : ''}
                     </div>
                     <div class="bg-black/20 rounded-lg p-3">
@@ -620,7 +620,7 @@ function generateInactiveModalContent(alert, isUserOrigin, isHardwareOrigin, isE
                         <div class="mt-2">
                             <span class="inline-flex items-center px-2 py-1 bg-red-600/30 text-red-200 text-xs rounded-full">
                                 <i class="fas fa-clock mr-1"></i>
-                                Desactivada ${alert.fecha_desactivacion ? formatDate(alert.fecha_desactivacion) : ''}
+                                Desactivada ${alert.fecha_desactivacion ? getTimeAgo(alert.fecha_desactivacion) : ''}
                             </span>
                         </div>
                     </div>
@@ -637,7 +637,7 @@ function generateInactiveModalContent(alert, isUserOrigin, isHardwareOrigin, isE
                                 <h5 class="text-red-200 font-medium text-sm mb-1">Detalles de Desactivación</h5>
                                 <p class="text-red-300 text-xs leading-relaxed">
                                     Esta alerta fue desactivada por <strong>${alert.desactivado_por.tipo === 'empresa' ? 'la empresa' : alert.desactivado_por.tipo === 'usuario' ? 'un usuario' : 'el sistema'}</strong>
-                                    ${alert.fecha_desactivacion ? ` el ${new Date(alert.fecha_desactivacion).toLocaleDateString()} a las ${new Date(alert.fecha_desactivacion).toLocaleTimeString()}` : ''}.
+                                    ${alert.fecha_desactivacion ? ` el ${formatDateTimeForUser(alert.fecha_desactivacion)}` : ''}.
                                     ${alert.desactivado_por.tipo === 'empresa' ? ' La desactivación fue realizada desde el panel de administración de la empresa.' : 
                                       alert.desactivado_por.tipo === 'usuario' ? ' Un usuario autorizado desactivó manualmente esta alerta.' : 
                                       ' La alerta fue desactivada automáticamente por el sistema.'}
@@ -1046,20 +1046,6 @@ if (typeof getAlertTypeColor === 'undefined') {
     }
 }
 
-if (typeof formatDate === 'undefined') {
-    function formatDate(dateString) {
-        const date = new Date(dateString);
-        const now = new Date();
-        const diff = now - date;
-        const minutes = Math.floor(diff / 60000);
-        const hours = Math.floor(diff / 3600000);
-        const days = Math.floor(diff / 86400000);
-        
-        if (minutes < 60) return `Hace ${minutes} minutos`;
-        if (hours < 24) return `Hace ${hours} horas`;
-        return `Hace ${days} días`;
-    }
-}
 
 // ========== FUNCIONES GLOBALES DE MODAL ==========
 function closeAlertModal() {
@@ -1188,7 +1174,7 @@ function generateOriginDetailsContent(alert, isUserOrigin, isHardwareOrigin, isE
                         <div class="bg-black/20 rounded p-2">
                             <div class="flex justify-between">
                                 <span class="text-purple-200">Timestamp:</span>
-                                <span class="text-white font-mono text-xs">${new Date(alert.data.timestamp_creacion).toLocaleString()}</span>
+                                <span class="text-white font-mono text-xs">${formatDateTimeForUser(alert.data.timestamp_creacion)}</span>
                             </div>
                         </div>
                     ` : ''}
@@ -1276,7 +1262,7 @@ function generateOriginDetailsContent(alert, isUserOrigin, isHardwareOrigin, isE
                         <div class="bg-black/20 rounded p-2">
                             <div class="flex justify-between">
                                 <span class="text-amber-200">Timestamp:</span>
-                                <span class="text-white font-mono text-xs">${new Date(alert.data.timestamp_creacion).toLocaleString()}</span>
+                                <span class="text-white font-mono text-xs">${formatDateTimeForUser(alert.data.timestamp_creacion)}</span>
                             </div>
                         </div>
                     ` : ''}

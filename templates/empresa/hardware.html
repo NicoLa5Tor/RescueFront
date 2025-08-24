@@ -1495,20 +1495,8 @@ function showHardwareDetails(hardware) {
     
     if (fechaRaw && fechaRaw !== 'N/A') {
       try {
-        const fecha = new Date(fechaRaw);
-        if (!isNaN(fecha.getTime())) {
-          fechaCreacion = fecha.toLocaleDateString('es-ES', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-          });
-        } else {
-          fechaCreacion = fechaRaw; // Usar valor original si no se puede parsear
-        }
+        fechaCreacion = formatDateTimeForUser(fechaRaw);
       } catch (e) {
-        //console.warn('Error parsing date:', e);
         fechaCreacion = fechaRaw; // Usar valor original en caso de error
       }
     }

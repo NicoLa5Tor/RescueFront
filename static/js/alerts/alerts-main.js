@@ -418,7 +418,7 @@ function renderAlerts(alerts) {
                     <div class="mt-3 flex items-center justify-between">
                         <span class="alert-timestamp text-gray-400">
                             <i class="fas fa-clock mr-1"></i>
-                            ${formatDate(alert.fecha_creacion)}
+                            ${getTimeAgo(alert.fecha_creacion)}
                         </span>
                         
                         <div class="flex items-center space-x-2 text-xs">
@@ -490,18 +490,6 @@ function getAlertTypeColor(tipo) {
     }
 }
 
-function formatDate(dateString) {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diff = now - date;
-    const minutes = Math.floor(diff / 60000);
-    const hours = Math.floor(diff / 3600000);
-    const days = Math.floor(diff / 86400000);
-    
-    if (minutes < 60) return `Hace ${minutes} minutos`;
-    if (hours < 24) return `Hace ${hours} horas`;
-    return `Hace ${days} días`;
-}
 
 // ========== FUNCIONES DE MODAL ==========
 async function showAlertDetails(alertId) {
@@ -679,7 +667,7 @@ function generateModalContent(alert, isUserOrigin, isHardwareOrigin) {
                             ${alert.prioridad.toUpperCase()}
                         </span>
                         <span class="px-2 py-1 rounded-full text-xs font-bold bg-indigo-500/30 text-indigo-200">
-                            ${formatDate(alert.fecha_creacion)}
+                            ${getTimeAgo(alert.fecha_creacion)}
                         </span>
                     </div>
                 </div>
@@ -777,7 +765,7 @@ function generateModalContent(alert, isUserOrigin, isHardwareOrigin) {
                             <div class="mt-2 pt-2 border-t border-gray-600">
                                 <p class="text-xs text-gray-400 mb-1">
                                     <i class="fas fa-calendar-times mr-1"></i>
-                                    Desactivada: ${formatDate(alert.fecha_desactivacion)}
+                                    Desactivada: ${getTimeAgo(alert.fecha_desactivacion)}
                                 </p>
                                 ${alert.desactivado_por ? `
                                     <p class="text-xs text-gray-400">
@@ -2007,7 +1995,7 @@ function generateOriginDetailsContent(alert, isUserOrigin, isHardwareOrigin) {
                         <div class="bg-black/20 rounded p-2">
                             <div class="flex justify-between">
                                 <span class="text-purple-200">Timestamp:</span>
-                                <span class="text-white font-mono text-xs">${new Date(alert.data.timestamp_creacion).toLocaleString()}</span>
+                                <span class="text-white font-mono text-xs">${formatDateTimeForUser(alert.data.timestamp_creacion)}</span>
                             </div>
                         </div>
                     ` : ''}
@@ -2107,7 +2095,7 @@ function generateOriginDetailsContent(alert, isUserOrigin, isHardwareOrigin) {
                         <div class="bg-black/20 rounded p-2">
                             <div class="flex justify-between">
                                 <span class="text-teal-200">Creada:</span>
-                                <span class="text-white font-mono text-xs">${new Date(alert.data?.timestamp_creacion || alert.fecha_creacion).toLocaleString()}</span>
+                                <span class="text-white font-mono text-xs">${formatDateTimeForUser(alert.data?.timestamp_creacion || alert.fecha_creacion)}</span>
                             </div>
                         </div>
                     ` : ''}
@@ -2687,7 +2675,6 @@ function checkForAutoOpenAlert() {
 window.generateModalContent = generateModalContent;
 window.getPriorityClass = getPriorityClass;
 window.getAlertTypeColor = getAlertTypeColor;
-window.formatDate = formatDate;
 window.generateLocationContent = generateLocationContent;
 window.generateEmbeddedMap = generateEmbeddedMap;
 window.generateSpecificLocationContent = generateSpecificLocationContent;
