@@ -409,17 +409,76 @@ async function findInactiveAlertById(alertId) {
     }
 }
 
+// Enrich alert object with human-readable deactivator name
+async function enrichDeactivatorInfo(alert) {
+    try {
+        if (!alert?.desactivado_por || alert.desactivado_por.nombre || !alert.desactivado_por.id) {
+            return;
+        }
+
+        if (!window.apiClient) {
+            window.apiClient = new EndpointTestClient();
+        }
+
+        const tipo = alert.desactivado_por.tipo;
+        if (tipo === 'usuario') {
+            let nombre = null;
+
+            const empresaId = alert.empresa_id || window.currentUser?.empresa_id || window.currentUser?.id;
+            if (empresaId) {
+                const resp = await window.apiClient.get_usuario(empresaId, alert.desactivado_por.id);
+                if (resp.ok) {
+                    const result = await resp.json();
+                    nombre = result.data?.nombre;
+                }
+            }
+
+            if (!nombre && Array.isArray(alert.numeros_telefonicos)) {
+                const contact = alert.numeros_telefonicos.find(c => c.usuario_id === alert.desactivado_por.id);
+                if (contact?.nombre) {
+                    nombre = contact.nombre;
+                }
+            }
+
+            if (nombre) {
+                alert.desactivado_por.nombre = nombre;
+            }
+        } else if (tipo === 'empresa') {
+            let nombre = null;
+
+            const resp = await window.apiClient.get_empresa(alert.desactivado_por.id);
+            if (resp.ok) {
+                const result = await resp.json();
+                nombre = result.data?.nombre;
+            }
+
+            if (!nombre && alert.empresa_nombre) {
+                nombre = alert.empresa_nombre;
+            }
+
+            if (nombre) {
+                alert.desactivado_por.nombre = nombre;
+            }
+        }
+    } catch (err) {
+        //console.error('Error obteniendo nombre del desactivador:', err);
+    }
+}
+
 // ========== FUNCIONES DE MODAL PARA ALERTAS INACTIVAS ==========
 async function showInactiveAlertDetails(alertId) {
     //console.log('🔍 Intentando mostrar detalles de alerta inactiva:', alertId);
-    
+
     const alert = await findInactiveAlertById(alertId);
     if (!alert) {
         //console.warn('❌ No se encontró la alerta inactiva con ID:', alertId);
         showSimpleNotification('No se pudo cargar la información de esta alerta inactiva', 'error');
         return;
     }
-    
+
+    await enrichDeactivatorInfo(alert);
+    inactiveAlertsCache.set(alertId, alert);
+
     //console.log('✅ Alerta inactiva encontrada:', alert);
     selectedInactiveAlertId = alertId;
     
