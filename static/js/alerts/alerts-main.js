@@ -1119,7 +1119,7 @@ function generateModalContent(alert, isUserOrigin, isHardwareOrigin) {
                 <h4 class="text-lg font-semibold text-white mb-3 flex items-center">
                     <i class="fas fa-phone mr-2"></i>Contactos Notificados (${alert.numeros_telefonicos.length})
                 </h4>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-48 overflow-y-auto custom-scrollbar">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                     ${alert.numeros_telefonicos.map(contacto => `
                         <div class="bg-black/20 rounded-lg p-3 flex items-center space-x-3 hover:bg-black/30 transition-colors modal-card">
                             <div class="w-8 h-8 ${contacto.disponible ? 'bg-teal-500' : 'bg-red-500'} rounded-full flex items-center justify-center flex-shrink-0">
