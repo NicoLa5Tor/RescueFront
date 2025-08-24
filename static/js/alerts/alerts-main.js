@@ -270,8 +270,8 @@ function updateStatsCards(alerts, pagination) {
     const now = new Date();
     const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
     const recentCount = alerts.filter(a => {
-        const alertDate = new Date(a.fecha_creacion);
-        return alertDate >= oneDayAgo;
+        const alertDate = parseISODate(a.fecha_creacion);
+        return alertDate && alertDate >= oneDayAgo;
     }).length;
     
     document.getElementById('totalAlertsCount').textContent = totalAlerts;
@@ -668,8 +668,9 @@ function generateModalContent(alert, isUserOrigin, isHardwareOrigin) {
                         <span class="px-2 py-1 rounded-full text-xs font-bold ${getPriorityClass(alert.prioridad)}">
                             ${alert.prioridad.toUpperCase()}
                         </span>
-                        <span class="px-2 py-1 rounded-full text-xs font-bold bg-indigo-500/30 text-indigo-200">
-                            ${getTimeAgo(alert.fecha_creacion)}
+                        <span class="px-2 py-1 rounded-full text-xs font-bold bg-indigo-500/30 text-indigo-200 text-center">
+                            ${formatDateTimeForUser(alert.fecha_creacion)}
+                            <span class="block text-[10px] opacity-70">${getTimeAgo(alert.fecha_creacion)}</span>
                         </span>
                     </div>
                 </div>
