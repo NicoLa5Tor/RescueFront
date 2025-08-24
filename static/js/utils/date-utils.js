@@ -1,8 +1,24 @@
 (function() {
+  function parseISODate(isoString) {
+    if (typeof window !== 'undefined' && window.parseISODate) {
+      return window.parseISODate(isoString);
+    }
+    if (!isoString) return null;
+    try {
+      let normalized = String(isoString);
+      if (!/(Z|[+-]\d{2}:?\d{2})$/.test(normalized)) {
+        normalized += 'Z';
+      }
+      const date = new Date(normalized);
+      return isNaN(date) ? null : date;
+    } catch (e) {
+      return null;
+    }
+  }
+
   function getTimeAgo(dateString) {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    if (isNaN(date)) return '';
+    const date = parseISODate(dateString);
+    if (!date) return '';
     const now = new Date();
     let diff = now - date;
     if (diff < 0) diff = 0;

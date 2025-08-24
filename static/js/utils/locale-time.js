@@ -6,16 +6,33 @@
   window.detectedUserLocale = userLocale;
   window.detectedUserZone = userZone;
 
-  function formatDateTimeForUser(isoString, options = { dateStyle: 'short', timeStyle: 'short' }) {
-    if (!isoString) return '';
+  function parseISODate(isoString) {
+    if (!isoString) return null;
     try {
-      const date = new Date(isoString);
-      if (isNaN(date)) return '';
-      return new Intl.DateTimeFormat(userLocale, { ...options, timeZone: userZone }).format(date);
+      let normalized = String(isoString);
+      if (!/(Z|[+-]\d{2}:?\d{2})$/.test(normalized)) {
+        normalized += 'Z';
+      }
+      const date = new Date(normalized);
+      return isNaN(date) ? null : date;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function formatDateTimeForUser(isoString, options = { dateStyle: 'short', timeStyle: 'short' }) {
+    const date = parseISODate(isoString);
+    if (!date) return '';
+    try {
+      if (userZone && userZone !== 'UTC') {
+        return new Intl.DateTimeFormat(userLocale, { ...options, timeZone: userZone }).format(date);
+      }
+      return date.toLocaleString(userLocale, options);
     } catch (e) {
       return '';
     }
   }
 
   window.formatDateTimeForUser = formatDateTimeForUser;
+  window.parseISODate = parseISODate;
 })();
