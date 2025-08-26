@@ -66,10 +66,6 @@
             //console.log('🎭 HERO: Estableciendo estados iniciales');
             
             // Ocultar elementos que se van a animar INMEDIATAMENTE
-            gsap.set(['.title-word'], {
-                y: 30, // Reducido a 30px para coherencia con el espaciado aumentado
-                opacity: 0
-            });
             
             gsap.set(['.status-badge'], {
                 scale: 0,
@@ -204,17 +200,9 @@
             
             // NO resetear propiedades - usar los estados ya establecidos
             
-            // Animar títulos palabra por palabra
-            tl.to('.title-word', {
-                y: 0,
-                opacity: 1,
-                duration: 0.8,
-                stagger: 0.15,
-                ease: "power3.out"
-            })
             
             // Status badge
-            .to('.status-badge', {
+            tl.to('.status-badge', {
                 scale: 1,
                 opacity: 1,
                 duration: 0.6,
