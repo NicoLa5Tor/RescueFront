@@ -1112,16 +1112,16 @@ function generateModalContent(alert, isUserOrigin, isHardwareOrigin) {
                         // Determinar color de fondo basado en estado
                         let bgColor;
                         if (contacto.embarcado === true) {
-                            bgColor = 'bg-orange-600/30';
-                        } else if (contacto.disponible) {
                             bgColor = 'bg-green-600/30';
+                        } else if (contacto.disponible) {
+                            bgColor = 'bg-blue-600/30';
                         } else {
                             bgColor = 'bg-red-600/30';
                         }
                         
                         return `
                         <div class="${bgColor} rounded-lg p-3 flex items-center space-x-3 hover:bg-black/30 transition-colors modal-card">
-                            <div class="w-8 h-8 ${contacto.disponible ? 'bg-teal-500' : 'bg-red-500'} rounded-full flex items-center justify-center flex-shrink-0">
+                            <div class="w-8 h-8 ${contacto.embarcado === true ? 'bg-green-500' : contacto.disponible ? 'bg-blue-500' : 'bg-red-500'} rounded-full flex items-center justify-center flex-shrink-0">
                                 <i class="fas fa-user text-white text-sm"></i>
                             </div>
                             <div class="min-w-0 flex-1">
