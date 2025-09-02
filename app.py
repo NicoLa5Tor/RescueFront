@@ -8,10 +8,12 @@ from flask import (
     url_for,
     session,
     g,
+    make_response,
 )
 from flask_cors import CORS
 import requests
 import os
+import json
 from dotenv import load_dotenv
 from utils.api_client import APIClient
 
@@ -163,23 +165,51 @@ def login():
         
         usuario = request.form.get('usuario')
         password = request.form.get('password')
+        
+        # Hacer la petición al backend Y transferir cookies
         res = requests.post(f"{BACKEND_API_URL}/auth/login", 
                            json={"usuario": usuario, "password": password})
+        
         if res.ok:
             data = res.json()
-            # NO almacenar token en sesión - debe venir en cookie HTTPOnly
-            # session['token'] = data.get('token')  # Comentado - token en cookie
+            print("=== LOGIN DEBUG ===")
+            print(f"Backend cookies found: {len(list(res.cookies))}")
+            for cookie in res.cookies:
+                print(f"Cookie: {cookie.name} = {cookie.value[:50]}...")
+            print("=" * 20)
+            
+            import time
+            time.sleep(3)  # 3 segundos para poder ver los logs
+            
             session['user'] = data.get('user')
-            # NO hacer la sesión permanente - será temporal por defecto
             session.permanent = False
             
-            # Redirect based on user role
+            # Crear respuesta de redirect
             user_role = data.get('user', {}).get('role')
             if user_role == 'empresa':
-                return redirect(url_for('empresa_dashboard'))
+                response = make_response(redirect(url_for('empresa_dashboard')))
             else:
-                return redirect(url_for('super_admin_dashboard'))
-        error = res.json().get('message', 'Credenciales inválidas')
+                response = make_response(redirect(url_for('super_admin_dashboard')))
+            
+            # TRANSFERIR las cookies del backend usando requests.cookies
+            for cookie in res.cookies:
+                if cookie.name in ['auth_token', 'refresh_token']:
+                    response.set_cookie(
+                        cookie.name,
+                        cookie.value,
+                        httponly=True,
+                        secure=False,  # False para desarrollo
+                        samesite='Lax',
+                        path='/'
+                    )
+            
+            return response
+        else:
+            try:
+                error = res.json().get('message', 'Credenciales inválidas')
+            except:
+                error = 'Credenciales inválidas'
+        
         return render_template('login.html', api_url=PROXY_PREFIX, error=error)
     
     return render_template('login.html', api_url=PROXY_PREFIX, error=initial_error)
@@ -322,7 +352,31 @@ def proxy_api(endpoint):
             except Exception as e:
                 print(f"PROXY ERROR: PROXY: No se pudo parsear JSON de /{endpoint}: {e}")
         
-        return (resp.content, resp.status_code, resp.headers.items())
+        # SOLO transferir cookies si hay cookies que transferir
+        if resp.cookies:
+            # Crear respuesta Flask para transferir cookies del backend al navegador
+            flask_response = make_response(resp.content, resp.status_code)
+            
+            # Transferir headers (excepto Set-Cookie que se maneja separadamente)
+            for name, value in resp.headers.items():
+                if name.lower() not in ['set-cookie', 'content-length']:
+                    flask_response.headers[name] = value
+            
+            # TRANSFERIR COOKIES del backend al navegador
+            for cookie in resp.cookies:
+                flask_response.set_cookie(
+                    cookie.name,
+                    cookie.value,
+                    httponly=True,
+                    secure=False,
+                    samesite='Lax',
+                    path='/'
+                )
+            
+            return flask_response
+        else:
+            # Sin cookies, devolver respuesta normal
+            return (resp.content, resp.status_code, resp.headers.items())
     except Exception as e:
         #print(f"PROXY ERROR: PROXY ERROR en /{endpoint}: {e}")
         return jsonify({'error': 'Error del servidor'}), 500
