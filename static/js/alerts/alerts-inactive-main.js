@@ -853,8 +853,26 @@ function generateInactiveModalContent(alert, isUserOrigin, isHardwareOrigin, isE
                     <span class="bg-teal-600 text-white px-3 py-1 rounded-full text-sm">${alert.numeros_telefonicos.length}</span>
                 </h4>
                 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                    ${alert.numeros_telefonicos.map(contacto => `
-                        <div class="bg-white/5 border border-teal-500/10 rounded-lg p-4 flex items-center space-x-3">
+                    ${alert.numeros_telefonicos.sort((a, b) => {
+                        // Jerarquía: embarcado > disponible > no disponible
+                        if (a.embarcado === true && b.embarcado !== true) return -1;
+                        if (a.embarcado !== true && b.embarcado === true) return 1;
+                        if (a.disponible && !b.disponible) return -1;
+                        if (!a.disponible && b.disponible) return 1;
+                        return 0;
+                    }).map(contacto => {
+                        // Determinar color de fondo basado en estado
+                        let bgColor;
+                        if (contacto.embarcado === true) {
+                            bgColor = 'bg-orange-600/30';
+                        } else if (contacto.disponible) {
+                            bgColor = 'bg-green-600/30';
+                        } else {
+                            bgColor = 'bg-red-600/30';
+                        }
+                        
+                        return `
+                        <div class="${bgColor} border border-teal-500/10 rounded-lg p-4 flex items-center space-x-3">
                             <div class="w-10 h-10 ${contacto.disponible ? 'bg-teal-500' : 'bg-red-500'} rounded-full flex items-center justify-center flex-shrink-0">
                                 <i class="fas fa-user text-white"></i>
                             </div>
@@ -866,67 +884,14 @@ function generateInactiveModalContent(alert, isUserOrigin, isHardwareOrigin, isE
                                     <span class="text-xs ${contacto.disponible ? 'text-green-300' : 'text-red-300'}">
                                         ${contacto.disponible ? 'Estaba disponible' : 'No estaba disponible'}
                                     </span>
+                                    ${contacto.embarcado === true ? `
+                                        <span class="text-xs text-orange-300">- Embarcado</span>
+                                    ` : ''}
                                 </div>
-                                ${(() => {
-                                    if (contacto.embarcado === true) {
-                                        return `
-                                            <div class="mt-2 flex items-center text-orange-400">
-                                                <i class="fas fa-map-marked-alt mr-2 text-xs"></i>
-                                                <div>
-                                                    <p class="text-orange-400 text-xs font-medium">Se movilizó al incidente</p>
-                                                    <p class="text-teal-300 text-xs italic">En ruta durante la alerta</p>
-                                                </div>
-                                            </div>
-                                        `;
-                                    } else if (contacto.embarcado === false) {
-                                        if (contacto.disponible) {
-                                            return `
-                                                <div class="mt-2 flex items-center text-blue-400">
-                                                    <i class="fas fa-home mr-2 text-xs"></i>
-                                                    <div>
-                                                        <p class="text-blue-400 text-xs font-medium">No se movilizó</p>
-                                                        <p class="text-teal-300 text-xs italic">Disponible pero permaneció en espera</p>
-                                                    </div>
-                                                </div>
-                                            `;
-                                        } else {
-                                            return `
-                                                <div class="mt-2 flex items-center text-red-400">
-                                                    <i class="fas fa-times-circle mr-2 text-xs"></i>
-                                                    <div>
-                                                        <p class="text-red-400 text-xs font-medium">No estaba disponible</p>
-                                                        <p class="text-gray-400 text-xs italic">No respondió al incidente</p>
-                                                    </div>
-                                                </div>
-                                            `;
-                                        }
-                                    } else {
-                                        if (contacto.disponible) {
-                                            return `
-                                                <div class="mt-2 flex items-center text-green-400">
-                                                    <i class="fas fa-check-circle mr-2 text-xs"></i>
-                                                    <div>
-                                                        <p class="text-green-400 text-xs font-medium">Estaba disponible</p>
-                                                        <p class="text-teal-300 text-xs italic">Listo para responder durante la alerta</p>
-                                                    </div>
-                                                </div>
-                                            `;
-                                        } else {
-                                            return `
-                                                <div class="mt-2 flex items-center text-red-400">
-                                                    <i class="fas fa-exclamation-triangle mr-2 text-xs"></i>
-                                                    <div>
-                                                        <p class="text-red-400 text-xs font-medium">No estaba disponible</p>
-                                                        <p class="text-gray-400 text-xs italic">No pudo responder</p>
-                                                    </div>
-                                                </div>
-                                            `;
-                                        }
-                                    }
-                                })()}
                             </div>
                         </div>
-                    `).join('')}
+                        `;
+                    }).join('')}
                 </div>
             </div>
         ` : ''}
@@ -1292,8 +1257,26 @@ function generateContactsContent(alert) {
                 <i class="fas fa-phone mr-2"></i>Contactos Notificados (${alert.numeros_telefonicos.length})
             </h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-48 overflow-y-auto custom-scrollbar">
-                ${alert.numeros_telefonicos.map(contacto => `
-                    <div class="bg-black/20 rounded-lg p-3 flex items-center space-x-3">
+                ${alert.numeros_telefonicos.sort((a, b) => {
+                    // Jerarquía: embarcado > disponible > no disponible
+                    if (a.embarcado === true && b.embarcado !== true) return -1;
+                    if (a.embarcado !== true && b.embarcado === true) return 1;
+                    if (a.disponible && !b.disponible) return -1;
+                    if (!a.disponible && b.disponible) return 1;
+                    return 0;
+                }).map(contacto => {
+                    // Determinar color de fondo basado en estado
+                    let bgColor;
+                    if (contacto.embarcado === true) {
+                        bgColor = 'bg-orange-600/30';
+                    } else if (contacto.disponible) {
+                        bgColor = 'bg-green-600/30';
+                    } else {
+                        bgColor = 'bg-red-600/30';
+                    }
+                    
+                    return `
+                    <div class="${bgColor} rounded-lg p-3 flex items-center space-x-3">
                         <div class="w-8 h-8 ${contacto.disponible ? 'bg-teal-500' : 'bg-red-500'} rounded-full flex items-center justify-center flex-shrink-0">
                             <i class="fas fa-user text-white text-sm"></i>
                         </div>
@@ -1305,67 +1288,14 @@ function generateContactsContent(alert) {
                                 <span class="text-xs ${contacto.disponible ? 'text-green-300' : 'text-red-300'}">
                                     ${contacto.disponible ? 'Estaba disponible' : 'No estaba disponible'}
                                 </span>
+                                ${contacto.embarcado === true ? `
+                                    <span class="text-xs text-orange-300">- Embarcado</span>
+                                ` : ''}
                             </div>
-                            ${(() => {
-                                if (contacto.embarcado === true) {
-                                    return `
-                                        <div class="mt-2 flex items-center text-orange-400">
-                                            <i class="fas fa-map-marked-alt mr-2 text-xs"></i>
-                                            <div>
-                                                <p class="text-orange-400 text-xs font-medium">Se movilizó al incidente</p>
-                                                <p class="text-teal-300 text-xs italic">En ruta durante la alerta</p>
-                                            </div>
-                                        </div>
-                                    `;
-                                } else if (contacto.embarcado === false) {
-                                    if (contacto.disponible) {
-                                        return `
-                                            <div class="mt-2 flex items-center text-blue-400">
-                                                <i class="fas fa-home mr-2 text-xs"></i>
-                                                <div>
-                                                    <p class="text-blue-400 text-xs font-medium">No se movilizó</p>
-                                                    <p class="text-teal-300 text-xs italic">Disponible pero permaneció en espera</p>
-                                                </div>
-                                            </div>
-                                        `;
-                                    } else {
-                                        return `
-                                            <div class="mt-2 flex items-center text-red-400">
-                                                <i class="fas fa-times-circle mr-2 text-xs"></i>
-                                                <div>
-                                                    <p class="text-red-400 text-xs font-medium">No estaba disponible</p>
-                                                    <p class="text-gray-400 text-xs italic">No respondió al incidente</p>
-                                                </div>
-                                            </div>
-                                        `;
-                                    }
-                                } else {
-                                    if (contacto.disponible) {
-                                        return `
-                                            <div class="mt-2 flex items-center text-green-400">
-                                                <i class="fas fa-check-circle mr-2 text-xs"></i>
-                                                <div>
-                                                    <p class="text-green-400 text-xs font-medium">Estaba disponible</p>
-                                                    <p class="text-teal-300 text-xs italic">Listo para responder durante la alerta</p>
-                                                </div>
-                                            </div>
-                                        `;
-                                    } else {
-                                        return `
-                                            <div class="mt-2 flex items-center text-red-400">
-                                                <i class="fas fa-exclamation-triangle mr-2 text-xs"></i>
-                                                <div>
-                                                    <p class="text-red-400 text-xs font-medium">No estaba disponible</p>
-                                                    <p class="text-gray-400 text-xs italic">No pudo responder</p>
-                                                </div>
-                                            </div>
-                                        `;
-                                    }
-                                }
-                            })()}
                         </div>
                     </div>
-                `).join('')}
+                    `;
+                }).join('')}
             </div>
         </div>
     `;
