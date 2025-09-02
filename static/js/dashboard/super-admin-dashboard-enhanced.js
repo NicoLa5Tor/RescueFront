@@ -15,15 +15,9 @@ class SuperAdminDashboardEnhanced extends SuperAdminDashboard {
                 return false;
             }
             
-            // Verificar si la sesión es válida haciendo una petición al backend
-            // Las cookies se envían automáticamente
-            const response = await fetch('/proxy/health', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'include'
-            });
+            // Verificar si la sesión es válida usando el api-client
+            const apiClient = window.apiClient || new window.EndpointTestClient();
+            const response = await apiClient.health();
             
             const isValid = response.ok;
             if (!isValid) {

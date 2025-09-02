@@ -204,14 +204,9 @@ async function loadActiveAlerts() {
         let url = `/proxy/api/mqtt-alerts/empresa/${empresaId}/active-by-sede?limit=${alertsPerPage}&offset=${(currentPage - 1) * alertsPerPage}`;
         //console.log('🔗 URL a consultar:', url);
         
-        // Llamar al endpoint específico de empresa
-        const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            credentials: 'include'
-        });
+        // Usar el api-client para obtener alertas con refresh automático
+        const apiClient = window.apiClient || new window.EndpointTestClient();
+        const response = await apiClient.get_active_alerts_by_empresa(empresaId, alertsPerPage, (currentPage - 1) * alertsPerPage);
         
         //console.log('📡 Response status:', response.status);
         

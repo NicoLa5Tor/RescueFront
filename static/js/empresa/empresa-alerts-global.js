@@ -488,35 +488,32 @@ class EmpresaAlertsGlobal {
         //console.log('🏢 GLOBAL ALERTS: Cargando alertas...');
         
         try {
-            const url = `/proxy/api/mqtt-alerts/empresa/${this.empresaId}/active-by-sede?limit=10`;
-            const response = await fetch(url, {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include'
-            });
+            // Usar el api-client para obtener alertas con refresh automático
+            const apiClient = window.apiClient || new window.EndpointTestClient();
+            const response = await apiClient.get_active_alerts_by_empresa(this.empresaId, 10, 0);
             
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            }
-            
-            const data = await response.json();
-            
-            if (data.success && data.data && Array.isArray(data.data)) {
-                const alerts = data.data;
+            if (response.ok) {
+                const data = await response.json();
                 
-                // Detectar alertas nuevas
-                this.checkForNewAlerts(alerts);
-                
-                this.alertsCache.set('current', {
-                    alerts: alerts,
-                    timestamp: Date.now()
-                });
-                
-                this.updateUI(alerts);
-                //console.log(`✅ GLOBAL ALERTS: ${alerts.length} alertas cargadas`);
+                if (data.success && data.data && Array.isArray(data.data)) {
+                    const alerts = data.data;
+                    
+                    // Detectar alertas nuevas
+                    this.checkForNewAlerts(alerts);
+                    
+                    this.alertsCache.set('current', {
+                        alerts: alerts,
+                        timestamp: Date.now()
+                    });
+                    
+                    this.updateUI(alerts);
+                    //console.log(`✅ GLOBAL ALERTS: ${alerts.length} alertas cargadas`);
+                } else {
+                    this.updateUI([]);
+                    //console.log('🏢 GLOBAL ALERTS: No hay alertas activas');
+                }
             } else {
-                this.updateUI([]);
-                //console.log('🏢 GLOBAL ALERTS: No hay alertas activas');
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
             
         } catch (error) {
