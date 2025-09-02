@@ -1101,8 +1101,26 @@ function generateModalContent(alert, isUserOrigin, isHardwareOrigin) {
                     <i class="fas fa-phone mr-2"></i>Contactos Notificados (${alert.numeros_telefonicos.length})
                 </h4>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                    ${alert.numeros_telefonicos.map(contacto => `
-                        <div class="bg-black/20 rounded-lg p-3 flex items-center space-x-3 hover:bg-black/30 transition-colors modal-card">
+                    ${alert.numeros_telefonicos.sort((a, b) => {
+                        // Jerarquía: embarcado > disponible > no disponible
+                        if (a.embarcado === true && b.embarcado !== true) return -1;
+                        if (a.embarcado !== true && b.embarcado === true) return 1;
+                        if (a.disponible && !b.disponible) return -1;
+                        if (!a.disponible && b.disponible) return 1;
+                        return 0;
+                    }).map(contacto => {
+                        // Determinar color de fondo basado en estado
+                        let bgColor;
+                        if (contacto.embarcado === true) {
+                            bgColor = 'bg-orange-600/30';
+                        } else if (contacto.disponible) {
+                            bgColor = 'bg-green-600/30';
+                        } else {
+                            bgColor = 'bg-red-600/30';
+                        }
+                        
+                        return `
+                        <div class="${bgColor} rounded-lg p-3 flex items-center space-x-3 hover:bg-black/30 transition-colors modal-card">
                             <div class="w-8 h-8 ${contacto.disponible ? 'bg-teal-500' : 'bg-red-500'} rounded-full flex items-center justify-center flex-shrink-0">
                                 <i class="fas fa-user text-white text-sm"></i>
                             </div>
@@ -1114,70 +1132,14 @@ function generateModalContent(alert, isUserOrigin, isHardwareOrigin) {
                                     <span class="text-xs ${contacto.disponible ? 'text-green-300' : 'text-red-300'}">
                                         ${contacto.disponible ? 'Disponible' : 'No disponible'}
                                     </span>
+                                    ${contacto.embarcado === true ? `
+                                        <span class="text-xs text-orange-300">- Embarcado</span>
+                                    ` : ''}
                                 </div>
-                                ${(() => {
-                                    // Lógica mejorada para estados de contactos
-                                    if (contacto.embarcado === true) {
-                                        return `
-                                            <div class="mt-2 flex items-center text-orange-400">
-                                                <i class="fas fa-map-marked-alt mr-2 text-xs"></i>
-                                                <div>
-                                                    <p class="text-orange-400 text-xs font-medium">En Ruta al incidente</p>
-                                                    <p class="text-teal-300 text-xs italic">Desplazándose al lugar</p>
-                                                </div>
-                                            </div>
-                                        `;
-                                    } else if (contacto.embarcado === false) {
-                                        // Si no está embarcado, validar disponibilidad
-                                        if (contacto.disponible) {
-                                            return `
-                                                <div class="mt-2 flex items-center text-blue-400">
-                                                    <i class="fas fa-home mr-2 text-xs"></i>
-                                                    <div>
-                                                        <p class="text-blue-400 text-xs font-medium">En Espera</p>
-                                                        <p class="text-teal-300 text-xs italic">Disponible pero no en camino</p>
-                                                    </div>
-                                                </div>
-                                            `;
-                                        } else {
-                                            return `
-                                                <div class="mt-2 flex items-center text-red-400">
-                                                    <i class="fas fa-times-circle mr-2 text-xs"></i>
-                                                    <div>
-                                                        <p class="text-red-400 text-xs font-medium">No Disponible</p>
-                                                        <p class="text-gray-400 text-xs italic">No puede responder al incidente</p>
-                                                    </div>
-                                                </div>
-                                            `;
-                                        }
-                                    } else {
-                                        // Si no hay información de embarcado, solo mostrar disponibilidad
-                                        if (contacto.disponible) {
-                                            return `
-                                                <div class="mt-2 flex items-center text-green-400">
-                                                    <i class="fas fa-check-circle mr-2 text-xs"></i>
-                                                    <div>
-                                                        <p class="text-green-400 text-xs font-medium">Disponible</p>
-                                                        <p class="text-teal-300 text-xs italic">Listo para responder</p>
-                                                    </div>
-                                                </div>
-                                            `;
-                                        } else {
-                                            return `
-                                                <div class="mt-2 flex items-center text-red-400">
-                                                    <i class="fas fa-exclamation-triangle mr-2 text-xs"></i>
-                                                    <div>
-                                                        <p class="text-red-400 text-xs font-medium">No Disponible</p>
-                                                        <p class="text-gray-400 text-xs italic">No puede responder</p>
-                                                    </div>
-                                                </div>
-                                            `;
-                                        }
-                                    }
-                                })()}
                             </div>
                         </div>
-                    `).join('')}
+                        `;
+                    }).join('')}
                 </div>
             </div>
         ` : ''}
