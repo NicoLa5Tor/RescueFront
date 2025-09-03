@@ -57,6 +57,23 @@ class EndpointTestClient {
                 return response;
             }
             if (response.status === 401 && !config._retry) {
+                // Check error message to differentiate between invalid session and expired token
+                try {
+                    const errorData = await response.clone().json();
+                    const errorMessage = errorData?.message || '';
+                    
+                    // NUEVO: Detectar si es sesión inválida vs token expirado
+                    if (errorMessage.includes('Sesión inválida') || errorMessage.includes('Invalid session')) {
+                        console.log('❌ Invalid session detected, redirecting to login');
+                        this.processQueue(new Error('Invalid session'));
+                        this._redirectToLogin();
+                        return Promise.reject(new Error('Invalid session'));
+                    }
+                } catch (parseError) {
+                    // If can't parse response, continue with normal flow
+                    console.log('⚠️ Could not parse 401 response, continuing with token refresh');
+                }
+                
                 console.log('🔄 Access token expired, attempting refresh...');
                 if (this.isRefreshing) {
                     return new Promise((resolve, reject) => {
@@ -88,12 +105,26 @@ class EndpointTestClient {
                         console.log('🔄 Retrying original request after refresh');
                         return fetch(url, config);
                     } else {
-                        // Refresh failed, redirect to login
-                        console.log('❌ Token refresh failed, redirecting to login');
-                        this.processQueue(new Error('Token refresh failed'));
+                        // Check if refresh failed due to invalid session
+                        try {
+                            const refreshErrorData = await refreshResponse.clone().json();
+                            const refreshErrorMessage = refreshErrorData?.message || '';
+                            
+                            if (refreshErrorMessage.includes('Sesión inválida') || refreshErrorMessage.includes('Invalid session')) {
+                                console.log('❌ Session invalidated, redirecting to login');
+                                this.processQueue(new Error('Session invalidated'));
+                            } else {
+                                console.log('❌ Token refresh failed, redirecting to login');
+                                this.processQueue(new Error('Token refresh failed'));
+                            }
+                        } catch (parseError) {
+                            console.log('❌ Token refresh failed, redirecting to login');
+                            this.processQueue(new Error('Token refresh failed'));
+                        }
+                        
                         this.isRefreshing = false;
                         this._redirectToLogin();
-                        return Promise.reject(new Error('Token refresh failed'));
+                        return Promise.reject(new Error('Authentication failed'));
                     }
                 } catch (error) {
                     console.error('❌ Error during token refresh:', error);
@@ -133,6 +164,21 @@ class EndpointTestClient {
 
     async logout() {
         return this._request('POST', '/auth/logout');
+    }
+
+    // NUEVO: Logout de todas las sesiones
+    async logoutAll() {
+        return this._request('POST', '/auth/logout-all');
+    }
+
+    // NUEVO: Ver sesiones activas del usuario
+    async getSessions() {
+        return this._request('GET', '/auth/sessions');
+    }
+
+    // NUEVO: Cerrar sesión específica
+    async closeSession(sessionId) {
+        return this._request('DELETE', `/auth/sessions/${sessionId}`);
     }
 
     async health() {
