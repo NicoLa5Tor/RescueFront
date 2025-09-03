@@ -178,11 +178,8 @@ def login():
                 print(f"Cookie: {cookie.name} = {cookie.value[:50]}...")
             print("=" * 20)
             
-            import time
-            time.sleep(3)  # 3 segundos para poder ver los logs
-            
             session['user'] = data.get('user')
-            session.permanent = False
+            session.permanent = True  # Hacer que la sesión dure tanto como el refresh token
             
             # Crear respuesta de redirect
             user_role = data.get('user', {}).get('role')
@@ -262,7 +259,7 @@ def sync_session():
             # NO almacenar token en sesión - debe venir en cookie HTTPOnly
             # session['token'] = token or 'cookie_auth'  # Comentado - token en cookie
             session['user'] = user_data
-            session.permanent = False
+            session.permanent = True  # Hacer que la sesión dure tanto como el refresh token
             
             return jsonify({
                 'success': True,

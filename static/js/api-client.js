@@ -130,6 +130,13 @@ class EndpointTestClient {
                     console.error('❌ Error during token refresh:', error);
                     this.processQueue(error);
                     this.isRefreshing = false;
+                    
+                    // NO redirigir a login si es error de red durante refresh
+                    if (this._isNetworkError(error)) {
+                        console.log('🌐 Network error during refresh - tokens may still be valid');
+                        return Promise.reject(new Error('Sin conexión durante refresh - revisa tu internet'));
+                    }
+                    
                     this._redirectToLogin();
                     return Promise.reject(error);
                 }
@@ -138,8 +145,25 @@ class EndpointTestClient {
             return response;
         } catch (error) {
             console.error('❌ Request failed:', error);
+            
+            // NO redirigir a login si es error de red
+            if (this._isNetworkError(error)) {
+                console.log('🌐 Network error - tokens still valid');
+                throw new Error('Sin conexión - revisa tu internet');
+            }
+            
             throw error;
         }
+    }
+
+    /**
+     * Detectar si es error de red vs error de autenticación
+     */
+    _isNetworkError(error) {
+        return error.name === 'TypeError' && error.message.includes('fetch') ||
+               error.message.includes('Failed to fetch') ||
+               error.message.includes('NetworkError') ||
+               !navigator.onLine;
     }
 
     _redirectToLogin() {

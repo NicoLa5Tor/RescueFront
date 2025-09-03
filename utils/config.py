@@ -22,7 +22,7 @@ PROXY_PREFIX = '/proxy'  # Prefijo para el proxy interno
 
 # ========== CONFIGURACIÓN DE SEGURIDAD ==========
 SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret-key-change-in-production')
-SESSION_LIFETIME = int(os.getenv('SESSION_LIFETIME', '3600'))  # 1 hora por defecto
+SESSION_LIFETIME = int(os.getenv('SESSION_LIFETIME', '604800'))  # 7 días por defecto (igual que refresh token)
 
 # ========== CONFIGURACIÓN DE DEBUG ==========
 DEBUG_MODE = os.getenv('DEBUG', 'True').lower() in ('true', '1', 'yes', 'on')
