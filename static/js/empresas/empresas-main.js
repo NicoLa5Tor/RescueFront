@@ -85,32 +85,37 @@ class EmpresasMain {
    */
   createBasicApiClient() {
     return {
-      get_empresas: () => fetch('/proxy/api/empresas/'),
-      get_empresas_dashboard: () => fetch('/proxy/api/empresas/dashboard/all'),
-      get_empresa: (id) => fetch(`/proxy/api/empresas/${id}`),
+      get_empresas: () => fetch('/proxy/api/empresas', { credentials: 'include' }),
+      get_empresas_dashboard: () => fetch('/proxy/api/empresas/dashboard/all', { credentials: 'include' }),
+      get_empresa: (id) => fetch(`/proxy/api/empresas/${id}`, { credentials: 'include' }),
       toggle_empresa_status: (id, activa) => 
         fetch(`/proxy/api/empresas/${id}/toggle-status`, {
           method: 'PATCH',
+          credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ activa })
         }),
       create_empresa: (data) =>
-        fetch('/proxy/api/empresas/', {
+        fetch('/proxy/api/empresas', {
           method: 'POST',
+          credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
         }),
       update_empresa: (id, data) =>
         fetch(`/proxy/api/empresas/${id}`, {
           method: 'PUT',
+          credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
         }),
       delete_empresa: (id) =>
         fetch(`/proxy/api/empresas/${id}`, {
-          method: 'DELETE'
+          method: 'DELETE',
+          credentials: 'include'
         }),
-      get_tipos_empresa: () => fetch('/proxy/api/tipos_empresa')
+      get_tipos_empresa: () => fetch('/proxy/api/tipos_empresa', { credentials: 'include' }),
+      get_tipos_empresa_activos: () => fetch('/proxy/api/tipos_empresa/activos', { credentials: 'include' })
     };
   }
 
@@ -606,6 +611,7 @@ class EmpresasMain {
     const statusText = empresa.activa !== false ? '✅ Activa' : '⚫ Inactiva';
     const fechaCreacion = this.formatDate(empresa.fecha_creacion);
     const sedesText = empresa.sedes && empresa.sedes.length > 0 ? empresa.sedes.join(', ') : 'Principal';
+    const alertasExternasTexto = empresa.es_publica === true ? 'Activas' : 'Inactivas';
 
     card.innerHTML = `
       <div class="ios-card-header">
@@ -638,6 +644,13 @@ class EmpresasMain {
             Ubicación
           </span>
           <span class="ios-info-value text-sm font-bold text-gray-900 dark:text-white">${empresa.ubicacion || 'N/A'}</span>
+        </div>
+        <div class="ios-info-item">
+          <span class="ios-info-label text-xs font-medium text-gray-600 dark:text-gray-400">
+            <i class="fas fa-bullhorn text-amber-400 mr-1"></i>
+            Alertas externas
+          </span>
+          <span class="ios-info-value text-sm font-bold text-gray-900 dark:text-white">${alertasExternasTexto}</span>
         </div>
         <div class="ios-info-item">
           <span class="ios-info-label text-xs font-medium text-gray-600 dark:text-gray-400">
@@ -714,6 +727,7 @@ class EmpresasMain {
     const statusClass = empresa.activa !== false ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
     const statusText = empresa.activa !== false ? 'Activa' : 'Inactiva';
     const fechaCreacion = this.formatDate(empresa.fecha_creacion);
+    const alertasExternasTexto = empresa.es_publica === true ? 'Activas' : 'Inactivas';
 
     item.innerHTML = `
       <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
@@ -727,6 +741,7 @@ class EmpresasMain {
               <p class="text-sm text-gray-500 dark:text-gray-400">${empresa.ubicacion || 'Sin ubicación'}</p>
             </div>
             <p class="text-xs text-gray-400 dark:text-gray-500">Registrada: ${fechaCreacion}</p>
+            <p class="text-xs text-gray-400 dark:text-gray-500">Alertas externas: ${alertasExternasTexto}</p>
           </div>
         </div>
         <div class="flex items-center space-x-4">
@@ -1265,3 +1280,4 @@ window.viewEmpresa = (id) => empresasMain.viewEmpresa(id);
 window.clearFilters = () => empresasMain.clearFilters();
 
 //console.log('🏢 Empresas main module loaded');
+

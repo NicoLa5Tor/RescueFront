@@ -210,32 +210,37 @@ class EmpresasModals {
    */
   createBasicApiClient() {
     return {
-      get_empresas_dashboard: () => fetch('/proxy/api/empresas/dashboard/all'),
-      get_empresas: () => fetch('/proxy/api/empresas'),
-      get_empresa: (id) => fetch(`/proxy/api/empresas/${id}`),
+      get_empresas_dashboard: () => fetch('/proxy/api/empresas/dashboard/all', { credentials: 'include' }),
+      get_empresas: () => fetch('/proxy/api/empresas', { credentials: 'include' }),
+      get_empresa: (id) => fetch(`/proxy/api/empresas/${id}`, { credentials: 'include' }),
       toggle_empresa_status: (id, activa) => 
         fetch(`/proxy/api/empresas/${id}/toggle-status`, {
           method: 'PATCH',
+          credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ activa })
         }),
       create_empresa: (data) =>
-        fetch('/proxy/api/empresas/', {
+        fetch('/proxy/api/empresas', {
           method: 'POST',
+          credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
         }),
       update_empresa: (id, data) =>
         fetch(`/proxy/api/empresas/${id}`, {
           method: 'PUT',
+          credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
         }),
       delete_empresa: (id) =>
         fetch(`/proxy/api/empresas/${id}`, {
-          method: 'DELETE'
+          method: 'DELETE',
+          credentials: 'include'
         }),
-      get_tipos_empresa: () => fetch('/proxy/api/tipos_empresa')
+      get_tipos_empresa: () => fetch('/proxy/api/tipos_empresa', { credentials: 'include' }),
+      get_tipos_empresa_activos: () => fetch('/proxy/api/tipos_empresa/activos', { credentials: 'include' })
     };
   }
 
@@ -369,7 +374,20 @@ class EmpresasModals {
                     <!-- Options will be loaded dynamically from backend -->
                   </select>
                 </div>
-                
+
+                <!-- Alertas Externas -->
+                <div class="form-group">
+                  <label for="empresaEsPublica" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+                    <i class="fas fa-bullhorn text-amber-400 mr-2"></i>Alertas externas
+                  </label>
+                  <div class="flex items-center gap-3">
+                    <input type="checkbox" id="empresaEsPublica" class="h-5 w-5 text-blue-500 rounded focus:ring-blue-400">
+                    <span class="text-white/70 text-sm" id="empresaEsPublicaHint">
+                      Actívalo para que la empresa reciba alertas de otras empresas suscritas.
+                    </span>
+                  </div>
+                </div>
+
                 <!-- Descripción -->
                 <div class="form-group form-group-full">
                   <label for="empresaDescripcion" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
@@ -526,6 +544,18 @@ class EmpresasModals {
     const form = document.getElementById('empresaForm');
     if (form) {
       form.addEventListener('submit', (e) => this.handleFormSubmit(e));
+    }
+
+    const esPublicaCheckbox = document.getElementById('empresaEsPublica');
+    if (esPublicaCheckbox) {
+      esPublicaCheckbox.addEventListener('change', () => {
+        const hint = document.getElementById('empresaEsPublicaHint');
+        if (hint) {
+          hint.textContent = esPublicaCheckbox.checked
+            ? 'La empresa recibirá alertas de las entidades suscritas.'
+            : 'Actívalo para que la empresa reciba alertas de otras empresas suscritas.';
+        }
+      });
     }
 
     // Toggle modal buttons
@@ -738,6 +768,16 @@ class EmpresasModals {
     document.getElementById('empresaEmail').value = empresa.email || '';
     document.getElementById('empresaUbicacion').value = empresa.ubicacion || '';
     document.getElementById('empresaDescripcion').value = empresa.descripcion || '';
+    const esPublicaCheckbox = document.getElementById('empresaEsPublica');
+    if (esPublicaCheckbox) {
+      esPublicaCheckbox.checked = empresa.es_publica === true;
+      const hint = document.getElementById('empresaEsPublicaHint');
+      if (hint) {
+        hint.textContent = esPublicaCheckbox.checked
+          ? 'La empresa recibirá alertas de las entidades suscritas.'
+          : 'Actívalo para que la empresa reciba alertas de otras empresas suscritas.';
+      }
+    }
     
     // Load tipo de empresa with better handling
     const tipoSelect = document.getElementById('empresaTipo');
@@ -807,7 +847,15 @@ class EmpresasModals {
     document.getElementById('empresaEmail').value = 'contacto@empresa.com';
     document.getElementById('empresaUbicacion').value = 'Ciudad, País';
     document.getElementById('empresaDescripcion').value = 'Descripción de la empresa';
-    
+    const esPublicaCheckbox = document.getElementById('empresaEsPublica');
+    if (esPublicaCheckbox) {
+      esPublicaCheckbox.checked = false;
+      const hint = document.getElementById('empresaEsPublicaHint');
+      if (hint) {
+        hint.textContent = 'Actívalo para que la empresa reciba alertas de otras empresas suscritas.';
+      }
+    }
+
     this.sedes = ['Principal'];
     this.renderSedes();
     
@@ -845,6 +893,7 @@ class EmpresasModals {
    */
   populateViewModal(empresa) {
     const iniciales = this.getIniciales(empresa.nombre);
+    const esPublica = empresa.es_publica === true;
     
     // Find the tipo name from the tipo_empresa_id
     let tipoNombre = 'N/A';
@@ -873,6 +922,7 @@ class EmpresasModals {
           <p class="mb-1">Usuario: ${empresa.username || 'N/A'}</p>
           <p class="mb-1">Email: ${empresa.email || 'N/A'}</p>
           <p class="mb-1">Tipo: ${tipoNombre}</p>
+          <p class="mb-1">Alertas externas: ${esPublica ? 'Activas' : 'Inactivas'}</p>
           <p class="mb-1">Estado: ${empresa.activa !== false ? 'Activa' : 'Inactiva'}</p>
           <p class="mb-1">Creada: ${this.formatDate(empresa.fecha_creacion)}</p>
           <p>Descripción: ${empresa.descripcion || 'Sin descripción'}</p>
@@ -1012,6 +1062,7 @@ class EmpresasModals {
       ubicacion: document.getElementById('empresaUbicacion').value.trim(),
       descripcion: document.getElementById('empresaDescripcion').value.trim(),
       tipo_empresa_id: document.getElementById('empresaTipo').value.trim(), // Correcting this field
+      es_publica: document.getElementById('empresaEsPublica')?.checked === true,
       sedes: this.sedes.filter(sede => sede.trim() !== ''),
       roles: this.roles.filter(rol => rol.trim() !== '')
     };
@@ -1281,7 +1332,16 @@ class EmpresasModals {
     if (form) {
       form.reset();
     }
-    
+
+    const esPublicaCheckbox = document.getElementById('empresaEsPublica');
+    if (esPublicaCheckbox) {
+      esPublicaCheckbox.checked = false;
+      const hint = document.getElementById('empresaEsPublicaHint');
+      if (hint) {
+        hint.textContent = 'Actívalo para que la empresa reciba alertas de otras empresas suscritas.';
+      }
+    }
+
     this.sedes = ['Principal'];
     this.renderSedes();
     
