@@ -23,7 +23,9 @@ class EmpresasMain {
     this.currentView = 'dashboard'; // 'dashboard' shows all, 'forms' shows only active
     this.apiClient = null;
     this.isLoading = false;
-    
+    this.empresasPublicas = [];
+    this.empresasIndex = {};
+
     this.initializeComponents();
   }
 
@@ -249,6 +251,16 @@ class EmpresasMain {
 
       if (data.success && Array.isArray(data.data)) {
         this.empresasAll = data.data;
+        this.empresasIndex = {};
+        this.empresasAll.forEach(empresa => {
+          if (empresa && empresa._id) {
+            this.empresasIndex[String(empresa._id)] = empresa;
+          }
+        });
+        this.empresasPublicas = this.empresasAll.filter(empresa => empresa && empresa.es_publica === true);
+        if (window.empresasModals && typeof window.empresasModals.refreshEmpresasRelacionadasOptions === 'function') {
+          window.empresasModals.refreshEmpresasRelacionadasOptions();
+        }
         
         //console.log(`✅ ${data.data.length} empresas cargadas desde backend`);
         
@@ -269,6 +281,8 @@ class EmpresasMain {
 
     } catch (error) {
       //console.error('💥 Error cargando empresas:', error);
+      this.empresasPublicas = [];
+      this.empresasIndex = {};
       this.showError('Error al cargar empresas: ' + error.message);
     } finally {
       this.isLoading = false;
@@ -1280,4 +1294,3 @@ window.viewEmpresa = (id) => empresasMain.viewEmpresa(id);
 window.clearFilters = () => empresasMain.clearFilters();
 
 //console.log('🏢 Empresas main module loaded');
-

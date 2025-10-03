@@ -159,6 +159,9 @@ class EmpresasModals {
     this.apiClient = null;
     this.sedes = [];
     this.roles = [];
+    this.empresasRelacionadas = [];
+    this.publicEmpresasCache = null;
+    this.lastEmpresasRelacionadasExcludeId = null;
     
     // Inicializar ModalScrollManager
     this.modalManager = new EmpresasModalScrollManager();
@@ -182,6 +185,9 @@ class EmpresasModals {
       
       // Load tipos de empresa
       this.loadTiposEmpresa();
+
+      // Load empresas relacionadas disponibles
+      this.renderEmpresasRelacionadas();
       
       //consoleç.log('🏢 Modales de empresas inicializados correctamente');
       
@@ -385,6 +391,19 @@ class EmpresasModals {
                     <span class="text-white/70 text-sm" id="empresaEsPublicaHint">
                       Actívalo para que la empresa reciba alertas de otras empresas suscritas.
                     </span>
+                  </div>
+                </div>
+
+                <!-- Empresas Relacionadas -->
+                <div class="form-group form-group-full">
+                  <label class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+                    <i class="fas fa-share-alt text-sky-400 mr-2"></i>Empresas relacionadas
+                  </label>
+                  <p class="text-white/60 text-xs mb-3" id="empresasRelacionadasHint">
+                    Selecciona empresas públicas que podrán enviar alertas a esta empresa.
+                  </p>
+                  <div id="empresasRelacionadasList" class="empresa-relacionadas-container ios-blur-input !min-h-[3.5rem] max-h-40 overflow-y-auto p-3 space-y-2">
+                    <p class="text-white/50 text-sm">Cargando opciones...</p>
                   </div>
                 </div>
 
@@ -671,6 +690,7 @@ class EmpresasModals {
   openCreateModal() {
     try {
       this.currentEditingEmpresa = null;
+      this.lastEmpresasRelacionadasExcludeId = null;
       
       // Set modal title and button text
       document.getElementById('empresaModalTitle').innerHTML = '<i class="fas fa-plus"></i> Nueva Empresa';
@@ -701,6 +721,7 @@ class EmpresasModals {
   async openEditModal(empresaId) {
     try {
       this.currentEditingEmpresa = empresaId;
+      this.lastEmpresasRelacionadasExcludeId = empresaId;
       
       // Set modal title and button text
       document.getElementById('empresaModalTitle').innerHTML = '<i class="fas fa-edit"></i> Editar Empresa';
@@ -778,6 +799,9 @@ class EmpresasModals {
           : 'Actívalo para que la empresa reciba alertas de otras empresas suscritas.';
       }
     }
+
+    const relatedIds = Array.isArray(empresa.empresas_relacionadas_ids) ? empresa.empresas_relacionadas_ids : [];
+    this.empresasRelacionadas = Array.from(new Set(relatedIds.map(id => String(id)).filter(id => id && id !== String(empresa._id))));
     
     // Load tipo de empresa with better handling
     const tipoSelect = document.getElementById('empresaTipo');
@@ -829,6 +853,8 @@ class EmpresasModals {
       //console.error('❌ Select de tipo de empresa no encontrado');
     }
     
+    this.renderEmpresasRelacionadas(empresa._id);
+
     // Load sedes
     this.sedes = empresa.sedes || ['Principal'];
     this.renderSedes();
@@ -855,6 +881,9 @@ class EmpresasModals {
         hint.textContent = 'Actívalo para que la empresa reciba alertas de otras empresas suscritas.';
       }
     }
+
+    this.empresasRelacionadas = [];
+    this.renderEmpresasRelacionadas();
 
     this.sedes = ['Principal'];
     this.renderSedes();
@@ -906,6 +935,11 @@ class EmpresasModals {
       // Fallback to direct tipo field if available
       tipoNombre = empresa.tipo || empresa.tipo_empresa;
     }
+
+    const empresasRelacionadasIds = Array.isArray(empresa.empresas_relacionadas_ids) ? empresa.empresas_relacionadas_ids : [];
+    const empresasRelacionadasNombres = empresasRelacionadasIds
+      .map(id => this.getEmpresaNombreById(id))
+      .filter(nombre => nombre && nombre.trim() !== '');
     
     const content = `
       <div class="space-y-4">
@@ -935,6 +969,17 @@ class EmpresasModals {
                 `<span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-xs font-medium">${sede}</span>`
               ).join('') : 
               '<span class="text-gray-500 dark:text-gray-400">Sin sedes</span>'
+            }
+          </div>
+        </div>
+        <div class="text-sm">
+          <h5 class="font-semibold text-gray-900 dark:text-white mb-1">Empresas relacionadas</h5>
+          <div class="flex flex-wrap gap-2">
+            ${empresasRelacionadasNombres.length > 0 ?
+              empresasRelacionadasNombres.map(nombre => 
+                `<span class="px-2 py-1 bg-sky-100 dark:bg-sky-900 text-sky-800 dark:text-sky-200 rounded-full text-xs font-medium">${nombre}</span>`
+              ).join('') :
+              '<span class="text-gray-500 dark:text-gray-400">Sin empresas relacionadas</span>'
             }
           </div>
         </div>
@@ -1066,6 +1111,12 @@ class EmpresasModals {
       sedes: this.sedes.filter(sede => sede.trim() !== ''),
       roles: this.roles.filter(rol => rol.trim() !== '')
     };
+
+    const currentEmpresaId = this.currentEditingEmpresa ? String(this.currentEditingEmpresa) : null;
+    const relacionadasLimpias = Array.from(new Set(this.empresasRelacionadas.map(id => String(id)).filter(Boolean)));
+    formData.empresas_relacionadas_ids = currentEmpresaId
+      ? relacionadasLimpias.filter(id => id !== currentEmpresaId)
+      : relacionadasLimpias;
     
     // Add password for create
     if (!this.currentEditingEmpresa) {
@@ -1213,6 +1264,200 @@ class EmpresasModals {
     });
   }
 
+  /**
+   * Empresas relacionadas management
+   */
+  renderEmpresasRelacionadas(excludeId = null) {
+    const container = document.getElementById('empresasRelacionadasList');
+    if (!container) {
+      return;
+    }
+
+    this.lastEmpresasRelacionadasExcludeId = excludeId || null;
+
+    const empresasDisponibles = this.getEmpresasPublicasFromSources(excludeId);
+
+    if (empresasDisponibles === null) {
+      container.innerHTML = '<p class="text-white/50 text-sm">Cargando empresas públicas...</p>';
+      this.updateEmpresasRelacionadasHint();
+      this.fetchPublicEmpresas().then(() => {
+        this.renderEmpresasRelacionadas(this.lastEmpresasRelacionadasExcludeId);
+      }).catch(() => {
+        container.innerHTML = '<p class="text-red-300 text-sm">No se pudieron cargar las empresas públicas.</p>';
+        this.updateEmpresasRelacionadasHint();
+      });
+      return;
+    }
+
+    if (!empresasDisponibles.length) {
+      container.innerHTML = '<p class="text-white/50 text-sm">No hay empresas públicas disponibles para relacionar.</p>';
+      this.updateEmpresasRelacionadasHint();
+      return;
+    }
+
+    container.innerHTML = '';
+
+    empresasDisponibles
+      .slice()
+      .sort((a, b) => (a?.nombre || '').localeCompare(b?.nombre || '', 'es', { sensitivity: 'base' }))
+      .forEach(empresa => {
+        if (!empresa || !empresa._id) return;
+        const empresaId = String(empresa._id);
+        const isChecked = this.empresasRelacionadas.includes(empresaId);
+
+        const option = document.createElement('label');
+        option.className = 'empresa-relacionada-option flex items-center justify-between gap-3 px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 transition';
+
+        const leftWrapper = document.createElement('div');
+        leftWrapper.className = 'flex items-center gap-2';
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.className = 'empresa-relacionada-checkbox h-4 w-4 text-blue-500 focus:ring-blue-400 rounded';
+        checkbox.value = empresaId;
+        checkbox.checked = isChecked;
+        checkbox.addEventListener('change', (event) => {
+          this.toggleEmpresaRelacionada(empresaId, event.target.checked);
+        });
+
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'text-white text-sm font-medium';
+        nameSpan.textContent = empresa.nombre || 'Sin nombre';
+
+        leftWrapper.appendChild(checkbox);
+        leftWrapper.appendChild(nameSpan);
+
+        const metaSpan = document.createElement('span');
+        metaSpan.className = 'text-xs text-white/60';
+        metaSpan.textContent = empresa.ubicacion || 'Sin ubicación';
+
+        option.appendChild(leftWrapper);
+        option.appendChild(metaSpan);
+
+        container.appendChild(option);
+      });
+
+    this.updateEmpresasRelacionadasHint();
+  }
+
+  getEmpresasPublicasFromSources(excludeId = null) {
+    const excludeString = excludeId ? String(excludeId) : null;
+    if (window.empresasMain && Array.isArray(window.empresasMain.empresasPublicas) && window.empresasMain.empresasPublicas.length > 0) {
+      return window.empresasMain.empresasPublicas.filter(empresa => empresa && empresa._id && String(empresa._id) !== excludeString);
+    }
+
+    if (window.empresasMain && Array.isArray(window.empresasMain.empresasAll) && window.empresasMain.empresasAll.length > 0) {
+      return window.empresasMain.empresasAll.filter(empresa => empresa && empresa.es_publica === true && empresa._id && String(empresa._id) !== excludeString);
+    }
+
+    if (Array.isArray(this.publicEmpresasCache) && this.publicEmpresasCache.length > 0) {
+      return this.publicEmpresasCache.filter(empresa => empresa && empresa._id && String(empresa._id) !== excludeString);
+    }
+
+    return null;
+  }
+
+  async fetchPublicEmpresas() {
+    try {
+      let response = null;
+      if (this.apiClient && typeof this.apiClient.get_empresas_dashboard === 'function') {
+        response = await this.apiClient.get_empresas_dashboard();
+      } else if (this.apiClient && typeof this.apiClient.get_empresas === 'function') {
+        response = await this.apiClient.get_empresas();
+      }
+
+      if (!response) {
+        this.publicEmpresasCache = [];
+        return this.publicEmpresasCache;
+      }
+
+      if (!response || !response.ok) {
+        this.publicEmpresasCache = [];
+        return [];
+      }
+
+      const data = await response.json();
+      if (data.success && Array.isArray(data.data)) {
+        this.publicEmpresasCache = data.data.filter(empresa => empresa && empresa.es_publica === true);
+        return this.publicEmpresasCache;
+      }
+
+      if (Array.isArray(data.empresas)) {
+        this.publicEmpresasCache = data.empresas.filter(empresa => empresa && empresa.es_publica === true);
+        return this.publicEmpresasCache;
+      }
+
+      this.publicEmpresasCache = [];
+      return this.publicEmpresasCache;
+    } catch (error) {
+      this.publicEmpresasCache = [];
+      return this.publicEmpresasCache;
+    }
+  }
+
+  toggleEmpresaRelacionada(empresaId, isChecked) {
+    const id = String(empresaId);
+    if (isChecked) {
+      if (!this.empresasRelacionadas.includes(id)) {
+        this.empresasRelacionadas.push(id);
+      }
+    } else {
+      this.empresasRelacionadas = this.empresasRelacionadas.filter(existingId => existingId !== id);
+    }
+
+    this.updateEmpresasRelacionadasHint();
+  }
+
+  setEmpresasRelacionadas(ids = [], excludeId = null) {
+    const sanitized = Array.from(new Set((ids || []).map(id => String(id)).filter(Boolean)));
+    const excludeString = excludeId ? String(excludeId) : null;
+    this.empresasRelacionadas = excludeString ? sanitized.filter(id => id !== excludeString) : sanitized;
+    this.renderEmpresasRelacionadas(excludeString);
+  }
+
+  refreshEmpresasRelacionadasOptions(excludeId = null) {
+    this.renderEmpresasRelacionadas(excludeId || this.lastEmpresasRelacionadasExcludeId);
+  }
+
+  getEmpresaNombreById(empresaId) {
+    if (!empresaId) return '';
+    const id = String(empresaId);
+
+    if (window.empresasMain && window.empresasMain.empresasIndex && window.empresasMain.empresasIndex[id]) {
+      return window.empresasMain.empresasIndex[id].nombre || '';
+    }
+
+    if (window.empresasMain && Array.isArray(window.empresasMain.empresasAll)) {
+      const found = window.empresasMain.empresasAll.find(empresa => empresa && String(empresa._id) === id);
+      if (found) {
+        return found.nombre || '';
+      }
+    }
+
+    if (Array.isArray(this.publicEmpresasCache)) {
+      const cached = this.publicEmpresasCache.find(empresa => empresa && String(empresa._id) === id);
+      if (cached) {
+        return cached.nombre || '';
+      }
+    }
+
+    return '';
+  }
+
+  updateEmpresasRelacionadasHint() {
+    const hint = document.getElementById('empresasRelacionadasHint');
+    if (!hint) {
+      return;
+    }
+
+    const count = this.empresasRelacionadas.length;
+    if (count > 0) {
+      hint.textContent = `${count} ${count === 1 ? 'empresa seleccionada recibirá' : 'empresas seleccionadas recibirán'} alertas externas.`;
+    } else {
+      hint.textContent = 'Selecciona empresas públicas que podrán enviar alertas a esta empresa.';
+    }
+  }
+
   // ===== GESTIÓN UNIFICADA DE MODALES CON MODALSCROLLMANAGER =====
   
   /**
@@ -1341,6 +1586,9 @@ class EmpresasModals {
         hint.textContent = 'Actívalo para que la empresa reciba alertas de otras empresas suscritas.';
       }
     }
+
+    this.empresasRelacionadas = [];
+    this.renderEmpresasRelacionadas();
 
     this.sedes = ['Principal'];
     this.renderSedes();
