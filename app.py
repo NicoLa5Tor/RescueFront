@@ -29,6 +29,7 @@ from utils.config import (
     validate_config,
     print_config
 )
+from utils.images_service import fetch_image_folders, fetch_folder_files
 
 # Validar configuración al inicio
 validate_config()
@@ -129,7 +130,14 @@ def validate_backend_connection():
 @app.before_request
 def attach_api_client():
     # Validar conectividad con backend para rutas protegidas (solo admin routes)
-    protected_routes = ['admin_dashboard', 'super_admin_dashboard', 'admin_users', 'admin_empresas', 'admin_hardware']
+    protected_routes = [
+        'admin_dashboard',
+        'super_admin_dashboard',
+        'admin_users',
+        'admin_empresas',
+        'admin_hardware',
+        'admin_imagenes'
+    ]
     if request.endpoint in protected_routes:
         if not validate_backend_connection():
             #print("❌ Backend no disponible, limpiando sesión")
@@ -660,6 +668,52 @@ def admin_hardware():
         hardware_data=hardware_data,
         active_page='hardware'
     )
+
+
+@app.route('/admin/imagenes')
+@require_role(['super_admin'])
+def admin_imagenes():
+    """Gestión visual de carpetas de imágenes - Solo para super_admin."""
+
+    folder_names, error_message, endpoint = fetch_image_folders()
+
+    folders = [
+        {
+            'name': name,
+            'display_name': name.replace('-', ' ').replace('_', ' ').title(),
+            'initials': ''.join(part[0].upper() for part in name.split('-')[:2] if part) or 'FD'
+        }
+        for name in folder_names
+    ]
+
+    images_data = {
+        'folders': folders,
+        'error': error_message or None,
+        'service_url': endpoint
+    }
+
+    return render_template(
+        'admin/imagenes.html',
+        api_url=PROXY_PREFIX,
+        images_data=images_data,
+        active_page='imagenes'
+    )
+
+@app.route('/admin/imagenes/<path:folder_name>/files')
+@require_role(['super_admin'])
+def admin_imagenes_folder_files(folder_name):
+    """Devuelve los archivos de una carpeta en formato JSON."""
+    files, error_message, endpoint = fetch_folder_files(folder_name)
+    success = error_message == ''
+    status_code = 200 if success else 502
+    return jsonify({
+        'success': success,
+        'folder': folder_name,
+        'files': files,
+        'error': error_message or None,
+        'service_url': endpoint
+    }), status_code
+
 
 @app.route('/empresa/hardware')
 @require_role(['empresa'])

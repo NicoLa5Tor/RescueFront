@@ -30,6 +30,12 @@ DEBUG_MODE = os.getenv('DEBUG', 'True').lower() in ('true', '1', 'yes', 'on')
 # ========== CONFIGURACIÓN DE CORS ==========
 CORS_ORIGINS = os.getenv('CORS_ORIGINS', '*').split(',')
 
+# ========== SERVICIO DE IMÁGENES ==========
+IMAGES_SERVICE_BASE_URL = os.getenv(
+    'IMAGES_SERVICE_BASE_URL',
+    'https://images-service.rescue.com.co'
+)
+
 # ========== CONFIGURACIÓN PÚBLICA DE CONTACTO ==========
 # Variables seguras para exponer al frontend
 PUBLIC_CONTACT_CONFIG = {
@@ -98,6 +104,7 @@ def print_config():
     print("=" * 50)
     print(f"🏗️  Backend URL: {BACKEND_API_URL}")
     print(f"🔗 Proxy Prefix: {PROXY_PREFIX}")
+    print(f"🖼️  Images Service: {IMAGES_SERVICE_BASE_URL}")
     print(f"🐛 Debug Mode: {DEBUG_MODE}")
     print(f"🔐 Secret Key: {'***' + SECRET_KEY[-4:] if len(SECRET_KEY) > 4 else '****'}")
     print(f"⏰ Session Lifetime: {SESSION_LIFETIME}s")

@@ -215,6 +215,10 @@
               <div class="sidebar__link-icon"><i class="fas fa-microchip"></i></div>
               <span class="sidebar__link-text">Hardware</span>
             </a>
+            <a href="{{ url_for('admin_imagenes') }}" class="sidebar__link {% if active_page=='imagenes' %}sidebar__link--active{% endif %}" aria-current="{% if active_page=='imagenes' %}page{% else %}false{% endif %}">
+              <div class="sidebar__link-icon"><i class="fas fa-images"></i></div>
+              <span class="sidebar__link-text">Imágenes</span>
+            </a>
             <a href="{{ url_for('admin_company_types') }}" class="sidebar__link {% if active_page=='company_types' %}sidebar__link--active{% endif %}" aria-current="{% if active_page=='company_types' %}page{% else %}false{% endif %}">
               <div class="sidebar__link-icon"><i class="fas fa-layer-group"></i></div>
               <span class="sidebar__link-text">Tipos Empresa</span>
