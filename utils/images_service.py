@@ -98,6 +98,63 @@ def fetch_image_folders() -> Tuple[List[str], str, str]:
         return [], error_message, endpoint
 
 
+
+def create_image_folder(name: str) -> Tuple[bool, str]:
+    """Crea un directorio en el servicio externo."""
+    endpoint = build_images_service_url('folders')
+    payload = {'name': name}
+    try:
+        response = requests.post(endpoint, json=payload, timeout=DEFAULT_TIMEOUT)
+        response.raise_for_status()
+        return True, ''
+    except Exception as exc:  # noqa: BLE001
+        print(f'⚠️ Error creating image folder: {exc}')
+        message = 'No fue posible crear el directorio, intenta nuevamente.'
+        return False, message
+
+
+def upload_image_file(folder: str, filename: str, file_obj) -> Tuple[bool, str]:
+    """Carga un archivo hacia el servicio externo."""
+    endpoint = build_images_service_url('upload')
+    files = {
+        'file': (
+            getattr(file_obj, 'filename', filename) or filename,
+            getattr(file_obj, 'stream', file_obj),
+            getattr(file_obj, 'mimetype', 'application/octet-stream')
+        )
+    }
+    data = {
+        'folder': folder,
+        'filename': filename
+    }
+
+    try:
+        # Reiniciar el cursor del archivo si es posible
+        stream = files['file'][1]
+        if hasattr(stream, 'seek'):
+            stream.seek(0)
+
+        response = requests.post(endpoint, data=data, files=files, timeout=DEFAULT_TIMEOUT)
+        response.raise_for_status()
+        return True, ''
+    except Exception as exc:  # noqa: BLE001
+        print(f'⚠️ Error uploading file {filename} to folder {folder}: {exc}')
+        return False, 'No fue posible cargar el archivo, intenta nuevamente.'
+
+
+def delete_image_folder(folder_name: str) -> Tuple[bool, str]:
+    """Elimina un directorio en el servicio externo."""
+    encoded = quote(folder_name, safe='')
+    endpoint = build_images_service_url(f'folders/{encoded}')
+    try:
+        response = requests.delete(endpoint, timeout=DEFAULT_TIMEOUT)
+        response.raise_for_status()
+        return True, ''
+    except Exception as exc:  # noqa: BLE001
+        print(f'⚠️ Error deleting image folder {folder_name}: {exc}')
+        return False, 'No fue posible eliminar el directorio, intenta nuevamente.'
+
+
 def fetch_folder_files(folder_name: str) -> Tuple[List[Dict[str, Any]], str, str]:
     """Obtiene los archivos de una carpeta específica del servicio."""
     encoded_folder = quote(folder_name, safe='')

@@ -14,6 +14,7 @@ from flask_cors import CORS
 import requests
 import os
 import json
+import re
 from dotenv import load_dotenv
 from utils.api_client import APIClient
 
@@ -29,7 +30,13 @@ from utils.config import (
     validate_config,
     print_config
 )
-from utils.images_service import fetch_image_folders, fetch_folder_files
+from utils.images_service import (
+    fetch_image_folders,
+    fetch_folder_files,
+    create_image_folder,
+    delete_image_folder,
+    upload_image_file,
+)
 
 # Validar configuración al inicio
 validate_config()
@@ -47,6 +54,9 @@ app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 
 # Habilitar CORS
 CORS(app, supports_credentials=True, origins=CORS_ORIGINS)
+
+FOLDER_SLUG_PATTERN = re.compile(r'^[\w-]{1,50}$')
+FILE_BASENAME_PATTERN = re.compile(r'^[\w-]{1,120}$')
 
 # Helper function to check roles
 def require_role(allowed_roles):
@@ -713,6 +723,94 @@ def admin_imagenes_folder_files(folder_name):
         'error': error_message or None,
         'service_url': endpoint
     }), status_code
+
+
+@app.route('/admin/imagenes/upload', methods=['POST'])
+@require_role(['super_admin'])
+def admin_upload_image_file():
+    """Carga un archivo en la carpeta indicada del servicio de imágenes."""
+    folder = (request.form.get('folder') or '').strip()
+    filename = (request.form.get('filename') or '').strip()
+    file_storage = request.files.get('file')
+
+    if not folder or not FOLDER_SLUG_PATTERN.fullmatch(folder):
+        return jsonify({
+            'success': False,
+            'error': 'La carpeta es obligatoria y solo admite letras, números o guiones.'
+        }), 400
+
+    if not filename or not FILE_BASENAME_PATTERN.fullmatch(filename):
+        return jsonify({
+            'success': False,
+            'error': 'El nombre base es obligatorio y solo admite letras, números o guiones.'
+        }), 400
+
+    if not file_storage or not getattr(file_storage, 'filename', '').strip():
+        return jsonify({
+            'success': False,
+            'error': 'Selecciona un archivo válido para cargar.'
+        }), 400
+
+    success, error_message = upload_image_file(folder, filename, file_storage)
+    status_code = 201 if success else 502
+    response_data = {
+        'success': success,
+        'folder': folder,
+        'filename': filename,
+        'error': error_message or None
+    }
+
+    if success:
+        updated_folders, _, _ = fetch_image_folders()
+        response_data['folders'] = updated_folders
+
+    return jsonify(response_data), status_code
+
+
+@app.route('/admin/imagenes/folders', methods=['POST'])
+@require_role(['super_admin'])
+def admin_create_image_folder():
+    """Crea un nuevo directorio en el servicio de imágenes."""
+    payload = request.get_json(silent=True) or {}
+    name = (payload.get('name') or '').strip()
+    if not name:
+        return jsonify({
+            'success': False,
+            'error': 'El nombre del directorio es obligatorio.'
+        }), 400
+
+    success, error_message = create_image_folder(name)
+    status_code = 201 if success else 502
+    response_data = {
+        'success': success,
+        'name': name,
+        'error': error_message or None
+    }
+
+    if success:
+        updated_folders, _, _ = fetch_image_folders()
+        response_data['folders'] = updated_folders
+
+    return jsonify(response_data), status_code
+
+
+@app.route('/admin/imagenes/folders/<path:folder_name>', methods=['DELETE'])
+@require_role(['super_admin'])
+def admin_delete_image_folder(folder_name):
+    """Elimina un directorio en el servicio de imágenes."""
+    success, error_message = delete_image_folder(folder_name)
+    status_code = 200 if success else 502
+    response_data = {
+        'success': success,
+        'folder': folder_name,
+        'error': error_message or None
+    }
+
+    if success:
+        updated_folders, _, _ = fetch_image_folders()
+        response_data['folders'] = updated_folders
+
+    return jsonify(response_data), status_code
 
 
 @app.route('/empresa/hardware')
