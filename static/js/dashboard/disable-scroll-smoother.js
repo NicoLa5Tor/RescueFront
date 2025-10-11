@@ -17,6 +17,7 @@
             '/admin/empresas',
             '/admin/users',
             '/admin/hardware',
+            '/admin/alert-types',
             '/admin/company-types'
         ];
         

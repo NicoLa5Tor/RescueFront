@@ -1,0 +1,209 @@
+{% extends "admin/dashboard.html" %}
+
+{% block title %}Tipos de Alertas - Rescue{% endblock %}
+
+{% block extra_css %}
+{{ super() }}
+<link href="{{ url_for('static', filename='css/hardware/hardware-main.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/alerts/alert-types.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block main_content %}
+{% set stats = alert_types_data.alert_types_stats if alert_types_data is defined and alert_types_data.alert_types_stats is defined else {} %}
+{% set alert_types = alert_types_data.alert_types if alert_types_data is defined and alert_types_data.alert_types is defined else [] %}
+{% set pagination = alert_types_data.pagination if alert_types_data is defined and alert_types_data.pagination is defined else {} %}
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="ios-header-container mb-8">
+    <div class="ios-header-backdrop">
+      <div class="ios-header-content">
+        <div class="ios-header-text">
+          <div class="ios-header-icon">
+            <i class="fas fa-bell"></i>
+          </div>
+          <div>
+            <h1 class="ios-header-title">Catálogo de Tipos de Alertas</h1>
+            <p class="ios-header-subtitle">Configura prioridades, acciones y cobertura para cada tipo</p>
+          </div>
+        </div>
+        <div class="ios-header-actions">
+          <button class="ios-action-btn ios-action-btn-secondary" type="button">
+            <i class="fas fa-file-export"></i>
+            <span>Exportar Catálogo</span>
+          </button>
+          <button class="ios-action-btn ios-action-btn-primary" type="button">
+            <i class="fas fa-plus"></i>
+            <span>Nuevo Tipo</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ios-stats-grid">
+    <div class="ios-stat-card" data-stat="total">
+      <div class="ios-stat-icon ios-stat-icon-blue">
+        <i class="fas fa-list"></i>
+      </div>
+      <div class="ios-stat-content">
+        <div class="ios-stat-label">Tipos Registrados</div>
+        <div class="ios-stat-value">{{ stats.total_types | default(0) }}</div>
+        <div class="ios-stat-trend">Catálogo global</div>
+      </div>
+      <div class="ios-stat-shimmer"></div>
+    </div>
+
+    <div class="ios-stat-card" data-stat="active">
+      <div class="ios-stat-icon ios-stat-icon-green">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <div class="ios-stat-content">
+        <div class="ios-stat-label">Activos</div>
+        <div class="ios-stat-value">{{ stats.active_types | default(0) }}</div>
+        <div class="ios-stat-trend">Operativos</div>
+      </div>
+      <div class="ios-stat-shimmer"></div>
+    </div>
+
+    <div class="ios-stat-card" data-stat="critical">
+      <div class="ios-stat-icon ios-stat-icon-red">
+        <i class="fas fa-exclamation-triangle"></i>
+      </div>
+      <div class="ios-stat-content">
+        <div class="ios-stat-label">Prioridad Máxima</div>
+        <div class="ios-stat-value">{{ stats.critical_types | default(0) }}</div>
+        <div class="ios-stat-trend">Alto impacto</div>
+      </div>
+      <div class="ios-stat-shimmer"></div>
+    </div>
+
+    <div class="ios-stat-card" data-stat="sla">
+      <div class="ios-stat-icon ios-stat-icon-purple">
+        <i class="fas fa-stopwatch"></i>
+      </div>
+      <div class="ios-stat-content">
+        <div class="ios-stat-label">SLA Promedio</div>
+        <div class="ios-stat-value">{{ stats.avg_sla_minutes | default(0) }}<span class="ios-stat-unit"> min</span></div>
+        <div class="ios-stat-trend">Tiempo de respuesta</div>
+      </div>
+      <div class="ios-stat-shimmer"></div>
+    </div>
+  </div>
+
+  <section class="ios-hardware-grid mt-10" aria-label="Listado de tipos de alertas">
+    {% for alert_type in alert_types %}
+    <article class="ios-hardware-card alert-type-card force-visible" data-severity="{{ alert_type.severity | default('desconocida') | lower }}" style="--alert-type-color: {{ alert_type.color | default('#1d4ed8') }};">
+      <header class="alert-type-card__header">
+        <div class="ios-card-icon">
+          <i class="{{ alert_type.icon | default('fas fa-bell') }}"></i>
+        </div>
+        <div class="alert-type-card__badges">
+          <span class="ios-status-badge alert-severity-badge alert-severity-{{ alert_type.severity | default('desconocida') | lower | replace(' ', '-') }}">
+            {{ alert_type.severity | default('Sin prioridad') }}
+          </span>
+          <span class="ios-status-badge alert-status-badge {{ 'alert-status-active' if alert_type.active | default(True) else 'alert-status-inactive' }}">
+            {{ 'Activa' if alert_type.active | default(True) else 'Inactiva' }}
+          </span>
+        </div>
+      </header>
+
+      <h2 class="ios-card-title">{{ alert_type.name | default('Tipo sin nombre') }}</h2>
+      <p class="ios-card-subtitle">{{ alert_type.description | default('Sin descripción disponible para este tipo de alerta.') }}</p>
+
+      <dl class="ios-card-info alert-type-card__info">
+        <div class="ios-info-item">
+          <dt class="ios-info-label"><i class="fas fa-clock"></i> SLA objetivo</dt>
+          <dd class="ios-info-value">{{ alert_type.sla_minutes | default(0) }} min</dd>
+        </div>
+        <div class="ios-info-item">
+          <dt class="ios-info-label"><i class="fas fa-bullhorn"></i> Intensidad</dt>
+          <dd class="ios-info-value">{{ alert_type.severity | default('Sin prioridad') | upper }}</dd>
+        </div>
+        <div class="ios-info-item">
+          <dt class="ios-info-label"><i class="fas fa-palette"></i> Color</dt>
+          <dd class="ios-info-value">
+            <span class="alert-type-color" style="background: {{ alert_type.color | default('#1d4ed8') }};"></span>
+            {{ alert_type.color | default('N/D') }}
+          </dd>
+        </div>
+        <div class="ios-info-item">
+          <dt class="ios-info-label"><i class="fas fa-redo"></i> Última revisión</dt>
+          <dd class="ios-info-value">{{ alert_type.updated_at | default('Sin registro') }}</dd>
+        </div>
+      </dl>
+
+      {% if alert_type.image %}
+      <figure class="alert-type-card__media">
+        <img src="{{ alert_type.image }}" alt="Imagen de {{ alert_type.name }}" loading="lazy">
+        <figcaption>Imagen oficial de referencia</figcaption>
+      </figure>
+      {% endif %}
+
+      {% if alert_type.recommendations | default([]) %}
+      <div class="alert-type-card__triggers">
+        <p class="alert-type-card__section-title">
+          <i class="fas fa-clipboard-list"></i>
+          Recomendaciones iniciales
+        </p>
+        <ul class="alert-type-card__list">
+          {% for recommendation in alert_type.recommendations[:4] %}
+          <li>{{ recommendation }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      {% if alert_type.equipment | default([]) %}
+      <div class="alert-type-card__triggers">
+        <p class="alert-type-card__section-title">
+          <i class="fas fa-toolbox"></i>
+          Implementos necesarios
+        </p>
+        <ul class="alert-type-card__list">
+          {% for item in alert_type.equipment[:4] %}
+          <li>{{ item }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      {% if alert_type.sound %}
+      <div class="alert-type-card__sound">
+        <i class="fas fa-volume-up"></i>
+        <a href="{{ alert_type.sound }}" target="_blank" rel="noopener" class="alert-type-card__sound-link">Escuchar sonido asignado</a>
+      </div>
+      {% endif %}
+    </article>
+    {% else %}
+    <div class="alert-types-empty">
+      <div class="alert-types-empty__icon">
+        <i class="fas fa-bell-slash"></i>
+      </div>
+      <h3>No hay tipos configurados</h3>
+      <p>Agrega un tipo de alerta para definir prioridades, equipos y canales de notificación.</p>
+    </div>
+    {% endfor %}
+  </section>
+
+  {% if pagination.pages | default(1) > 1 %}
+  {% set current_page = pagination.page | default(1) %}
+  {% set total_pages = pagination.pages | default(1) %}
+  {% set limit_value = pagination.limit | default(10) %}
+  <nav class="alert-types-pagination" aria-label="Paginación de tipos de alertas">
+    <a class="pagination-btn {{ 'pagination-btn--disabled' if current_page <= 1 }}" href="{% if current_page > 1 %}{{ url_for('admin_alert_types', page=current_page-1, limit=limit_value) }}{% else %}#{% endif %}" aria-disabled="{{ 'true' if current_page <= 1 else 'false' }}">
+      <i class="fas fa-chevron-left"></i>
+      <span>Anterior</span>
+    </a>
+
+    <div class="pagination-info">
+      Página {{ current_page }} de {{ total_pages }} · {{ stats.total_types | default(pagination.total | default(0)) }} registros
+    </div>
+
+    <a class="pagination-btn {{ 'pagination-btn--disabled' if current_page >= total_pages }}" href="{% if current_page < total_pages %}{{ url_for('admin_alert_types', page=current_page+1, limit=limit_value) }}{% else %}#{% endif %}" aria-disabled="{{ 'true' if current_page >= total_pages else 'false' }}">
+      <span>Siguiente</span>
+      <i class="fas fa-chevron-right"></i>
+    </a>
+  </nav>
+  {% endif %}
+</div>
+{% endblock %}

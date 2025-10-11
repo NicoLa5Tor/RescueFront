@@ -46,6 +46,7 @@ function waitForStylesAndHidePreloader() {
         '/admin/empresas',
         '/admin/users',
         '/admin/hardware',
+        '/admin/alert-types',
         '/admin/company-types'
     ];
     
@@ -526,11 +527,12 @@ window.addEventListener('load', function() {
             '/empresa/hardware',
             '/empresa/usuarios',
             '/empresa/alertas',
-            '/admin/empresas',
-            '/admin/users',
-            '/admin/hardware',
-            '/admin/company-types'
-        ];
+        '/admin/empresas',
+        '/admin/users',
+        '/admin/hardware',
+        '/admin/alert-types',
+        '/admin/company-types'
+    ];
         
         return dashboardPaths.some(path => currentPath.startsWith(path));
     }

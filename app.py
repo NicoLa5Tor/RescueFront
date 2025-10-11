@@ -146,6 +146,7 @@ def attach_api_client():
         'admin_users',
         'admin_empresas',
         'admin_hardware',
+        'admin_alert_types',
         'admin_imagenes'
     ]
     if request.endpoint in protected_routes:
@@ -677,6 +678,166 @@ def admin_hardware():
         api_url=PROXY_PREFIX, 
         hardware_data=hardware_data,
         active_page='hardware'
+    )
+
+
+@app.route('/admin/alert-types')
+@require_role(['super_admin'])
+def admin_alert_types():
+    """Gestión de tipos de alertas - Solo para super_admin."""
+    fallback_types = [
+        {
+            'id': 'sample-critical',
+            'name': 'Alerta crítica',
+            'description': 'Activada ante riesgos inmediatos para la vida o infraestructura crítica.',
+            'severity': 'critica',
+            'color': '#ef4444',
+            'sla_minutes': 2,
+            'channels': ['SMS', 'Llamada automática', 'Tablero web'],
+            'owner': 'Coordinación general',
+            'updated_at': '2024-01-10 14:30',
+            'trigger_examples': [
+                'Botón de pánico activado',
+                'Sensor estructural excedido',
+                'Incendio detectado por hardware'
+            ],
+            'tags': ['prioridad-1', 'respuesta-inmediata'],
+            'active': True,
+            'icon': 'fas fa-triangle-exclamation',
+            'recommendations': [
+                'Evacuar la zona afectada',
+                'Contactar a bomberos locales',
+                'Activar protocolos de emergencia'
+            ],
+            'equipment': [
+                'Extintores tipo ABC',
+                'Sistema de rociadores',
+                'Kit de primeros auxilios'
+            ],
+            'sound': 'https://assets.rescue.com.co/sonidos/incendio.mp3'
+        },
+        {
+            'id': 'sample-high',
+            'name': 'Alerta operativa alta',
+            'description': 'Afectaciones severas al servicio que requieren coordinación inmediata.',
+            'severity': 'alta',
+            'color': '#f97316',
+            'sla_minutes': 10,
+            'channels': ['Correo', 'Push móvil', 'Panel web'],
+            'owner': 'Operaciones',
+            'updated_at': '2024-02-02 09:15',
+            'trigger_examples': [
+                'Corte eléctrico extendido',
+                'Falla regional de comunicaciones',
+                'Bloqueo de acceso en sitio'
+            ],
+            'tags': ['prioridad-2', 'coordinación'],
+            'active': True,
+            'icon': 'fas fa-bolt',
+            'recommendations': [
+                'Activar plan de contingencia',
+                'Escalar al equipo de operaciones',
+                'Verificar disponibilidad de personal'
+            ],
+            'equipment': [
+                'Radios portátiles',
+                'Vehículos de apoyo',
+                'Kit de herramientas'
+            ],
+            'sound': 'https://assets.rescue.com.co/sonidos/operativa.mp3'
+        },
+        {
+            'id': 'sample-informative',
+            'name': 'Alerta informativa',
+            'description': 'Eventos monitoreados sin impacto crítico que requieren seguimiento.',
+            'severity': 'media',
+            'color': '#facc15',
+            'sla_minutes': 30,
+            'channels': ['Correo', 'Panel web'],
+            'owner': 'Monitoreo',
+            'updated_at': '2023-12-20 08:00',
+            'trigger_examples': [
+                'Prueba de sistemas programada',
+                'Aviso meteorológico preventivo'
+            ],
+            'tags': ['prioridad-3'],
+            'active': False,
+            'icon': 'fas fa-info-circle',
+            'recommendations': [
+                'Monitorear evolución del evento',
+                'Mantener comunicación con proveedores',
+                'Informar novedades al panel central'
+            ],
+            'equipment': [
+                'Panel de control web',
+                'Sistema de comunicaciones',
+                'Dashboard de métricas'
+            ],
+            'sound': 'https://assets.rescue.com.co/sonidos/informativa.mp3'
+        }
+    ]
+
+    def build_stats(types):
+        total = len(types)
+        active = sum(1 for t in types if t.get('active', True))
+        inactive = max(total - active, 0)
+        critical = sum(1 for t in types if (t.get('severity') or '').lower() == 'critica')
+        sla_values = [t.get('sla_minutes') for t in types if isinstance(t.get('sla_minutes'), (int, float))]
+        avg_sla = round(sum(sla_values) / len(sla_values)) if sla_values else 0
+        return {
+            'total_types': total,
+            'active_types': active,
+            'inactive_types': inactive,
+            'critical_types': critical,
+            'avg_sla_minutes': avg_sla,
+        }
+
+    page = max(int(request.args.get('page', 1) or 1), 1)
+    limit = request.args.get('limit', 4)
+    try:
+        limit = int(limit)
+    except (TypeError, ValueError):
+        limit = 10
+    limit = min(max(limit, 1), 50)
+
+    alert_types_data = {
+        'alert_types': fallback_types,
+        'alert_types_stats': build_stats(fallback_types),
+        'pagination': {
+            'page': page,
+            'limit': limit,
+            'total': len(fallback_types),
+            'pages': max(1, (len(fallback_types) + limit - 1) // limit),
+        }
+    }
+
+    api_fetch = getattr(g.api_client, 'get_alert_types', None)
+    if callable(api_fetch):
+        try:
+            api_data = api_fetch(page=page, limit=limit) or {}
+            alert_types = api_data.get('alert_types', [])
+            alert_types_stats = api_data.get('alert_types_stats', build_stats(alert_types))
+            pagination = api_data.get('pagination') or {
+                'page': page,
+                'limit': limit,
+                'total': len(alert_types),
+                'pages': 1,
+            }
+            alert_types_data = {
+                'alert_types': alert_types,
+                'alert_types_stats': alert_types_stats,
+                'pagination': pagination,
+            }
+        except Exception as exc:
+            app.logger.warning('Falling back to sample alert types due to error: %s', exc)
+
+    return render_template(
+        'admin/alert_types.html',
+        alert_types_data=alert_types_data,
+        active_page='alert_types',
+        api_url=PROXY_PREFIX,
+        dashboard_data={},
+        activity_data=None
     )
 
 

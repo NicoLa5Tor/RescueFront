@@ -36,7 +36,10 @@ class APIClient:
         cookies = self._get_auth_cookies()
         headers = kwargs.pop('headers', {})
         headers.setdefault('Content-Type', 'application/json')
-        
+        auth_token = request.cookies.get('auth_token')
+        if auth_token:
+            headers.setdefault('Authorization', f'Bearer {auth_token}')
+
         return requests.request(
             method=method,
             url=url,
@@ -218,6 +221,106 @@ class APIClient:
                     'out_of_stock': 0,
                     'total_value': 0,
                     'avg_price': 0
+                }
+            }
+
+    def get_alert_types(
+        self,
+        page: int = 1,
+        limit: int = 10
+    ) -> Dict[str, Any]:
+        """Obtiene tipos de alerta con paginación"""
+
+        def _map_severity(raw_value: Optional[str]) -> str:
+            if not raw_value:
+                return 'desconocida'
+            normalized = str(raw_value).strip().upper()
+            mapping = {
+                'ROJO': 'critica',
+                'NARANJA': 'alta',
+                'AMARILLO': 'media',
+                'VERDE': 'baja',
+            }
+            return mapping.get(normalized, normalized.lower())
+
+        try:
+            params = {
+                'page': max(page, 1),
+                'limit': max(limit, 1)
+            }
+            response = self.get('/api/tipos-alarma', params=params)
+            if not response.ok:
+                raise Exception(f"HTTP {response.status_code}: {response.text}")
+
+            payload = response.json()
+            if not payload.get('success'):
+                raise Exception(f"Backend error: {payload}")
+
+            raw_items = payload.get('data', []) or []
+            pagination = payload.get('pagination', {}) or {}
+
+            mapped_items = []
+            for raw in raw_items:
+                severity = _map_severity(raw.get('tipo_alerta'))
+                mapped_items.append({
+                    'id': str(raw.get('_id', '')),
+                    'name': raw.get('nombre', ''),
+                    'description': raw.get('descripcion', ''),
+                    'severity': severity,
+                    'color': raw.get('color_alerta') or '#1d4ed8',
+                    'image': raw.get('imagen_base64'),
+                    'sound': raw.get('sonido_link'),
+                    'recommendations': raw.get('recomendaciones', []) or [],
+                    'equipment': raw.get('implementos_necesarios', []) or [],
+                    'company_id': raw.get('empresa_id'),
+                    'active': bool(raw.get('activo', True)),
+                    'sla_minutes': raw.get('sla_minutos') or raw.get('sla') or 0,
+                    'created_at': self._normalize_date(raw.get('fecha_creacion')),
+                    'updated_at': self._normalize_date(raw.get('fecha_actualizacion')),
+                })
+
+            total = pagination.get('total', len(mapped_items))
+            active = sum(1 for item in mapped_items if item.get('active'))
+            stats = {
+                'total_types': total,
+                'active_types': active,
+                'inactive_types': max(total - active, 0),
+                'critical_types': sum(1 for item in mapped_items if item.get('severity') == 'critica'),
+                'avg_sla_minutes': 0,
+            }
+
+            return {
+                'alert_types': mapped_items,
+                'alert_types_stats': stats,
+                'pagination': {
+                    'page': pagination.get('page', params['page']),
+                    'limit': pagination.get('limit', params['limit']),
+                    'total': total,
+                    'pages': pagination.get('pages') or (
+                        (total + pagination.get('limit', params['limit']) - 1)
+                        // pagination.get('limit', params['limit'])
+                        if total and pagination.get('limit', params['limit'])
+                        else 1
+                    )
+                }
+            }
+
+        except Exception as exc:
+            print(f"Error getting alert types data: {exc}")
+            return {
+                'alert_types': [],
+                'alert_types_stats': {
+                    'total_types': 0,
+                    'active_types': 0,
+                    'inactive_types': 0,
+                    'critical_types': 0,
+                    'avg_sla_minutes': 0,
+                },
+                'pagination': {
+                    'page': max(page, 1),
+                    'limit': max(limit, 1),
+                    'total': 0,
+                    'pages': 1,
                 }
             }
     
