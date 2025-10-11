@@ -27,11 +27,11 @@
           </div>
         </div>
         <div class="ios-header-actions">
-          <button class="ios-action-btn ios-action-btn-secondary" type="button">
+          <button class="ios-action-btn ios-action-btn-secondary" type="button" onclick="openCreateAlertTypeModal()">
             <i class="fas fa-file-export"></i>
             <span>Exportar Catálogo</span>
           </button>
-          <button class="ios-action-btn ios-action-btn-primary" type="button">
+          <button class="ios-action-btn ios-action-btn-primary" type="button" onclick="openCreateAlertTypeModal()">
             <i class="fas fa-plus"></i>
             <span>Nuevo Tipo</span>
           </button>
@@ -188,7 +188,7 @@
   {% if pagination.pages | default(1) > 1 %}
   {% set current_page = pagination.page | default(1) %}
   {% set total_pages = pagination.pages | default(1) %}
-  {% set limit_value = pagination.limit | default(10) %}
+  {% set limit_value = pagination.limit | default(4) %}
   <nav class="alert-types-pagination" aria-label="Paginación de tipos de alertas">
     <a class="pagination-btn {{ 'pagination-btn--disabled' if current_page <= 1 }}" href="{% if current_page > 1 %}{{ url_for('admin_alert_types', page=current_page-1, limit=limit_value) }}{% else %}#{% endif %}" aria-disabled="{{ 'true' if current_page <= 1 else 'false' }}">
       <i class="fas fa-chevron-left"></i>
@@ -206,4 +206,107 @@
   </nav>
   {% endif %}
 </div>
+
+<!-- Modal: Crear Tipo de Alerta -->
+<div id="createAlertTypeModal" class="ios-modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="createAlertTypeTitle">
+  <div class="ios-blur-modal-container max-w-4xl">
+    <div class="ios-blur-header">
+      <div class="flex items-center justify-between w-full">
+        <div class="flex items-center space-x-3">
+          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-red-500 via-orange-500 to-yellow-400 flex items-center justify-center shadow-lg">
+            <i class="fas fa-bell text-white text-xl"></i>
+          </div>
+          <div>
+            <h2 id="createAlertTypeTitle" class="text-2xl font-semibold text-white">Nuevo tipo de alerta</h2>
+            <p class="text-sm text-white/70">Define los atributos básicos y las recomendaciones iniciales</p>
+          </div>
+        </div>
+        <button type="button" class="ios-blur-btn ios-blur-btn-secondary !p-2" data-modal-close aria-label="Cerrar modal" onclick="closeCreateAlertTypeModal()">
+          <i class="fas fa-times text-lg"></i>
+        </button>
+      </div>
+    </div>
+
+    <form id="createAlertTypeForm" class="ios-blur-body space-y-6">
+      <div id="alertTypeFormFeedback" class="hidden px-4 py-3 rounded-lg border border-red-400 bg-red-500/20 text-red-100 text-sm"></div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="alertTypeName" class="ios-filter-label">Nombre *</label>
+          <input type="text" id="alertTypeName" name="nombre" class="ios-filter-input" placeholder="Ej. Evacuación Total" required>
+        </div>
+
+        <div class="form-group">
+          <label for="alertTypeSeverity" class="ios-filter-label">Nivel de alerta *</label>
+          <select id="alertTypeSeverity" name="tipo_alerta" class="ios-filter-input" required>
+            <option value="">Selecciona un nivel</option>
+            <option value="ROJO">Rojo (Crítica)</option>
+            <option value="NARANJA">Naranja (Alta)</option>
+            <option value="AMARILLO">Amarillo (Media)</option>
+            <option value="VERDE">Verde (Baja)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="alertTypeColor" class="ios-filter-label">Color *</label>
+          <div class="ios-color-picker">
+            <input type="color" id="alertTypeColorPicker" class="ios-color-input" value="#FF0000" aria-label="Seleccionar color de alerta">
+            <input type="text" id="alertTypeColor" name="color_alerta" class="ios-filter-input" placeholder="#FF0000" value="#FF0000" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="alertTypeCompanyId" class="ios-filter-label">Empresa (opcional)</label>
+          <input type="text" id="alertTypeCompanyId" name="empresa_id" class="ios-filter-input" placeholder="ID de empresa o dejar vacío">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="alertTypeDescription" class="ios-filter-label">Descripción *</label>
+        <textarea id="alertTypeDescription" name="descripcion" class="ios-filter-input" rows="3" placeholder="Describe cuándo se activa esta alerta" required></textarea>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="alertTypeImage" class="ios-filter-label">Imagen de referencia</label>
+          <input type="url" id="alertTypeImage" name="imagen_base64" class="ios-filter-input" placeholder="https://...">
+        </div>
+        <div class="form-group">
+          <label for="alertTypeSound" class="ios-filter-label">Sonido asignado</label>
+          <input type="url" id="alertTypeSound" name="sonido_link" class="ios-filter-input" placeholder="https://...">
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="alertTypeRecommendations" class="ios-filter-label">Recomendaciones iniciales</label>
+          <textarea id="alertTypeRecommendations" class="ios-filter-input" rows="4" placeholder="Escribe una recomendación por línea"></textarea>
+          <p class="text-xs text-white/60 mt-1">Las recomendaciones se guardan como lista. Usa una línea por recomendación.</p>
+        </div>
+        <div class="form-group">
+          <label for="alertTypeEquipment" class="ios-filter-label">Implementos necesarios</label>
+          <textarea id="alertTypeEquipment" class="ios-filter-input" rows="4" placeholder="Escribe un implemento por línea"></textarea>
+          <p class="text-xs text-white/60 mt-1">Puedes dejarlo vacío si no aplica.</p>
+        </div>
+      </div>
+
+      <div class="ios-blur-footer">
+        <button type="button" class="ios-blur-btn ios-blur-btn-secondary" onclick="closeCreateAlertTypeModal()">
+          <i class="fas fa-times mr-2"></i>
+          Cancelar
+        </button>
+        <button type="submit" class="ios-blur-btn ios-blur-btn-primary" id="createAlertTypeSubmit">
+          <i class="fas fa-save mr-2"></i>
+          Guardar tipo de alerta
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{{ super() }}
+<script src="{{ url_for('static', filename='js/modal-utils.js') }}"></script>
+<script src="{{ url_for('static', filename='js/alerts/alert-types-main.js') }}"></script>
 {% endblock %}

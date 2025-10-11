@@ -320,10 +320,31 @@ class APIClient:
                     'page': max(page, 1),
                     'limit': max(limit, 1),
                     'total': 0,
-                    'pages': 1,
-                }
+                'pages': 1,
             }
-    
+        }
+
+    def create_alert_type(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+        """Crea un nuevo tipo de alerta"""
+        try:
+            response = self.post('/api/tipos-alarma', json=payload)
+            data = response.json()
+            success = response.ok and data.get('success', False)
+            return {
+                'success': success,
+                'data': data.get('data'),
+                'message': data.get('message') or data.get('error') or '',
+                'status_code': response.status_code
+            }
+        except Exception as exc:
+            print(f"Error creating alert type: {exc}")
+            return {
+                'success': False,
+                'data': None,
+                'message': str(exc),
+                'status_code': 500
+            }
+
     def get_company_types(self) -> Dict[str, Any]:
         """Obtiene los tipos de empresa"""
         try:

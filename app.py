@@ -841,6 +841,35 @@ def admin_alert_types():
     )
 
 
+@app.route('/admin/alert-types/create', methods=['POST'])
+@require_role(['super_admin'])
+def admin_create_alert_type():
+    payload = request.get_json(silent=True) or {}
+
+    required_fields = ['nombre', 'descripcion', 'tipo_alerta', 'color_alerta']
+    missing = [field for field in required_fields if not str(payload.get(field, '')).strip()]
+    if missing:
+        return jsonify({
+            'success': False,
+            'message': f"Faltan campos obligatorios: {', '.join(missing)}"
+        }), 400
+
+    api_response = g.api_client.create_alert_type(payload)
+    status_code = api_response.get('status_code', 500 if not api_response.get('success') else 201)
+
+    if api_response.get('success'):
+        return jsonify({
+            'success': True,
+            'message': api_response.get('message') or 'Tipo de alerta creado exitosamente',
+            'data': api_response.get('data')
+        }), status_code
+
+    return jsonify({
+        'success': False,
+        'message': api_response.get('message') or 'No se pudo crear el tipo de alerta'
+    }), status_code
+
+
 @app.route('/admin/imagenes')
 @require_role(['super_admin'])
 def admin_imagenes():

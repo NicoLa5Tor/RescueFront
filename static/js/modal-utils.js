@@ -238,7 +238,8 @@ class ModalManager {
             'editUserModal': 'ios-modal-open',
             'viewUserModal': 'ios-modal-open',
             'toggleUserModal': 'ios-modal-open',
-            'userUpdateModal': 'ios-modal-open'
+            'userUpdateModal': 'ios-modal-open',
+            'createAlertTypeModal': 'ios-modal-open'
         };
         
         return modalClassMap[modalId] || null;

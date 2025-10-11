@@ -405,4 +405,36 @@
     text-align: center;
   }
 }
+
+.ios-color-picker {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.ios-color-input {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+}
+
+.ios-color-input::-webkit-color-swatch-wrapper {
+  padding: 0;
+  border-radius: 14px;
+}
+
+.ios-color-input::-webkit-color-swatch {
+  border: none;
+  border-radius: 14px;
+}
+
+.ios-color-input::-moz-color-swatch {
+  border: none;
+  border-radius: 14px;
+}
 }
