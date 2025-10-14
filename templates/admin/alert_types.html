@@ -12,6 +12,7 @@
 {% set stats = alert_types_data.alert_types_stats if alert_types_data is defined and alert_types_data.alert_types_stats is defined else {} %}
 {% set alert_types = alert_types_data.alert_types if alert_types_data is defined and alert_types_data.alert_types is defined else [] %}
 {% set pagination = alert_types_data.pagination if alert_types_data is defined and alert_types_data.pagination is defined else {} %}
+{% set status_value = selected_status | default(alert_types_data.filter_status | default('active')) %}
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
   <div class="ios-header-container mb-8">
@@ -27,10 +28,6 @@
           </div>
         </div>
         <div class="ios-header-actions">
-          <button class="ios-action-btn ios-action-btn-secondary" type="button" onclick="openCreateAlertTypeModal()">
-            <i class="fas fa-file-export"></i>
-            <span>Exportar Catálogo</span>
-          </button>
           <button class="ios-action-btn ios-action-btn-primary" type="button" onclick="openCreateAlertTypeModal()">
             <i class="fas fa-plus"></i>
             <span>Nuevo Tipo</span>
@@ -40,7 +37,7 @@
     </div>
   </div>
 
-  <div class="ios-stats-grid">
+  <div class="ios-stats-grid alert-types-stats-grid">
     <div class="ios-stat-card" data-stat="total">
       <div class="ios-stat-icon ios-stat-icon-blue">
         <i class="fas fa-list"></i>
@@ -77,22 +74,27 @@
       <div class="ios-stat-shimmer"></div>
     </div>
 
-    <div class="ios-stat-card" data-stat="sla">
-      <div class="ios-stat-icon ios-stat-icon-purple">
-        <i class="fas fa-stopwatch"></i>
+  </div>
+
+  <div class="ios-filters-container ios-blur-bg mb-8" id="alertTypesFilters">
+    <div class="ios-filters-grid">
+      <div class="ios-filter-item">
+        <label class="ios-filter-label" for="alertTypesStatusFilter">Estado</label>
+        <select id="alertTypesStatusFilter" class="ios-filter-input">
+          <option value="active" {{ 'selected' if status_value == 'active' else '' }}>Mostrar activos</option>
+          <option value="inactive" {{ 'selected' if status_value == 'inactive' else '' }}>Mostrar inactivos</option>
+          <option value="all" {{ 'selected' if status_value == 'all' else '' }}>Mostrar todos</option>
+        </select>
       </div>
-      <div class="ios-stat-content">
-        <div class="ios-stat-label">SLA Promedio</div>
-        <div class="ios-stat-value">{{ stats.avg_sla_minutes | default(0) }}<span class="ios-stat-unit"> min</span></div>
-        <div class="ios-stat-trend">Tiempo de respuesta</div>
-      </div>
-      <div class="ios-stat-shimmer"></div>
     </div>
   </div>
 
   <section class="ios-hardware-grid mt-10" aria-label="Listado de tipos de alertas">
     {% for alert_type in alert_types %}
-    <article class="ios-hardware-card alert-type-card force-visible" data-severity="{{ alert_type.severity | default('desconocida') | lower }}" style="--alert-type-color: {{ alert_type.color | default('#1d4ed8') }};">
+    {% set color_value = alert_type.color | default('') %}
+    {% set color_is_hex = color_value and color_value.startswith('#') and (color_value|length == 7 or color_value|length == 4) %}
+    {% set color_css = color_value if color_is_hex else '#1d4ed8' %}
+    <article class="ios-hardware-card alert-type-card force-visible" data-status="{{ 'active' if alert_type.active | default(True) else 'inactive' }}" data-severity="{{ alert_type.severity | default('desconocida') | lower }}" style="--alert-type-color: {{ color_css }};">
       <header class="alert-type-card__header">
         <div class="ios-card-icon">
           <i class="{{ alert_type.icon | default('fas fa-bell') }}"></i>
@@ -122,8 +124,10 @@
         <div class="ios-info-item">
           <dt class="ios-info-label"><i class="fas fa-palette"></i> Color</dt>
           <dd class="ios-info-value">
-            <span class="alert-type-color" style="background: {{ alert_type.color | default('#1d4ed8') }};"></span>
-            {{ alert_type.color | default('N/D') }}
+            {% if color_is_hex %}
+            <span class="alert-type-color" style="background: {{ color_value }};"></span>
+            {% endif %}
+            {{ color_value or 'Sin color definido' }}
           </dd>
         </div>
         <div class="ios-info-item">
@@ -169,8 +173,41 @@
 
       {% if alert_type.sound %}
       <div class="alert-type-card__sound">
-        <i class="fas fa-volume-up"></i>
-        <a href="{{ alert_type.sound }}" target="_blank" rel="noopener" class="alert-type-card__sound-link">Escuchar sonido asignado</a>
+        <div class="alert-type-card__sound-icon">
+          <i class="fas fa-volume-up"></i>
+        </div>
+        <div class="alert-type-card__sound-player">
+          <p class="alert-type-card__section-title">Sonido asignado</p>
+          <audio controls preload="metadata" src="{{ alert_type.sound }}" class="alert-type-card__audio"></audio>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if alert_type.id %}
+      <div class="ios-card-actions alert-type-card__actions">
+        <button
+          type="button"
+          class="ios-card-btn"
+          onclick="viewAlertType('{{ alert_type.id }}')"
+          title="Ver detalles"
+        >
+          <i class="fas fa-eye"></i>
+        </button>
+
+        {% if alert_type.active %}
+        <button
+          type="button"
+          class="ios-card-btn ios-card-btn-warning"
+          data-alert-type-deactivate="true"
+          data-alert-type-id="{{ alert_type.id }}"
+          data-alert-type-name="{{ alert_type.name | default('Tipo sin nombre') }}"
+          title="Desactivar tipo de alerta"
+        >
+          <i class="fas fa-power-off"></i>
+        </button>
+        {% else %}
+        <span class="ios-status-badge alert-status-badge alert-status-inactive">Inactiva</span>
+        {% endif %}
       </div>
       {% endif %}
     </article>
@@ -190,7 +227,7 @@
   {% set total_pages = pagination.pages | default(1) %}
   {% set limit_value = pagination.limit | default(4) %}
   <nav class="alert-types-pagination" aria-label="Paginación de tipos de alertas">
-    <a class="pagination-btn {{ 'pagination-btn--disabled' if current_page <= 1 }}" href="{% if current_page > 1 %}{{ url_for('admin_alert_types', page=current_page-1, limit=limit_value) }}{% else %}#{% endif %}" aria-disabled="{{ 'true' if current_page <= 1 else 'false' }}">
+    <a class="pagination-btn {{ 'pagination-btn--disabled' if current_page <= 1 }}" href="{% if current_page > 1 %}{{ url_for('admin_alert_types', page=current_page-1, limit=limit_value, status=status_value) }}{% else %}#{% endif %}" aria-disabled="{{ 'true' if current_page <= 1 else 'false' }}">
       <i class="fas fa-chevron-left"></i>
       <span>Anterior</span>
     </a>
@@ -199,12 +236,141 @@
       Página {{ current_page }} de {{ total_pages }} · {{ stats.total_types | default(pagination.total | default(0)) }} registros
     </div>
 
-    <a class="pagination-btn {{ 'pagination-btn--disabled' if current_page >= total_pages }}" href="{% if current_page < total_pages %}{{ url_for('admin_alert_types', page=current_page+1, limit=limit_value) }}{% else %}#{% endif %}" aria-disabled="{{ 'true' if current_page >= total_pages else 'false' }}">
+    <a class="pagination-btn {{ 'pagination-btn--disabled' if current_page >= total_pages }}" href="{% if current_page < total_pages %}{{ url_for('admin_alert_types', page=current_page+1, limit=limit_value, status=status_value) }}{% else %}#{% endif %}" aria-disabled="{{ 'true' if current_page >= total_pages else 'false' }}">
       <span>Siguiente</span>
       <i class="fas fa-chevron-right"></i>
     </a>
   </nav>
   {% endif %}
+</div>
+
+<!-- Modal: Desactivar Tipo de Alerta -->
+<div id="toggleAlertTypeModal" class="ios-modal-backdrop toggle-modal hidden" role="dialog" aria-modal="true" aria-labelledby="toggleAlertTypeTitle">
+  <div class="ios-blur-modal-container max-w-md" id="toggleAlertTypeContainer">
+    <div class="ios-blur-header text-center">
+      <div class="toggle-modal-icon deactivate mx-auto mb-4" id="toggleAlertTypeIcon">
+        <i class="fas fa-power-off text-4xl" id="toggleAlertTypeIconFa"></i>
+      </div>
+      <h2 id="toggleAlertTypeTitle" class="text-2xl font-semibold text-white">Desactivar tipo de alerta</h2>
+    </div>
+
+    <div class="ios-blur-body space-y-6">
+      <p class="text-white/80 text-lg text-center" id="toggleAlertTypeMessage">¿Estás seguro de que quieres desactivar este tipo de alerta?</p>
+
+      <div class="space-y-2 text-left">
+        <label for="alertTypeDeactivateReason" class="ios-filter-label">Motivo de desactivación *</label>
+        <textarea
+          id="alertTypeDeactivateReason"
+          class="ios-filter-input min-h-[110px] resize-none"
+          placeholder="Describe brevemente el motivo (máx. 500 caracteres)"
+          maxlength="500"
+          required
+        ></textarea>
+        <div class="flex justify-between text-xs text-white/50">
+          <span>El motivo se registra en el historial y notificaciones.</span>
+          <span id="alertTypeDeactivateCounter">0/500</span>
+        </div>
+      </div>
+
+      <div id="alertTypeDeactivateFeedback" class="hidden px-4 py-3 rounded-lg border border-red-400 bg-red-500/20 text-red-100 text-sm"></div>
+    </div>
+
+    <div class="ios-blur-footer">
+      <button type="button" class="ios-blur-btn ios-blur-btn-secondary" onclick="closeDeactivateAlertTypeModal()">
+        <i class="fas fa-times mr-2"></i>
+        Cancelar
+      </button>
+      <button type="button" class="ios-blur-btn ios-blur-btn-primary" id="alertTypeDeactivateConfirmBtn" onclick="confirmDeactivateAlertType()">
+        <i class="fas fa-power-off mr-2" id="alertTypeDeactivateConfirmIcon"></i>
+        <span id="alertTypeDeactivateConfirmText">Desactivar</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Detalles Tipo de Alerta -->
+<div id="viewAlertTypeModal" class="ios-modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="viewAlertTypeTitle">
+  <div class="ios-blur-modal-container max-w-3xl">
+    <div class="ios-blur-header">
+      <div class="flex items-center justify-between w-full">
+        <div class="flex items-center space-x-3">
+          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-red-500 via-orange-500 to-yellow-400 flex items-center justify-center shadow-lg">
+            <i class="fas fa-bell text-white text-xl"></i>
+          </div>
+          <div>
+            <h2 id="viewAlertTypeTitle" class="text-2xl font-semibold text-white">Detalle del tipo de alerta</h2>
+            <p class="text-sm text-white/70" id="viewAlertTypeSubtitle">Consulta la configuración completa</p>
+          </div>
+        </div>
+        <button type="button" class="ios-blur-btn ios-blur-btn-secondary !p-2" onclick="closeViewAlertTypeModal()" aria-label="Cerrar modal">
+          <i class="fas fa-times text-lg"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="ios-blur-body space-y-6" id="viewAlertTypeBody">
+      <div class="alert-type-detail-header">
+        <div>
+          <h3 class="alert-type-detail-title" id="alertDetailName">-</h3>
+          <p class="alert-type-detail-description" id="alertDetailDescription">-</p>
+        </div>
+        <div class="alert-type-detail-meta">
+          <span class="ios-status-badge" id="alertDetailSeverity">-</span>
+          <span class="alert-type-detail-color" id="alertDetailColorSwatch">-</span>
+        </div>
+      </div>
+
+      <div class="alert-type-detail-grid">
+        <dl>
+          <div>
+            <dt>Estado</dt>
+            <dd id="alertDetailActive">-</dd>
+          </div>
+          <div>
+            <dt>Color configurado</dt>
+            <dd id="alertDetailColorValue">-</dd>
+          </div>
+          <div>
+            <dt>Empresa asociada</dt>
+            <dd id="alertDetailCompany">Global</dd>
+          </div>
+          <div>
+            <dt>Creación</dt>
+            <dd id="alertDetailCreated">-</dd>
+          </div>
+          <div>
+            <dt>Última actualización</dt>
+            <dd id="alertDetailUpdated">-</dd>
+          </div>
+        </dl>
+
+        <div class="alert-type-detail-media" id="alertDetailMediaContainer" hidden>
+          <div class="alert-type-detail-media-preview" id="alertDetailImagePreview"></div>
+          <div class="alert-type-detail-media-audio" id="alertDetailAudioContainer"></div>
+        </div>
+      </div>
+
+      <div class="alert-type-detail-lists">
+        <div>
+          <h4><i class="fas fa-clipboard-list"></i> Recomendaciones</h4>
+          <ul id="alertDetailRecommendations" class="alert-type-detail-list"></ul>
+        </div>
+        <div>
+          <h4><i class="fas fa-toolbox"></i> Implementos necesarios</h4>
+          <ul id="alertDetailEquipment" class="alert-type-detail-list"></ul>
+        </div>
+      </div>
+
+      <div id="alertDetailFeedback" class="hidden px-4 py-3 rounded-lg border border-red-400 bg-red-500/20 text-red-100 text-sm"></div>
+    </div>
+
+    <div class="ios-blur-footer">
+      <button type="button" class="ios-blur-btn ios-blur-btn-secondary" onclick="closeViewAlertTypeModal()">
+        <i class="fas fa-times mr-2"></i>
+        Cerrar
+      </button>
+    </div>
+  </div>
 </div>
 
 <!-- Modal: Crear Tipo de Alerta -->
@@ -249,15 +415,18 @@
 
         <div class="form-group">
           <label for="alertTypeColor" class="ios-filter-label">Color *</label>
-          <div class="ios-color-picker">
-            <input type="color" id="alertTypeColorPicker" class="ios-color-input" value="#FF0000" aria-label="Seleccionar color de alerta">
-            <input type="text" id="alertTypeColor" name="color_alerta" class="ios-filter-input" placeholder="#FF0000" value="#FF0000" required>
-          </div>
+          <input type="text" id="alertTypeColor" name="color_alerta" class="ios-filter-input" placeholder="Ej. Rojo intenso" required>
+          <p class="text-xs text-white/60 mt-1">Ingresa el color como texto descriptivo (ej.: "Rojo", "Verde").</p>
         </div>
 
         <div class="form-group">
-          <label for="alertTypeCompanyId" class="ios-filter-label">Empresa (opcional)</label>
-          <input type="text" id="alertTypeCompanyId" name="empresa_id" class="ios-filter-input" placeholder="ID de empresa o dejar vacío">
+          <label for="alertTypeCompanyInput" class="ios-filter-label">Empresa (opcional)</label>
+          <div class="ios-combo-box">
+            <input type="text" id="alertTypeCompanyInput" class="ios-filter-input" placeholder="Global (sin empresa)" list="alertTypeCompanyList" autocomplete="off">
+            <datalist id="alertTypeCompanyList"></datalist>
+            <input type="hidden" name="empresa_id" id="alertTypeCompanyId">
+          </div>
+          <p class="text-xs text-white/50 mt-1">Escribe para buscar por nombre. Deja vacío para que sea global.</p>
         </div>
       </div>
 
@@ -268,25 +437,77 @@
 
       <div class="form-grid">
         <div class="form-group">
-          <label for="alertTypeImage" class="ios-filter-label">Imagen de referencia</label>
-          <input type="url" id="alertTypeImage" name="imagen_base64" class="ios-filter-input" placeholder="https://...">
+          <label class="ios-filter-label">Imagen de referencia</label>
+          <div class="ios-file-picker">
+            <div class="ios-file-picker-row">
+              <select id="alertImageFolderSelect" class="ios-filter-input">
+                <option value="">Selecciona una carpeta</option>
+              </select>
+              <select id="alertImageFileSelect" class="ios-filter-input" disabled>
+                <option value="">Selecciona un archivo</option>
+              </select>
+            </div>
+            <p class="ios-file-helper">Elige un archivo del gestor de imágenes. Las miniaturas se generan automáticamente.</p>
+            <div id="alertImagePreview" class="ios-file-preview ios-file-preview--image">
+              <div class="ios-file-preview__placeholder">
+                <i class="fas fa-image"></i>
+                <span>No se ha seleccionado imagen</span>
+              </div>
+            </div>
+          </div>
+          <input type="hidden" name="imagen_base64" id="alertTypeImage">
+          <input type="hidden" name="imagen_url" id="alertTypeImageUrl">
+          <input type="hidden" name="imagen_nombre" id="alertTypeImageName">
         </div>
+
         <div class="form-group">
-          <label for="alertTypeSound" class="ios-filter-label">Sonido asignado</label>
-          <input type="url" id="alertTypeSound" name="sonido_link" class="ios-filter-input" placeholder="https://...">
+          <label class="ios-filter-label">Sonido asignado</label>
+          <div class="ios-file-picker">
+            <div class="ios-file-picker-row">
+              <select id="alertSoundFolderSelect" class="ios-filter-input">
+                <option value="">Selecciona una carpeta</option>
+              </select>
+              <select id="alertSoundFileSelect" class="ios-filter-input" disabled>
+                <option value="">Selecciona un archivo</option>
+              </select>
+            </div>
+            <p class="ios-file-helper">Selecciona archivos de audio en formato MP3, WAV u OGG.</p>
+            <div id="alertSoundPreview" class="ios-file-preview ios-file-preview--audio">
+              <div class="ios-file-preview__placeholder">
+                <i class="fas fa-volume-up"></i>
+                <span>No se ha seleccionado sonido</span>
+              </div>
+            </div>
+          </div>
+          <input type="hidden" name="sonido_link" id="alertTypeSound">
         </div>
       </div>
 
       <div class="form-grid">
         <div class="form-group">
-          <label for="alertTypeRecommendations" class="ios-filter-label">Recomendaciones iniciales</label>
-          <textarea id="alertTypeRecommendations" class="ios-filter-input" rows="4" placeholder="Escribe una recomendación por línea"></textarea>
-          <p class="text-xs text-white/60 mt-1">Las recomendaciones se guardan como lista. Usa una línea por recomendación.</p>
+          <label for="alertRecommendationInput" class="ios-filter-label">Recomendaciones iniciales</label>
+          <div class="ios-chip-input">
+            <input type="text" id="alertRecommendationInput" class="ios-filter-input" placeholder="Ej. Detener actividades y desalojar">
+            <button type="button" class="ios-action-btn ios-action-btn-primary" id="alertRecommendationAddBtn">
+              <i class="fas fa-plus"></i>
+              <span>Agregar</span>
+            </button>
+          </div>
+          <p class="ios-chip-helper">Presiona Enter o haz clic en "Agregar" para registrar cada recomendación.</p>
+          <div id="alertRecommendationsList" class="ios-chip-container"></div>
         </div>
+
         <div class="form-group">
-          <label for="alertTypeEquipment" class="ios-filter-label">Implementos necesarios</label>
-          <textarea id="alertTypeEquipment" class="ios-filter-input" rows="4" placeholder="Escribe un implemento por línea"></textarea>
-          <p class="text-xs text-white/60 mt-1">Puedes dejarlo vacío si no aplica.</p>
+          <label for="alertEquipmentInput" class="ios-filter-label">Implementos necesarios</label>
+          <div class="ios-chip-input">
+            <input type="text" id="alertEquipmentInput" class="ios-filter-input" placeholder="Ej. Kit de primeros auxilios">
+            <button type="button" class="ios-action-btn ios-action-btn-primary" id="alertEquipmentAddBtn">
+              <i class="fas fa-plus"></i>
+              <span>Agregar</span>
+            </button>
+          </div>
+          <p class="ios-chip-helper">Registra cada implemento por separado. Puedes dejar la sección vacía.</p>
+          <div id="alertEquipmentList" class="ios-chip-container"></div>
         </div>
       </div>
 

@@ -792,6 +792,13 @@ def admin_alert_types():
             'avg_sla_minutes': avg_sla,
         }
 
+    def apply_status_filter(types, status):
+        if status == 'active':
+            return [t for t in types if t.get('active', True)]
+        if status == 'inactive':
+            return [t for t in types if not t.get('active', True)]
+        return types
+
     page = max(int(request.args.get('page', 1) or 1), 1)
     limit = request.args.get('limit', 4)
     try:
@@ -800,21 +807,28 @@ def admin_alert_types():
         limit = 10
     limit = min(max(limit, 1), 50)
 
+    requested_status = (request.args.get('status') or 'active').strip().lower()
+    if requested_status not in {'active', 'inactive', 'all'}:
+        requested_status = 'active'
+
+    fallback_filtered = apply_status_filter(fallback_types, requested_status)
+
     alert_types_data = {
-        'alert_types': fallback_types,
-        'alert_types_stats': build_stats(fallback_types),
+        'alert_types': fallback_filtered,
+        'alert_types_stats': build_stats(fallback_filtered),
         'pagination': {
             'page': page,
             'limit': limit,
-            'total': len(fallback_types),
-            'pages': max(1, (len(fallback_types) + limit - 1) // limit),
-        }
+            'total': len(fallback_filtered),
+            'pages': max(1, (len(fallback_filtered) + limit - 1) // limit),
+        },
+        'filter_status': requested_status,
     }
 
     api_fetch = getattr(g.api_client, 'get_alert_types', None)
     if callable(api_fetch):
         try:
-            api_data = api_fetch(page=page, limit=limit) or {}
+            api_data = api_fetch(page=page, limit=limit, status=requested_status) or {}
             alert_types = api_data.get('alert_types', [])
             alert_types_stats = api_data.get('alert_types_stats', build_stats(alert_types))
             pagination = api_data.get('pagination') or {
@@ -823,11 +837,15 @@ def admin_alert_types():
                 'total': len(alert_types),
                 'pages': 1,
             }
+            filter_status = api_data.get('filter_status', requested_status)
+
             alert_types_data = {
                 'alert_types': alert_types,
                 'alert_types_stats': alert_types_stats,
                 'pagination': pagination,
+                'filter_status': filter_status,
             }
+            requested_status = filter_status
         except Exception as exc:
             app.logger.warning('Falling back to sample alert types due to error: %s', exc)
 
@@ -837,7 +855,8 @@ def admin_alert_types():
         active_page='alert_types',
         api_url=PROXY_PREFIX,
         dashboard_data={},
-        activity_data=None
+        activity_data=None,
+        selected_status=requested_status
     )
 
 
@@ -867,6 +886,60 @@ def admin_create_alert_type():
     return jsonify({
         'success': False,
         'message': api_response.get('message') or 'No se pudo crear el tipo de alerta'
+    }), status_code
+
+
+@app.route('/admin/alert-types/<alert_type_id>/deactivate', methods=['PATCH'])
+@require_role(['super_admin'])
+def admin_deactivate_alert_type(alert_type_id: str):
+    payload = request.get_json(silent=True) or {}
+    motivo = str(payload.get('motivo', '')).strip()
+
+    if not motivo:
+        return jsonify({
+            'success': False,
+            'message': 'El motivo de desactivación es obligatorio.'
+        }), 400
+
+    api_response = g.api_client.deactivate_alert_type(alert_type_id, motivo)
+    status_code = api_response.get('status_code', 500)
+
+    if api_response.get('success'):
+        return jsonify({
+            'success': True,
+            'message': api_response.get('message') or 'Tipo de alerta desactivado exitosamente',
+            'motivo': motivo,
+            'data': api_response.get('data')
+        }), status_code
+
+    return jsonify({
+        'success': False,
+        'message': api_response.get('message') or 'No se pudo desactivar el tipo de alerta'
+    }), status_code
+
+
+@app.route('/admin/alert-types/<alert_type_id>/detail', methods=['GET'])
+@require_role(['super_admin'])
+def admin_alert_type_detail(alert_type_id: str):
+    api_fetch = getattr(g.api_client, 'get_alert_type', None)
+    if not callable(api_fetch):
+        return jsonify({
+            'success': False,
+            'message': 'Servicio no disponible.'
+        }), 503
+
+    result = api_fetch(alert_type_id)
+    if result.get('success'):
+        return jsonify({
+            'success': True,
+            'data': result.get('data')
+        })
+
+    message = result.get('message') or 'No se encontró el tipo de alerta.'
+    status_code = 404 if 'HTTP 404' in message or 'not found' in message.lower() else 400
+    return jsonify({
+        'success': False,
+        'message': message
     }), status_code
 
 
@@ -954,6 +1027,51 @@ def admin_upload_image_file():
         updated_folders, _, _ = fetch_image_folders()
         response_data['folders'] = updated_folders
 
+    return jsonify(response_data), status_code
+
+
+def _format_folder_display(folder_name: str) -> str:
+    cleaned = (folder_name or '').replace('_', ' ').replace('-', ' ').strip()
+    if not cleaned:
+        return 'Carpeta'
+    return ' '.join(part.capitalize() for part in cleaned.split())
+
+
+@app.route('/admin/image-assets/folders')
+@require_role(['super_admin'])
+def admin_image_assets_folders():
+    folders, error_message, service_url = fetch_image_folders()
+    normalized = [
+        {
+            'name': name,
+            'display_name': _format_folder_display(name)
+        }
+        for name in folders
+    ]
+
+    response_data = {
+        'success': error_message == '',
+        'folders': normalized,
+        'service_url': service_url,
+        'error': error_message or None
+    }
+
+    status_code = 200 if error_message == '' else 502
+    return jsonify(response_data), status_code
+
+
+@app.route('/admin/image-assets/folders/<path:folder_name>/files')
+@require_role(['super_admin'])
+def admin_image_assets_folder_files(folder_name):
+    files, error_message, service_url = fetch_folder_files(folder_name)
+    response_data = {
+        'success': error_message == '',
+        'folder': folder_name,
+        'files': files,
+        'service_url': service_url,
+        'error': error_message or None
+    }
+    status_code = 200 if error_message == '' else 502
     return jsonify(response_data), status_code
 
 

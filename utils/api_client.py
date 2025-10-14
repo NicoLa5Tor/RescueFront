@@ -38,7 +38,7 @@ class APIClient:
         headers.setdefault('Content-Type', 'application/json')
         auth_token = request.cookies.get('auth_token')
         if auth_token:
-            headers.setdefault('Authorization', f'Bearer {auth_token}')
+            headers['Authorization'] = f'Bearer {auth_token}'
 
         return requests.request(
             method=method,
@@ -63,6 +63,10 @@ class APIClient:
     def delete(self, endpoint: str, **kwargs) -> requests.Response:
         """DELETE request con autenticación"""
         return self._make_request('DELETE', endpoint, **kwargs)
+
+    def patch(self, endpoint: str, **kwargs) -> requests.Response:
+        """PATCH request con autenticación"""
+        return self._make_request('PATCH', endpoint, **kwargs)
     
     # Métodos específicos del dominio - solo los que realmente usas
     
@@ -227,9 +231,10 @@ class APIClient:
     def get_alert_types(
         self,
         page: int = 1,
-        limit: int = 10
+        limit: int = 10,
+        status: str = 'active'
     ) -> Dict[str, Any]:
-        """Obtiene tipos de alerta con paginación"""
+        """Obtiene tipos de alerta con paginación y filtros por estado"""
 
         def _map_severity(raw_value: Optional[str]) -> str:
             if not raw_value:
@@ -244,11 +249,22 @@ class APIClient:
             return mapping.get(normalized, normalized.lower())
 
         try:
+            normalized_status = (status or 'active').strip().lower()
+            if normalized_status not in {'active', 'inactive', 'all'}:
+                normalized_status = 'active'
+
             params = {
                 'page': max(page, 1),
                 'limit': max(limit, 1)
             }
-            response = self.get('/api/tipos-alarma', params=params)
+
+            endpoint_map = {
+                'active': '/api/tipos-alarma/activos',
+                'inactive': '/api/tipos-alarma/inactivos',
+                'all': '/api/tipos-alarma',
+            }
+            endpoint = endpoint_map.get(normalized_status, '/api/tipos-alarma')
+            response = self.get(endpoint, params=params)
             if not response.ok:
                 raise Exception(f"HTTP {response.status_code}: {response.text}")
 
@@ -262,12 +278,17 @@ class APIClient:
             mapped_items = []
             for raw in raw_items:
                 severity = _map_severity(raw.get('tipo_alerta'))
+                color_value = raw.get('color_alerta')
+                if isinstance(color_value, str):
+                    color_value = color_value.strip()
+                else:
+                    color_value = ''
                 mapped_items.append({
                     'id': str(raw.get('_id', '')),
                     'name': raw.get('nombre', ''),
                     'description': raw.get('descripcion', ''),
                     'severity': severity,
-                    'color': raw.get('color_alerta') or '#1d4ed8',
+                    'color': color_value,
                     'image': raw.get('imagen_base64'),
                     'sound': raw.get('sonido_link'),
                     'recommendations': raw.get('recomendaciones', []) or [],
@@ -302,7 +323,8 @@ class APIClient:
                         if total and pagination.get('limit', params['limit'])
                         else 1
                     )
-                }
+                },
+                'filter_status': normalized_status
             }
 
         except Exception as exc:
@@ -320,10 +342,66 @@ class APIClient:
                     'page': max(page, 1),
                     'limit': max(limit, 1),
                     'total': 0,
-                'pages': 1,
+                    'pages': 1,
+                },
+                'filter_status': normalized_status
             }
-        }
 
+    def get_alert_type(self, alert_type_id: str) -> Dict[str, Any]:
+        """Obtiene el detalle de un tipo de alerta por ID"""
+        if not alert_type_id:
+            return {'success': False, 'message': 'ID inválido', 'data': None}
+
+        def _map_severity(raw_value: Optional[str]) -> str:
+            if not raw_value:
+                return 'desconocida'
+            normalized = str(raw_value).strip().upper()
+            mapping = {
+                'ROJO': 'critica',
+                'NARANJA': 'alta',
+                'AMARILLO': 'media',
+                'VERDE': 'baja',
+            }
+            return mapping.get(normalized, normalized.lower())
+
+        try:
+            response = self.get(f"/api/tipos-alarma/{alert_type_id}")
+            if not response.ok:
+                raise Exception(f"HTTP {response.status_code}: {response.text}")
+
+            payload = response.json()
+            if not payload.get('success'):
+                raise Exception(payload.get('message') or 'Respuesta sin éxito')
+
+            data = payload.get('data') or {}
+            mapped = {
+                'id': str(data.get('_id', '')),
+                'name': data.get('nombre', ''),
+                'description': data.get('descripcion', ''),
+                'severity': _map_severity(data.get('tipo_alerta')),
+                'color': (data.get('color_alerta') or '').strip(),
+                'image': data.get('imagen_base64'),
+                'recommendations': data.get('recomendaciones', []) or [],
+                'equipment': data.get('implementos_necesarios', []) or [],
+                'sound': data.get('sonido_link'),
+                'company_id': data.get('empresa_id'),
+                'active': bool(data.get('activo', True)),
+                'created_at': self._normalize_date(data.get('fecha_creacion')),
+                'updated_at': self._normalize_date(data.get('fecha_actualizacion')),
+            }
+
+            return {
+                'success': True,
+                'data': mapped,
+                'raw': data,
+            }
+        except Exception as exc:
+            print(f"Error getting alert type detail: {exc}")
+            return {
+                'success': False,
+                'message': str(exc),
+                'data': None,
+            }
     def create_alert_type(self, payload: Dict[str, Any]) -> Dict[str, Any]:
         """Crea un nuevo tipo de alerta"""
         try:
@@ -338,6 +416,29 @@ class APIClient:
             }
         except Exception as exc:
             print(f"Error creating alert type: {exc}")
+            return {
+                'success': False,
+                'data': None,
+                'message': str(exc),
+                'status_code': 500
+            }
+
+    def deactivate_alert_type(self, alert_type_id: str, motivo: str) -> Dict[str, Any]:
+        """Desactiva un tipo de alerta, especificando el motivo."""
+        try:
+            endpoint = f"/api/tipos-alarma/{alert_type_id}/desactivar"
+            response = self.patch(endpoint, json={'motivo': motivo})
+            data = response.json()
+            success = response.ok and data.get('success', False)
+            return {
+                'success': success,
+                'data': data.get('data'),
+                'message': data.get('message') or data.get('error') or '',
+                'status_code': response.status_code,
+                'payload': data
+            }
+        except Exception as exc:
+            print(f"Error deactivating alert type: {exc}")
             return {
                 'success': False,
                 'data': None,

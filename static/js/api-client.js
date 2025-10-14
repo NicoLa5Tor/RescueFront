@@ -11,6 +11,10 @@ class EndpointTestClient {
         const headers = {
             'Content-Type': 'application/json',
         };
+        const token = this.getCookie('auth_token') || this.token;
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
         return headers;
     }
     getStoredToken() {
@@ -28,7 +32,7 @@ class EndpointTestClient {
         return null;
     }
     async _request(method, endpoint, options = {}) {
-        const url = `${this.baseUrl}${endpoint}`;    
+        const url = `${this.baseUrl}${endpoint}`;
         const config = {
             method,
             headers: this._headers(),
