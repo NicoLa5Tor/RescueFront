@@ -895,12 +895,6 @@ def admin_deactivate_alert_type(alert_type_id: str):
     payload = request.get_json(silent=True) or {}
     motivo = str(payload.get('motivo', '')).strip()
 
-    if not motivo:
-        return jsonify({
-            'success': False,
-            'message': 'El motivo de desactivación es obligatorio.'
-        }), 400
-
     api_response = g.api_client.deactivate_alert_type(alert_type_id, motivo)
     status_code = api_response.get('status_code', 500)
 
@@ -915,6 +909,38 @@ def admin_deactivate_alert_type(alert_type_id: str):
     return jsonify({
         'success': False,
         'message': api_response.get('message') or 'No se pudo desactivar el tipo de alerta'
+    }), status_code
+
+
+@app.route('/admin/alert-types/<alert_type_id>/toggle', methods=['PATCH'])
+@require_role(['super_admin'])
+def admin_toggle_alert_type(alert_type_id: str):
+    payload = request.get_json(silent=True) or {}
+    motivo = str(payload.get('motivo', '')).strip()
+    accion = str(payload.get('accion', '')).strip() if payload.get('accion') else ''
+
+    api_payload = {}
+    if accion:
+        api_payload['accion'] = accion
+    if motivo:
+        api_payload['motivo'] = motivo
+
+    api_response = g.api_client.toggle_alert_type_status(
+        alert_type_id,
+        api_payload if api_payload else None
+    )
+    status_code = api_response.get('status_code', 500)
+
+    if api_response.get('success'):
+        return jsonify({
+            'success': True,
+            'message': api_response.get('message') or 'Estado del tipo de alerta actualizado correctamente',
+            'data': api_response.get('data')
+        }), status_code
+
+    return jsonify({
+        'success': False,
+        'message': api_response.get('message') or 'No se pudo actualizar el estado del tipo de alerta'
     }), status_code
 
 

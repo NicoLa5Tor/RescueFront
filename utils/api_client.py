@@ -423,11 +423,14 @@ class APIClient:
                 'status_code': 500
             }
 
-    def deactivate_alert_type(self, alert_type_id: str, motivo: str) -> Dict[str, Any]:
+    def deactivate_alert_type(self, alert_type_id: str, motivo: Optional[str] = '') -> Dict[str, Any]:
         """Desactiva un tipo de alerta, especificando el motivo."""
         try:
-            endpoint = f"/api/tipos-alarma/{alert_type_id}/desactivar"
-            response = self.patch(endpoint, json={'motivo': motivo})
+            endpoint = f"/api/tipos-alarma/{alert_type_id}/toggle-status"
+            payload = {'accion': 'deactivate'}
+            if motivo:
+                payload['motivo'] = motivo
+            response = self.patch(endpoint, json=payload)
             data = response.json()
             success = response.ok and data.get('success', False)
             return {
@@ -439,6 +442,32 @@ class APIClient:
             }
         except Exception as exc:
             print(f"Error deactivating alert type: {exc}")
+            return {
+                'success': False,
+                'data': None,
+                'message': str(exc),
+                'status_code': 500
+            }
+
+    def toggle_alert_type_status(self, alert_type_id: str, payload: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        """Alterna el estado activo/inactivo de un tipo de alerta."""
+        try:
+            endpoint = f"/api/tipos-alarma/{alert_type_id}/toggle-status"
+            request_kwargs: Dict[str, Any] = {}
+            if payload:
+                request_kwargs['json'] = payload
+            response = self.patch(endpoint, **request_kwargs)
+            data = response.json()
+            success = response.ok and data.get('success', False)
+            return {
+                'success': success,
+                'data': data.get('data'),
+                'message': data.get('message') or data.get('error') or '',
+                'status_code': response.status_code,
+                'payload': data
+            }
+        except Exception as exc:
+            print(f"Error toggling alert type status: {exc}")
             return {
                 'success': False,
                 'data': None,

@@ -8,17 +8,12 @@
   const colorInput = document.getElementById('alertTypeColor');
   const severitySelect = document.getElementById('alertTypeSeverity');
   const deactivateModalId = 'toggleAlertTypeModal';
-  const deactivateReasonInput = document.getElementById('alertTypeDeactivateReason');
-  const deactivateCounter = document.getElementById('alertTypeDeactivateCounter');
   const deactivateFeedback = document.getElementById('alertTypeDeactivateFeedback');
   const deactivateConfirmBtn = document.getElementById('alertTypeDeactivateConfirmBtn');
   const deactivateMessage = document.getElementById('toggleAlertTypeMessage');
   const deactivateTitle = document.getElementById('toggleAlertTypeTitle');
   const deactivateIconWrapper = document.getElementById('toggleAlertTypeIcon');
   const deactivateIcon = document.getElementById('toggleAlertTypeIconFa');
-  const deactivateConfirmIcon = document.getElementById('alertTypeDeactivateConfirmIcon');
-  const deactivateConfirmText = document.getElementById('alertTypeDeactivateConfirmText');
-  const deactivateConfirmBtnDefaultHTML = deactivateConfirmBtn ? deactivateConfirmBtn.innerHTML : '';
   const companyInput = document.getElementById('alertTypeCompanyInput');
   const companyHiddenInput = document.getElementById('alertTypeCompanyId');
   const companyDatalist = document.getElementById('alertTypeCompanyList');
@@ -67,8 +62,9 @@
   const deactivateState = {
     id: null,
     name: '',
+    mode: 'deactivate',
   };
-  const deactivateButtons = document.querySelectorAll('[data-alert-type-deactivate="true"]');
+  const toggleButtons = document.querySelectorAll('[data-alert-type-toggle]');
 
   const companiesState = {
     list: [],
@@ -182,13 +178,16 @@
   function updateDeactivateControls() {
     if (!deactivateConfirmBtn) return;
 
-    const length = (deactivateReasonInput?.value || '').trim().length;
-    if (deactivateCounter) {
-      deactivateCounter.textContent = `${length}/500`;
-    }
-
     const hasId = Boolean(deactivateState.id);
-    deactivateConfirmBtn.disabled = !hasId || length < 5;
+    deactivateConfirmBtn.disabled = !hasId;
+  }
+
+  function getDeactivateConfirmIcon() {
+    return document.getElementById('alertTypeDeactivateConfirmIcon');
+  }
+
+  function getDeactivateConfirmText() {
+    return document.getElementById('alertTypeDeactivateConfirmText');
   }
 
   function setDetailText(element, value, fallback = '-') {
@@ -354,14 +353,10 @@
   function resetDeactivateModal() {
     deactivateState.id = null;
     deactivateState.name = '';
-
-    if (deactivateReasonInput) {
-      deactivateReasonInput.value = '';
-    }
+    deactivateState.mode = 'deactivate';
 
     hideDeactivateFeedback();
     if (deactivateConfirmBtn) {
-      deactivateConfirmBtn.innerHTML = deactivateConfirmBtnDefaultHTML;
       deactivateConfirmBtn.disabled = true;
     }
     if (deactivateIconWrapper) {
@@ -376,11 +371,13 @@
     if (deactivateMessage) {
       deactivateMessage.textContent = '¿Estás seguro de que quieres desactivar este tipo de alerta?';
     }
-    if (deactivateConfirmIcon) {
-      deactivateConfirmIcon.className = 'fas fa-power-off mr-2';
+    const confirmIconEl = getDeactivateConfirmIcon();
+    if (confirmIconEl) {
+      confirmIconEl.className = 'fas fa-power-off mr-2';
     }
-    if (deactivateConfirmText) {
-      deactivateConfirmText.textContent = 'Desactivar';
+    const confirmTextEl = getDeactivateConfirmText();
+    if (confirmTextEl) {
+      confirmTextEl.textContent = 'Desactivar';
     }
     updateDeactivateControls();
   }
@@ -868,13 +865,7 @@
     });
   }
 
-  if (deactivateReasonInput) {
-    deactivateReasonInput.addEventListener('input', () => {
-      hideDeactivateFeedback();
-      updateDeactivateControls();
-    });
-    updateDeactivateControls();
-  }
+  updateDeactivateControls();
 
   if (statusFilter) {
     statusFilter.addEventListener('change', () => {
@@ -888,13 +879,15 @@
     });
   }
 
-  if (deactivateButtons.length > 0) {
-    deactivateButtons.forEach((button) => {
+  if (toggleButtons.length > 0) {
+    toggleButtons.forEach((button) => {
       button.addEventListener('click', (event) => {
         const target = event.currentTarget;
         const alertTypeId = target?.dataset?.alertTypeId;
         const alertTypeName = target?.dataset?.alertTypeName || '';
-        window.openDeactivateAlertTypeModal(alertTypeId, alertTypeName);
+        const toggleMode = (target?.dataset?.alertTypeToggle || 'deactivate').toLowerCase();
+        const normalizedMode = toggleMode === 'activate' ? 'activate' : 'deactivate';
+        window.openToggleAlertTypeModal(alertTypeId, alertTypeName, normalizedMode);
       });
     });
   }
@@ -963,38 +956,41 @@
     }
   };
 
-  window.openDeactivateAlertTypeModal = function(alertTypeId, alertTypeName) {
+  window.openToggleAlertTypeModal = function(alertTypeId, alertTypeName, mode = 'deactivate') {
     if (!alertTypeId) return;
+
     deactivateState.id = alertTypeId;
     deactivateState.name = (alertTypeName || '').toString();
+    deactivateState.mode = mode === 'activate' ? 'activate' : 'deactivate';
+
+    const isActivation = deactivateState.mode === 'activate';
+    const nameFragment = deactivateState.name ? `"${deactivateState.name}"` : 'este tipo de alerta';
 
     if (deactivateMessage) {
-      const nameFragment = deactivateState.name ? `"${deactivateState.name}"` : 'este tipo de alerta';
-      deactivateMessage.textContent = `¿Estás seguro de que quieres desactivar ${nameFragment}?`;
+      deactivateMessage.textContent = isActivation
+        ? `¿Quieres reactivar ${nameFragment}?`
+        : `¿Estás seguro de que quieres desactivar ${nameFragment}?`;
     }
     if (deactivateTitle) {
-      deactivateTitle.textContent = 'Desactivar tipo de alerta';
+      deactivateTitle.textContent = isActivation ? 'Reactivar tipo de alerta' : 'Desactivar tipo de alerta';
     }
     if (deactivateIconWrapper) {
-      deactivateIconWrapper.className = 'toggle-modal-icon deactivate mx-auto mb-4';
+      const baseClass = 'toggle-modal-icon mx-auto mb-4';
+      deactivateIconWrapper.className = `${baseClass} ${isActivation ? 'activate' : 'deactivate'}`;
     }
     if (deactivateIcon) {
-      deactivateIcon.className = 'fas fa-power-off text-4xl';
+      deactivateIcon.className = isActivation ? 'fas fa-redo text-4xl' : 'fas fa-power-off text-4xl';
     }
-    if (deactivateConfirmIcon) {
-      deactivateConfirmIcon.className = 'fas fa-power-off mr-2';
+    const confirmIconEl = getDeactivateConfirmIcon();
+    if (confirmIconEl) {
+      confirmIconEl.className = isActivation ? 'fas fa-redo mr-2' : 'fas fa-power-off mr-2';
     }
-    if (deactivateConfirmText) {
-      deactivateConfirmText.textContent = 'Desactivar';
-    }
-    if (deactivateReasonInput) {
-      deactivateReasonInput.value = '';
+    const confirmTextEl = getDeactivateConfirmText();
+    if (confirmTextEl) {
+      confirmTextEl.textContent = isActivation ? 'Reactivar' : 'Desactivar';
     }
 
     hideDeactivateFeedback();
-    if (deactivateConfirmBtn) {
-      deactivateConfirmBtn.innerHTML = deactivateConfirmBtnDefaultHTML;
-    }
     updateDeactivateControls();
 
     if (window.modalManager) {
@@ -1005,6 +1001,10 @@
         modal.classList.remove('hidden');
       }
     }
+  };
+
+  window.openDeactivateAlertTypeModal = function(alertTypeId, alertTypeName) {
+    window.openToggleAlertTypeModal(alertTypeId, alertTypeName, 'deactivate');
   };
 
   window.closeDeactivateAlertTypeModal = function() {
@@ -1019,48 +1019,59 @@
     resetDeactivateModal();
   };
 
-  window.confirmDeactivateAlertType = async function() {
-    if (!deactivateState.id || !deactivateConfirmBtn || !deactivateReasonInput) {
+  window.confirmToggleAlertType = async function() {
+    if (!deactivateState.id || !deactivateConfirmBtn) {
       return;
     }
 
-    const motivo = deactivateReasonInput.value.trim();
-    if (motivo.length < 5) {
-      showDeactivateFeedback('Escribe un motivo con al menos 5 caracteres.');
-      updateDeactivateControls();
-      return;
-    }
+    const isActivation = deactivateState.mode === 'activate';
 
     const originalContent = deactivateConfirmBtn.innerHTML;
     deactivateConfirmBtn.disabled = true;
     deactivateConfirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Procesando...';
 
-    try {
-      const response = await fetch(`/admin/alert-types/${encodeURIComponent(deactivateState.id)}/deactivate`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({ motivo }),
-      });
+    const endpoint = `/admin/alert-types/${encodeURIComponent(deactivateState.id)}/toggle`;
 
+    const payload = {
+      accion: isActivation ? 'activate' : 'deactivate',
+    };
+
+    const fetchOptions = {
+      method: 'PATCH',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    };
+
+    try {
+      const response = await fetch(endpoint, fetchOptions);
       const data = await response.json().catch(() => ({ success: false }));
 
       if (!response.ok || !data.success) {
-        throw new Error(data.message || 'No se pudo desactivar el tipo de alerta.');
+        const fallbackMessage = isActivation
+          ? 'No se pudo reactivar el tipo de alerta.'
+          : 'No se pudo desactivar el tipo de alerta.';
+        throw new Error(data.message || fallbackMessage);
       }
 
+      deactivateConfirmBtn.innerHTML = originalContent;
       closeDeactivateAlertTypeModal();
-      showSuccessToast(data.message || 'Tipo de alerta desactivado correctamente.');
+      const defaultSuccess = isActivation
+        ? 'Tipo de alerta reactivado correctamente.'
+        : 'Tipo de alerta desactivado correctamente.';
+      showSuccessToast(data.message || defaultSuccess);
       setTimeout(() => window.location.reload(), 1200);
     } catch (error) {
-      showDeactivateFeedback(error.message || 'Ocurrió un error al desactivar el tipo de alerta.');
+      showDeactivateFeedback(error.message || 'Ocurrió un error al actualizar el estado del tipo de alerta.');
       deactivateConfirmBtn.disabled = false;
       deactivateConfirmBtn.innerHTML = originalContent;
       updateDeactivateControls();
     }
   };
+
+  window.confirmDeactivateAlertType = window.confirmToggleAlertType;
 
   if (!companyInput) {
     companiesState.loaded = true;

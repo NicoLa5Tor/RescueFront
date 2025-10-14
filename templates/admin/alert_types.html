@@ -198,7 +198,7 @@
         <button
           type="button"
           class="ios-card-btn ios-card-btn-warning"
-          data-alert-type-deactivate="true"
+          data-alert-type-toggle="deactivate"
           data-alert-type-id="{{ alert_type.id }}"
           data-alert-type-name="{{ alert_type.name | default('Tipo sin nombre') }}"
           title="Desactivar tipo de alerta"
@@ -206,7 +206,16 @@
           <i class="fas fa-power-off"></i>
         </button>
         {% else %}
-        <span class="ios-status-badge alert-status-badge alert-status-inactive">Inactiva</span>
+        <button
+          type="button"
+          class="ios-card-btn ios-card-btn-success"
+          data-alert-type-toggle="activate"
+          data-alert-type-id="{{ alert_type.id }}"
+          data-alert-type-name="{{ alert_type.name | default('Tipo sin nombre') }}"
+          title="Reactivar tipo de alerta"
+        >
+          <i class="fas fa-redo"></i>
+        </button>
         {% endif %}
       </div>
       {% endif %}
@@ -257,21 +266,6 @@
     <div class="ios-blur-body space-y-6">
       <p class="text-white/80 text-lg text-center" id="toggleAlertTypeMessage">¿Estás seguro de que quieres desactivar este tipo de alerta?</p>
 
-      <div class="space-y-2 text-left">
-        <label for="alertTypeDeactivateReason" class="ios-filter-label">Motivo de desactivación *</label>
-        <textarea
-          id="alertTypeDeactivateReason"
-          class="ios-filter-input min-h-[110px] resize-none"
-          placeholder="Describe brevemente el motivo (máx. 500 caracteres)"
-          maxlength="500"
-          required
-        ></textarea>
-        <div class="flex justify-between text-xs text-white/50">
-          <span>El motivo se registra en el historial y notificaciones.</span>
-          <span id="alertTypeDeactivateCounter">0/500</span>
-        </div>
-      </div>
-
       <div id="alertTypeDeactivateFeedback" class="hidden px-4 py-3 rounded-lg border border-red-400 bg-red-500/20 text-red-100 text-sm"></div>
     </div>
 
@@ -280,7 +274,7 @@
         <i class="fas fa-times mr-2"></i>
         Cancelar
       </button>
-      <button type="button" class="ios-blur-btn ios-blur-btn-primary" id="alertTypeDeactivateConfirmBtn" onclick="confirmDeactivateAlertType()">
+      <button type="button" class="ios-blur-btn ios-blur-btn-primary" id="alertTypeDeactivateConfirmBtn" onclick="confirmToggleAlertType()">
         <i class="fas fa-power-off mr-2" id="alertTypeDeactivateConfirmIcon"></i>
         <span id="alertTypeDeactivateConfirmText">Desactivar</span>
       </button>
