@@ -11,6 +11,19 @@
  * IMPLEMENTANDO MODALSCROLLMANAGER PARA APERTURA PERFECTA
  */
 
+const buildApiUrl = window.__buildApiUrl || function(path = '') {
+  const base = window.__APP_CONFIG && window.__APP_CONFIG.apiUrl;
+  if (!base) {
+    throw new Error('API URL no configurada');
+  }
+  const normalizedBase = base.endsWith('/') ? base.slice(0, -1) : base;
+  if (!path) {
+    return normalizedBase;
+  }
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+  return `${normalizedBase}${normalizedPath}`;
+};
+
 // ============================================================================
 // 1. MODAL SCROLL MANAGER - OPTIMIZADO PARA USUARIOS
 // ============================================================================
@@ -231,6 +244,7 @@ class UsuariosModals {
     this.currentUser = null; // Para edición
     this.apiClient = null;
     this.especialidades = [];
+    this.availableRoles = [];
     this.isCreating = false;
     this.isUpdating = false;
     
@@ -271,7 +285,7 @@ class UsuariosModals {
     } else if (window.apiClient) {
       this.apiClient = window.apiClient;
     } else if (typeof EndpointTestClient !== 'undefined') {
-      this.apiClient = new EndpointTestClient('/proxy');
+      this.apiClient = new EndpointTestClient();
     } else {
       this.apiClient = this.createBasicApiClient();
     }
@@ -282,29 +296,29 @@ class UsuariosModals {
    */
   createBasicApiClient() {
     return {
-      get_usuarios_by_empresa: (empresaId) => fetch(`/proxy/empresas/${empresaId}/usuarios`),
-      get_usuario: (empresaId, userId) => fetch(`/proxy/empresas/${empresaId}/usuarios/${userId}`),
-      get_empresa: (empresaId) => fetch(`/proxy/empresas/${empresaId}`),
+      get_usuarios_by_empresa: (empresaId) => fetch(buildApiUrl(`/empresas/${empresaId}/usuarios`)),
+      get_usuario: (empresaId, userId) => fetch(buildApiUrl(`/empresas/${empresaId}/usuarios/${userId}`)),
+      get_empresa: (empresaId) => fetch(buildApiUrl(`/empresas/${empresaId}`)),
       toggle_usuario_status: (empresaId, userId, activo) => 
-        fetch(`/proxy/empresas/${empresaId}/usuarios/${userId}/toggle-status`, {
+        fetch(buildApiUrl(`/empresas/${empresaId}/usuarios/${userId}/toggle-status`), {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ activo })
         }),
       update_usuario: (empresaId, userId, data) =>
-        fetch(`/proxy/empresas/${empresaId}/usuarios/${userId}`, {
+        fetch(buildApiUrl(`/empresas/${empresaId}/usuarios/${userId}`), {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
         }),
       create_usuario: (empresaId, data) =>
-        fetch(`/proxy/empresas/${empresaId}/usuarios`, {
+        fetch(buildApiUrl(`/empresas/${empresaId}/usuarios`), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
         }),
       delete_usuario: (empresaId, userId) =>
-        fetch(`/proxy/empresas/${empresaId}/usuarios/${userId}`, {
+        fetch(buildApiUrl(`/empresas/${empresaId}/usuarios/${userId}`), {
           method: 'DELETE'
         })
     };
@@ -677,7 +691,7 @@ class UsuariosModals {
         //console.log('✅ Datos de usuario válidos, populando formulario...');
         this.currentUser = result.data;
         this.currentUser.empresaId = empresaId;
-        this.populateEditModal(result.data);
+        await this.populateEditModal(result.data);
       } else {
         //console.error('❌ Respuesta del backend no válida:', result);
         const errorMessage = result.errors ? result.errors.join(', ') : 'Error al cargar datos del usuario';
@@ -703,9 +717,14 @@ class UsuariosModals {
     
     this.especialidades = [];
     this.renderEspecialidades('edit');
+
+    const rolSelect = document.getElementById('editUserRol');
+    if (rolSelect) {
+      this.loadRoles(rolSelect);
+    }
   }
 
-  populateEditModal(user) {
+  async populateEditModal(user) {
     document.getElementById('editUsername').value = user.nombre || '';
     document.getElementById('editUserEmail').value = user.email || '';
     
@@ -741,28 +760,27 @@ class UsuariosModals {
     
     const rol = document.getElementById('editUserRol');
     if (rol) {
-      this.loadRoles(rol);
-      setTimeout(() => { rol.value = user.rol || ''; }, 100);
+      await this.loadRoles(rol, user.rol || '');
     }
   }
 
   async confirmEdit() {
     if (this.isUpdating) return;
+    let submitBtn;
     
     try {
       this.isUpdating = true;
       
-      const submitBtn = document.querySelector('#editUserModal [type="submit"], #editUserModal .ios-blur-btn-primary');
-      const originalBtnText = submitBtn?.textContent;
+      submitBtn = document.querySelector('#editUserModal [type="submit"], #editUserModal .ios-blur-btn-primary');
       if (submitBtn) {
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Actualizando...';
+        submitBtn.classList.add('is-loading');
       }
       if (!this.currentUser) {
         this.showNotification('No hay usuario seleccionado', 'error');
         if (submitBtn) {
           submitBtn.disabled = false;
-          if (originalBtnText) submitBtn.innerHTML = originalBtnText;
+          submitBtn.classList.remove('is-loading');
         }
         return;
       }
@@ -822,7 +840,7 @@ class UsuariosModals {
         
         if (submitBtn) {
           submitBtn.disabled = false;
-          if (originalBtnText) submitBtn.innerHTML = originalBtnText;
+          submitBtn.classList.remove('is-loading');
         }
         return;
       }
@@ -832,6 +850,10 @@ class UsuariosModals {
       const isSuccess = response.status === 200 || response.ok || result.success === true;
       
       if (isSuccess) {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.classList.remove('is-loading');
+        }
         this.closeEditModal();
         this.showSuccessModal(result.message || 'Usuario actualizado exitosamente');
         
@@ -841,7 +863,7 @@ class UsuariosModals {
       } else {
         if (submitBtn) {
           submitBtn.disabled = false;
-          if (originalBtnText) submitBtn.innerHTML = originalBtnText;
+          submitBtn.classList.remove('is-loading');
         }
         
         let errorMessage = 'Error al actualizar usuario';
@@ -860,6 +882,10 @@ class UsuariosModals {
       this.showNotification(`Error de conexión: ${error.message}`, 'error');
     } finally {
       this.isUpdating = false;
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('is-loading');
+      }
     }
   }
 
@@ -1064,6 +1090,7 @@ class UsuariosModals {
     
     this.especialidades = [];
     this.renderEspecialidades('create');
+    this.availableRoles = [];
     
     const sedeElement = document.getElementById('createUserSede');
     if (sedeElement) {
@@ -1083,19 +1110,20 @@ class UsuariosModals {
     }
     this.especialidades = [];
     this.renderEspecialidades('edit');
+    this.availableRoles = [];
   }
 
   async confirmCreate() {
     if (this.isCreating) return;
+    let submitBtn;
     
     try {
       this.isCreating = true;
       
-      const submitBtn = document.querySelector('#createUserModal [type="submit"], #createUserModal .ios-blur-btn-primary');
-      const originalBtnText = submitBtn?.textContent;
+      submitBtn = document.querySelector('#createUserModal [type="submit"], #createUserModal .ios-blur-btn-primary');
       if (submitBtn) {
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Creando...';
+        submitBtn.classList.add('is-loading');
       }
       let empresaId = window.usuariosMain?.currentEmpresa?._id;
       
@@ -1107,7 +1135,7 @@ class UsuariosModals {
         this.showNotification('No hay empresa seleccionada', 'error');
         if (submitBtn) {
           submitBtn.disabled = false;
-          if (originalBtnText) submitBtn.innerHTML = originalBtnText;
+          submitBtn.classList.remove('is-loading');
         }
         return;
       }
@@ -1168,7 +1196,7 @@ class UsuariosModals {
         
         if (submitBtn) {
           submitBtn.disabled = false;
-          if (originalBtnText) submitBtn.innerHTML = originalBtnText;
+          submitBtn.classList.remove('is-loading');
         }
         return;
       }
@@ -1178,6 +1206,10 @@ class UsuariosModals {
       const isSuccess = response.status === 200 || response.status === 201 || response.ok || result.success === true;
       
       if (isSuccess) {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.classList.remove('is-loading');
+        }
         this.closeCreateModal();
         this.showSuccessModal(result.message || 'Usuario creado exitosamente');
         
@@ -1187,7 +1219,7 @@ class UsuariosModals {
       } else {
         if (submitBtn) {
           submitBtn.disabled = false;
-          if (originalBtnText) submitBtn.innerHTML = originalBtnText;
+          submitBtn.classList.remove('is-loading');
         }
         
         let errorMessage = 'Error al crear usuario';
@@ -1206,6 +1238,10 @@ class UsuariosModals {
       this.showNotification(`Error de conexión: ${error.message}`, 'error');
     } finally {
       this.isCreating = false;
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('is-loading');
+      }
     }
   }
 
@@ -1316,21 +1352,84 @@ class UsuariosModals {
     });
   }
   
-  loadRoles(selectElement) {
+  async loadRoles(selectElement, selectedValue = '') {
     const empresaId = window.usuariosMain?.currentEmpresa?._id || window.empresaId;
-    if (!empresaId || !this.apiClient) return;
-    
-    this.apiClient.get_empresa(empresaId).then(response => response.json()).then(data => {
-      if (data.success && data.data && data.data.roles) {
-        selectElement.innerHTML = '<option value="">Seleccionar rol...</option>' + 
-          data.data.roles.map(rol => `<option value="${rol}">${rol}</option>`).join('');
+
+    if (!selectElement) {
+      return [];
+    }
+
+    selectElement.innerHTML = '<option value="">Cargando roles...</option>';
+
+    if (!empresaId || !this.apiClient) {
+      selectElement.innerHTML = '<option value="">No hay empresa seleccionada</option>';
+      return [];
+    }
+
+    try {
+      const response = await this.apiClient.get_empresa(empresaId);
+      const data = await response.json();
+
+      if (data.success && data.data) {
+        this.availableRoles = this.normalizeEmpresaRoles(data.data.roles);
       } else {
-        selectElement.innerHTML = '<option value="">No hay roles disponibles</option>';
+        this.availableRoles = [];
       }
-    }).catch(error => {
+
+      if (!this.availableRoles.length) {
+        selectElement.innerHTML = '<option value="">No hay roles disponibles</option>';
+        return [];
+      }
+
+      selectElement.innerHTML = '<option value="">Seleccionar rol...</option>';
+
+      this.availableRoles.forEach((rol) => {
+        const option = document.createElement('option');
+        option.value = rol.nombre;
+        option.textContent = rol.is_creator ? `${rol.nombre} • Genera alertas` : rol.nombre;
+        option.dataset.isCreator = rol.is_creator ? 'true' : 'false';
+        selectElement.appendChild(option);
+      });
+
+      if (selectedValue) {
+        selectElement.value = selectedValue;
+      }
+
+      return this.availableRoles;
+    } catch (error) {
       //console.error('Error loading roles:', error);
       selectElement.innerHTML = '<option value="">Error cargando roles</option>';
-    });
+      this.availableRoles = [];
+      return [];
+    }
+  }
+
+  normalizeEmpresaRoles(rawRoles) {
+    if (!Array.isArray(rawRoles)) {
+      return [];
+    }
+
+    return rawRoles
+      .map((rol) => {
+        if (typeof rol === 'string') {
+          return {
+            nombre: rol.trim(),
+            is_creator: false
+          };
+        }
+
+        if (rol && typeof rol === 'object') {
+          const nombre = (rol.nombre || rol.name || '').toString().trim();
+          const isCreator = rol.is_creator ?? rol.isCreator ?? rol.creates_alerts ?? rol.crea_alertas;
+          return {
+            nombre,
+            is_creator: Boolean(isCreator)
+          };
+        }
+
+        return { nombre: '', is_creator: false };
+      })
+      .filter((rol) => rol.nombre !== '' || rol.is_creator === true);
   }
 
   // ===== NOTIFICATIONS =====

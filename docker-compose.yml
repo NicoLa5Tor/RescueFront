@@ -15,9 +15,6 @@ services:
       dockerfile: Dockerfile
     image: rescue-frontend:latest
     container_name: rescue-frontend
-    # Solo puerto local para Cloudflare Tunnel
-    ports:
-      - "127.0.0.1:5000:5000"  # Solo localhost
     environment:
       - FLASK_ENV=production
       - FLASK_DEBUG=0
@@ -25,9 +22,11 @@ services:
       # Cargar variables desde archivo .env
     env_file:
       - .env
+    expose:
+      - "5000"
     volumes:
-      # Logs para monitoreo
-      - ./logs:/app/logs
+      # Logs centralizados
+      - /root/opt/volumes/rescue-logs/frontend:/app/logs
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
@@ -35,15 +34,14 @@ services:
       timeout: 10s
       retries: 3
       start_period: 15s
-    # Red interna simple
+    # Red compartida con servicios externos
     networks:
       - rescue-network
 
 networks:
   rescue-network:
-    driver: bridge
-    external: false
-    name: frontend_rescue-network
+    external: true
+    name: rescue-network
 
 # Volumen para logs persistentes
 volumes:

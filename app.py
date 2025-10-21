@@ -944,6 +944,35 @@ def admin_toggle_alert_type(alert_type_id: str):
     }), status_code
 
 
+@app.route('/admin/alert-types/<alert_type_id>/update', methods=['PUT'])
+@require_role(['super_admin'])
+def admin_update_alert_type(alert_type_id: str):
+    payload = request.get_json(silent=True) or {}
+
+    required_fields = ['nombre', 'descripcion', 'tipo_alerta', 'color_alerta']
+    missing = [field for field in required_fields if not str(payload.get(field, '')).strip()]
+    if missing:
+        return jsonify({
+            'success': False,
+            'message': f"Faltan campos obligatorios: {', '.join(missing)}"
+        }), 400
+
+    api_response = g.api_client.update_alert_type(alert_type_id, payload)
+    status_code = api_response.get('status_code', 500 if not api_response.get('success') else 200)
+
+    if api_response.get('success'):
+        return jsonify({
+            'success': True,
+            'message': api_response.get('message') or 'Tipo de alerta actualizado exitosamente',
+            'data': api_response.get('data')
+        }), status_code
+
+    return jsonify({
+        'success': False,
+        'message': api_response.get('message') or 'No se pudo actualizar el tipo de alerta'
+    }), status_code
+
+
 @app.route('/admin/alert-types/<alert_type_id>/detail', methods=['GET'])
 @require_role(['super_admin'])
 def admin_alert_type_detail(alert_type_id: str):

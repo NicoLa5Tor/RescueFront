@@ -12,7 +12,20 @@ let alertsPerPage = 5;
 
 // Variables para WebSocket
 let websocket = null;
-let websocketUrl = window.websocket_url || 'https://websocket.rescue.com.co'; // Usar la configuración de Flask o localhost por defecto
+const appConfig = window.__APP_CONFIG || {};
+const websocketUrl = appConfig.websocketUrl;
+const buildApiUrl = window.__buildApiUrl || function(path = '') {
+    const base = window.__APP_CONFIG && window.__APP_CONFIG.apiUrl;
+    if (!base) {
+        throw new Error('API URL no configurada');
+    }
+    const normalizedBase = base.endsWith('/') ? base.slice(0, -1) : base;
+    if (!path) {
+        return normalizedBase;
+    }
+    const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+    return `${normalizedBase}${normalizedPath}`;
+};
 let reconnectAttempts = 0;
 const maxReconnectAttempts = 5;
 const reconnectDelay = 3000; // 3 segundos
@@ -70,6 +83,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // ========== FUNCIONES DE WEBSOCKET ==========
 function connectWebSocket() {
+    if (!websocketUrl) {
+        console.warn('⚠️ WebSocket URL no configurado en la aplicación');
+        return;
+    }
+
     try {
         websocket = new WebSocket(websocketUrl);
         
@@ -201,7 +219,7 @@ async function loadActiveAlerts() {
         }
         
         // Construir URL para obtener alertas
-        let url = `/proxy/api/mqtt-alerts/empresa/${empresaId}/active-by-sede?limit=${alertsPerPage}&offset=${(currentPage - 1) * alertsPerPage}`;
+        let url = buildApiUrl(`/api/mqtt-alerts/empresa/${empresaId}/active-by-sede?limit=${alertsPerPage}&offset=${(currentPage - 1) * alertsPerPage}`);
         //console.log('🔗 URL a consultar:', url);
         
         // Usar el api-client para obtener alertas con refresh automático
@@ -1631,7 +1649,7 @@ async function findAlertById(alertId) {
             return cachedAlert;
         }
         
-        const response = await fetch(`/proxy/api/mqtt-alerts/${alertId}`, {
+        const response = await fetch(buildApiUrl(`/api/mqtt-alerts/${alertId}`), {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include'

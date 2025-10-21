@@ -3,6 +3,19 @@
  * Solo código funcional y necesario
  */
 
+const buildApiUrl = window.__buildApiUrl || function(path = '') {
+  const base = window.__APP_CONFIG && window.__APP_CONFIG.apiUrl;
+  if (!base) {
+    throw new Error('API URL no configurada');
+  }
+  const normalizedBase = base.endsWith('/') ? base.slice(0, -1) : base;
+  if (!path) {
+    return normalizedBase;
+  }
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+  return `${normalizedBase}${normalizedPath}`;
+};
+
 // ============================================================================
 // 1. MODAL SCROLL MANAGER - VERSIÓN OPTIMIZADA
 // ============================================================================
@@ -618,7 +631,7 @@ async function callAPI(method, endpoint, data = null) {
   
   if (data) options.body = JSON.stringify(data);
   
-  const response = await fetch(`/proxy${endpoint}`, options);
+  const response = await fetch(buildApiUrl(endpoint), options);
   const result = await response.json();
   
   if (!response.ok) {

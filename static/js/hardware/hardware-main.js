@@ -19,7 +19,20 @@ class HardwareMain {
       filters: null,
       performance: null
     };
-    
+
+    this.buildApiUrl = window.__buildApiUrl || ((path = '') => {
+      const base = window.__APP_CONFIG && window.__APP_CONFIG.apiUrl;
+      if (!base) {
+        throw new Error('API URL no configurada');
+      }
+      const normalizedBase = base.endsWith('/') ? base.slice(0, -1) : base;
+      if (!path) {
+        return normalizedBase;
+      }
+      const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+      return `${normalizedBase}${normalizedPath}`;
+    });
+
     this.apiClient = null;
     this.initialized = false;
     
@@ -78,10 +91,10 @@ class HardwareMain {
       ////console.log('🔗 Inicializando API client...');
       
       // Check if proxy is available
-      const healthResponse = await fetch('/proxy/health');
+      const healthResponse = await fetch(this.buildApiUrl('/health'));
       
       if (healthResponse.ok) {
-        this.apiClient = new EndpointTestClient('/proxy');
+        this.apiClient = new EndpointTestClient();
         ////console.log('✅ API Client inicializado');
         
         // Make API client available to core module

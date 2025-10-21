@@ -194,6 +194,17 @@
           <i class="fas fa-eye"></i>
         </button>
 
+        <button
+          type="button"
+          class="ios-card-btn"
+          data-alert-type-edit="true"
+          data-alert-type-id="{{ alert_type.id }}"
+          data-alert-type-name="{{ alert_type.name | default('Tipo sin nombre') }}"
+          title="Editar tipo de alerta"
+        >
+          <i class="fas fa-edit"></i>
+        </button>
+
         {% if alert_type.active %}
         <button
           type="button"
@@ -378,7 +389,7 @@
           </div>
           <div>
             <h2 id="createAlertTypeTitle" class="text-2xl font-semibold text-white">Nuevo tipo de alerta</h2>
-            <p class="text-sm text-white/70">Define los atributos básicos y las recomendaciones iniciales</p>
+            <p class="text-sm text-white/70" id="createAlertTypeSubtitle">Define los atributos básicos y las recomendaciones iniciales</p>
           </div>
         </div>
         <button type="button" class="ios-blur-btn ios-blur-btn-secondary !p-2" data-modal-close aria-label="Cerrar modal" onclick="closeCreateAlertTypeModal()">

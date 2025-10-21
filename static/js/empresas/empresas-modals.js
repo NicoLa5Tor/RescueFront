@@ -9,6 +9,19 @@
  * - Modal de confirmaciones y success
  */
 
+const buildApiUrl = window.__buildApiUrl || function(path = '') {
+  const base = window.__APP_CONFIG && window.__APP_CONFIG.apiUrl;
+  if (!base) {
+    throw new Error('API URL no configurada');
+  }
+  const normalizedBase = base.endsWith('/') ? base.slice(0, -1) : base;
+  if (!path) {
+    return normalizedBase;
+  }
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+  return `${normalizedBase}${normalizedPath}`;
+};
+
 // ============================================================================
 // 1. EMPRESAS MODAL SCROLL MANAGER - OPTIMIZADO PARA EMPRESAS
 // ============================================================================
@@ -199,7 +212,7 @@ class EmpresasModals {
     } else if (window.apiClient) {
       this.apiClient = window.apiClient;
     } else if (typeof EndpointTestClient !== 'undefined') {
-      this.apiClient = new EndpointTestClient('/proxy');
+      this.apiClient = new EndpointTestClient();
     } else {
       this.apiClient = this.createBasicApiClient();
     }
@@ -210,32 +223,32 @@ class EmpresasModals {
    */
   createBasicApiClient() {
     return {
-      get_empresas_dashboard: () => fetch('/proxy/api/empresas/dashboard/all'),
-      get_empresas: () => fetch('/proxy/api/empresas'),
-      get_empresa: (id) => fetch(`/proxy/api/empresas/${id}`),
+      get_empresas_dashboard: () => fetch(buildApiUrl('/api/empresas/dashboard/all')),
+      get_empresas: () => fetch(buildApiUrl('/api/empresas')),
+      get_empresa: (id) => fetch(buildApiUrl(`/api/empresas/${id}`)),
       toggle_empresa_status: (id, activa) => 
-        fetch(`/proxy/api/empresas/${id}/toggle-status`, {
+        fetch(buildApiUrl(`/api/empresas/${id}/toggle-status`), {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ activa })
         }),
       create_empresa: (data) =>
-        fetch('/proxy/api/empresas/', {
+        fetch(buildApiUrl('/api/empresas/'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
         }),
       update_empresa: (id, data) =>
-        fetch(`/proxy/api/empresas/${id}`, {
+        fetch(buildApiUrl(`/api/empresas/${id}`), {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
         }),
       delete_empresa: (id) =>
-        fetch(`/proxy/api/empresas/${id}`, {
+        fetch(buildApiUrl(`/api/empresas/${id}`), {
           method: 'DELETE'
         }),
-      get_tipos_empresa: () => fetch('/proxy/api/tipos_empresa')
+      get_tipos_empresa: () => fetch(buildApiUrl('/api/tipos_empresa'))
     };
   }
 
@@ -793,8 +806,8 @@ class EmpresasModals {
     this.sedes = empresa.sedes || ['Principal'];
     this.renderSedes();
     
-    // Load roles
-    this.roles = empresa.roles || [];
+    // Load roles with new structure support
+    this.roles = this.normalizeRoles(empresa.roles);
     this.renderRoles();
   }
 
@@ -811,7 +824,7 @@ class EmpresasModals {
     this.sedes = ['Principal'];
     this.renderSedes();
     
-    this.roles = ['Empleado'];
+    this.roles = [{ nombre: 'Empleado', is_creator: false }];
     this.renderRoles();
   }
 
@@ -858,6 +871,8 @@ class EmpresasModals {
       tipoNombre = empresa.tipo || empresa.tipo_empresa;
     }
     
+    const roles = this.normalizeRoles(empresa.roles);
+
     const content = `
       <div class="space-y-4">
         <div class="flex items-center space-x-3">
@@ -891,9 +906,11 @@ class EmpresasModals {
         <div class="text-sm">
           <h5 class="font-semibold text-gray-900 dark:text-white mb-1">Roles</h5>
           <div class="flex flex-wrap gap-2">
-            ${empresa.roles && empresa.roles.length > 0 ? 
-              empresa.roles.map(rol => 
-                `<span class="px-2 py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded-full text-xs font-medium">${rol}</span>`
+            ${roles.length > 0 ? 
+              roles.map(rol => 
+                `<span class="px-2 py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded-full text-xs font-medium">
+                  ${rol.nombre || 'Sin nombre'}${rol.is_creator ? ' • Genera alertas' : ''}
+                </span>`
               ).join('') : 
               '<span class="text-gray-500 dark:text-gray-400">Sin roles definidos</span>'
             }
@@ -969,12 +986,6 @@ class EmpresasModals {
       }
       
       // Validate that roles are not empty
-      const rolesVacios = formData.roles.filter(rol => !rol || rol.trim() === '');
-      if (rolesVacios.length > 0) {
-        this.showNotification('Error: Los roles no pueden estar vacíos', 'error');
-        return;
-      }
-      
       // Validate for duplicate sedes
       const sedesUnicas = [...new Set(formData.sedes.map(sede => sede.trim().toLowerCase()))];
       if (sedesUnicas.length !== formData.sedes.length) {
@@ -983,7 +994,7 @@ class EmpresasModals {
       }
       
       // Validate for duplicate roles
-      const rolesUnicos = [...new Set(formData.roles.map(rol => rol.trim().toLowerCase()))];
+      const rolesUnicos = [...new Set(formData.roles.map(rol => rol.nombre.toLowerCase()))];
       if (rolesUnicos.length !== formData.roles.length) {
         this.showNotification('Error: No puede haber roles duplicados', 'error');
         return;
@@ -1013,7 +1024,13 @@ class EmpresasModals {
       descripcion: document.getElementById('empresaDescripcion').value.trim(),
       tipo_empresa_id: document.getElementById('empresaTipo').value.trim(), // Correcting this field
       sedes: this.sedes.filter(sede => sede.trim() !== ''),
-      roles: this.roles.filter(rol => rol.trim() !== '')
+      roles: this.roles
+        .filter(rol => rol && typeof rol.nombre === 'string')
+        .map(rol => ({
+          nombre: rol.nombre.trim(),
+          is_creator: Boolean(rol.is_creator)
+        }))
+        .filter(rol => rol.nombre !== '')
     };
     
     // Add password for create
@@ -1123,7 +1140,7 @@ class EmpresasModals {
    * Rol management
    */
   addRol() {
-    this.roles.push('');
+    this.roles.push({ nombre: '', is_creator: false });
     this.renderRoles();
     
     // Focus on the new input
@@ -1139,27 +1156,76 @@ class EmpresasModals {
     this.renderRoles();
   }
 
-  updateRol(index, value) {
-    this.roles[index] = value;
+  updateRolNombre(index, value) {
+    if (!this.roles[index]) return;
+    this.roles[index].nombre = value;
+  }
+
+  toggleRolCreator(index, isChecked) {
+    if (!this.roles[index]) return;
+    this.roles[index].is_creator = Boolean(isChecked);
   }
 
   renderRoles() {
     const container = document.getElementById('rolesList');
     container.innerHTML = '';
-    
+
+    if (!Array.isArray(this.roles)) {
+      this.roles = [];
+    }
+
+    if (this.roles.length === 0) {
+      this.roles.push({ nombre: '', is_creator: false });
+    }
+
     this.roles.forEach((rol, index) => {
       const rolItem = document.createElement('div');
-      rolItem.className = 'empresa-rol-item';
+      rolItem.className = 'empresa-rol-item flex flex-col sm:flex-row sm:items-center gap-2';
       rolItem.innerHTML = `
-        <input type="text" class="ios-blur-input flex-1" value="${rol}" 
-               placeholder="Nombre del rol" 
-               onchange="empresasModals.updateRol(${index}, this.value)">
+        <div class="flex-1 flex flex-col sm:flex-row sm:items-center gap-2">
+          <input type="text" class="ios-blur-input empresa-rol-input flex-1" value="${rol.nombre || ''}" 
+                 placeholder="Nombre del rol" 
+                 onchange="empresasModals.updateRolNombre(${index}, this.value)">
+          <label class="inline-flex items-center gap-2 text-xs font-medium text-white/80 dark:text-gray-300">
+            <input type="checkbox" class="empresa-rol-checkbox" ${rol.is_creator ? 'checked' : ''} 
+                   onchange="empresasModals.toggleRolCreator(${index}, this.checked)">
+            Puede generar alertas
+          </label>
+        </div>
         <button type="button" class="ios-blur-btn ios-blur-btn-secondary !p-2 !min-w-0" onclick="empresasModals.removeRol(${index})">
           <i class="fas fa-trash"></i>
         </button>
       `;
       container.appendChild(rolItem);
     });
+  }
+
+  normalizeRoles(rawRoles) {
+    if (!Array.isArray(rawRoles)) {
+      return [];
+    }
+
+    return rawRoles
+      .map((rol) => {
+        if (typeof rol === 'string') {
+          return {
+            nombre: rol.trim(),
+            is_creator: false
+          };
+        }
+
+        if (rol && typeof rol === 'object') {
+          const nombre = (rol.nombre || rol.name || '').toString().trim();
+          const isCreator = rol.is_creator ?? rol.isCreator ?? rol.creates_alerts ?? rol.crea_alertas;
+          return {
+            nombre,
+            is_creator: Boolean(isCreator)
+          };
+        }
+
+        return { nombre: '', is_creator: false };
+      })
+      .filter((rol) => rol.nombre !== '' || rol.is_creator === true);
   }
 
   // ===== GESTIÓN UNIFICADA DE MODALES CON MODALSCROLLMANAGER =====
@@ -1285,7 +1351,7 @@ class EmpresasModals {
     this.sedes = ['Principal'];
     this.renderSedes();
     
-    this.roles = ['Empleado'];
+    this.roles = [{ nombre: 'Empleado', is_creator: false }];
     this.renderRoles();
   }
 

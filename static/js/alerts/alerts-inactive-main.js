@@ -19,6 +19,19 @@ let inactiveCacheMetadata = {
     cacheMisses: 0
 };
 
+const buildApiUrl = window.__buildApiUrl || function(path = '') {
+    const base = window.__APP_CONFIG && window.__APP_CONFIG.apiUrl;
+    if (!base) {
+        throw new Error('API URL no configurada');
+    }
+    const normalizedBase = base.endsWith('/') ? base.slice(0, -1) : base;
+    if (!path) {
+        return normalizedBase;
+    }
+    const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+    return `${normalizedBase}${normalizedPath}`;
+};
+
 // ========== INICIALIZACIÓN ==========
 document.addEventListener('DOMContentLoaded', function() {
     //console.log('🚫 ALERTAS INACTIVAS: Página de alertas inactivas inicializada');
@@ -341,7 +354,7 @@ async function findInactiveAlertById(alertId) {
         }
         
         //console.log('📡 Haciendo petición al backend para alerta específica:', alertId);
-        const response = await fetch(`/proxy/api/mqtt-alerts/${alertId}`, {
+        const response = await fetch(buildApiUrl(`/api/mqtt-alerts/${alertId}`), {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include'

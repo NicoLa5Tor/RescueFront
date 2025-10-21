@@ -14,7 +14,7 @@ class SuperAdminDashboard {
 
     initializeClient() {
         // Initialize API client with proxy
-        this.client = new EndpointTestClient('/proxy');
+        this.client = new EndpointTestClient();
         
         // No necesitamos manejar tokens manualmente con cookies
         ////console.log('Using cookie-based authentication');

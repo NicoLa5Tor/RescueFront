@@ -2,12 +2,26 @@
  * Authentication Manager
  * Maneja autenticación basada en cookies seguras
  */
-
 if (typeof window.AuthManager === 'undefined') {
+const buildApiUrl = window.__buildApiUrl || function(path = '') {
+    const base = window.__APP_CONFIG && window.__APP_CONFIG.apiUrl;
+    if (!base) {
+        throw new Error('API URL no configurada');
+    }
+
+    const normalizedBase = base.endsWith('/') ? base.slice(0, -1) : base;
+    if (!path) {
+        return normalizedBase;
+    }
+
+    const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+    return `${normalizedBase}${normalizedPath}`;
+};
+
 class AuthManager {
     constructor() {
         // Usar el proxy del frontend para que las cookies se manejen correctamente
-        this.client = new EndpointTestClient(window.location.origin + '/proxy');
+        this.client = new EndpointTestClient(buildApiUrl(''));
     }
 
     /**
@@ -23,11 +37,9 @@ class AuthManager {
             
             // Verificar si la sesión es válida haciendo una petición al backend
             // Las cookies se envían automáticamente
-            // Usar URL absoluta HTTPS para asegurar que no use HTTP
-            const baseUrl = window.location.protocol + '//' + window.location.host;
-            const proxyUrl = baseUrl + '/proxy/health';
-            
-            const response = await fetch(proxyUrl, {
+            const healthUrl = buildApiUrl('/health');
+
+            const response = await fetch(healthUrl, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -293,11 +305,9 @@ class AuthManager {
     async testConnection() {
         try {
             //console.log('📌 Probando conexión al backend a través del proxy HTTPS...');
-            // Usar URL absoluta HTTPS para asegurar que no use HTTP
-            const baseUrl = window.location.protocol + '//' + window.location.host;
-            const proxyUrl = baseUrl + '/proxy/health';
-            
-            const response = await fetch(proxyUrl, {
+            const healthUrl = buildApiUrl('/health');
+
+            const response = await fetch(healthUrl, {
                 method: 'GET',
                 credentials: 'include',
                 headers: {

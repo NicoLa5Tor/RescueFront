@@ -1991,10 +1991,10 @@ function checkModalElements() {
 }
 
 // Get token from session and initialize
-fetch('/proxy/health')
+fetch(window.__buildApiUrl('/health'))
   .then(response => {
     if (response.ok) {
-      apiClient = new EndpointTestClient('/proxy');
+      apiClient = new EndpointTestClient();
       //console.log('API Client initialized');
       
       // Check modal elements

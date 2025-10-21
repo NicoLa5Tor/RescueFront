@@ -125,7 +125,7 @@ class AuthVerification {
         //console.log('🌐 Verificando conectividad con backend...');
         
         try {
-            const response = await fetch('/proxy/health', {
+            const response = await fetch(window.__buildApiUrl('/health'), {
                 method: 'GET',
                 credentials: 'include'
             });

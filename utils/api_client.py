@@ -423,6 +423,29 @@ class APIClient:
                 'status_code': 500
             }
 
+    def update_alert_type(self, alert_type_id: str, payload: Dict[str, Any]) -> Dict[str, Any]:
+        """Actualiza un tipo de alerta existente"""
+        try:
+            endpoint = f"/api/tipos-alarma/{alert_type_id}"
+            response = self.put(endpoint, json=payload)
+            data = response.json()
+            success = response.ok and data.get('success', False)
+            return {
+                'success': success,
+                'data': data.get('data'),
+                'message': data.get('message') or data.get('error') or '',
+                'status_code': response.status_code,
+                'payload': data
+            }
+        except Exception as exc:
+            print(f"Error updating alert type: {exc}")
+            return {
+                'success': False,
+                'data': None,
+                'message': str(exc),
+                'status_code': 500
+            }
+
     def deactivate_alert_type(self, alert_type_id: str, motivo: Optional[str] = '') -> Dict[str, Any]:
         """Desactiva un tipo de alerta, especificando el motivo."""
         try:

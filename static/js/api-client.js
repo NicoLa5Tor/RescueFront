@@ -1,7 +1,17 @@
 
 if (typeof window.EndpointTestClient === 'undefined') {
+const DEFAULT_API_BASE_URL = typeof window.__buildApiUrl === 'function'
+    ? window.__buildApiUrl('')
+    : (function() {
+        const base = window.__APP_CONFIG && window.__APP_CONFIG.apiUrl;
+        if (!base) {
+            throw new Error('API URL no configurada');
+        }
+        return base.endsWith('/') ? base.slice(0, -1) : base;
+    })();
+
 class EndpointTestClient {
-    constructor(baseUrl = '/proxy', token = null) {
+    constructor(baseUrl = DEFAULT_API_BASE_URL, token = null) {
         this.baseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
         this.token = token;
         this.isRefreshing = false;

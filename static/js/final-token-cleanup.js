@@ -151,7 +151,7 @@
         //console.log('🍪 Verificando cookies HTTPOnly...');
         
         // Intentar hacer una petición para verificar que las cookies se envían automáticamente
-        fetch('/proxy/health', {
+        fetch(window.__buildApiUrl('/health'), {
             method: 'GET',
             credentials: 'include'
         })

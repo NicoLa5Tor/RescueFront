@@ -23,6 +23,18 @@ class EmpresasMain {
     this.currentView = 'dashboard'; // 'dashboard' shows all, 'forms' shows only active
     this.apiClient = null;
     this.isLoading = false;
+    this.buildApiUrl = window.__buildApiUrl || ((path = '') => {
+      const base = window.__APP_CONFIG && window.__APP_CONFIG.apiUrl;
+      if (!base) {
+        throw new Error('API URL no configurada');
+      }
+      const normalizedBase = base.endsWith('/') ? base.slice(0, -1) : base;
+      if (!path) {
+        return normalizedBase;
+      }
+      const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+      return `${normalizedBase}${normalizedPath}`;
+    });
     
     this.initializeComponents();
   }
@@ -65,7 +77,7 @@ class EmpresasMain {
       
       // Check if we have the endpoint test client
       if (typeof EndpointTestClient !== 'undefined') {
-        this.apiClient = new EndpointTestClient('/proxy');
+        this.apiClient = new EndpointTestClient();
         //console.log('✅ API client creado usando EndpointTestClient');
         return;
       }
@@ -85,32 +97,32 @@ class EmpresasMain {
    */
   createBasicApiClient() {
     return {
-      get_empresas: () => fetch('/proxy/api/empresas/'),
-      get_empresas_dashboard: () => fetch('/proxy/api/empresas/dashboard/all'),
-      get_empresa: (id) => fetch(`/proxy/api/empresas/${id}`),
+      get_empresas: () => fetch(this.buildApiUrl('/api/empresas/')),
+      get_empresas_dashboard: () => fetch(this.buildApiUrl('/api/empresas/dashboard/all')),
+      get_empresa: (id) => fetch(this.buildApiUrl(`/api/empresas/${id}`)),
       toggle_empresa_status: (id, activa) => 
-        fetch(`/proxy/api/empresas/${id}/toggle-status`, {
+        fetch(this.buildApiUrl(`/api/empresas/${id}/toggle-status`), {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ activa })
         }),
       create_empresa: (data) =>
-        fetch('/proxy/api/empresas/', {
+        fetch(this.buildApiUrl('/api/empresas/'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
         }),
       update_empresa: (id, data) =>
-        fetch(`/proxy/api/empresas/${id}`, {
+        fetch(this.buildApiUrl(`/api/empresas/${id}`), {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
         }),
       delete_empresa: (id) =>
-        fetch(`/proxy/api/empresas/${id}`, {
+        fetch(this.buildApiUrl(`/api/empresas/${id}`), {
           method: 'DELETE'
         }),
-      get_tipos_empresa: () => fetch('/proxy/api/tipos_empresa')
+      get_tipos_empresa: () => fetch(this.buildApiUrl('/api/tipos_empresa'))
     };
   }
 

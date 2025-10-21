@@ -48,7 +48,7 @@ class UsuariosMain {
   async setupApiClient() {
     // Use global API client if available
     if (window.EndpointTestClient) {
-      this.apiClient = new window.EndpointTestClient('/proxy');
+      this.apiClient = new window.EndpointTestClient();
       //console.log('✅ Usando API client global');
     } else {
       //console.error('❌ API client global no disponible');
@@ -981,4 +981,3 @@ window.exportUsuarios = () => {
 };
 
 //console.log('👥 Usuarios main module loaded');
-

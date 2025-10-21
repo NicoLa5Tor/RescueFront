@@ -561,7 +561,7 @@ async function loadActiveAlertsForDashboard() {
             return;
         }
         
-        const url = `/proxy/api/mqtt-alerts/empresa/${empresaId}/active-by-sede`;
+        const url = window.__buildApiUrl(`/api/mqtt-alerts/empresa/${empresaId}/active-by-sede`);
         //console.log('🏢 DASHBOARD: URL:', url);
         
         const response = await fetch(url, {

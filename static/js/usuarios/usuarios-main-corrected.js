@@ -27,6 +27,18 @@ class UsuariosMain {
       inactive: 0,
       roles: 0
     };
+    this.buildApiUrl = window.__buildApiUrl || ((path = '') => {
+      const base = window.__APP_CONFIG && window.__APP_CONFIG.apiUrl;
+      if (!base) {
+        throw new Error('API URL no configurada');
+      }
+      const normalizedBase = base.endsWith('/') ? base.slice(0, -1) : base;
+      if (!path) {
+        return normalizedBase;
+      }
+      const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+      return `${normalizedBase}${normalizedPath}`;
+    });
     
     this.initializeComponents();
   }
@@ -97,7 +109,7 @@ class UsuariosMain {
     //console.log('🔌 Configurando cliente API...');
     
     if (window.EndpointTestClient) {
-      this.apiClient = new window.EndpointTestClient('/proxy');
+      this.apiClient = new window.EndpointTestClient();
       //console.log('✅ Usando EndpointTestClient global');
     } else if (window.apiClient) {
       this.apiClient = window.apiClient;
@@ -115,29 +127,29 @@ class UsuariosMain {
   createBasicApiClient() {
     return {
       get_usuarios_by_empresa: (empresaId) => 
-        fetch(`/proxy/empresas/${empresaId}/usuarios`, { credentials: 'include' }),
+        fetch(this.buildApiUrl(`/empresas/${empresaId}/usuarios`), { credentials: 'include' }),
       get_usuario: (empresaId, userId) => 
-        fetch(`/proxy/empresas/${empresaId}/usuarios/${userId}`, { credentials: 'include' }),
+        fetch(this.buildApiUrl(`/empresas/${empresaId}/usuarios/${userId}`), { credentials: 'include' }),
       get_empresa: (empresaId) => 
-        fetch(`/proxy/empresas/${empresaId}`, { credentials: 'include' }),
+        fetch(this.buildApiUrl(`/empresas/${empresaId}`), { credentials: 'include' }),
       get_empresas: () => 
-        fetch('/proxy/empresas', { credentials: 'include' }),
+        fetch(this.buildApiUrl('/empresas'), { credentials: 'include' }),
       toggle_usuario_status: (empresaId, userId, activo) => 
-        fetch(`/proxy/empresas/${empresaId}/usuarios/${userId}/toggle-status`, {
+        fetch(this.buildApiUrl(`/empresas/${empresaId}/usuarios/${userId}/toggle-status`), {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
           body: JSON.stringify({ activo })
         }),
       update_usuario: (empresaId, userId, data) =>
-        fetch(`/proxy/empresas/${empresaId}/usuarios/${userId}`, {
+        fetch(this.buildApiUrl(`/empresas/${empresaId}/usuarios/${userId}`), {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
           body: JSON.stringify(data)
         }),
       create_usuario: (empresaId, data) =>
-        fetch(`/proxy/empresas/${empresaId}/usuarios`, {
+        fetch(this.buildApiUrl(`/empresas/${empresaId}/usuarios`), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',

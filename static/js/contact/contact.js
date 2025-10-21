@@ -9,6 +9,18 @@ class RescueContactForm {
         this.submitBtn = this.form?.querySelector('button[type="submit"]');
         this.messagesContainer = document.querySelector('.form-messages');
         this.isSubmitting = false;  // Protección contra múltiples envíos
+        this.buildApiUrl = window.__buildApiUrl || ((path = '') => {
+            const base = window.__APP_CONFIG && window.__APP_CONFIG.apiUrl;
+            if (!base) {
+                throw new Error('API URL no configurada');
+            }
+            const normalizedBase = base.endsWith('/') ? base.slice(0, -1) : base;
+            if (!path) {
+                return normalizedBase;
+            }
+            const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+            return `${normalizedBase}${normalizedPath}`;
+        });
         
         this.init();
     }
@@ -107,7 +119,7 @@ class RescueContactForm {
             //console.log('📧 Enviando datos del formulario al backend:', payload);
             
             // Hacer la petición real al backend
-            const response = await fetch('/proxy/api/contact/send', {
+            const response = await fetch(this.buildApiUrl('/api/contact/send'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -45,6 +45,31 @@
         })();
         
     </script>
+    <script>
+        (function() {
+            const apiUrl = {{ (api_url or '')|tojson }};
+            const websocketUrl = {{ (websocket_url or '')|tojson }};
+
+            window.__APP_CONFIG = Object.freeze({
+                apiUrl,
+                websocketUrl
+            });
+
+            window.__buildApiUrl = function(path = '') {
+                if (!apiUrl) {
+                    throw new Error('API URL no configurada');
+                }
+
+                const normalizedBase = apiUrl.endsWith('/') ? apiUrl.slice(0, -1) : apiUrl;
+                if (!path) {
+                    return normalizedBase;
+                }
+
+                const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+                return `${normalizedBase}${normalizedPath}`;
+            };
+        })();
+    </script>
     
     <!-- Precarga de imágenes para optimización -->
     <link rel="preload" as="image" href="https://e00-elmundo.uecdn.es/assets/multimedia/imagenes/2022/02/23/16456127740623.jpg">
@@ -421,7 +446,7 @@
 
     <!-- API Configuration -->
     <script>
-        window.API_BASE_URL = '{{ api_url if api_url else "http://localhost:5000" }}';
+        window.API_BASE_URL = {{ (api_url or '') | tojson }};
         window.CURRENT_USER = '{% if current_user %}{{ current_user | tojson | safe }}{% else %}null{% endif %}';
         {% if session.get('token') %}
         window.INIT_TOKEN = "{{ session.get('token') }}";

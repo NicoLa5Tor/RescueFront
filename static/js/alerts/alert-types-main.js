@@ -1,6 +1,21 @@
 (function() {
   'use strict';
 
+  window.__ALERT_TYPES_MODAL_VERSION__ = 'no-reload-v2';
+
+  const buildApiUrl = window.__buildApiUrl || function(path = '') {
+    const base = window.__APP_CONFIG && window.__APP_CONFIG.apiUrl;
+    if (!base) {
+      throw new Error('API URL no configurada');
+    }
+    const normalizedBase = base.endsWith('/') ? base.slice(0, -1) : base;
+    if (!path) {
+      return normalizedBase;
+    }
+    const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+    return `${normalizedBase}${normalizedPath}`;
+  };
+
   const modalId = 'createAlertTypeModal';
   const form = document.getElementById('createAlertTypeForm');
   const feedbackEl = document.getElementById('alertTypeFormFeedback');
@@ -38,6 +53,12 @@
   const equipmentAddBtn = document.getElementById('alertEquipmentAddBtn');
   const equipmentList = document.getElementById('alertEquipmentList');
   const statusFilter = document.getElementById('alertTypesStatusFilter');
+  const createModalTitle = document.getElementById('createAlertTypeTitle');
+  const createModalSubtitle = document.getElementById('createAlertTypeSubtitle');
+  const submitBtnDefaultHTML = submitBtn ? submitBtn.innerHTML : '';
+  let formMode = 'create';
+  let editingAlertTypeId = null;
+  let editingAlertTypeSnapshot = null;
   const viewAlertModalId = 'viewAlertTypeModal';
   const viewAlertElements = {
     modal: () => document.getElementById(viewAlertModalId),
@@ -65,6 +86,7 @@
     mode: 'deactivate',
   };
   const toggleButtons = document.querySelectorAll('[data-alert-type-toggle]');
+  const editButtons = document.querySelectorAll('[data-alert-type-edit="true"]');
 
   const companiesState = {
     list: [],
@@ -92,6 +114,10 @@
 
   function resetForm() {
     if (!form) return;
+
+    editingAlertTypeId = null;
+    editingAlertTypeSnapshot = null;
+    setFormMode('create');
 
     form.reset();
 
@@ -147,10 +173,22 @@
     }
   }
 
-  function showFeedback(message) {
-    if (!feedbackEl) return;
-    feedbackEl.textContent = message;
-    feedbackEl.classList.remove('hidden');
+  function showFeedback(message, options = {}) {
+    const { type = 'error', useToast = true } = options;
+
+    if (feedbackEl) {
+      if (useToast) {
+        feedbackEl.textContent = '';
+        feedbackEl.classList.add('hidden');
+      } else {
+        feedbackEl.textContent = message;
+        feedbackEl.classList.remove('hidden');
+      }
+    }
+
+    if (useToast && message) {
+      renderHardwareStyleToast(message, type);
+    }
   }
 
   function hideFeedback() {
@@ -163,16 +201,60 @@
     return (colorInput?.value || '').toString().trim();
   }
 
-  function showDeactivateFeedback(message) {
-    if (!deactivateFeedback) return;
-    deactivateFeedback.textContent = message;
-    deactivateFeedback.classList.remove('hidden');
+  function showDeactivateFeedback(message, options = {}) {
+    const { type = 'error', useToast = true } = options;
+
+    if (deactivateFeedback) {
+      if (useToast) {
+        deactivateFeedback.textContent = '';
+        deactivateFeedback.classList.add('hidden');
+      } else {
+        deactivateFeedback.textContent = message;
+        deactivateFeedback.classList.remove('hidden');
+      }
+    }
+
+    if (useToast && message) {
+      renderHardwareStyleToast(message, type);
+    }
   }
 
   function hideDeactivateFeedback() {
     if (!deactivateFeedback) return;
     deactivateFeedback.textContent = '';
     deactivateFeedback.classList.add('hidden');
+  }
+
+  function setFormMode(mode, displayName = '') {
+    const normalized = mode === 'edit' ? 'edit' : 'create';
+    formMode = normalized;
+
+    const isEdit = normalized === 'edit';
+    if (createModalTitle) {
+      createModalTitle.textContent = isEdit ? 'Editar tipo de alerta' : 'Nuevo tipo de alerta';
+    }
+    if (createModalSubtitle) {
+      createModalSubtitle.textContent = isEdit
+        ? (displayName ? `Modifica la configuración de ${displayName}` : 'Actualiza la configuración existente')
+        : 'Define los atributos básicos y las recomendaciones iniciales';
+    }
+    if (submitBtn) {
+      submitBtn.innerHTML = isEdit
+        ? '<i class="fas fa-sync-alt mr-2"></i>Actualizar tipo de alerta'
+        : (submitBtnDefaultHTML || '<i class="fas fa-save mr-2"></i>Guardar tipo de alerta');
+    }
+  }
+
+  function mapSeverityToCode(value) {
+    if (!value) return '';
+    const normalized = value.toString().trim().toLowerCase();
+    const mapping = {
+      critica: 'ROJO',
+      alta: 'NARANJA',
+      media: 'AMARILLO',
+      baja: 'VERDE',
+    };
+    return mapping[normalized] || value.toString().trim().toUpperCase();
   }
 
   function updateDeactivateControls() {
@@ -266,10 +348,23 @@
     }
   }
 
-  function showAlertTypeFeedback(message) {
-    if (!viewAlertElements.feedback) return;
-    viewAlertElements.feedback.textContent = message;
-    viewAlertElements.feedback.classList.remove('hidden');
+  function showAlertTypeFeedback(message, options = {}) {
+    const { type = 'error', useToast = true } = options;
+    const feedback = viewAlertElements.feedback;
+
+    if (feedback) {
+      if (useToast) {
+        feedback.textContent = '';
+        feedback.classList.add('hidden');
+      } else {
+        feedback.textContent = message;
+        feedback.classList.remove('hidden');
+      }
+    }
+
+    if (useToast && message) {
+      renderHardwareStyleToast(message, type);
+    }
   }
 
   function hideAlertTypeFeedback() {
@@ -326,12 +421,8 @@
       const imageValue = data.image;
       if (viewAlertElements.imagePreview) {
         if (imageValue) {
-          let imageSrc = imageValue;
-          if (!/^data:image\//.test(imageValue) && !/^https?:\/\//i.test(imageValue)) {
-            imageSrc = `data:image/png;base64,${imageValue}`;
-          }
           viewAlertElements.imagePreview.classList.add('has-image');
-          viewAlertElements.imagePreview.innerHTML = `<img src="${imageSrc}" alt="Imagen del tipo de alerta">`;
+          viewAlertElements.imagePreview.innerHTML = `<img src="${imageValue}" alt="Imagen del tipo de alerta">`;
         } else {
           viewAlertElements.imagePreview.classList.remove('has-image');
           viewAlertElements.imagePreview.innerHTML = '';
@@ -387,6 +478,73 @@
     equipmentState.length = 0;
     renderChipList(recommendationsState, recommendationsList, 'recomendación');
     renderChipList(equipmentState, equipmentList, 'implemento');
+  }
+
+  function populateFormForEdit(data) {
+    if (!form) return;
+
+    const safeData = data || {};
+    const displayName = (safeData.name || '').toString().trim();
+
+    editingAlertTypeId = safeData.id || null;
+    editingAlertTypeSnapshot = safeData;
+    setFormMode('edit', displayName || 'el tipo seleccionado');
+
+    const nameField = form.elements.namedItem('nombre');
+    if (nameField) {
+      nameField.value = displayName;
+    }
+
+    if (severitySelect) {
+      severitySelect.value = mapSeverityToCode(safeData.severity);
+    }
+
+    if (colorInput) {
+      colorInput.value = (safeData.color || '').toString();
+    }
+
+    const descriptionField = form.elements.namedItem('descripcion');
+    if (descriptionField) {
+      descriptionField.value = (safeData.description || '').toString();
+    }
+
+    selectCompanyById(safeData.company_id || '');
+
+    recommendationsState.length = 0;
+    if (Array.isArray(safeData.recommendations)) {
+      safeData.recommendations
+        .map((item) => (item ?? '').toString().trim())
+        .filter(Boolean)
+        .forEach((item) => recommendationsState.push(item));
+    }
+    renderChipList(recommendationsState, recommendationsList, 'recomendación');
+
+    equipmentState.length = 0;
+    if (Array.isArray(safeData.equipment)) {
+      safeData.equipment
+        .map((item) => (item ?? '').toString().trim())
+        .filter(Boolean)
+        .forEach((item) => equipmentState.push(item));
+    }
+    renderChipList(equipmentState, equipmentList, 'implemento');
+
+    if (imageHiddenInput) {
+      imageHiddenInput.value = safeData.image || '';
+    }
+    if (imageUrlHiddenInput) {
+      imageUrlHiddenInput.value = '';
+    }
+    if (imageNameHiddenInput) {
+      imageNameHiddenInput.value = safeData.image ? 'Imagen actual' : '';
+    }
+    updateImagePreview(safeData.image || null, safeData.image ? 'Imagen actual' : '');
+
+    if (soundHiddenInput) {
+      soundHiddenInput.value = safeData.sound || '';
+    }
+    updateSoundPreview(safeData.sound || null, safeData.sound ? 'Sonido actual' : '');
+
+    hideFeedback();
   }
 
   function addRecommendation() {
@@ -462,10 +620,10 @@
     try {
       let response;
       if (window.EndpointTestClient) {
-        const client = new window.EndpointTestClient('/proxy');
+        const client = new window.EndpointTestClient();
         response = await client.get_empresas();
       } else {
-        response = await fetch('/proxy/api/empresas', { credentials: 'include' });
+        response = await fetch(buildApiUrl('/api/empresas'), { credentials: 'include' });
       }
 
       if (!response || !response.ok) {
@@ -521,6 +679,23 @@
       option.value = company.display;
       companyDatalist.appendChild(option);
     });
+  }
+
+  function selectCompanyById(companyId) {
+    if (!companyHiddenInput || !companyInput) return;
+    if (!companyId) {
+      companyHiddenInput.value = '';
+      companyInput.value = '';
+      return;
+    }
+    const match = companiesState.list.find((company) => company.id === companyId);
+    if (match) {
+      companyInput.value = match.display;
+      companyHiddenInput.value = match.id;
+    } else {
+      companyInput.value = '';
+      companyHiddenInput.value = '';
+    }
   }
 
   function syncHiddenCompany(value) {
@@ -598,6 +773,16 @@
     });
 
     selectElement.value = '';
+  }
+
+  async function ensureFormResourcesLoaded() {
+    await Promise.all([
+      ensureCompaniesLoaded(),
+      ensureMediaFoldersLoaded(),
+    ]);
+
+    renderCompanyDatalist(companiesState.list);
+    populateMediaFolderSelectors();
   }
 
   async function handleImageFolderChange(event) {
@@ -811,6 +996,13 @@
       implementos_necesarios: [...equipmentState],
     };
 
+    if (!payload.imagen_base64 && editingAlertTypeSnapshot?.image) {
+      payload.imagen_base64 = editingAlertTypeSnapshot.image;
+    }
+    if (!payload.sonido_link && editingAlertTypeSnapshot?.sound) {
+      payload.sonido_link = editingAlertTypeSnapshot.sound;
+    }
+
     const empresaId = companyHiddenInput?.value || '';
     if (empresaId) {
       payload.empresa_id = empresaId;
@@ -829,8 +1021,14 @@
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Guardando...';
 
     try {
-      const response = await fetch('/admin/alert-types/create', {
-        method: 'POST',
+      const isEditing = Boolean(editingAlertTypeId);
+      const endpoint = isEditing
+        ? `/admin/alert-types/${encodeURIComponent(editingAlertTypeId)}/update`
+        : '/admin/alert-types/create';
+      const method = isEditing ? 'PUT' : 'POST';
+
+      const response = await fetch(endpoint, {
+        method,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -841,14 +1039,23 @@
       const data = await response.json().catch(() => ({ success: false, message: 'Error al interpretar la respuesta del servidor.' }));
 
       if (!response.ok || !data.success) {
-        throw new Error(data.message || 'No se pudo crear el tipo de alerta.');
+        const fallbackMessage = isEditing
+          ? 'No se pudo actualizar el tipo de alerta.'
+          : 'No se pudo crear el tipo de alerta.';
+        throw new Error(data.message || fallbackMessage);
       }
 
       closeCreateAlertTypeModal();
-      showSuccessToast(data.message || 'El tipo de alerta se registró correctamente.');
+      const defaultSuccess = isEditing
+        ? 'El tipo de alerta se actualizó correctamente.'
+        : 'El tipo de alerta se registró correctamente.';
+      showSuccessToast(data.message || defaultSuccess);
     } catch (error) {
       console.error('Error creating alert type:', error);
-      showFeedback(error.message || 'Ocurrió un error al crear el tipo de alerta.');
+      const fallback = Boolean(editingAlertTypeId)
+        ? 'Ocurrió un error al actualizar el tipo de alerta.'
+        : 'Ocurrió un error al crear el tipo de alerta.';
+      showFeedback(error.message || fallback);
     } finally {
       submitBtn.disabled = false;
       submitBtn.innerHTML = originalContent;
@@ -888,6 +1095,17 @@
         const toggleMode = (target?.dataset?.alertTypeToggle || 'deactivate').toLowerCase();
         const normalizedMode = toggleMode === 'activate' ? 'activate' : 'deactivate';
         window.openToggleAlertTypeModal(alertTypeId, alertTypeName, normalizedMode);
+      });
+    });
+  }
+
+  if (editButtons.length > 0) {
+    editButtons.forEach((button) => {
+      button.addEventListener('click', (event) => {
+        const target = event.currentTarget;
+        const alertTypeId = target?.dataset?.alertTypeId;
+        const alertTypeName = target?.dataset?.alertTypeName || '';
+        window.openEditAlertTypeModal(alertTypeId, alertTypeName);
       });
     });
   }
@@ -939,21 +1157,62 @@
 
     if (window.modalManager) {
       window.modalManager.openModal(modalId, { modalClass: 'ios-modal-open' });
+    } else {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+        document.body.classList.add('modal-open');
+      }
     }
 
-    await Promise.all([
-      ensureCompaniesLoaded(),
-      ensureMediaFoldersLoaded(),
-    ]);
+    await ensureFormResourcesLoaded();
+  };
 
-    renderCompanyDatalist(companiesState.list);
-    populateMediaFolderSelectors();
+  window.openEditAlertTypeModal = async function(alertTypeId, alertTypeName) {
+    if (!alertTypeId) return;
+
+    const displayName = (alertTypeName || '').toString().trim();
+
+    resetForm();
+    editingAlertTypeId = alertTypeId;
+    setFormMode('edit', displayName || 'el tipo seleccionado');
+    showFeedback('Cargando configuración del tipo de alerta...', { type: 'info', useToast: false });
+
+    if (window.modalManager) {
+      window.modalManager.openModal(modalId, { modalClass: 'ios-modal-open' });
+    } else {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+        document.body.classList.add('modal-open');
+      }
+    }
+
+    try {
+      await ensureFormResourcesLoaded();
+      const detail = await fetchAlertTypeDetail(alertTypeId);
+      populateFormForEdit(detail || {});
+      hideFeedback();
+    } catch (error) {
+      console.error('Error loading alert type for editing:', error);
+      showFeedback(error.message || 'No se pudo cargar la información para editar este tipo de alerta.');
+    }
   };
 
   window.closeCreateAlertTypeModal = function() {
     if (window.modalManager) {
       window.modalManager.closeModal(modalId);
+    } else {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+        document.body.classList.remove('modal-open');
+      }
     }
+    resetForm();
   };
 
   window.openToggleAlertTypeModal = function(alertTypeId, alertTypeName, mode = 'deactivate') {
@@ -1062,7 +1321,6 @@
         ? 'Tipo de alerta reactivado correctamente.'
         : 'Tipo de alerta desactivado correctamente.';
       showSuccessToast(data.message || defaultSuccess);
-      setTimeout(() => window.location.reload(), 1200);
     } catch (error) {
       showDeactivateFeedback(error.message || 'Ocurrió un error al actualizar el estado del tipo de alerta.');
       deactivateConfirmBtn.disabled = false;
@@ -1127,7 +1385,7 @@
     }
 
     resetAlertTypeModal();
-    showAlertTypeFeedback('Cargando detalles...');
+    showAlertTypeFeedback('Cargando detalles...', { type: 'info', useToast: false });
     openAlertTypeModalShell();
 
     try {
@@ -1154,7 +1412,6 @@
 
   function showSuccessToast(message) {
     renderHardwareStyleToast(message, 'success');
-    setTimeout(() => window.location.reload(), 1500);
   }
 
   function renderHardwareStyleToast(message, type = 'info') {
@@ -1196,7 +1453,9 @@
       </div>
     `;
 
-    toast.querySelector('[data-toast-close]').addEventListener('click', () => {
+    toast.querySelector('[data-toast-close]').addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
       toast.remove();
     });
 
