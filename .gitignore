@@ -32,7 +32,6 @@ ENV/
 .venv/
 .env/
 pyvenv.cfg
-
 # Environment variables
 .env
 .env.local
