@@ -257,13 +257,11 @@
             <i class="fas fa-exclamation-triangle text-red-400 mr-2"></i>Tipo de Alerta *
           </label>
           <select id="tipoAlerta" class="ios-blur-input" required>
-            <option value="">Seleccionar tipo de alerta...</option>
-            <option value="ROJO" style="color: #dc2626;">🔴 ROJO - Incendio</option>
-            <option value="AMARILLO" style="color: #eab308;">🟡 AMARILLO - Sanitaria</option>
-            <option value="NARANJA" style="color: #ea580c;">🟠 NARANJA - Catástrofe Natural</option>
-            <option value="AZUL" style="color: #2563eb;">🔵 AZUL - Accidente</option>
-            <option value="VERDE" style="color: #16a34a;">🟢 VERDE - Delincuencia</option>
+            <option value="" data-type-id="">Seleccionar tipo de alerta...</option>
           </select>
+          <p id="tipoAlertaHelper" class="mt-2 text-xs text-white/60 hidden">
+            No encontramos tipos de alerta activos. Ponte en contacto con tu administrador.
+          </p>
         </div>
 
         <!-- Sede -->

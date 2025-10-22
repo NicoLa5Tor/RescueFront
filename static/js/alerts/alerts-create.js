@@ -2,6 +2,8 @@
 // Variables globales para la creación de alertas
 let empresaData = null;
 let createModalManager = null;
+let alertTypesCache = [];
+let alertTypesLoading = false;
 // ========== INICIALIZACIÓN ==========
 document.addEventListener('DOMContentLoaded', function() {
     ////console.log('🚨 Inicializando sistema de creación de alertas...');
@@ -14,6 +16,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Cargar datos de la empresa
     loadEmpresaDataForAlert();
+
+    // Cargar tipos de alerta disponibles para la empresa
+    loadAlertTypesForAlert();
     
     // Configurar event listeners
     setupCreateAlertEventListeners();
@@ -27,9 +32,12 @@ function showCreateAlertModal() {
     
     // Resetear formulario
     resetCreateAlertForm();
-    
+
     // Cargar datos frescos de la empresa
     loadEmpresaDataForAlert();
+
+    // Garantizar que el listado de tipos esté actualizado
+    loadAlertTypesForAlert();
     
     // Mostrar modal
     if (createModalManager) {
@@ -188,6 +196,188 @@ function populateSedesDropdown(sedes) {
         sedeSelect.appendChild(option);
         //console.log('⚠️ No hay sedes definidas, usando "Principal" por defecto');
     }
+}
+
+// ========== TIPOS DE ALERTA ==========
+
+async function loadAlertTypesForAlert(forceReload = false) {
+    if (alertTypesLoading) {
+        return;
+    }
+
+    const { select, helper } = getAlertTypeSelectElements();
+    if (!select) {
+        return;
+    }
+
+    const empresaId = window.currentUser?.empresa_id || window.currentUser?.id;
+    if (!empresaId) {
+        populateAlertTypesDropdown([]);
+        return;
+    }
+
+    if (alertTypesCache.length > 0 && !forceReload) {
+        populateAlertTypesDropdown(alertTypesCache);
+        return;
+    }
+
+    const apiClient = window.apiClient || (window.EndpointTestClient ? new window.EndpointTestClient() : null);
+    if (!apiClient || typeof apiClient.get_alert_types_for_empresa !== 'function') {
+        handleAlertTypesError(new Error('Cliente API no disponible para tipos de alerta'));
+        populateAlertTypesDropdown([]);
+        return;
+    }
+
+    alertTypesLoading = true;
+    setAlertTypeSelectLoading(true);
+
+    try {
+        const response = await apiClient.get_alert_types_for_empresa(empresaId);
+        if (!response || !response.ok) {
+            const statusText = response ? `${response.status} ${response.statusText}` : 'sin respuesta';
+            throw new Error(`Error al obtener tipos de alerta (${statusText})`);
+        }
+
+        const payload = await response.json().catch(() => ({}));
+        const rawTypes = Array.isArray(payload?.data)
+            ? payload.data
+            : Array.isArray(payload?.alert_types)
+                ? payload.alert_types
+                : [];
+
+        alertTypesCache = rawTypes.filter(Boolean);
+        populateAlertTypesDropdown(alertTypesCache);
+    } catch (error) {
+        console.error('Error cargando tipos de alerta para empresa:', error);
+        alertTypesCache = [];
+        populateAlertTypesDropdown([]);
+        handleAlertTypesError(error);
+    } finally {
+        alertTypesLoading = false;
+        setAlertTypeSelectLoading(false);
+    }
+}
+
+function populateAlertTypesDropdown(types) {
+    const { select, helper } = getAlertTypeSelectElements();
+    if (!select) {
+        return;
+    }
+
+    const previousValue = select.value;
+
+    while (select.options.length > 1) {
+        select.remove(1);
+    }
+
+    if (!types || types.length === 0) {
+        if (helper) {
+            helper.classList.remove('hidden');
+        }
+        select.disabled = true;
+        return;
+    }
+
+    const sortedTypes = [...types].sort((a, b) => {
+        const nameA = (a?.nombre || a?.name || a?.tipo_alerta || '').toString().toLowerCase();
+        const nameB = (b?.nombre || b?.name || b?.tipo_alerta || '').toString().toLowerCase();
+        return nameA.localeCompare(nameB, 'es');
+    });
+
+    sortedTypes.forEach((type) => {
+        const option = document.createElement('option');
+        const typeId = (type?.id || type?._id || '').toString();
+        const code = (type?.tipo_alerta || type?.codigo || '').toString();
+        const displayName = (type?.nombre || type?.name || code || 'Tipo sin nombre').toString();
+        const severity = (type?.severity || '').toString();
+        const color = (type?.color_alerta || type?.color || '').toString();
+
+        option.value = code || typeId || displayName;
+        option.textContent = code && code !== displayName ? `${displayName} (${code})` : displayName;
+        option.dataset.typeId = typeId;
+        option.dataset.typeName = displayName;
+        option.dataset.typeCode = code;
+        option.dataset.typeSeverity = severity;
+        option.dataset.typeColor = color;
+
+        if (color) {
+            option.style.color = color;
+        }
+
+        select.appendChild(option);
+    });
+
+    if (helper) {
+        helper.classList.add('hidden');
+    }
+
+    select.disabled = false;
+
+    const previousOption = Array.from(select.options).find((opt) => opt.value === previousValue);
+    if (previousOption) {
+        select.value = previousValue;
+    } else {
+        select.selectedIndex = 0;
+    }
+}
+
+function setAlertTypeSelectLoading(loading) {
+    const { select } = getAlertTypeSelectElements();
+    if (!select) {
+        return;
+    }
+
+    const placeholder = select.querySelector('option[value=""]');
+    if (placeholder) {
+        placeholder.textContent = loading ? 'Cargando tipos de alerta...' : 'Seleccionar tipo de alerta...';
+    }
+
+    if (loading) {
+        select.disabled = true;
+    } else if (alertTypesCache.length > 0) {
+        select.disabled = false;
+    }
+}
+
+function handleAlertTypesError(error) {
+    if (error) {
+        console.warn('Tipos de alerta: using fallback state', error);
+    }
+    const { helper } = getAlertTypeSelectElements();
+    if (helper) {
+        helper.classList.remove('hidden');
+    }
+
+    if (typeof showSimpleNotification === 'function') {
+        showSimpleNotification('No pudimos cargar los tipos de alerta. Intenta nuevamente.', 'warning', 6000);
+    }
+}
+
+function getAlertTypeSelectElements() {
+    return {
+        select: document.getElementById('tipoAlerta'),
+        helper: document.getElementById('tipoAlertaHelper')
+    };
+}
+
+function getSelectedAlertTypeInfo() {
+    const { select } = getAlertTypeSelectElements();
+    if (!select) {
+        return {};
+    }
+
+    const option = select.selectedOptions && select.selectedOptions[0];
+    if (!option) {
+        return {};
+    }
+
+    return {
+        id: option.dataset.typeId || '',
+        code: option.dataset.typeCode || option.value || '',
+        name: option.dataset.typeName || option.textContent || '',
+        color: option.dataset.typeColor || '',
+        severity: option.dataset.typeSeverity || ''
+    };
 }
 
 /**
@@ -569,7 +759,9 @@ function showValidationErrors(errors) {
  * Mostrar éxito al crear alerta
  */
 function showCreateAlertSuccess(result) {
-    const successMessage = `¡Alerta creada exitosamente!\n\n• Tipo: ${result.data?.tipo_alerta || 'N/A'}\n• Sede: ${result.data?.sede || 'N/A'}\n• Prioridad: ${result.data?.prioridad || 'N/A'}\n\nSe han notificado los contactos de emergencia correspondientes.`;
+    const selectedType = getSelectedAlertTypeInfo();
+    const tipoLabel = selectedType.name || result.data?.tipo_alerta || 'N/A';
+    const successMessage = `¡Alerta creada exitosamente!\n\n• Tipo: ${tipoLabel}\n• Sede: ${result.data?.sede || 'N/A'}\n• Prioridad: ${result.data?.prioridad || 'N/A'}\n\nSe han notificado los contactos de emergencia correspondientes.`;
     showSimpleNotification(successMessage, 'success', 5000);
 }
 

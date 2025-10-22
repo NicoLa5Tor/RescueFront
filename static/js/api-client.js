@@ -296,6 +296,10 @@ class EndpointTestClient {
         return this._request('GET', `/api/empresas/${empresaId}`);
     }
 
+    async get_alert_types_for_empresa(empresaId) {
+        return this._request('GET', `/api/tipos-alarma/empresa/${empresaId}/todos`);
+    }
+
     async create_empresa(data) {
         return this._request('POST', '/api/empresas', { data });
     }
