@@ -296,8 +296,18 @@ class EndpointTestClient {
         return this._request('GET', `/api/empresas/${empresaId}`);
     }
 
-    async get_alert_types_for_empresa(empresaId) {
-        return this._request('GET', `/api/tipos-alarma/empresa/${empresaId}/todos`);
+    async get_alert_types_for_empresa(empresaId, { soloActivos = true } = {}) {
+        if (!empresaId) {
+            throw new Error('empresaId requerido para obtener tipos de alerta');
+        }
+
+        const params = new URLSearchParams();
+        if (soloActivos) {
+            params.set('solo_activos', 'true');
+        }
+
+        const endpoint = `/api/tipos-alarma/empresa/${encodeURIComponent(empresaId)}/todos?${params.toString()}`;
+        return this._request('GET', endpoint);
     }
 
     async create_empresa(data) {

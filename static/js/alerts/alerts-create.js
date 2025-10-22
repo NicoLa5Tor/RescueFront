@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
     loadEmpresaDataForAlert();
 
     // Cargar tipos de alerta disponibles para la empresa
-    loadAlertTypesForAlert();
+    loadAlertTypesForAlert(true);
     
     // Configurar event listeners
     setupCreateAlertEventListeners();
@@ -223,7 +223,7 @@ async function loadAlertTypesForAlert(forceReload = false) {
 
     const apiClient = window.apiClient || (window.EndpointTestClient ? new window.EndpointTestClient() : null);
     if (!apiClient || typeof apiClient.get_alert_types_for_empresa !== 'function') {
-        handleAlertTypesError(new Error('Cliente API no disponible para tipos de alerta'));
+        handleAlertTypesError(new Error('Cliente API no disponible para tipos de alerta por empresa'));
         populateAlertTypesDropdown([]);
         return;
     }
@@ -232,23 +232,23 @@ async function loadAlertTypesForAlert(forceReload = false) {
     setAlertTypeSelectLoading(true);
 
     try {
-        const response = await apiClient.get_alert_types_for_empresa(empresaId);
+        const response = await apiClient.get_alert_types_for_empresa(empresaId, { soloActivos: true });
         if (!response || !response.ok) {
             const statusText = response ? `${response.status} ${response.statusText}` : 'sin respuesta';
-            throw new Error(`Error al obtener tipos de alerta (${statusText})`);
+            throw new Error(`Error al obtener tipos de alerta activos (${statusText})`);
         }
 
         const payload = await response.json().catch(() => ({}));
-        const rawTypes = Array.isArray(payload?.data)
-            ? payload.data
-            : Array.isArray(payload?.alert_types)
-                ? payload.alert_types
-                : [];
+        const normalizedTypes = normalizeEmpresaAlertTypesPayload(payload, empresaId);
 
-        alertTypesCache = rawTypes.filter(Boolean);
+        alertTypesCache = normalizedTypes;
         populateAlertTypesDropdown(alertTypesCache);
+
+        if (!alertTypesCache.length) {
+            handleAlertTypesError(new Error('No se encontraron tipos de alerta activos'));
+        }
     } catch (error) {
-        console.error('Error cargando tipos de alerta para empresa:', error);
+        console.error('Error cargando tipos de alerta activos para empresa:', error);
         alertTypesCache = [];
         populateAlertTypesDropdown([]);
         handleAlertTypesError(error);
@@ -264,8 +264,6 @@ function populateAlertTypesDropdown(types) {
         return;
     }
 
-    const previousValue = select.value;
-
     while (select.options.length > 1) {
         select.remove(1);
     }
@@ -278,31 +276,31 @@ function populateAlertTypesDropdown(types) {
         return;
     }
 
-    const sortedTypes = [...types].sort((a, b) => {
-        const nameA = (a?.nombre || a?.name || a?.tipo_alerta || '').toString().toLowerCase();
-        const nameB = (b?.nombre || b?.name || b?.tipo_alerta || '').toString().toLowerCase();
-        return nameA.localeCompare(nameB, 'es');
-    });
+    const normalizedTypes = [...types]
+        .map((type) => normalizeSingleAlertType(type))
+        .filter(Boolean)
+        .sort((a, b) => a.name.localeCompare(b.name, 'es'));
 
-    sortedTypes.forEach((type) => {
-        const option = document.createElement('option');
-        const typeId = (type?.id || type?._id || '').toString();
-        const code = (type?.tipo_alerta || type?.codigo || '').toString();
-        const displayName = (type?.nombre || type?.name || code || 'Tipo sin nombre').toString();
-        const severity = (type?.severity || '').toString();
-        const color = (type?.color_alerta || type?.color || '').toString();
-
-        option.value = code || typeId || displayName;
-        option.textContent = code && code !== displayName ? `${displayName} (${code})` : displayName;
-        option.dataset.typeId = typeId;
-        option.dataset.typeName = displayName;
-        option.dataset.typeCode = code;
-        option.dataset.typeSeverity = severity;
-        option.dataset.typeColor = color;
-
-        if (color) {
-            option.style.color = color;
+    if (normalizedTypes.length === 0) {
+        if (helper) {
+            helper.classList.remove('hidden');
         }
+        select.disabled = true;
+        return;
+    }
+
+    normalizedTypes.forEach((type) => {
+        const option = document.createElement('option');
+        option.value = type.id;
+        option.textContent = type.code ? `${type.name} (${type.code})` : type.name;
+        option.dataset.typeId = type.id;
+        option.dataset.typeName = type.name;
+        option.dataset.typeCode = type.code || '';
+        option.dataset.typeSeverity = type.severity || '';
+        option.dataset.typeColor = type.color || '';
+        option.dataset.typeEmpresaId = type.empresaId || '';
+        option.dataset.typeEmpresaNombre = type.empresaNombre || '';
+        option.dataset.typeDescription = type.description || '';
 
         select.appendChild(option);
     });
@@ -312,13 +310,7 @@ function populateAlertTypesDropdown(types) {
     }
 
     select.disabled = false;
-
-    const previousOption = Array.from(select.options).find((opt) => opt.value === previousValue);
-    if (previousOption) {
-        select.value = previousValue;
-    } else {
-        select.selectedIndex = 0;
-    }
+    select.value = '';
 }
 
 function setAlertTypeSelectLoading(loading) {
@@ -349,7 +341,7 @@ function handleAlertTypesError(error) {
     }
 
     if (typeof showSimpleNotification === 'function') {
-        showSimpleNotification('No pudimos cargar los tipos de alerta. Intenta nuevamente.', 'warning', 6000);
+        showSimpleNotification('No pudimos cargar los tipos de alerta activos. Intenta nuevamente.', 'warning', 6000);
     }
 }
 
@@ -372,11 +364,14 @@ function getSelectedAlertTypeInfo() {
     }
 
     return {
-        id: option.dataset.typeId || '',
-        code: option.dataset.typeCode || option.value || '',
-        name: option.dataset.typeName || option.textContent || '',
-        color: option.dataset.typeColor || '',
-        severity: option.dataset.typeSeverity || ''
+        id: (option.dataset.typeId || '').trim(),
+        code: (option.dataset.typeCode || '').trim(),
+        name: (option.dataset.typeName || '').trim(),
+        color: (option.dataset.typeColor || '').trim(),
+        severity: (option.dataset.typeSeverity || '').trim(),
+        description: (option.dataset.typeDescription || '').trim(),
+        empresaId: (option.dataset.typeEmpresaId || '').trim(),
+        empresaNombre: (option.dataset.typeEmpresaNombre || '').trim()
     };
 }
 
@@ -507,22 +502,248 @@ async function handleCreateAlertSubmit(event) {
  */
 function getCreateAlertFormData() {
     const empresaId = window.currentUser?.empresa_id || window.currentUser?.id;
-    const empresaUsername = window.currentUser?.username;
     const sedeSeleccionada = document.getElementById('sedeAlerta').value;
     const direccionIngresada = document.getElementById('direccionAlerta').value.trim();
-    
-    // Formato correcto para coincidir con el ejemplo de curl
-    return {
+    const selectedType = getSelectedAlertTypeInfo();
+
+    const payload = {
         creador: {
             empresa_id: empresaId,
             tipo: "empresa",
             sede: sedeSeleccionada,
             direccion: direccionIngresada
         },
-        tipo_alerta: document.getElementById('tipoAlerta').value,
         descripcion: document.getElementById('descripcionAlerta').value,
         prioridad: document.getElementById('prioridadAlerta').value
     };
+
+    if (selectedType.id) {
+        payload.tipo_alerta_id = selectedType.id;
+    }
+    if (selectedType.code) {
+        payload.tipo_alerta_codigo = selectedType.code;
+        payload.tipo_alerta = selectedType.code;
+    }
+    if (selectedType.name) {
+        payload.tipo_alerta_nombre = selectedType.name;
+    }
+    if (selectedType.color) {
+        payload.tipo_alerta_color = selectedType.color;
+    }
+    if (selectedType.severity) {
+        payload.tipo_alerta_severidad = selectedType.severity;
+    }
+    if (selectedType.description) {
+        payload.tipo_alerta_descripcion = selectedType.description;
+    }
+    if (selectedType.empresaId) {
+        payload.tipo_alerta_empresa_id = selectedType.empresaId;
+    }
+    if (selectedType.empresaNombre) {
+        payload.tipo_alerta_empresa_nombre = selectedType.empresaNombre;
+    }
+
+    if (!payload.tipo_alerta && selectedType.name) {
+        payload.tipo_alerta = selectedType.name;
+    }
+    if (!payload.tipo_alerta && selectedType.id) {
+        payload.tipo_alerta = selectedType.id;
+    }
+
+    return payload;
+}
+
+function normalizeEmpresaAlertTypesPayload(payload, empresaId) {
+    if (!payload) {
+        return [];
+    }
+
+    const collections = [];
+
+    if (Array.isArray(payload?.data)) {
+        collections.push(payload.data);
+    }
+    if (Array.isArray(payload?.alert_types)) {
+        collections.push(payload.alert_types);
+    }
+    if (Array.isArray(payload)) {
+        collections.push(payload);
+    }
+
+    if (collections.length === 0) {
+        collectArrayValues(payload, collections, new Set());
+    }
+
+    const normalized = collections
+        .flat()
+        .map((item) => normalizeSingleAlertType(item, empresaId))
+        .filter(Boolean);
+
+    return uniqueAlertTypes(normalized).filter((type) => {
+        if (!empresaId) {
+            return true;
+        }
+        return type.empresaId === empresaId;
+    });
+}
+
+function normalizeSingleAlertType(raw, fallbackEmpresaId = '') {
+    if (!raw) {
+        return null;
+    }
+
+    const source = extractTypeSource(raw);
+
+    const code = [
+        source.tipo_alerta_codigo,
+        source.alert_type_code,
+        source.codigo,
+        source.code,
+        source.tipo_alerta,
+    ].map((value) => (value || '').toString().trim()).find(Boolean);
+
+    const name = [
+        source.tipo_alerta_nombre,
+        source.nombre_tipo_alerta,
+        source.nombre_alerta,
+        source.nombre,
+        source.name,
+        source.display_name,
+        source.label,
+        code,
+    ].map((value) => (value || '').toString().trim()).find(Boolean);
+
+    const id = [
+        source.tipo_alerta_id,
+        source.alert_type_id,
+        code,
+        name,
+        source._id,
+        source.id,
+    ].map((value) => (value || '').toString().trim()).find(Boolean);
+
+    const color = [
+        source.tipo_alerta_color,
+        source.color_alerta,
+        source.color,
+        source.color_hex,
+        source.hex_color,
+    ].map((value) => (value || '').toString().trim()).find(Boolean);
+
+    const severity = [
+        source.tipo_alerta_severidad,
+        source.severity,
+        source.prioridad,
+        source.priority,
+    ].map((value) => (value || '').toString().trim()).find(Boolean);
+
+    const description = [
+        source.descripcion,
+        source.description,
+        source.detalle,
+        source.detail,
+        source.comentarios,
+    ].map((value) => (value || '').toString().trim()).find(Boolean);
+
+    const empresaId = [
+        source.empresa_id,
+        source.empresaId,
+        raw.empresa_id,
+        raw.empresaId,
+        raw.empresa,
+    ].map((value) => (value || '').toString().trim()).find(Boolean) || fallbackEmpresaId;
+
+    const empresaNombre = [
+        source.empresa_nombre,
+        source.empresa,
+        raw.empresa_nombre,
+        raw.empresa,
+        source.nombre_empresa,
+        raw.nombre_empresa,
+    ].map((value) => (value || '').toString().trim()).find(Boolean);
+
+    if (!id && !code && !name) {
+        return null;
+    }
+
+    const resolvedId = (id || code || name).toString().trim();
+    const resolvedName = (name || code || resolvedId).toString().trim();
+
+    return {
+        id: resolvedId,
+        code: code || '',
+        name: resolvedName,
+        nombre: resolvedName,
+        color: color || '',
+        severity: severity || '',
+        description: description || '',
+        empresaId: empresaId || '',
+        empresaNombre: empresaNombre || '',
+    };
+}
+
+function extractTypeSource(item) {
+    if (!item) {
+        return {};
+    }
+
+    const base = { ...item };
+
+    const nestedCandidates = [
+        item.tipo_alerta,
+        item.alert_type,
+        item.tipoAlerta,
+        item.alertType,
+        item.data,
+        item.data?.mensaje_original,
+        item.data?.metadatos,
+    ];
+
+    nestedCandidates.forEach((candidate) => {
+        if (candidate && typeof candidate === 'object') {
+            Object.assign(base, candidate);
+        }
+    });
+
+    return base;
+}
+
+function uniqueAlertTypes(types) {
+    const unique = new Map();
+
+    types.filter(Boolean).forEach((type) => {
+        const key = type.id || `${type.name}-${type.code}`;
+        if (key && !unique.has(key)) {
+            unique.set(key, type);
+        }
+    });
+
+    return Array.from(unique.values());
+}
+
+function collectArrayValues(value, collections, visited) {
+    if (!value || typeof value !== 'object') {
+        return;
+    }
+
+    if (visited.has(value)) {
+        return;
+    }
+    visited.add(value);
+
+    if (Array.isArray(value)) {
+        if (!collections.includes(value)) {
+            collections.push(value);
+        }
+        value.forEach((item) => collectArrayValues(item, collections, visited));
+        return;
+    }
+
+    Object.values(value).forEach((nested) => {
+        if (nested && typeof nested === 'object') {
+            collectArrayValues(nested, collections, visited);
+        }
+    });
 }
 
 /**
@@ -550,10 +771,10 @@ function validateCreateAlertData(data) {
         }
     }
     
-    if (!data.tipo_alerta || data.tipo_alerta.trim() === '') {
-        errors.push('Debe seleccionar un tipo de alerta');
+    if (!data.tipo_alerta_id) {
+        errors.push('Debe seleccionar un tipo de alerta disponible');
     }
-    
+
     if (!data.descripcion || data.descripcion.trim() === '') {
         errors.push('Debe proporcionar una descripción de la emergencia');
     } else if (data.descripcion.trim().length < 10) {
@@ -636,16 +857,18 @@ async function sendCreateAlertRequest(alertData) {
             // El backend devuelve la alerta en responseData.alert
             const alertData = responseData.alert || responseData.data || responseData;
             sendAlertCreatedWebSocketMessage(alertData);
-            
+
             return {
                 success: true,
                 message: responseData.message || 'Alerta creada exitosamente',
                 data: {
-                    id: alertData._id || 'alert_' + Date.now(),
-                    tipo_alerta: alertData.tipo_alerta,
-                    sede: alertData.sede,
-                    prioridad: alertData.prioridad,
-                    fecha_creacion: alertData.fecha_creacion || new Date().toISOString()
+                    id: alertData._id || alertData.id || null,
+                    tipo_alerta_id: alertData.tipo_alerta_id || alertData.alert_type_id || null,
+                    tipo_alerta: alertData.tipo_alerta || alertData.tipo_alerta_codigo || null,
+                    tipo_alerta_nombre: alertData.tipo_alerta_nombre || alertData.nombre_tipo_alerta || null,
+                    sede: alertData.sede || null,
+                    prioridad: alertData.prioridad || null,
+                    fecha_creacion: alertData.fecha_creacion || alertData.created_at || null
                 }
             };
         } else {
@@ -760,7 +983,7 @@ function showValidationErrors(errors) {
  */
 function showCreateAlertSuccess(result) {
     const selectedType = getSelectedAlertTypeInfo();
-    const tipoLabel = selectedType.name || result.data?.tipo_alerta || 'N/A';
+    const tipoLabel = selectedType.name || result.data?.tipo_alerta_nombre || result.data?.tipo_alerta || 'N/A';
     const successMessage = `¡Alerta creada exitosamente!\n\n• Tipo: ${tipoLabel}\n• Sede: ${result.data?.sede || 'N/A'}\n• Prioridad: ${result.data?.prioridad || 'N/A'}\n\nSe han notificado los contactos de emergencia correspondientes.`;
     showSimpleNotification(successMessage, 'success', 5000);
 }
