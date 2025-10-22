@@ -32,4 +32,5 @@ jobs:
             git fetch --prune
             git reset --hard origin/main
             docker-compose pull
+            docker-compose build frontend
             docker-compose up -d --remove-orphans frontend
