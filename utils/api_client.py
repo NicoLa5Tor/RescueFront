@@ -7,8 +7,8 @@ más comunes al backend de forma consistente y reutilizable.
 """
 
 import requests
-from typing import Dict, Any, Optional
-from flask import request
+from typing import Dict, Any, Optional, List
+from flask import request, g
 from datetime import datetime
 
 
@@ -19,8 +19,14 @@ class APIClient:
         self.base_url = base_url.rstrip("/")
     
     def _get_auth_cookies(self) -> Dict[str, str]:
-        """Obtiene las cookies de autenticación de la petición actual"""
-        return {'auth_token': request.cookies.get('auth_token')} if request.cookies.get('auth_token') else {}
+        """Obtiene las cookies de autenticación considerando tokens refrescados"""
+        cached_cookies = getattr(g, 'cached_auth_cookies', {})
+        auth_cookies: Dict[str, str] = {}
+        for cookie_name in ('auth_token', 'refresh_token'):
+            cookie_value = cached_cookies.get(cookie_name) or request.cookies.get(cookie_name)
+            if cookie_value:
+                auth_cookies[cookie_name] = cookie_value
+        return auth_cookies
 
     def _normalize_date(self, value: Any) -> str:
         if not value:
@@ -32,21 +38,138 @@ class APIClient:
     
     def _make_request(self, method: str, endpoint: str, **kwargs) -> requests.Response:
         """Hace una petición HTTP con autenticación automática"""
-        url = f"{self.base_url}{endpoint}"
+        raw_kwargs = dict(kwargs)
+        retry_attempted = raw_kwargs.pop('_retry_attempted', False)
+
+        if endpoint.startswith(('http://', 'https://')):
+            url = endpoint
+            normalized_endpoint = endpoint
+        else:
+            normalized_endpoint = endpoint if endpoint.startswith('/') else f'/{endpoint}'
+            url = f"{self.base_url}{normalized_endpoint}"
+
+        extra_cookies = raw_kwargs.pop('cookies', None)
         cookies = self._get_auth_cookies()
-        headers = kwargs.pop('headers', {})
+        if extra_cookies:
+            cookies.update(extra_cookies)
+
+        headers = dict(raw_kwargs.pop('headers', {}))
         headers.setdefault('Content-Type', 'application/json')
-        auth_token = request.cookies.get('auth_token')
-        if auth_token:
+
+        auth_token = cookies.get('auth_token') or request.cookies.get('auth_token')
+        if auth_token and 'Authorization' not in headers:
             headers['Authorization'] = f'Bearer {auth_token}'
 
-        return requests.request(
+        request_kwargs = dict(raw_kwargs)
+        request_kwargs['cookies'] = cookies
+        request_kwargs['headers'] = headers
+
+        response = requests.request(
             method=method,
             url=url,
-            cookies=cookies,
-            headers=headers,
-            **kwargs
+            **request_kwargs
         )
+
+        if (
+            response.status_code == 401
+            and self._should_attempt_refresh(normalized_endpoint, retry_attempted, cookies)
+        ):
+            refreshed_cookies = self._refresh_token(cookies)
+            if refreshed_cookies:
+                retry_headers = dict(headers)
+                new_auth_token = refreshed_cookies.get('auth_token')
+                if new_auth_token:
+                    retry_headers['Authorization'] = f'Bearer {new_auth_token}'
+                else:
+                    retry_headers.pop('Authorization', None)
+
+                retry_kwargs = dict(raw_kwargs)
+                retry_kwargs['cookies'] = refreshed_cookies
+                retry_kwargs['headers'] = retry_headers
+                response = requests.request(
+                    method=method,
+                    url=url,
+                    **retry_kwargs
+                )
+            else:
+                # Limpia tokens cacheados si el refresh falla para evitar bucles
+                if hasattr(g, 'cached_auth_cookies'):
+                    g.cached_auth_cookies.clear()
+
+        return response
+
+    def _should_attempt_refresh(self, endpoint: str, retry_attempted: bool, cookies: Dict[str, str]) -> bool:
+        if retry_attempted:
+            return False
+
+        normalized = endpoint if endpoint.startswith('/') else f'/{endpoint}'
+        if normalized in ('/auth/login', '/auth/refresh'):
+            return False
+
+        refresh_token = cookies.get('refresh_token') or request.cookies.get('refresh_token')
+        return bool(refresh_token)
+
+    def _store_refreshed_cookies(self, cookie_jar) -> None:
+        if not cookie_jar:
+            return
+
+        cached = dict(getattr(g, 'cached_auth_cookies', {}))
+        stored: List[Dict[str, str]] = list(getattr(g, 'backend_refreshed_cookies', []))
+
+        for cookie in cookie_jar:
+            if not cookie.value:
+                continue
+            cached[cookie.name] = cookie.value
+            stored.append({'name': cookie.name, 'value': cookie.value})
+
+        g.cached_auth_cookies = cached
+        g.backend_refreshed_cookies = stored
+
+    def _refresh_token(self, cookies: Dict[str, str]) -> Optional[Dict[str, str]]:
+        refresh_token = cookies.get('refresh_token') or request.cookies.get('refresh_token')
+        if not refresh_token:
+            return None
+
+        refresh_url = f"{self.base_url}/auth/refresh"
+        headers = {'Content-Type': 'application/json'}
+
+        if cookies.get('auth_token'):
+            headers['Authorization'] = f"Bearer {cookies['auth_token']}"
+
+        try:
+            refresh_response = requests.post(
+                refresh_url,
+                cookies=cookies,
+                headers=headers
+            )
+        except Exception as exc:  # noqa: BLE001
+            print(f"❌ Error refreshing token: {exc}")
+            return None
+
+        if refresh_response.ok:
+            refreshed = dict(cookies)
+            for cookie in refresh_response.cookies:
+                if cookie.value:
+                    refreshed[cookie.name] = cookie.value
+
+            self._store_refreshed_cookies(refresh_response.cookies)
+            return refreshed
+
+        # Si el backend reporta sesión inválida, limpia la caché local
+        if hasattr(g, 'cached_auth_cookies'):
+            g.cached_auth_cookies.clear()
+
+        try:
+            error_payload = refresh_response.json()
+            print(f"⚠️ Refresh token failed: {error_payload}")
+        except Exception:
+            print(f"⚠️ Refresh token failed with status {refresh_response.status_code}")
+
+        return None
+
+    def request(self, method: str, endpoint: str, **kwargs) -> requests.Response:
+        """Permite realizar peticiones con método dinámico"""
+        return self._make_request(method.upper(), endpoint, **kwargs)
     
     def get(self, endpoint: str, **kwargs) -> requests.Response:
         """GET request con autenticación"""

@@ -78,11 +78,8 @@ def require_role(allowed_roles):
             if auth_token and not user_data:
                 try:
                     # Validate token with backend
-                    import requests
-                    response = requests.get(
-                        f"{BACKEND_API_URL}/health",
-                        cookies={'auth_token': auth_token}
-                    )
+                    client = getattr(g, 'api_client', APIClient(BACKEND_API_URL))
+                    response = client.get('/health')
                     if not response.ok:
                         #print(f"❌ Invalid auth token for route {request.endpoint}")
                         return redirect(url_for('login'))
@@ -130,7 +127,8 @@ def require_role(allowed_roles):
 def validate_backend_connection():
     """Valida si el backend está disponible"""
     try:
-        response = requests.get(f"{BACKEND_API_URL}/health")
+        client = APIClient(BACKEND_API_URL)
+        response = client.get('/health')
         return response.ok
     except Exception as e:
         #print(f"❌ Backend no disponible: {e}")
@@ -304,8 +302,8 @@ def proxy_api(endpoint):
     public_endpoints = ['auth/login', 'api/contact/send']
     
     if endpoint not in public_endpoints:
-        # Verificar que tengamos una sesión válida O cookie de autenticación para endpoints protegidos
-        if 'user' not in session and not request.cookies.get('auth_token'):
+        # Verificar que tengamos token de autenticación para endpoints protegidos
+        if not request.cookies.get('auth_token'):
             return jsonify({'error': 'No autenticado'}), 401
 
     #print(f"PROXY: {request.method} /{endpoint} - Session valid: {bool(session.get('user'))}")
@@ -327,25 +325,21 @@ def proxy_api(endpoint):
         #print(f"PROXY DATA: PROXY: Datos enviados - {data}")
 
     try:
-        # Hacer la petición manualmente con las cookies
-        import requests
         headers = {'Content-Type': 'application/json'}
-        cookies = dict(request.cookies)
-        
+        extra_cookies = dict(request.cookies)
+
         # Agregar User-Agent específico para endpoint de contacto
         if endpoint == 'api/contact/send':
             headers['User-Agent'] = 'RESCUE-Frontend/1.0'
-        
-        #print(f"PROXY: Enviando cookies al backend: {cookies}")
-        #print(f"PROXY: Headers enviados: {headers}")
-        
-        resp = requests.request(
+
+        backend_endpoint = f"/{endpoint}" if not endpoint.startswith('/') else endpoint
+        resp = g.api_client.request(
             request.method,
-            f"{BACKEND_API_URL}/{endpoint}",
+            backend_endpoint,
             params=request.args,
             json=data,
             headers=headers,
-            cookies=cookies
+            cookies=extra_cookies
         )
         #print(f"PROXY RESPONSE: PROXY: Respuesta del backend - Status: {resp.status_code}, Content-Length: {len(resp.content) if resp.content else 0}")
         
@@ -413,28 +407,12 @@ def super_admin_dashboard():
     #print(f"🔥 SUPER ADMIN DASHBOARD: Iniciando carga de datos REALES...")
     
     try:
-        # Obtener datos reales del backend vía API usando el proxy interno
-        # En lugar de usar el cliente API directamente, vamos a usar requests con cookies
-        import requests
-        
-        # Obtener cookies de la petición actual
-        cookies = dict(request.cookies)
-        headers = {'Content-Type': 'application/json'}
-        
-        #print(f"🍪 Using cookies for API calls: {cookies}")
-        
-        # Hacer llamadas directas al backend con cookies
-        dashboard_stats_response = requests.get(
-            f"{BACKEND_API_URL}/api/dashboard/stats",
-            cookies=cookies,
-            headers=headers
-        )
-        
-        performance_response = requests.get(
-            f"{BACKEND_API_URL}/api/dashboard/system-performance",
-            cookies=cookies,
-            headers=headers
-        )
+        auth_token = request.cookies.get('auth_token')
+        if not auth_token:
+            raise RuntimeError('Missing auth token for dashboard data')
+
+        dashboard_stats_response = g.api_client.get('/api/dashboard/stats')
+        performance_response = g.api_client.get('/api/dashboard/system-performance')
         
         # Inicializar datos con estructura básica
         dashboard_data = {
@@ -483,13 +461,9 @@ def super_admin_dashboard():
         else:
             print(f"❌ Failed to load performance metrics: {performance_response.status_code}")
         
-        # Obtener companies y users recientes usando requests con cookies
+        # Obtener companies y users recientes usando el cliente autenticado
         try:
-            companies_response = requests.get(
-                f"{BACKEND_API_URL}/api/dashboard/recent-companies",
-                cookies=cookies,
-                headers=headers
-            )
+            companies_response = g.api_client.get('/api/dashboard/recent-companies')
             if companies_response.ok:
                 companies_data = companies_response.json()
                 if companies_data.get('success') and 'data' in companies_data:
@@ -499,11 +473,7 @@ def super_admin_dashboard():
             print(f"⚠️ Error loading recent companies: {e}")
         
         try:
-            users_response = requests.get(
-                f"{BACKEND_API_URL}/api/dashboard/recent-users",
-                cookies=cookies,
-                headers=headers
-            )
+            users_response = g.api_client.get('/api/dashboard/recent-users')
             if users_response.ok:
                 users_data = users_response.json()
                 if users_data.get('success') and 'data' in users_data:
@@ -512,13 +482,9 @@ def super_admin_dashboard():
         except Exception as e:
             print(f"⚠️ Error loading recent users: {e}")
         
-        # Obtener gráficos usando requests con cookies
+        # Obtener gráficos usando el cliente autenticado
         try:
-            activity_response = requests.get(
-                f"{BACKEND_API_URL}/api/dashboard/activity-chart",
-                cookies=cookies,
-                headers=headers
-            )
+            activity_response = g.api_client.get('/api/dashboard/activity-chart')
             if activity_response.ok:
                 activity_data = activity_response.json()
                 if activity_data.get('success') and 'data' in activity_data:
@@ -528,11 +494,7 @@ def super_admin_dashboard():
             print(f"⚠️ Error loading activity chart: {e}")
         
         try:
-            distribution_response = requests.get(
-                f"{BACKEND_API_URL}/api/dashboard/distribution-chart",
-                cookies=cookies,
-                headers=headers
-            )
+            distribution_response = g.api_client.get('/api/dashboard/distribution-chart')
             if distribution_response.ok:
                 distribution_data = distribution_response.json()
                 if distribution_data.get('success') and 'data' in distribution_data:
@@ -1186,43 +1148,41 @@ def empresa_hardware():
     try:
         # Llamada directa al endpoint de hardware por empresa
         auth_token = request.cookies.get('auth_token')
-        if auth_token:
-            import requests
-            backend_url = f"{BACKEND_API_URL}/api/hardware/empresa/{empresa_id}"
-            cookies = {'auth_token': auth_token}
-            response = requests.get(backend_url, cookies=cookies)
-            
-            if response.ok:
-                data = response.json()
-                if data.get('success'):
-                    hardware_list = data.get('data', [])
-                    
-                    # Obtener tipos de hardware
-                    types_response = requests.get(f"{BACKEND_API_URL}/api/hardware-types", cookies=cookies)
-                    hardware_types = []
-                    if types_response.ok:
-                        types_data = types_response.json()
-                        if types_data.get('success'):
-                            hardware_types = types_data.get('data', [])
-                    
-                    hardware_data = {
-                        'hardware_list': hardware_list,
-                        'hardware_types': hardware_types,
-                        'hardware_stats': {
-                            'total_items': len(hardware_list),
-                            'active_items': len([h for h in hardware_list if h.get('activa', True)]),
-                            'inactive_items': len([h for h in hardware_list if not h.get('activa', True)]),
-                            'available_items': len([h for h in hardware_list if h.get('activa', True)]),
-                            'out_of_stock': len([h for h in hardware_list if not h.get('activa', True)]),
-                            'total_value': sum(h.get('datos', {}).get('price', 0) * h.get('datos', {}).get('stock', 0) for h in hardware_list)
-                        }
-                    }
-                else:
-                    raise Exception(f"Backend error: {data.get('errors', [])}")
-            else:
-                raise Exception(f"HTTP {response.status_code}: {response.text}")
-        else:
+        if not auth_token:
             raise Exception("No auth token found")
+
+        backend_endpoint = f"/api/hardware/empresa/{empresa_id}"
+        response = g.api_client.get(backend_endpoint)
+
+        if response.ok:
+            data = response.json()
+            if data.get('success'):
+                hardware_list = data.get('data', [])
+
+                # Obtener tipos de hardware
+                types_response = g.api_client.get('/api/hardware-types')
+                hardware_types = []
+                if types_response.ok:
+                    types_data = types_response.json()
+                    if types_data.get('success'):
+                        hardware_types = types_data.get('data', [])
+
+                hardware_data = {
+                    'hardware_list': hardware_list,
+                    'hardware_types': hardware_types,
+                    'hardware_stats': {
+                        'total_items': len(hardware_list),
+                        'active_items': len([h for h in hardware_list if h.get('activa', True)]),
+                        'inactive_items': len([h for h in hardware_list if not h.get('activa', True)]),
+                        'available_items': len([h for h in hardware_list if h.get('activa', True)]),
+                        'out_of_stock': len([h for h in hardware_list if not h.get('activa', True)]),
+                        'total_value': sum(h.get('datos', {}).get('price', 0) * h.get('datos', {}).get('stock', 0) for h in hardware_list)
+                    }
+                }
+            else:
+                raise Exception(f"Backend error: {data.get('errors', [])}")
+        else:
+            raise Exception(f"HTTP {response.status_code}: {response.text}")
             
     except Exception as e:
         #print(f"Error getting hardware data for empresa {empresa_id}: {e}")
@@ -1284,22 +1244,26 @@ def empresa_dashboard():
     
     # Get real empresa name from backend like in stats
     empresa_nombre = 'Mi Empresa'
+    backend_data = {}
     try:
         if empresa_id:
             auth_token = request.cookies.get('auth_token')
-            if auth_token:
-                import requests
-                backend_url = f"{BACKEND_API_URL}/api/empresas/{empresa_id}/statistics"
-                cookies = {'auth_token': auth_token}
-                response = requests.get(backend_url, cookies=cookies)
-                if response.ok:
-                    data = response.json()
-                    if data.get('success'):
-                        backend_data = data.get('data', {})
-                        empresa_nombre = backend_data.get('empresa', {}).get('nombre', 'Mi Empresa')
+            if not auth_token:
+                raise RuntimeError('No auth token found in cookies')
+
+            response = g.api_client.get(f"/api/empresas/{empresa_id}/statistics")
+            if response.ok:
+                data = response.json()
+                if data.get('success'):
+                    backend_data = data.get('data', {})
+                    empresa_nombre = backend_data.get('empresa', {}).get('nombre', 'Mi Empresa')
+                else:
+                    raise Exception(f"Backend error: {data.get('errors', [])}")
+            else:
+                raise Exception(f"HTTP {response.status_code}: {response.text}")
     except Exception as e:
-        print(f"Error getting empresa name for dashboard: {e}")
-    
+        print(f"Error getting empresa statistics: {e}")
+
     # Get summary data (lighter version for dashboard)
     dashboard_summary = {
         'empresa': {
@@ -1319,38 +1283,15 @@ def empresa_dashboard():
         ]
     }
     
-    try:
-        if empresa_id:
-            # Try to get basic statistics for dashboard KPIs using same method as empresa_stats
-            auth_token = request.cookies.get('auth_token')
-            if auth_token:
-                # Make direct request to backend with cookie authentication
-                import requests
-                backend_url = f"{BACKEND_API_URL}/api/empresas/{empresa_id}/statistics"
-                cookies = {'auth_token': auth_token}
-                response = requests.get(backend_url, cookies=cookies)
-                
-                if response.ok:
-                    data = response.json()
-                    if data.get('success'):
-                        backend_data = data.get('data', {})
-                        dashboard_summary['kpis'].update({
-                            'usuarios_total': backend_data.get('usuarios', {}).get('total_usuarios', 0),
-                            'usuarios_activos': backend_data.get('usuarios', {}).get('usuarios_activos', 0),
-                            'hardware_total': backend_data.get('hardware', {}).get('total_hardware', 0),
-                            'alertas_activas': backend_data.get('alertas', {}).get('alertas_activas', 0)
-                        })
-                        #print(f"✅ Dashboard KPIs loaded for {empresa_id} using cookies")
-                    else:
-                        print(f"⚠️ Backend returned error for dashboard KPIs: {data.get('errors', [])}")
-                else:
-                    print(f"⚠️ Dashboard KPIs request failed. Status: {response.status_code}")
-                    if response.status_code == 401:
-                        print(f"❌ Unauthorized for dashboard KPIs - token might be invalid")
-            else:
-                print(f"❌ No auth token found in cookies for dashboard KPIs")
-    except Exception as e:
-        print(f"⚠️ Error fetching dashboard KPIs: {e}")
+    if backend_data:
+        dashboard_summary['kpis'].update({
+            'usuarios_total': backend_data.get('usuarios', {}).get('total_usuarios', 0),
+            'usuarios_activos': backend_data.get('usuarios', {}).get('usuarios_activos', 0),
+            'hardware_total': backend_data.get('hardware', {}).get('total_hardware', 0),
+            'alertas_activas': backend_data.get('alertas', {}).get('alertas_activas', 0)
+        })
+    else:
+        print(f"⚠️ Dashboard KPIs fallback in use for empresa {empresa_id}")
     
     return render_template(
         'empresa/dashboard_main.html', 
@@ -1441,69 +1382,65 @@ def empresa_stats():
         if empresa_id:
             # Try to get real statistics from backend with authentication cookies
             auth_token = request.cookies.get('auth_token')
-            if auth_token:
-                # Make direct request to backend with cookie authentication
-                import requests
-                backend_url = f"{BACKEND_API_URL}/api/empresas/{empresa_id}/statistics"
-                cookies = {'auth_token': auth_token}
-                response = requests.get(backend_url, cookies=cookies)
-                
-                if response.ok:
-                    data = response.json()
-                    if data.get('success'):
-                        backend_data = data.get('data', {})
-                        #print(f"📊 Raw backend data: {backend_data}")
-                        
-                        # Map backend data to frontend expected structure
-                        empresa_statistics = {
-                            'empresa': {
-                                'id': backend_data.get('empresa', {}).get('id', empresa_id),
-                                'nombre': backend_data.get('empresa', {}).get('nombre', empresa_username or 'Mi Empresa'),
-                                'activa': backend_data.get('empresa', {}).get('activa', True),
-                                'fecha_creacion': backend_data.get('empresa', {}).get('fecha_creacion', '2024-01-01')
-                            },
-                            'usuarios': {
-                                'total': backend_data.get('usuarios', {}).get('total_usuarios', 0),
-                                'activos': backend_data.get('usuarios', {}).get('usuarios_activos', 0),
-                                'inactivos': backend_data.get('usuarios', {}).get('usuarios_inactivos', 0)
-                            },
-                            'hardware': {
-                                'total': backend_data.get('hardware', {}).get('total_hardware', 0),
-                                'activos': backend_data.get('hardware', {}).get('hardware_activo', 0),
-                                'inactivos': backend_data.get('hardware', {}).get('hardware_inactivo', 0),
-                                'por_tipo': backend_data.get('hardware', {}).get('por_tipo', {
-                                    'botonera': 0,
-                                    'semaforo': 0,
-                                    'televisor': 0,
-                                    'pantalla': 0
-                                })
-                            },
-                            'alertas': {
-                                'total': backend_data.get('alertas', {}).get('total_alertas', 0),
-                                'activas': backend_data.get('alertas', {}).get('alertas_activas', 0),
-                                'resueltas': backend_data.get('alertas', {}).get('alertas_inactivas', 0),
-                                'por_prioridad': {
-                                    'critica': backend_data.get('alertas', {}).get('alertas_por_prioridad', {}).get('critica', 0),
-                                    'alta': backend_data.get('alertas', {}).get('alertas_por_prioridad', {}).get('alta', 0),
-                                    'media': backend_data.get('alertas', {}).get('alertas_por_prioridad', {}).get('media', 0),
-                                    'baja': backend_data.get('alertas', {}).get('alertas_por_prioridad', {}).get('baja', 0)
-                                }
-                            },
-                            'actividad_reciente': {
-                                'logs_ultimos_30_dias': backend_data.get('alertas', {}).get('alertas_recientes_30d', 0),
-                                'ultima_actividad': backend_data.get('empresa', {}).get('ultima_actividad', '2024-07-20T10:30:00Z')
+            if not auth_token:
+                raise RuntimeError('No auth token found in cookies')
+
+            response = g.api_client.get(f"/api/empresas/{empresa_id}/statistics")
+
+            if response.ok:
+                data = response.json()
+                if data.get('success'):
+                    backend_data = data.get('data', {})
+                    #print(f"📊 Raw backend data: {backend_data}")
+
+                    # Map backend data to frontend expected structure
+                    empresa_statistics = {
+                        'empresa': {
+                            'id': backend_data.get('empresa', {}).get('id', empresa_id),
+                            'nombre': backend_data.get('empresa', {}).get('nombre', empresa_username or 'Mi Empresa'),
+                            'activa': backend_data.get('empresa', {}).get('activa', True),
+                            'fecha_creacion': backend_data.get('empresa', {}).get('fecha_creacion', '2024-01-01')
+                        },
+                        'usuarios': {
+                            'total': backend_data.get('usuarios', {}).get('total_usuarios', 0),
+                            'activos': backend_data.get('usuarios', {}).get('usuarios_activos', 0),
+                            'inactivos': backend_data.get('usuarios', {}).get('usuarios_inactivos', 0)
+                        },
+                        'hardware': {
+                            'total': backend_data.get('hardware', {}).get('total_hardware', 0),
+                            'activos': backend_data.get('hardware', {}).get('hardware_activo', 0),
+                            'inactivos': backend_data.get('hardware', {}).get('hardware_inactivo', 0),
+                            'por_tipo': backend_data.get('hardware', {}).get('por_tipo', {
+                                'botonera': 0,
+                                'semaforo': 0,
+                                'televisor': 0,
+                                'pantalla': 0
+                            })
+                        },
+                        'alertas': {
+                            'total': backend_data.get('alertas', {}).get('total_alertas', 0),
+                            'activas': backend_data.get('alertas', {}).get('alertas_activas', 0),
+                            'resueltas': backend_data.get('alertas', {}).get('alertas_inactivas', 0),
+                            'por_prioridad': {
+                                'critica': backend_data.get('alertas', {}).get('alertas_por_prioridad', {}).get('critica', 0),
+                                'alta': backend_data.get('alertas', {}).get('alertas_por_prioridad', {}).get('alta', 0),
+                                'media': backend_data.get('alertas', {}).get('alertas_por_prioridad', {}).get('media', 0),
+                                'baja': backend_data.get('alertas', {}).get('alertas_por_prioridad', {}).get('baja', 0)
                             }
+                        },
+                        'actividad_reciente': {
+                            'logs_ultimos_30_dias': backend_data.get('alertas', {}).get('alertas_recientes_30d', 0),
+                            'ultima_actividad': backend_data.get('empresa', {}).get('ultima_actividad', '2024-07-20T10:30:00Z')
                         }
-                        print(f"✅ Loaded and mapped empresa statistics")
-                        #print(f"📋 Mapped data: {empresa_statistics}")
-                    else:
-                        print(f"⚠️ Backend returned error: {data.get('errors', [])}")
+                    }
+                    print(f"✅ Loaded and mapped empresa statistics")
+                    #print(f"📋 Mapped data: {empresa_statistics}")
                 else:
-                    #print(f"⚠️ Backend statistics not available, using defaults. Status: {response.status_code}")
-                    if response.status_code == 401:
-                        print(f"❌ Unauthorized - token might be invalid or expired")
+                    print(f"⚠️ Backend returned error: {data.get('errors', [])}")
             else:
-                print(f"❌ No auth token found in cookies")
+                #print(f"⚠️ Backend statistics not available, using defaults. Status: {response.status_code}")
+                if response.status_code == 401:
+                    print(f"❌ Unauthorized - token might be invalid or expired")
     except Exception as e:
         print(f"❌ Error fetching empresa statistics: {e}")
     
@@ -1586,7 +1523,23 @@ def after_request(response):
     response.headers['X-Content-Type-Options'] = 'nosniff'
     response.headers['X-Frame-Options'] = 'DENY'
     response.headers['X-XSS-Protection'] = '1; mode=block'
-    
+
+    # Aplicar cookies refrescadas del backend durante la petición
+    refreshed_cookies = getattr(g, 'backend_refreshed_cookies', [])
+    for cookie in refreshed_cookies:
+        cookie_name = cookie.get('name')
+        cookie_value = cookie.get('value')
+        if not cookie_name or cookie_value is None:
+            continue
+        response.set_cookie(
+            cookie_name,
+            cookie_value,
+            httponly=True,
+            secure=not DEBUG_MODE,
+            samesite='Lax',
+            path='/'
+        )
+
     # Headers solo para desarrollo
     if DEBUG_MODE:
         response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
