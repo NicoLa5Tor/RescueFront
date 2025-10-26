@@ -239,7 +239,14 @@ async function loadAlertTypesForAlert(forceReload = false) {
         }
 
         const payload = await response.json().catch(() => ({}));
+        if (window.console && console.debug) {
+            console.debug('[Alertas] payload crudo tipos alerta:', payload);
+        }
         const normalizedTypes = normalizeEmpresaAlertTypesPayload(payload, empresaId);
+
+        if (window.console && console.debug) {
+            console.debug('[Alertas] tipos normalizados para empresa', empresaId, normalizedTypes);
+        }
 
         alertTypesCache = normalizedTypes;
         populateAlertTypesDropdown(alertTypesCache);
@@ -763,9 +770,16 @@ function uniqueAlertTypes(types) {
     const unique = new Map();
 
     types.filter(Boolean).forEach((type) => {
-        const key = type.id || `${type.name}-${type.code}`;
-        if (key && !unique.has(key)) {
-            unique.set(key, type);
+        const keyParts = [
+            resolveScalarValue(type.id),
+            resolveScalarValue(type.code),
+            resolveScalarValue(type.name),
+            resolveScalarValue(type.empresaId)
+        ];
+        const key = keyParts.filter(Boolean).join('::');
+        const mapKey = key || JSON.stringify(type);
+        if (!unique.has(mapKey)) {
+            unique.set(mapKey, type);
         }
     });
 
