@@ -459,7 +459,8 @@
 
       <div class="form-group">
         <label for="alertTypeDescription" class="ios-filter-label">Descripción *</label>
-        <textarea id="alertTypeDescription" name="descripcion" class="ios-filter-input" rows="3" placeholder="Describe cuándo se activa esta alerta" required></textarea>
+        <textarea id="alertTypeDescription" name="descripcion" class="ios-filter-input" rows="3" placeholder="Describe cuándo se activa esta alerta" maxlength="65" required></textarea>
+        <p class="text-xs text-white/60 mt-1" id="alertTypeDescriptionHelper">Máximo 65 caracteres. <span id="alertTypeDescriptionCounter">0/65</span></p>
       </div>
 
       <div class="form-grid">

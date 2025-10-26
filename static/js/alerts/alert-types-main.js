@@ -51,6 +51,11 @@
   const soundPreview = document.getElementById('alertSoundPreview');
   const soundHiddenInput = document.getElementById('alertTypeSound');
 
+  const descriptionInput = document.getElementById('alertTypeDescription');
+  const descriptionCounter = document.getElementById('alertTypeDescriptionCounter');
+  const descriptionHelper = document.getElementById('alertTypeDescriptionHelper');
+  const DESCRIPTION_LIMIT = 65;
+
   const recommendationInput = document.getElementById('alertRecommendationInput');
   const recommendationAddBtn = document.getElementById('alertRecommendationAddBtn');
   const recommendationsList = document.getElementById('alertRecommendationsList');
@@ -194,6 +199,7 @@
     }
 
     syncHiddenCompany('');
+    updateDescriptionCounter(descriptionInput ? descriptionInput.value : '');
 
     resetMediaSelectors();
     updateImagePreview(null, '');
@@ -248,6 +254,32 @@
 
     if (useToast && message) {
       renderHardwareStyleToast(message, type);
+    }
+  }
+
+  function updateDescriptionCounter(value) {
+    if (!descriptionCounter) {
+      return;
+    }
+    const length = (value || '').length;
+    descriptionCounter.textContent = `${length}/${DESCRIPTION_LIMIT}`;
+
+    if (descriptionInput) {
+      if (length > DESCRIPTION_LIMIT) {
+        descriptionInput.setCustomValidity(`La descripción no puede exceder ${DESCRIPTION_LIMIT} caracteres.`);
+      } else {
+        descriptionInput.setCustomValidity('');
+      }
+    }
+
+    if (descriptionHelper) {
+      if (length > DESCRIPTION_LIMIT) {
+        descriptionHelper.style.color = '#f87171';
+      } else if (length >= DESCRIPTION_LIMIT - 10) {
+        descriptionHelper.style.color = '#facc15';
+      } else {
+        descriptionHelper.style.color = '';
+      }
     }
   }
 
@@ -582,6 +614,7 @@
     const descriptionField = form.elements.namedItem('descripcion');
     if (descriptionField) {
       descriptionField.value = (safeData.description || '').toString();
+      updateDescriptionCounter(descriptionField.value);
     }
 
     const isGlobal = !safeData.company_id;
@@ -1119,6 +1152,17 @@
       payload.sonido_link = editingAlertTypeSnapshot.sound;
     }
 
+    if (payload.descripcion.length > DESCRIPTION_LIMIT) {
+      updateDescriptionCounter(payload.descripcion);
+      showFeedback(`La descripción no puede exceder ${DESCRIPTION_LIMIT} caracteres.`);
+      if (descriptionInput) {
+        descriptionInput.focus();
+        descriptionInput.setCustomValidity(`La descripción no puede exceder ${DESCRIPTION_LIMIT} caracteres.`);
+        descriptionInput.reportValidity();
+      }
+      return;
+    }
+
     const isGlobalToggle = Boolean(scopeToggle?.checked);
     const empresaId = (companyHiddenInput?.value || '').trim();
     const companyDisplay = (companyInput?.value || '').trim();
@@ -1204,6 +1248,13 @@
   if (colorInput) {
     colorInput.addEventListener('input', () => {
       hideFeedback();
+    });
+  }
+
+  if (descriptionInput) {
+    updateDescriptionCounter(descriptionInput.value || '');
+    descriptionInput.addEventListener('input', () => {
+      updateDescriptionCounter(descriptionInput.value || '');
     });
   }
 
