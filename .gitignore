@@ -32,6 +32,8 @@ ENV/
 .venv/
 .env/
 pyvenv.cfg
+AGENTS.md 
+CLAUDE.md
 # Environment variables
 .env
 .env.local

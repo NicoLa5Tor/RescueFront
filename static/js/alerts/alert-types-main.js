@@ -32,6 +32,12 @@
   const companyInput = document.getElementById('alertTypeCompanyInput');
   const companyHiddenInput = document.getElementById('alertTypeCompanyId');
   const companyDatalist = document.getElementById('alertTypeCompanyList');
+  const scopeToggle = document.getElementById('alertTypeScopeGlobal');
+  const companyGroup = document.getElementById('alertTypeCompanyGroup');
+  const companyLabelSuffix = document.getElementById('alertTypeCompanyLabelSuffix');
+  const companyHelper = document.getElementById('alertTypeCompanyHelper');
+  const scopeWrapper = document.getElementById('alertTypeScopeWrapper');
+  const scopeLabel = document.getElementById('alertTypeScopeLabel');
 
   const imageFolderSelect = document.getElementById('alertImageFolderSelect');
   const imageFileSelect = document.getElementById('alertImageFileSelect');
@@ -60,6 +66,7 @@
   let editingAlertTypeId = null;
   let editingAlertTypeSnapshot = null;
   const viewAlertModalId = 'viewAlertTypeModal';
+  let pendingRefreshTimeout = null;
   const viewAlertElements = {
     modal: () => document.getElementById(viewAlertModalId),
     title: document.getElementById('viewAlertTypeTitle'),
@@ -112,6 +119,56 @@
     window.modalManager.setupModal(deactivateModalId, { closeOnBackdropClick: false });
   }
 
+  function setAlertScope(isGlobal, { preserveCompany = false } = {}) {
+    const globalState = Boolean(isGlobal);
+
+    if (scopeToggle) {
+      scopeToggle.checked = globalState;
+    }
+
+    if (companyGroup) {
+      companyGroup.classList.toggle('is-scope-global', globalState);
+    }
+
+    if (companyInput) {
+      companyInput.disabled = globalState;
+      companyInput.placeholder = globalState
+        ? 'Alerta global (sin empresa)'
+        : 'Selecciona una empresa';
+
+      if (globalState) {
+        companyInput.setCustomValidity('');
+        if (!preserveCompany) {
+          companyInput.value = '';
+        }
+      }
+    }
+
+    if (companyHiddenInput && !preserveCompany && globalState) {
+      companyHiddenInput.value = '';
+    }
+
+    if (companyLabelSuffix) {
+      companyLabelSuffix.textContent = '(opcional)';
+    }
+
+    if (companyHelper) {
+      companyHelper.textContent = globalState
+        ? 'La alerta se aplicará a todas las empresas. No necesitas seleccionar una.'
+        : 'Selecciona una empresa para asociarla o deja el campo vacío para que sea global.';
+    }
+
+    if (scopeWrapper) {
+      scopeWrapper.classList.toggle('is-active', globalState);
+    }
+
+    if (scopeLabel) {
+      scopeLabel.textContent = globalState
+        ? 'Alerta global activada'
+        : 'Convertir en alerta global';
+    }
+  }
+
   function resetForm() {
     if (!form) return;
 
@@ -120,6 +177,7 @@
     setFormMode('create');
 
     form.reset();
+    setAlertScope(false);
 
     if (colorInput) {
       colorInput.value = '';
@@ -191,6 +249,19 @@
     if (useToast && message) {
       renderHardwareStyleToast(message, type);
     }
+  }
+
+  function scheduleAlertTypesRefresh(delay = 600) {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    if (pendingRefreshTimeout) {
+      window.clearTimeout(pendingRefreshTimeout);
+    }
+    pendingRefreshTimeout = window.setTimeout(() => {
+      pendingRefreshTimeout = null;
+      window.location.reload();
+    }, Math.max(delay, 0));
   }
 
   function hideFeedback() {
@@ -413,7 +484,10 @@
         viewAlertElements.active.style.color = isActive ? '#34d399' : '#f87171';
       }
 
-      setDetailText(viewAlertElements.company, data.company_id ? `ID: ${data.company_id}` : 'Global');
+      const companyName = (data.company_name || '').toString().trim();
+      const companyId = (data.company_id || '').toString().trim();
+      const companyLabel = companyName || (companyId ? `ID: ${companyId}` : 'Global');
+      setDetailText(viewAlertElements.company, companyLabel || 'Global', 'Global');
       setDetailText(viewAlertElements.created, formatDateTime(data.created_at));
       setDetailText(viewAlertElements.updated, formatDateTime(data.updated_at));
 
@@ -510,7 +584,15 @@
       descriptionField.value = (safeData.description || '').toString();
     }
 
-    selectCompanyById(safeData.company_id || '');
+    const isGlobal = !safeData.company_id;
+    setAlertScope(isGlobal, { preserveCompany: Boolean(safeData.company_id) });
+
+    if (isGlobal) {
+      selectCompanyById('');
+      syncHiddenCompany('');
+    } else {
+      selectCompanyById(safeData.company_id || '');
+    }
 
     recommendationsState.length = 0;
     if (Array.isArray(safeData.recommendations)) {
@@ -705,13 +787,20 @@
 
   function syncHiddenCompany(value) {
     if (!companyHiddenInput) return;
+    if (scopeToggle?.checked) {
+      companyHiddenInput.value = '';
+      if (companyInput) {
+        companyInput.setCustomValidity('');
+      }
+      return;
+    }
     const normalized = value.trim().toLowerCase();
     const hasValue = normalized.length > 0;
     const match = companiesState.list.find((company) => company.displayLower === normalized);
     companyHiddenInput.value = match ? match.id : '';
 
     if (companyInput) {
-      const validityMessage = match ? '' : (hasValue ? 'Selecciona una empresa válida' : 'Selecciona una empresa');
+      const validityMessage = match ? '' : (hasValue ? 'Selecciona una empresa válida' : '');
       companyInput.setCustomValidity(validityMessage);
     }
   }
@@ -721,12 +810,28 @@
   }
 
   function handleCompanyInputBlur(event) {
+    if (scopeToggle?.checked) {
+      event.target.value = '';
+      syncHiddenCompany('');
+      return;
+    }
     const value = event.target.value || '';
     const normalized = value.trim().toLowerCase();
     const match = companiesState.list.find((company) => company.displayLower === normalized);
     if (!match) {
       event.target.value = '';
       syncHiddenCompany('');
+    }
+  }
+
+  function handleScopeToggleChange(event) {
+    const isGlobal = Boolean(event?.target?.checked);
+    setAlertScope(isGlobal);
+    if (isGlobal) {
+      syncHiddenCompany('');
+    } else if (companyInput) {
+      syncHiddenCompany(companyInput.value || '');
+      companyInput.focus();
     }
   }
 
@@ -1014,9 +1119,14 @@
       payload.sonido_link = editingAlertTypeSnapshot.sound;
     }
 
-    const empresaId = companyHiddenInput?.value || '';
-    if (!empresaId) {
-      showFeedback('Debes seleccionar una empresa para el tipo de alerta.');
+    const isGlobalToggle = Boolean(scopeToggle?.checked);
+    const empresaId = (companyHiddenInput?.value || '').trim();
+    const companyDisplay = (companyInput?.value || '').trim();
+    const hasCompanySelection = empresaId.length > 0;
+    const typedButNoMatch = !isGlobalToggle && !hasCompanySelection && companyDisplay.length > 0;
+
+    if (typedButNoMatch) {
+      showFeedback('Selecciona una empresa válida o marca el alcance global.');
       if (companyInput) {
         companyInput.focus();
         companyInput.setCustomValidity('Selecciona una empresa válida');
@@ -1025,7 +1135,11 @@
       return;
     }
 
-    payload.empresa_id = empresaId;
+    if (companyInput) {
+      companyInput.setCustomValidity('');
+    }
+
+    payload.empresa_id = (isGlobalToggle || !hasCompanySelection) ? '' : empresaId;
 
     const missing = ['nombre', 'descripcion', 'tipo_alerta', 'color_alerta']
       .filter((field) => !payload[field]);
@@ -1070,6 +1184,7 @@
         ? 'El tipo de alerta se actualizó correctamente.'
         : 'El tipo de alerta se registró correctamente.';
       showSuccessToast(data.message || defaultSuccess);
+      scheduleAlertTypesRefresh();
     } catch (error) {
       console.error('Error creating alert type:', error);
       const fallback = Boolean(editingAlertTypeId)
@@ -1134,6 +1249,10 @@
     companyInput.addEventListener('input', handleCompanyInputChange);
     companyInput.addEventListener('change', handleCompanyInputChange);
     companyInput.addEventListener('blur', handleCompanyInputBlur);
+  }
+
+  if (scopeToggle) {
+    scopeToggle.addEventListener('change', handleScopeToggleChange);
   }
 
   if (recommendationAddBtn && recommendationInput) {
@@ -1341,6 +1460,7 @@
         ? 'Tipo de alerta reactivado correctamente.'
         : 'Tipo de alerta desactivado correctamente.';
       showSuccessToast(data.message || defaultSuccess);
+      scheduleAlertTypesRefresh();
     } catch (error) {
       showDeactivateFeedback(error.message || 'Ocurrió un error al actualizar el estado del tipo de alerta.');
       deactivateConfirmBtn.disabled = false;

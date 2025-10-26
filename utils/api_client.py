@@ -400,6 +400,19 @@ class APIClient:
 
             mapped_items = []
             for raw in raw_items:
+                company_reference = raw.get('empresa') or raw.get('company') or {}
+                if isinstance(company_reference, dict):
+                    company_name = (
+                        company_reference.get('nombre')
+                        or company_reference.get('name')
+                        or ''
+                    )
+                else:
+                    company_name = (
+                        raw.get('empresa_nombre')
+                        or raw.get('nombre_empresa')
+                        or ''
+                    )
                 severity = _map_severity(raw.get('tipo_alerta'))
                 color_value = raw.get('color_alerta')
                 if isinstance(color_value, str):
@@ -417,6 +430,8 @@ class APIClient:
                     'recommendations': raw.get('recomendaciones', []) or [],
                     'equipment': raw.get('implementos_necesarios', []) or [],
                     'company_id': raw.get('empresa_id'),
+                    'company_name': company_name,
+                    'scope': 'global' if not raw.get('empresa_id') else 'empresa',
                     'active': bool(raw.get('activo', True)),
                     'sla_minutes': raw.get('sla_minutos') or raw.get('sla') or 0,
                     'created_at': self._normalize_date(raw.get('fecha_creacion')),
@@ -497,6 +512,19 @@ class APIClient:
                 raise Exception(payload.get('message') or 'Respuesta sin éxito')
 
             data = payload.get('data') or {}
+            company_reference = data.get('empresa') or data.get('company') or {}
+            if isinstance(company_reference, dict):
+                company_name = (
+                    company_reference.get('nombre')
+                    or company_reference.get('name')
+                    or ''
+                )
+            else:
+                company_name = (
+                    data.get('empresa_nombre')
+                    or data.get('nombre_empresa')
+                    or ''
+                )
             mapped = {
                 'id': str(data.get('_id', '')),
                 'name': data.get('nombre', ''),
@@ -508,6 +536,8 @@ class APIClient:
                 'equipment': data.get('implementos_necesarios', []) or [],
                 'sound': data.get('sonido_link'),
                 'company_id': data.get('empresa_id'),
+                'company_name': company_name,
+                'scope': 'global' if not data.get('empresa_id') else 'empresa',
                 'active': bool(data.get('activo', True)),
                 'created_at': self._normalize_date(data.get('fecha_creacion')),
                 'updated_at': self._normalize_date(data.get('fecha_actualizacion')),
