@@ -94,7 +94,12 @@
     {% set color_value = alert_type.color | default('') %}
     {% set color_is_hex = color_value and color_value.startswith('#') and (color_value|length == 7 or color_value|length == 4) %}
     {% set color_css = color_value if color_is_hex else '#1d4ed8' %}
-    <article class="ios-hardware-card alert-type-card force-visible" data-status="{{ 'active' if alert_type.active | default(True) else 'inactive' }}" data-severity="{{ alert_type.severity | default('desconocida') | lower }}" style="--alert-type-color: {{ color_css }};">
+    <article
+      class="ios-hardware-card alert-type-card force-visible{{ ' alert-type-card--global' if not alert_type.company_id }}"
+      data-status="{{ 'active' if alert_type.active | default(True) else 'inactive' }}"
+      data-severity="{{ alert_type.severity | default('desconocida') | lower }}"
+      style="--alert-type-color: {{ color_css }};"
+    >
       <header class="alert-type-card__header">
         <div class="ios-card-icon">
           <i class="{{ alert_type.icon | default('fas fa-bell') }}"></i>

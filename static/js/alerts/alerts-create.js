@@ -291,8 +291,10 @@ function populateAlertTypesDropdown(types) {
 
     normalizedTypes.forEach((type) => {
         const option = document.createElement('option');
-        option.value = type.id;
-        option.textContent = type.code ? `${type.name} (${type.code})` : type.name;
+        option.value = type.id || '';
+        const isGlobal = !(type.empresaId || '').trim();
+        const baseLabel = type.code ? `${type.name} (${type.code})` : type.name;
+        option.textContent = isGlobal ? `${baseLabel} · Global` : baseLabel;
         option.dataset.typeId = type.id;
         option.dataset.typeName = type.name;
         option.dataset.typeCode = type.code || '';
@@ -301,6 +303,7 @@ function populateAlertTypesDropdown(types) {
         option.dataset.typeEmpresaId = type.empresaId || '';
         option.dataset.typeEmpresaNombre = type.empresaNombre || '';
         option.dataset.typeDescription = type.description || '';
+        option.dataset.typeScope = isGlobal ? 'global' : 'empresa';
 
         select.appendChild(option);
     });
@@ -634,7 +637,8 @@ function normalizeEmpresaAlertTypesPayload(payload, empresaId) {
         if (!normalizedEmpresaId) {
             return true;
         }
-        return resolveScalarValue(type.empresaId) === normalizedEmpresaId;
+        const typeEmpresaId = resolveScalarValue(type.empresaId);
+        return typeEmpresaId === normalizedEmpresaId || typeEmpresaId === '';
     });
 }
 
