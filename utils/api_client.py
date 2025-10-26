@@ -651,6 +651,28 @@ class APIClient:
                 'status_code': 500
             }
 
+    def delete_alert_type(self, alert_type_id: str) -> Dict[str, Any]:
+        """Elimina definitivamente un tipo de alerta."""
+        try:
+            endpoint = f"/api/tipos-alarma/{alert_type_id}"
+            response = self.delete(endpoint)
+            data = response.json() if response.content else {}
+            success = response.ok and data.get('success', False)
+            return {
+                'success': success,
+                'message': data.get('message') or data.get('error') or '',
+                'status_code': response.status_code,
+                'payload': data
+            }
+        except Exception as exc:
+            print(f"Error deleting alert type: {exc}")
+            return {
+                'success': False,
+                'message': str(exc),
+                'status_code': 500,
+                'payload': None
+            }
+
     def get_company_types(self) -> Dict[str, Any]:
         """Obtiene los tipos de empresa"""
         try:

@@ -99,6 +99,7 @@
   };
   const toggleButtons = document.querySelectorAll('[data-alert-type-toggle]');
   const editButtons = document.querySelectorAll('[data-alert-type-edit="true"]');
+  const deleteButtons = document.querySelectorAll('[data-alert-type-delete="true"]');
 
   const companiesState = {
     list: [],
@@ -1296,6 +1297,17 @@
     });
   }
 
+  if (deleteButtons.length > 0) {
+    deleteButtons.forEach((button) => {
+      button.addEventListener('click', (event) => {
+        const target = event.currentTarget;
+        const alertTypeId = target?.dataset?.alertTypeId;
+        const alertTypeName = target?.dataset?.alertTypeName || '';
+        window.openToggleAlertTypeModal(alertTypeId, alertTypeName, 'delete');
+      });
+    });
+  }
+
   if (companyInput) {
     companyInput.addEventListener('input', handleCompanyInputChange);
     companyInput.addEventListener('change', handleCompanyInputChange);
@@ -1410,33 +1422,64 @@
 
     deactivateState.id = alertTypeId;
     deactivateState.name = (alertTypeName || '').toString();
-    deactivateState.mode = mode === 'activate' ? 'activate' : 'deactivate';
+    const normalizedMode = mode === 'activate' ? 'activate' : (mode === 'delete' ? 'delete' : 'deactivate');
+    deactivateState.mode = normalizedMode;
 
     const isActivation = deactivateState.mode === 'activate';
+    const isDeletion = deactivateState.mode === 'delete';
     const nameFragment = deactivateState.name ? `"${deactivateState.name}"` : 'este tipo de alerta';
 
     if (deactivateMessage) {
-      deactivateMessage.textContent = isActivation
-        ? `¿Quieres reactivar ${nameFragment}?`
-        : `¿Estás seguro de que quieres desactivar ${nameFragment}?`;
+      if (isActivation) {
+        deactivateMessage.textContent = `¿Quieres reactivar ${nameFragment}?`;
+      } else if (isDeletion) {
+        deactivateMessage.textContent = `Esta acción eliminará ${nameFragment}. ¿Deseas continuar?`;
+      } else {
+        deactivateMessage.textContent = `¿Estás seguro de que quieres desactivar ${nameFragment}?`;
+      }
     }
     if (deactivateTitle) {
-      deactivateTitle.textContent = isActivation ? 'Reactivar tipo de alerta' : 'Desactivar tipo de alerta';
+      if (isActivation) {
+        deactivateTitle.textContent = 'Reactivar tipo de alerta';
+      } else if (isDeletion) {
+        deactivateTitle.textContent = 'Eliminar tipo de alerta';
+      } else {
+        deactivateTitle.textContent = 'Desactivar tipo de alerta';
+      }
     }
     if (deactivateIconWrapper) {
       const baseClass = 'toggle-modal-icon mx-auto mb-4';
-      deactivateIconWrapper.className = `${baseClass} ${isActivation ? 'activate' : 'deactivate'}`;
+      const modifier = isActivation ? 'activate' : (isDeletion ? 'delete' : 'deactivate');
+      deactivateIconWrapper.className = `${baseClass} ${modifier}`;
     }
     if (deactivateIcon) {
-      deactivateIcon.className = isActivation ? 'fas fa-redo text-4xl' : 'fas fa-power-off text-4xl';
+      if (isActivation) {
+        deactivateIcon.className = 'fas fa-redo text-4xl';
+      } else if (isDeletion) {
+        deactivateIcon.className = 'fas fa-trash text-4xl';
+      } else {
+        deactivateIcon.className = 'fas fa-power-off text-4xl';
+      }
     }
     const confirmIconEl = getDeactivateConfirmIcon();
     if (confirmIconEl) {
-      confirmIconEl.className = isActivation ? 'fas fa-redo mr-2' : 'fas fa-power-off mr-2';
+      if (isActivation) {
+        confirmIconEl.className = 'fas fa-redo mr-2';
+      } else if (isDeletion) {
+        confirmIconEl.className = 'fas fa-trash mr-2';
+      } else {
+        confirmIconEl.className = 'fas fa-power-off mr-2';
+      }
     }
     const confirmTextEl = getDeactivateConfirmText();
     if (confirmTextEl) {
-      confirmTextEl.textContent = isActivation ? 'Reactivar' : 'Desactivar';
+      if (isActivation) {
+        confirmTextEl.textContent = 'Reactivar';
+      } else if (isDeletion) {
+        confirmTextEl.textContent = 'Eliminar';
+      } else {
+        confirmTextEl.textContent = 'Desactivar';
+      }
     }
 
     hideDeactivateFeedback();
@@ -1474,46 +1517,66 @@
     }
 
     const isActivation = deactivateState.mode === 'activate';
+    const isDeletion = deactivateState.mode === 'delete';
 
     const originalContent = deactivateConfirmBtn.innerHTML;
     deactivateConfirmBtn.disabled = true;
     deactivateConfirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Procesando...';
 
-    const endpoint = `/admin/alert-types/${encodeURIComponent(deactivateState.id)}/toggle`;
+    const endpoint = isDeletion
+      ? `/admin/alert-types/${encodeURIComponent(deactivateState.id)}/delete`
+      : `/admin/alert-types/${encodeURIComponent(deactivateState.id)}/toggle`;
 
-    const payload = {
-      accion: isActivation ? 'activate' : 'deactivate',
-    };
-
-    const fetchOptions = {
-      method: 'PATCH',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    };
+    let fetchOptions;
+    if (isDeletion) {
+      fetchOptions = {
+        method: 'DELETE',
+        credentials: 'include',
+      };
+    } else {
+      const payload = {
+        accion: isActivation ? 'activate' : 'deactivate',
+      };
+      fetchOptions = {
+        method: 'PATCH',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      };
+    }
 
     try {
       const response = await fetch(endpoint, fetchOptions);
       const data = await response.json().catch(() => ({ success: false }));
 
       if (!response.ok || !data.success) {
-        const fallbackMessage = isActivation
-          ? 'No se pudo reactivar el tipo de alerta.'
-          : 'No se pudo desactivar el tipo de alerta.';
+        let fallbackMessage;
+        if (isDeletion) {
+          fallbackMessage = 'No se pudo eliminar el tipo de alerta.';
+        } else {
+          fallbackMessage = isActivation
+            ? 'No se pudo reactivar el tipo de alerta.'
+            : 'No se pudo desactivar el tipo de alerta.';
+        }
         throw new Error(data.message || fallbackMessage);
       }
 
       deactivateConfirmBtn.innerHTML = originalContent;
       closeDeactivateAlertTypeModal();
-      const defaultSuccess = isActivation
-        ? 'Tipo de alerta reactivado correctamente.'
-        : 'Tipo de alerta desactivado correctamente.';
+      const defaultSuccess = isDeletion
+        ? 'Tipo de alerta eliminado correctamente.'
+        : isActivation
+          ? 'Tipo de alerta reactivado correctamente.'
+          : 'Tipo de alerta desactivado correctamente.';
       showSuccessToast(data.message || defaultSuccess);
       scheduleAlertTypesRefresh();
     } catch (error) {
-      showDeactivateFeedback(error.message || 'Ocurrió un error al actualizar el estado del tipo de alerta.');
+      const fallback = isDeletion
+        ? 'Ocurrió un error al eliminar el tipo de alerta.'
+        : 'Ocurrió un error al actualizar el estado del tipo de alerta.';
+      showDeactivateFeedback(error.message || fallback);
       deactivateConfirmBtn.disabled = false;
       deactivateConfirmBtn.innerHTML = originalContent;
       updateDeactivateControls();

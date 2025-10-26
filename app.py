@@ -968,6 +968,24 @@ def admin_alert_type_detail(alert_type_id: str):
     }), status_code
 
 
+@app.route('/admin/alert-types/<alert_type_id>/delete', methods=['DELETE'])
+@require_role(['super_admin'])
+def admin_delete_alert_type(alert_type_id: str):
+    api_response = g.api_client.delete_alert_type(alert_type_id)
+    status_code = api_response.get('status_code', 500)
+
+    if api_response.get('success'):
+        return jsonify({
+            'success': True,
+            'message': api_response.get('message') or 'Tipo de alerta eliminado correctamente'
+        }), status_code
+
+    return jsonify({
+        'success': False,
+        'message': api_response.get('message') or 'No se pudo eliminar el tipo de alerta'
+    }), status_code
+
+
 @app.route('/admin/imagenes')
 @require_role(['super_admin'])
 def admin_imagenes():
