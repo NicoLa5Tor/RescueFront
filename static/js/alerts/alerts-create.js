@@ -700,13 +700,19 @@ function normalizeSingleAlertType(raw, fallbackEmpresaId = '') {
         source.comentarios,
     ].map(resolveScalarValue).find(Boolean);
 
-    const empresaId = [
+    const empresaIdSource = [
         source.empresa_id,
         source.empresaId,
         raw.empresa_id,
         raw.empresaId,
         raw.empresa,
-    ].map(resolveScalarValue).find(Boolean) || resolveScalarValue(fallbackEmpresaId);
+    ].map(resolveScalarValue).find(Boolean);
+
+    const empresaId = (empresaIdSource !== undefined && empresaIdSource !== null)
+        ? empresaIdSource
+        : resolveScalarValue(source.es_global) === true || resolveScalarValue(raw.es_global) === true
+            ? ''
+            : resolveScalarValue(fallbackEmpresaId);
 
     const empresaNombre = [
         source.empresa_nombre,
@@ -724,6 +730,8 @@ function normalizeSingleAlertType(raw, fallbackEmpresaId = '') {
     const resolvedId = (id || code || name).toString().trim();
     const resolvedName = (name || code || resolvedId).toString().trim();
 
+    const resolvedEmpresaId = resolveScalarValue(empresaId);
+
     return {
         id: resolvedId,
         code: code || '',
@@ -732,8 +740,9 @@ function normalizeSingleAlertType(raw, fallbackEmpresaId = '') {
         color: color || '',
         severity: severity || '',
         description: description || '',
-        empresaId: resolveScalarValue(empresaId) || '',
+        empresaId: resolvedEmpresaId || '',
         empresaNombre: empresaNombre || '',
+        scope: (resolvedEmpresaId || '') ? 'empresa' : 'global',
     };
 }
 
