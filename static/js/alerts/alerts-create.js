@@ -239,14 +239,7 @@ async function loadAlertTypesForAlert(forceReload = false) {
         }
 
         const payload = await response.json().catch(() => ({}));
-        if (window.console && console.debug) {
-            console.debug('[Alertas] payload crudo tipos alerta:', payload);
-        }
         const normalizedTypes = normalizeEmpresaAlertTypesPayload(payload, empresaId);
-
-        if (window.console && console.debug) {
-            console.debug('[Alertas] tipos normalizados para empresa', empresaId, normalizedTypes);
-        }
 
         alertTypesCache = normalizedTypes;
         populateAlertTypesDropdown(alertTypesCache);
