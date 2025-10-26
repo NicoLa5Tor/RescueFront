@@ -254,8 +254,16 @@ unlockScroll() {
 // 2. ESTADO GLOBAL
 // ============================================================================
 
-let modalManager;
+let companyTypesModalManager;
 let editingCompanyType = null;
+
+function getCompanyTypesModalManager() {
+  if (!companyTypesModalManager) {
+    companyTypesModalManager = new ModalScrollManager();
+  }
+  return companyTypesModalManager;
+}
+
 let currentFeatures = [];
 let currentShowingInactive = false;
 let toggleModalData = { typeId: null, newStatus: null };
@@ -273,7 +281,7 @@ function openCreateModal() {
   document.getElementById('companyTypeForm').reset();
   updateFeaturesList();
   
-  modalManager.openModal('companyTypeModal', { focusTrap: true });
+  getCompanyTypesModalManager().openModal('companyTypeModal', { focusTrap: true });
 }
 
 async function editCompanyType(id) {
@@ -296,11 +304,11 @@ async function editCompanyType(id) {
     return;
   }
   
-  modalManager.openModal('companyTypeModal', { focusTrap: true });
+  getCompanyTypesModalManager().openModal('companyTypeModal', { focusTrap: true });
 }
 
-function closeModal() {
-  modalManager.closeModal('companyTypeModal');
+function closeCompanyTypeModal() {
+  getCompanyTypesModalManager().closeModal('companyTypeModal');
   editingCompanyType = null;
   currentFeatures = [];
 }
@@ -318,11 +326,11 @@ async function viewCompanyType(id) {
     return;
   }
   
-  modalManager.openModal('detailsModal', { focusTrap: true });
+  getCompanyTypesModalManager().openModal('detailsModal', { focusTrap: true });
 }
 
-function closeDetailsModal() {
-  modalManager.closeModal('detailsModal');
+function closeCompanyTypeDetailsModal() {
+  getCompanyTypesModalManager().closeModal('detailsModal');
 }
 
 function openToggleModal(id, currentStatus, typeName) {
@@ -330,7 +338,7 @@ function openToggleModal(id, currentStatus, typeName) {
   toggleModalData = { typeId: id, newStatus };
   
   updateToggleModalContent(newStatus, typeName);
-  modalManager.openModal('toggleCompanyTypeModal', { focusTrap: true });
+  getCompanyTypesModalManager().openModal('toggleCompanyTypeModal', { focusTrap: true });
 }
 
 function updateToggleModalContent(newStatus, typeName) {
@@ -362,8 +370,8 @@ function updateToggleModalContent(newStatus, typeName) {
   }
 }
 
-function closeToggleModal() {
-  modalManager.closeModal('toggleCompanyTypeModal');
+function closeCompanyTypeToggleModal() {
+  getCompanyTypesModalManager().closeModal('toggleCompanyTypeModal');
   toggleModalData = { typeId: null, newStatus: null };
 }
 
@@ -407,11 +415,11 @@ function showUpdateModal(message = 'El tipo de empresa se ha actualizado exitosa
                                message.includes('actualizado') ? '¡Tipo Actualizado!' : '¡Operación Exitosa!';
   elements.message.textContent = message;
   
-  modalManager.openModal('clientUpdateModal', { focusTrap: true });
+  getCompanyTypesModalManager().openModal('clientUpdateModal', { focusTrap: true });
 }
 
-function closeUpdateModal() {
-  modalManager.closeModal('clientUpdateModal');
+function closeCompanyTypeUpdateModal() {
+  getCompanyTypesModalManager().closeModal('clientUpdateModal');
 }
 
 // ============================================================================
@@ -439,7 +447,7 @@ function showToggleSuccess(activated) {
   };
   
   if (!elements.title || !elements.message) {
-    closeToggleModal();
+    closeCompanyTypeToggleModal();
     return;
   }
   
@@ -462,7 +470,7 @@ function showToggleSuccess(activated) {
   }
   
   setTimeout(() => {
-    closeToggleModal();
+    closeCompanyTypeToggleModal();
     setTimeout(() => updateCardVisually(toggleModalData.typeId, activated), 500);
   }, 2000);
 }
@@ -761,7 +769,7 @@ async function handleFormSubmission(e) {
       showUpdateModal('El nuevo tipo de empresa se ha creado exitosamente.');
     }
     
-    closeModal();
+    closeCompanyTypeModal();
     setTimeout(() => location.reload(), 1500);
     
   } catch (error) {
@@ -775,7 +783,7 @@ async function handleFormSubmission(e) {
 // ============================================================================
 
 function init() {
-  modalManager = new ModalScrollManager();
+  getCompanyTypesModalManager();
   
   // Estado inicial
   const urlParams = new URLSearchParams(window.location.search);
@@ -798,10 +806,10 @@ function init() {
     document.getElementById(id)?.addEventListener('click', (e) => {
       if (e.target === e.currentTarget) {
         const closeFn = {
-          companyTypeModal: closeModal,
-          detailsModal: closeDetailsModal,
-          toggleCompanyTypeModal: closeToggleModal,
-          clientUpdateModal: closeUpdateModal
+          companyTypeModal: closeCompanyTypeModal,
+          detailsModal: closeCompanyTypeDetailsModal,
+          toggleCompanyTypeModal: closeCompanyTypeToggleModal,
+          clientUpdateModal: closeCompanyTypeUpdateModal
         }[id];
         closeFn?.();
       }
@@ -809,8 +817,10 @@ function init() {
   });
   
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && modalManager.hasOpenModals()) {
-      modalManager.closeAllModals();
+    const manager = companyTypesModalManager;
+    if (!manager) return;
+    if (e.key === 'Escape' && manager.hasOpenModals()) {
+      manager.closeAllModals();
     }
   });
   
@@ -838,8 +848,8 @@ document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded'
 
 // Exponer funciones globales
 Object.assign(window, {
-  modalManager, openCreateModal, editCompanyType, closeModal, viewCompanyType, 
-  closeDetailsModal, toggleStatus, confirmToggleCompanyType, closeToggleModal, 
-  closeUpdateModal, toggleIncludeInactive, addFeature, removeFeature, 
+  openCreateModal, editCompanyType, closeCompanyTypeModal, viewCompanyType,
+  closeCompanyTypeDetailsModal, toggleStatus, confirmToggleCompanyType, closeCompanyTypeToggleModal,
+  closeCompanyTypeUpdateModal, toggleIncludeInactive, addFeature, removeFeature,
   handleFeatureKeyPress, viewCompaniesOfType, exportTypes
 });

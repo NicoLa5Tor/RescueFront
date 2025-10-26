@@ -256,8 +256,8 @@ window.CompanyTypesAnimations = {
     if (modalBackdrop) {
       modalBackdrop.addEventListener('click', (e) => {
         if (e.target === modalBackdrop) {
-          if (typeof closeModal === 'function') {
-            closeModal();
+          if (typeof closeCompanyTypeModal === 'function') {
+            closeCompanyTypeModal();
           }
         }
       });
@@ -268,8 +268,8 @@ window.CompanyTypesAnimations = {
       if (e.key === 'Escape') {
         const modal = document.getElementById('companyTypeModal');
         if (modal && modal.classList.contains('active')) {
-          if (typeof closeModal === 'function') {
-            closeModal();
+          if (typeof closeCompanyTypeModal === 'function') {
+            closeCompanyTypeModal();
           }
         }
       }

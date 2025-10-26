@@ -254,7 +254,7 @@
             <p class="text-sm text-white/70 dark:text-gray-300">Complete los campos para registrar el tipo</p>
           </div>
         </div>
-        <button type="button" class="ios-blur-btn ios-blur-btn-secondary !p-2 !min-w-0" onclick="closeModal()" aria-label="Cerrar modal">
+        <button type="button" class="ios-blur-btn ios-blur-btn-secondary !p-2 !min-w-0" onclick="closeCompanyTypeModal()" aria-label="Cerrar modal">
           <i class="fas fa-times text-lg"></i>
         </button>
       </div>
@@ -317,7 +317,7 @@
     
     <!-- Modal Footer -->
     <div class="ios-blur-footer">
-      <button type="button" class="ios-blur-btn ios-blur-btn-secondary" onclick="closeModal()">
+      <button type="button" class="ios-blur-btn ios-blur-btn-secondary" onclick="closeCompanyTypeModal()">
         <i class="fas fa-times mr-2"></i>
         <span class="text-sm font-medium">Cancelar</span>
       </button>
@@ -344,7 +344,7 @@
             <p class="text-sm text-white/70">Información completa del tipo seleccionado</p>
           </div>
         </div>
-        <button type="button" class="ios-blur-btn ios-blur-btn-secondary !p-2 !min-w-0" onclick="closeDetailsModal()" aria-label="Cerrar modal">
+        <button type="button" class="ios-blur-btn ios-blur-btn-secondary !p-2 !min-w-0" onclick="closeCompanyTypeDetailsModal()" aria-label="Cerrar modal">
           <i class="fas fa-times text-lg"></i>
         </button>
       </div>
@@ -359,7 +359,7 @@
     
     <!-- Modal Footer -->
     <div class="ios-blur-footer">
-      <button type="button" class="ios-blur-btn ios-blur-btn-secondary" onclick="closeDetailsModal()">
+      <button type="button" class="ios-blur-btn ios-blur-btn-secondary" onclick="closeCompanyTypeDetailsModal()">
         <i class="fas fa-times mr-2"></i>
         Cerrar
       </button>
@@ -381,7 +381,7 @@
         ¿Estás seguro de que quieres activar este tipo de empresa?
       </p>
       <div class="flex gap-4 justify-center">
-        <button class="ios-blur-btn ios-blur-btn-secondary" onclick="closeToggleModal()">
+        <button class="ios-blur-btn ios-blur-btn-secondary" onclick="closeCompanyTypeToggleModal()">
           <i class="fas fa-times mr-2"></i>
           <span class="text-sm font-medium">Cancelar</span>
         </button>
@@ -407,7 +407,7 @@
       <p class="text-white/80 dark:text-gray-300 text-lg mb-6" id="updateModalMessage">
         El tipo de empresa se ha actualizado exitosamente.
       </p>
-      <button class="ios-blur-btn ios-blur-btn-primary mx-auto" onclick="closeUpdateModal()">
+      <button class="ios-blur-btn ios-blur-btn-primary mx-auto" onclick="closeCompanyTypeUpdateModal()">
         <i class="fas fa-check mr-2"></i>
         <span class="text-sm font-medium">Aceptar</span>
       </button>

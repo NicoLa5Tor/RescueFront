@@ -553,6 +553,55 @@ function getCreateAlertFormData() {
     return payload;
 }
 
+function resolveScalarValue(value) {
+    if (value == null) {
+        return '';
+    }
+
+    if (typeof value === 'object') {
+        if (Array.isArray(value)) {
+            for (const item of value) {
+                const resolved = resolveScalarValue(item);
+                if (resolved) {
+                    return resolved;
+                }
+            }
+            return '';
+        }
+
+        const oidLikeKeys = ['$oid', '$id', '_id', 'id', 'value', '$value', '$numberInt', '$numberLong'];
+        for (const key of oidLikeKeys) {
+            if (value[key] != null) {
+                const resolved = resolveScalarValue(value[key]);
+                if (resolved) {
+                    return resolved;
+                }
+            }
+        }
+
+        // Si es un objeto con clave "empresa" o similar, intentar profundizar
+        const empresaKeys = ['empresa', 'company'];
+        for (const key of empresaKeys) {
+            if (value[key] != null) {
+                const resolved = resolveScalarValue(value[key]);
+                if (resolved) {
+                    return resolved;
+                }
+            }
+        }
+
+        return '';
+    }
+
+    const text = `${value}`.trim();
+    const objectIdMatch = text.match(/^ObjectId\((['\"]?)([0-9a-fA-F]{24})\1\)$/);
+    if (objectIdMatch) {
+        return objectIdMatch[2];
+    }
+
+    return text === '[object Object]' ? '' : text;
+}
+
 function normalizeEmpresaAlertTypesPayload(payload, empresaId) {
     if (!payload) {
         return [];
@@ -579,11 +628,13 @@ function normalizeEmpresaAlertTypesPayload(payload, empresaId) {
         .map((item) => normalizeSingleAlertType(item, empresaId))
         .filter(Boolean);
 
+    const normalizedEmpresaId = resolveScalarValue(empresaId);
+
     return uniqueAlertTypes(normalized).filter((type) => {
-        if (!empresaId) {
+        if (!normalizedEmpresaId) {
             return true;
         }
-        return type.empresaId === empresaId;
+        return resolveScalarValue(type.empresaId) === normalizedEmpresaId;
     });
 }
 
@@ -600,7 +651,7 @@ function normalizeSingleAlertType(raw, fallbackEmpresaId = '') {
         source.codigo,
         source.code,
         source.tipo_alerta,
-    ].map((value) => (value || '').toString().trim()).find(Boolean);
+    ].map(resolveScalarValue).find(Boolean);
 
     const name = [
         source.tipo_alerta_nombre,
@@ -611,7 +662,7 @@ function normalizeSingleAlertType(raw, fallbackEmpresaId = '') {
         source.display_name,
         source.label,
         code,
-    ].map((value) => (value || '').toString().trim()).find(Boolean);
+    ].map(resolveScalarValue).find(Boolean);
 
     const id = [
         source.tipo_alerta_id,
@@ -620,7 +671,7 @@ function normalizeSingleAlertType(raw, fallbackEmpresaId = '') {
         name,
         source._id,
         source.id,
-    ].map((value) => (value || '').toString().trim()).find(Boolean);
+    ].map(resolveScalarValue).find(Boolean);
 
     const color = [
         source.tipo_alerta_color,
@@ -628,14 +679,14 @@ function normalizeSingleAlertType(raw, fallbackEmpresaId = '') {
         source.color,
         source.color_hex,
         source.hex_color,
-    ].map((value) => (value || '').toString().trim()).find(Boolean);
+    ].map(resolveScalarValue).find(Boolean);
 
     const severity = [
         source.tipo_alerta_severidad,
         source.severity,
         source.prioridad,
         source.priority,
-    ].map((value) => (value || '').toString().trim()).find(Boolean);
+    ].map(resolveScalarValue).find(Boolean);
 
     const description = [
         source.descripcion,
@@ -643,7 +694,7 @@ function normalizeSingleAlertType(raw, fallbackEmpresaId = '') {
         source.detalle,
         source.detail,
         source.comentarios,
-    ].map((value) => (value || '').toString().trim()).find(Boolean);
+    ].map(resolveScalarValue).find(Boolean);
 
     const empresaId = [
         source.empresa_id,
@@ -651,7 +702,7 @@ function normalizeSingleAlertType(raw, fallbackEmpresaId = '') {
         raw.empresa_id,
         raw.empresaId,
         raw.empresa,
-    ].map((value) => (value || '').toString().trim()).find(Boolean) || fallbackEmpresaId;
+    ].map(resolveScalarValue).find(Boolean) || resolveScalarValue(fallbackEmpresaId);
 
     const empresaNombre = [
         source.empresa_nombre,
@@ -660,7 +711,7 @@ function normalizeSingleAlertType(raw, fallbackEmpresaId = '') {
         raw.empresa,
         source.nombre_empresa,
         raw.nombre_empresa,
-    ].map((value) => (value || '').toString().trim()).find(Boolean);
+    ].map(resolveScalarValue).find(Boolean);
 
     if (!id && !code && !name) {
         return null;
@@ -677,7 +728,7 @@ function normalizeSingleAlertType(raw, fallbackEmpresaId = '') {
         color: color || '',
         severity: severity || '',
         description: description || '',
-        empresaId: empresaId || '',
+        empresaId: resolveScalarValue(empresaId) || '',
         empresaNombre: empresaNombre || '',
     };
 }

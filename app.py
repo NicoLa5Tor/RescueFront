@@ -835,6 +835,15 @@ def admin_create_alert_type():
             'message': f"Faltan campos obligatorios: {', '.join(missing)}"
         }), 400
 
+    raw_empresa_id = payload.get('empresa_id')
+    empresa_id = str(raw_empresa_id).strip() if raw_empresa_id is not None else ''
+    if not empresa_id:
+        return jsonify({
+            'success': False,
+            'message': 'Debes seleccionar una empresa para el tipo de alerta.'
+        }), 400
+    payload['empresa_id'] = empresa_id
+
     api_response = g.api_client.create_alert_type(payload)
     status_code = api_response.get('status_code', 500 if not api_response.get('success') else 201)
 
@@ -918,6 +927,15 @@ def admin_update_alert_type(alert_type_id: str):
             'success': False,
             'message': f"Faltan campos obligatorios: {', '.join(missing)}"
         }), 400
+
+    raw_empresa_id = payload.get('empresa_id')
+    empresa_id = str(raw_empresa_id).strip() if raw_empresa_id is not None else ''
+    if not empresa_id:
+        return jsonify({
+            'success': False,
+            'message': 'Debes seleccionar una empresa para el tipo de alerta.'
+        }), 400
+    payload['empresa_id'] = empresa_id
 
     api_response = g.api_client.update_alert_type(alert_type_id, payload)
     status_code = api_response.get('status_code', 500 if not api_response.get('success') else 200)

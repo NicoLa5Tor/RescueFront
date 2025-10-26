@@ -425,13 +425,13 @@
         </div>
 
         <div class="form-group">
-          <label for="alertTypeCompanyInput" class="ios-filter-label">Empresa (opcional)</label>
+          <label for="alertTypeCompanyInput" class="ios-filter-label">Empresa *</label>
           <div class="ios-combo-box">
-            <input type="text" id="alertTypeCompanyInput" class="ios-filter-input" placeholder="Global (sin empresa)" list="alertTypeCompanyList" autocomplete="off">
+            <input type="text" id="alertTypeCompanyInput" class="ios-filter-input" placeholder="Selecciona una empresa" list="alertTypeCompanyList" autocomplete="off" required>
             <datalist id="alertTypeCompanyList"></datalist>
             <input type="hidden" name="empresa_id" id="alertTypeCompanyId">
           </div>
-          <p class="text-xs text-white/50 mt-1">Escribe para buscar por nombre. Deja vacío para que sea global.</p>
+          <p class="text-xs text-white/50 mt-1">Escribe para buscar por nombre y selecciona una empresa obligatoria.</p>
         </div>
       </div>
 

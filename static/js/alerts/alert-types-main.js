@@ -129,11 +129,13 @@
     }
     if (companyInput) {
       companyInput.value = '';
-      companyInput.placeholder = 'Global (sin empresa)';
+      companyInput.placeholder = 'Selecciona una empresa';
     }
     if (companyHiddenInput) {
       companyHiddenInput.value = '';
     }
+
+    syncHiddenCompany('');
 
     resetMediaSelectors();
     updateImagePreview(null, '');
@@ -648,14 +650,14 @@
         : [];
 
       renderCompanyDatalist(companiesState.list);
-      companyInput.placeholder = 'Global (sin empresa)';
+      companyInput.placeholder = 'Selecciona una empresa';
       companiesState.loaded = true;
     } catch (error) {
       console.error('Error loading companies for alert types:', error);
       showFeedback('No se pudieron cargar las empresas. Intenta nuevamente.');
       companiesState.list = [];
       renderCompanyDatalist(companiesState.list);
-      companyInput.placeholder = 'Global (sin empresa)';
+      companyInput.placeholder = 'Selecciona una empresa';
     } finally {
       companiesState.loading = false;
     }
@@ -686,6 +688,7 @@
     if (!companyId) {
       companyHiddenInput.value = '';
       companyInput.value = '';
+      syncHiddenCompany('');
       return;
     }
     const match = companiesState.list.find((company) => company.id === companyId);
@@ -696,13 +699,21 @@
       companyInput.value = '';
       companyHiddenInput.value = '';
     }
+
+    syncHiddenCompany(companyInput.value || '');
   }
 
   function syncHiddenCompany(value) {
     if (!companyHiddenInput) return;
     const normalized = value.trim().toLowerCase();
+    const hasValue = normalized.length > 0;
     const match = companiesState.list.find((company) => company.displayLower === normalized);
     companyHiddenInput.value = match ? match.id : '';
+
+    if (companyInput) {
+      const validityMessage = match ? '' : (hasValue ? 'Selecciona una empresa válida' : 'Selecciona una empresa');
+      companyInput.setCustomValidity(validityMessage);
+    }
   }
 
   function handleCompanyInputChange(event) {
@@ -1004,9 +1015,17 @@
     }
 
     const empresaId = companyHiddenInput?.value || '';
-    if (empresaId) {
-      payload.empresa_id = empresaId;
+    if (!empresaId) {
+      showFeedback('Debes seleccionar una empresa para el tipo de alerta.');
+      if (companyInput) {
+        companyInput.focus();
+        companyInput.setCustomValidity('Selecciona una empresa válida');
+        companyInput.reportValidity();
+      }
+      return;
     }
+
+    payload.empresa_id = empresaId;
 
     const missing = ['nombre', 'descripcion', 'tipo_alerta', 'color_alerta']
       .filter((field) => !payload[field]);
@@ -1017,6 +1036,7 @@
     }
 
     const originalContent = submitBtn.innerHTML;
+
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Guardando...';
 
