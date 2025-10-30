@@ -427,7 +427,8 @@
       <div class="form-grid">
         <div class="form-group">
           <label for="alertTypeName" class="ios-filter-label">Nombre *</label>
-          <input type="text" id="alertTypeName" name="nombre" class="ios-filter-input" placeholder="Ej. Evacuación Total" required>
+          <input type="text" id="alertTypeName" name="nombre" class="ios-filter-input" placeholder="Ej. Evacuación Total" maxlength="24" required>
+          <p class="text-xs text-white/60 mt-1" id="alertTypeNameHelper">Máximo 24 caracteres. <span id="alertTypeNameCounter">0/24</span></p>
         </div>
 
         <div class="form-group">

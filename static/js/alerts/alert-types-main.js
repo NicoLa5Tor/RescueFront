@@ -55,6 +55,10 @@
   const descriptionCounter = document.getElementById('alertTypeDescriptionCounter');
   const descriptionHelper = document.getElementById('alertTypeDescriptionHelper');
   const DESCRIPTION_LIMIT = 65;
+  const nameInput = form ? form.elements.namedItem('nombre') : null;
+  const NAME_LIMIT = 24;
+  const nameCounter = document.getElementById('alertTypeNameCounter');
+  const nameHelper = document.getElementById('alertTypeNameHelper');
 
   const recommendationInput = document.getElementById('alertRecommendationInput');
   const recommendationAddBtn = document.getElementById('alertRecommendationAddBtn');
@@ -185,6 +189,16 @@
     form.reset();
     setAlertScope(false);
 
+    if (nameInput) {
+      const sanitizedName = normalizeNameValue(nameInput.value || '');
+      nameInput.value = sanitizedName;
+      if (typeof nameInput.setCustomValidity === 'function') {
+        nameInput.setCustomValidity('');
+      }
+    }
+
+    updateNameCounter(nameInput ? nameInput.value : '');
+
     if (colorInput) {
       colorInput.value = '';
     }
@@ -255,6 +269,39 @@
 
     if (useToast && message) {
       renderHardwareStyleToast(message, type);
+    }
+  }
+
+  function normalizeNameValue(value) {
+    const safeValue = (value || '').toString();
+    return safeValue.length > NAME_LIMIT
+      ? safeValue.slice(0, NAME_LIMIT)
+      : safeValue;
+  }
+
+  function updateNameCounter(value) {
+    const sanitized = (value || '').toString();
+    const length = sanitized.length;
+    if (nameCounter) {
+      nameCounter.textContent = `${length}/${NAME_LIMIT}`;
+    }
+
+    if (nameHelper) {
+      if (length > NAME_LIMIT) {
+        nameHelper.style.color = '#f87171';
+      } else if (length >= NAME_LIMIT - 5) {
+        nameHelper.style.color = '#facc15';
+      } else {
+        nameHelper.style.color = '';
+      }
+    }
+
+    if (nameInput && typeof nameInput.setCustomValidity === 'function') {
+      if (length > NAME_LIMIT) {
+        nameInput.setCustomValidity(`El nombre no puede exceder ${NAME_LIMIT} caracteres.`);
+      } else {
+        nameInput.setCustomValidity('');
+      }
     }
   }
 
@@ -599,10 +646,15 @@
     editingAlertTypeSnapshot = safeData;
     setFormMode('edit', displayName || 'el tipo seleccionado');
 
-    const nameField = form.elements.namedItem('nombre');
-    if (nameField) {
-      nameField.value = displayName;
+    if (nameInput) {
+      const truncatedName = normalizeNameValue(displayName);
+      nameInput.value = truncatedName;
+      if (typeof nameInput.setCustomValidity === 'function') {
+        nameInput.setCustomValidity('');
+      }
     }
+
+    updateNameCounter(nameInput ? nameInput.value : '');
 
     if (severitySelect) {
       severitySelect.value = mapSeverityToCode(safeData.severity);
@@ -1133,8 +1185,30 @@
 
     hideFeedback();
 
+    const rawNameValue = (nameInput?.value || '').toString().trim();
+    const normalizedName = normalizeNameValue(rawNameValue);
+
+    if (rawNameValue.length > NAME_LIMIT) {
+      showFeedback(`El nombre no puede exceder ${NAME_LIMIT} caracteres.`);
+      updateNameCounter(rawNameValue);
+      if (nameInput && typeof nameInput.setCustomValidity === 'function') {
+        nameInput.setCustomValidity(`El nombre no puede exceder ${NAME_LIMIT} caracteres.`);
+        nameInput.reportValidity();
+      }
+      if (nameInput && typeof nameInput.focus === 'function') {
+        nameInput.focus();
+      }
+      return;
+    }
+
+    if (nameInput && typeof nameInput.setCustomValidity === 'function') {
+      nameInput.setCustomValidity('');
+    }
+
+    updateNameCounter(normalizedName);
+
     const payload = {
-      nombre: (form.elements.namedItem('nombre')?.value || '').toString().trim(),
+      nombre: normalizedName,
       descripcion: (form.elements.namedItem('descripcion')?.value || '').toString().trim(),
       tipo_alerta: (severitySelect?.value || '').toString().trim().toUpperCase(),
       color_alerta: getColorValue(),
@@ -1257,6 +1331,21 @@
     descriptionInput.addEventListener('input', () => {
       updateDescriptionCounter(descriptionInput.value || '');
     });
+  }
+
+  if (nameInput && typeof nameInput.addEventListener === 'function') {
+    nameInput.addEventListener('input', () => {
+      const currentValue = (nameInput.value || '').toString();
+      if (currentValue.length > NAME_LIMIT) {
+        nameInput.value = normalizeNameValue(currentValue);
+      }
+      if (typeof nameInput.setCustomValidity === 'function') {
+        nameInput.setCustomValidity('');
+      }
+      updateNameCounter(nameInput.value || '');
+    });
+
+    updateNameCounter(nameInput.value || '');
   }
 
   updateDeactivateControls();
