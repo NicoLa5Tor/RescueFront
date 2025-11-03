@@ -66,10 +66,6 @@
             //console.log('🎭 HERO: Estableciendo estados iniciales');
             
             // Ocultar elementos que se van a animar INMEDIATAMENTE
-            gsap.set(['.title-word'], {
-                y: 30, // Reducido a 30px para coherencia con el espaciado aumentado
-                opacity: 0
-            });
             
             gsap.set(['.status-badge'], {
                 scale: 0,
@@ -149,22 +145,8 @@
                 }
             }
             
-            // Fade out en scroll con mejor rendimiento
-            const fadeOutAnim = gsap.to('.hero-content', {
-                opacity: 0.1,
-                y: -50,
-                ease: "power2.inOut"
-            });
-            
-            ScrollTrigger.create({
-                trigger: '#hero',
-                start: 'center center',
-                end: 'bottom center',
-                scrub: 1,
-                animation: fadeOutAnim
-            });
-            
-            this.animations.push(fadeOutAnim);
+            // Animación de desvanecimiento eliminada para mantener el título visible
+            // Mantener el contenido del hero siempre con opacidad completa
             
             // Hacer que el botón de login se pegue a la parte superior al hacer scroll
             const loginButton = document.querySelector('a.status-badge[href="/login"]');
@@ -204,17 +186,9 @@
             
             // NO resetear propiedades - usar los estados ya establecidos
             
-            // Animar títulos palabra por palabra
-            tl.to('.title-word', {
-                y: 0,
-                opacity: 1,
-                duration: 0.8,
-                stagger: 0.15,
-                ease: "power3.out"
-            })
             
             // Status badge
-            .to('.status-badge', {
+            tl.to('.status-badge', {
                 scale: 1,
                 opacity: 1,
                 duration: 0.6,
