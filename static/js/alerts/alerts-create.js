@@ -673,10 +673,12 @@ function normalizeSingleAlertType(raw, fallbackEmpresaId = '') {
     const id = [
         source.tipo_alerta_id,
         source.alert_type_id,
-        code,
-        name,
         source._id,
         source.id,
+        raw._id,
+        raw.id,
+        code,
+        name,
     ].map(resolveScalarValue).find(Boolean);
 
     const color = [
@@ -866,7 +868,7 @@ function validateCreateAlertData(data) {
  */
 async function sendCreateAlertRequest(alertData) {
     try {
-        //console.log('📡 Enviando datos de alerta via API Client:', alertData);
+        console.log('📡 Payload enviado para crear alerta:', alertData);
         
         // Verificar que tenemos el cliente API disponible
         if (!window.apiClient) {
