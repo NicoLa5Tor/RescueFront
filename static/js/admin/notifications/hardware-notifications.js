@@ -296,6 +296,49 @@ class AdminHardwareNotifications {
           z-index: 1000;
         }
 
+        .admin-hw-popup {
+          position: fixed;
+          top: 18px;
+          right: 18px;
+          background: linear-gradient(135deg, #ef4444, #b91c1c);
+          color: white;
+          padding: 12px 16px;
+          border-radius: 12px;
+          box-shadow: 0 12px 24px rgba(185, 28, 28, 0.35);
+          z-index: 1002;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          max-width: 320px;
+          animation: adminHwPopupIn 0.35s ease;
+        }
+
+        .admin-hw-popup__icon {
+          width: 34px;
+          height: 34px;
+          border-radius: 10px;
+          background: rgba(255, 255, 255, 0.2);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .admin-hw-popup__title {
+          font-weight: 700;
+          font-size: 13px;
+          margin-bottom: 2px;
+        }
+
+        .admin-hw-popup__text {
+          font-size: 12px;
+          opacity: 0.9;
+        }
+
+        @keyframes adminHwPopupIn {
+          from { transform: translateX(120%); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+
         .admin-hw-empty {
           padding: 40px 20px;
           text-align: center;
@@ -534,6 +577,7 @@ class AdminHardwareNotifications {
       const neverShown = [...newIds].filter(id => !this.shownIds.has(id));
       if (neverShown.length > 0) {
         this.openPanel();
+        this.showNewHardwarePopup(neverShown.length);
         this.markShown(neverShown);
       }
       this.currentIds = new Set(newIds);
@@ -544,6 +588,7 @@ class AdminHardwareNotifications {
     const trulyNew = [...newIds].filter(id => !this.shownIds.has(id));
     if (trulyNew.length > 0) {
       this.openPanel();
+      this.showNewHardwarePopup(trulyNew.length);
       this.markShown(trulyNew);
     }
 
@@ -576,6 +621,31 @@ class AdminHardwareNotifications {
       this.shownIds.add(id);
     });
     this.saveShownToStorage();
+  }
+
+  showNewHardwarePopup(count) {
+    if (!count) return;
+    const existing = document.querySelector('.admin-hw-popup');
+    if (existing) {
+      existing.remove();
+    }
+
+    const popup = document.createElement('div');
+    popup.className = 'admin-hw-popup';
+    popup.innerHTML = `
+      <div class="admin-hw-popup__icon">
+        <i class="fas fa-microchip"></i>
+      </div>
+      <div>
+        <div class="admin-hw-popup__title">Nuevo estado de hardware</div>
+        <div class="admin-hw-popup__text">Se detectaron ${count} cambio(s) nuevo(s)</div>
+      </div>
+    `;
+
+    document.body.appendChild(popup);
+    setTimeout(() => {
+      popup.remove();
+    }, 3500);
   }
 }
 
