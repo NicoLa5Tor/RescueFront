@@ -12,6 +12,7 @@
 
 class UsuariosMain {
   constructor() {
+    this.bootstrapUserContext();
     this.usuarios = [];
     this.usuariosAll = []; // Incluye inactivos para gestión completa
     this.empresas = []; // Lista de empresas disponibles
@@ -39,6 +40,23 @@ class UsuariosMain {
       //console.log('✅ Sistema de usuarios inicializado correctamente');
     } catch (error) {
       //console.error('💥 Error al inicializar sistema de usuarios:', error);
+    }
+  }
+
+  bootstrapUserContext() {
+    if (!window.userRole && window.currentUser?.role) {
+      window.userRole = window.currentUser.role;
+    }
+
+    if (!window.empresaId && window.currentUser?.role === 'empresa') {
+      window.empresaId = window.currentUser.id || window.currentUser.empresa_id || '';
+    }
+
+    if (!window.empresaNombre && window.currentUser?.role === 'empresa') {
+      window.empresaNombre = window.currentUser.username ||
+        window.currentUser.nombre ||
+        window.currentUser.name ||
+        '';
     }
   }
 
