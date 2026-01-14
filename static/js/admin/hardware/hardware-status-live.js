@@ -91,12 +91,14 @@ class AdminHardwareStatusLive {
     if (card.dataset.physicalInactive === 'true') return;
 
     card.dataset.physicalInactive = 'true';
-    if (!card.dataset.originalStyle) {
+    if (card.dataset.originalStyle === undefined) {
       card.dataset.originalStyle = card.style.cssText || '';
     }
 
     card.classList.add('hardware-physical-inactive');
-    card.style.cssText += 'background: rgba(239, 68, 68, 0.18) !important; border: 1px solid rgba(239, 68, 68, 0.35) !important; box-shadow: 0 10px 28px rgba(239, 68, 68, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.35) !important;';
+    card.style.setProperty('background', 'rgba(239, 68, 68, 0.18)', 'important');
+    card.style.setProperty('border', '1px solid rgba(239, 68, 68, 0.35)', 'important');
+    card.style.setProperty('box-shadow', '0 10px 28px rgba(239, 68, 68, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.35)', 'important');
 
     this.updateStatusBadge(card, 'ios-status-discontinued', 'Inactivo');
   }
@@ -104,7 +106,12 @@ class AdminHardwareStatusLive {
   clearPhysicalInactive(card) {
     card.dataset.physicalInactive = 'false';
     card.classList.remove('hardware-physical-inactive');
-    card.style.cssText = card.dataset.originalStyle || '';
+    if (card.dataset.originalStyle !== undefined) {
+      card.style.cssText = card.dataset.originalStyle;
+    }
+    card.style.removeProperty('background');
+    card.style.removeProperty('border');
+    card.style.removeProperty('box-shadow');
 
     const statusData = this.getStatusFromDataset(card.dataset);
     this.updateStatusBadge(card, statusData.className, statusData.label);
