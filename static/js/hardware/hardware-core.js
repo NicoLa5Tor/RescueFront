@@ -549,12 +549,31 @@ class HardwareCore {
         return String(value);
       };
 
+      const formatPhysicalStatusLabel = (key) => {
+        const labelMap = {
+          updated_at: 'Última verificación',
+          estado: 'Estado',
+          RAM: 'RAM',
+          buff: 'Buffer',
+          ip: 'IP',
+          out: 'Salida'
+        };
+        if (labelMap[key]) {
+          return labelMap[key];
+        }
+        const cleaned = String(key).replace(/_/g, ' ');
+        return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+      };
+
       const renderPhysicalStatus = (physicalStatus) => {
         const container = document.getElementById('viewHardwarePhysicalStatus');
         if (!container) {
           return;
         }
         container.innerHTML = '';
+        const card = container.closest('[data-physical-status-card]');
+
+        const hiddenKeys = new Set(['tipo_mensaje', 'id_dispositivo']);
 
         let statusData = physicalStatus;
         if (typeof statusData === 'string') {
@@ -570,16 +589,26 @@ class HardwareCore {
           empty.className = 'text-gray-200';
           empty.textContent = 'Sin estado físico disponible';
           container.appendChild(empty);
+          if (card) {
+            card.classList.add('hidden');
+          }
           return;
         }
 
-        const entries = Object.entries(statusData);
+        const entries = Object.entries(statusData).filter(([key]) => !hiddenKeys.has(key));
         if (!entries.length) {
           const empty = document.createElement('em');
           empty.className = 'text-gray-200';
           empty.textContent = 'Sin estado físico disponible';
           container.appendChild(empty);
+          if (card) {
+            card.classList.add('hidden');
+          }
           return;
+        }
+
+        if (card) {
+          card.classList.remove('hidden');
         }
 
         entries.forEach(([key, value]) => {
@@ -588,11 +617,18 @@ class HardwareCore {
 
           const label = document.createElement('span');
           label.className = 'text-white/90 font-semibold';
-          label.textContent = key;
+          label.textContent = formatPhysicalStatusLabel(key);
 
           const content = document.createElement('span');
           content.className = 'text-white/90';
-          content.textContent = formatPhysicalStatusValue(value);
+          if (key === 'updated_at') {
+            const formatted = window.formatDateTimeForUser
+              ? window.formatDateTimeForUser(value)
+              : new Date(value).toLocaleString('es-ES');
+            content.textContent = formatted || formatPhysicalStatusValue(value);
+          } else {
+            content.textContent = formatPhysicalStatusValue(value);
+          }
 
           row.appendChild(label);
           row.appendChild(content);
@@ -678,13 +714,24 @@ class HardwareCore {
       const fechaCreacion = this.formatCreationDate(hardware);
       this.setElementText('viewHardwareCreated', fechaCreacion);
 
-      const physicalStatus = getSafeValue(hardware, 'physical_status') ||
-        getSafeValue(hardware, 'datos.physical_status') ||
-        getSafeValue(datos, 'physical_status') ||
-        getSafeValue(hardware, 'physicalStatus') ||
-        getSafeValue(datos, 'physicalStatus') ||
-        getSafeValue(hardware, 'estado_fisico') ||
-        getSafeValue(datos, 'estado_fisico');
+      let physicalStatus = hardware && hardware.physical_status !== undefined
+        ? hardware.physical_status
+        : getSafeValue(hardware, 'datos.physical_status') ||
+          getSafeValue(datos, 'physical_status') ||
+          getSafeValue(hardware, 'physicalStatus') ||
+          getSafeValue(datos, 'physicalStatus') ||
+          getSafeValue(hardware, 'estado_fisico') ||
+          getSafeValue(datos, 'estado_fisico');
+
+      if (!physicalStatus || physicalStatus === 'N/A') {
+        const listCache = window.allHardware;
+        if (Array.isArray(listCache) && hardware && hardware._id) {
+          const cachedItem = listCache.find(item => item && item._id === hardware._id);
+          if (cachedItem && cachedItem.physical_status !== undefined) {
+            physicalStatus = cachedItem.physical_status;
+          }
+        }
+      }
       renderPhysicalStatus(physicalStatus);
 
       // Description
