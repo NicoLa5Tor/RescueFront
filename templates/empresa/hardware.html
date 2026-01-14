@@ -2387,6 +2387,47 @@ function createHardwareCard(hardware) {
     const datos = hardware.datos?.datos || hardware.datos || {};
     const status = datos.status || 'available';
     const stock = datos.stock || 0;
+
+    const physicalStatusRaw = hardware.physical_status ||
+      hardware.physicalStatus ||
+      hardware.estado_fisico ||
+      datos.physical_status ||
+      datos.physicalStatus ||
+      datos.estado_fisico ||
+      hardware.datos?.physical_status ||
+      hardware.datos?.datos?.physical_status;
+    let physicalStatus = physicalStatusRaw;
+    if (typeof physicalStatus === 'string') {
+      try {
+        physicalStatus = JSON.parse(physicalStatus);
+      } catch (e) {
+        physicalStatus = null;
+      }
+    }
+    let physicalEstado = null;
+    if (physicalStatus && typeof physicalStatus === 'object') {
+      if (physicalStatus.estado !== undefined) {
+        physicalEstado = physicalStatus.estado;
+      } else if (physicalStatus.status !== undefined) {
+        physicalEstado = physicalStatus.status;
+      } else {
+        const estadoKey = Object.keys(physicalStatus).find(key => key.toLowerCase() === 'estado');
+        if (estadoKey) {
+          physicalEstado = physicalStatus[estadoKey];
+        }
+      }
+    }
+    let physicalEstadoNormalized = physicalEstado ? String(physicalEstado).trim().toLowerCase() : '';
+    if (!physicalEstadoNormalized && physicalStatus && typeof physicalStatus === 'object') {
+      const match = Object.values(physicalStatus).find(value =>
+        typeof value === 'string' && value.trim().toLowerCase() === 'inactivo'
+      );
+      physicalEstadoNormalized = match ? 'inactivo' : '';
+    }
+    if (physicalEstadoNormalized === 'inactivo' || physicalEstadoNormalized === 'inactive' || hardware.activa === false) {
+      div.classList.add('hardware-physical-inactive');
+      div.style.cssText += 'background: rgba(239, 68, 68, 0.18) !important; border: 1px solid rgba(239, 68, 68, 0.35) !important; box-shadow: 0 10px 28px rgba(239, 68, 68, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.35) !important;';
+    }
     
     //console.log('📊 Datos extraídos:', { datos, status, stock });
     
