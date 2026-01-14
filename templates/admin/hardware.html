@@ -2185,6 +2185,7 @@ async function loadHardware() {
       // Renderizar hardware (SAME AS EMPRESAS LOGIC)
       renderHardware(data.data);
       updateStats(data);
+      openHardwareFromSession();
       
       // NO aplicar filtros automáticamente - dejar que las tarjetas se muestren
       // Los filtros se aplican solo cuando el usuario los cambia manualmente
@@ -2200,6 +2201,29 @@ async function loadHardware() {
   } finally {
     isLoadingHardware = false;
   }
+}
+
+let hardwareSessionOpenPending = false;
+function openHardwareFromSession() {
+  if (hardwareSessionOpenPending) return;
+
+  const hardwareId = sessionStorage.getItem('openHardwareId');
+  if (!hardwareId) return;
+
+  const hasData = Array.isArray(window.allHardware) && window.allHardware.length > 0;
+  const existsInList = hasData ? window.allHardware.some(item => item && item._id === hardwareId) : false;
+
+  if (existsInList && window.viewHardware && typeof window.viewHardware === 'function') {
+    sessionStorage.removeItem('openHardwareId');
+    window.viewHardware(hardwareId);
+    return;
+  }
+
+  hardwareSessionOpenPending = true;
+  setTimeout(() => {
+    hardwareSessionOpenPending = false;
+    openHardwareFromSession();
+  }, 500);
 }
 
 async function createHardwareAPI(hardwareData) {
