@@ -8,15 +8,23 @@ class EmpresaAlertsGlobal {
         this.empresaId = null;
         this.isActive = false;
         this.alertsCache = new Map();
+        this.hardwareCache = new Map();
         this.refreshInterval = null;
         this.notificationBadge = null;
         this.alertsPanel = null;
+        this.alertsCount = 0;
+        this.hardwareCount = 0;
         this.currentAlertIds = new Set(); // IDs de alertas actuales/activas
         this.seenAlertIds = new Set(); // Histórico de TODOS los IDs que hemos visto
         this.shownAlertIds = new Set(); // IDs de alertas YA MOSTRADAS (persistente)
+        this.currentHardwareIds = new Set();
+        this.shownHardwareIds = new Set();
+        this.activePanelTab = 'alerts';
         this.newAlertModalOpen = false; // Para evitar múltiples modales
         this.isFirstLoad = true; // Flag para saber si es la primera carga
+        this.isHardwareFirstLoad = true;
         this.localStorageKey = 'empresa_alerts_shown'; // Clave localStorage
+        this.hardwareStorageKey = 'empresa_hardware_shown';
         
         this.initializeSystem();
     }
@@ -42,12 +50,14 @@ class EmpresaAlertsGlobal {
         
         // Cargar alertas ya mostradas desde localStorage
         this.loadShownAlertsFromStorage();
+        this.loadShownHardwareFromStorage();
         
         // Crear elementos UI globales
         await this.createGlobalUI();
         
         // Cargar alertas iniciales
         await this.loadAlerts();
+        await this.loadHardwareStatus();
         
         // Configurar auto-refresh cada 30 segundos
         this.startAutoRefresh();
@@ -122,11 +132,22 @@ class EmpresaAlertsGlobal {
             <div id="globalAlertsPanel" class="empresa-alerts-panel hidden">
                 <div class="panel-header">
                     <div class="panel-title">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        Alertas Activas de tu Empresa
+                        <i class="fas fa-bell"></i>
+                        Centro de alertas
                     </div>
                     <button class="panel-close" onclick="window.empresaAlertsGlobal.closeAlertsPanel()">
                         <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <div class="panel-tabs">
+                    <button class="panel-tab active" data-tab="alerts" onclick="window.empresaAlertsGlobal.switchPanelTab('alerts')">
+                        Alertas
+                        <span class="panel-tab-count" id="alertsTabCount">0</span>
+                    </button>
+                    <button class="panel-tab" data-tab="hardware" onclick="window.empresaAlertsGlobal.switchPanelTab('hardware')">
+                        Hardware
+                        <span class="panel-tab-count" id="hardwareTabCount">0</span>
                     </button>
                 </div>
                 
@@ -134,6 +155,13 @@ class EmpresaAlertsGlobal {
                     <div class="loading-state">
                         <i class="fas fa-spinner fa-spin"></i>
                         <span>Cargando alertas...</span>
+                    </div>
+                </div>
+
+                <div class="panel-body hidden" id="globalHardwareList">
+                    <div class="loading-state">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <span>Verificando hardware...</span>
                     </div>
                 </div>
                 
@@ -154,6 +182,7 @@ class EmpresaAlertsGlobal {
         
         document.body.insertAdjacentHTML('beforeend', panelHTML);
         this.alertsPanel = document.getElementById('globalAlertsPanel');
+        this.switchPanelTab('alerts');
         
         //console.log('✅ GLOBAL ALERTS: Panel flotante de alertas creado');
     }
@@ -274,6 +303,49 @@ class EmpresaAlertsGlobal {
                     align-items: center;
                     justify-content: space-between;
                 }
+
+                .panel-tabs {
+                    display: flex;
+                    gap: 8px;
+                    padding: 12px 16px;
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+                }
+
+                .panel-tab {
+                    flex: 1;
+                    background: rgba(255, 255, 255, 0.08);
+                    border: 1px solid rgba(255, 255, 255, 0.12);
+                    color: rgba(255, 255, 255, 0.7);
+                    border-radius: 10px;
+                    padding: 8px 10px;
+                    font-size: 12px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 8px;
+                    transition: all 0.2s ease;
+                }
+
+                .panel-tab.active {
+                    background: rgba(59, 130, 246, 0.25);
+                    color: #ffffff;
+                    border-color: rgba(59, 130, 246, 0.45);
+                }
+
+                .panel-tab-count {
+                    min-width: 20px;
+                    height: 20px;
+                    border-radius: 999px;
+                    background: rgba(255, 255, 255, 0.15);
+                    color: #ffffff;
+                    font-size: 11px;
+                    font-weight: 700;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                }
                 
                 .panel-title {
                     color: white;
@@ -310,6 +382,10 @@ class EmpresaAlertsGlobal {
                     overflow-y: auto;
                     padding: 0;
                     max-height: 400px;
+                }
+
+                .panel-body.hidden {
+                    display: none;
                 }
                 
                 .loading-state {
@@ -392,6 +468,41 @@ class EmpresaAlertsGlobal {
                     color: rgba(255, 255, 255, 0.5);
                     font-size: 11px;
                     margin-top: 4px;
+                }
+
+                .hardware-status-item {
+                    padding: 16px 20px;
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                    transition: all 0.2s ease;
+                    cursor: pointer;
+                }
+
+                .hardware-status-item:hover {
+                    background: rgba(255, 255, 255, 0.05);
+                }
+
+                .hardware-status-item:last-child {
+                    border-bottom: none;
+                }
+
+                .hardware-status-title {
+                    color: white;
+                    font-weight: 600;
+                    font-size: 14px;
+                    margin-bottom: 6px;
+                }
+
+                .hardware-status-info {
+                    color: rgba(255, 255, 255, 0.7);
+                    font-size: 12px;
+                    line-height: 1.4;
+                }
+
+                .hardware-status-id {
+                    color: rgba(255, 255, 255, 0.45);
+                    font-size: 11px;
+                    margin-top: 4px;
+                    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
                 }
                 
                 .panel-footer {
@@ -521,28 +632,67 @@ class EmpresaAlertsGlobal {
             this.showError();
         }
     }
+
+    async loadHardwareStatus() {
+        if (!this.isActive) return;
+
+        try {
+            const base = typeof window.__buildApiUrl === 'function'
+                ? window.__buildApiUrl('')
+                : (window.__APP_CONFIG?.apiUrl || '');
+            const baseUrl = base.endsWith('/') ? base.slice(0, -1) : base;
+            const url = `${baseUrl}/api/hardware/physical-status/check`;
+
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            const items = this.normalizeHardwareItems(data);
+
+            this.checkForNewHardware(items);
+            this.hardwareCache.set('current', {
+                items,
+                timestamp: Date.now()
+            });
+            this.updateHardwarePanel(items);
+            this.hardwareCount = items.length;
+            this.updateNotificationBadge();
+            this.updateTabCounts(null, items.length);
+        } catch (error) {
+            this.showHardwareError();
+        }
+    }
     
     updateUI(alerts) {
         const alertsCount = alerts.length;
-        
-        // Actualizar badge del header - solo mostrar si hay alertas
-        if (this.notificationBadge) {
-            this.notificationBadge.textContent = alertsCount;
-            
-            if (alertsCount > 0) {
-                this.notificationBadge.style.display = 'flex';
-                // Añadir efecto de brillo sutil sin cambiar el tamaño
-                this.notificationBadge.style.animation = 'alertGlow 2s infinite';
-            } else {
-                // Ocultar completamente cuando no hay alertas
-                this.notificationBadge.style.display = 'none';
-                // Quitar efecto de animación del badge
-                this.notificationBadge.style.animation = 'none';
-            }
-        }
+        this.alertsCount = alertsCount;
+        this.updateNotificationBadge();
         
         // Actualizar panel
         this.updateAlertsPanel(alerts);
+        this.updateTabCounts(alertsCount, null);
+    }
+
+    updateNotificationBadge() {
+        if (!this.notificationBadge) return;
+
+        const total = this.alertsCount + this.hardwareCount;
+        this.notificationBadge.textContent = total;
+
+        if (total > 0) {
+            this.notificationBadge.style.display = 'flex';
+            this.notificationBadge.style.animation = 'alertGlow 2s infinite';
+        } else {
+            this.notificationBadge.style.display = 'none';
+            this.notificationBadge.style.animation = 'none';
+        }
     }
     
     updateAlertsPanel(alerts) {
@@ -583,6 +733,96 @@ class EmpresaAlertsGlobal {
         
         panel.innerHTML = alertsHTML;
     }
+
+    updateHardwarePanel(items) {
+        const panel = document.getElementById('globalHardwareList');
+        if (!panel) return;
+
+        if (!items || items.length === 0) {
+            panel.innerHTML = `
+                <div class="no-alerts-state">
+                    <i class="fas fa-check-circle"></i>
+                    <h3 style="color: white; margin-bottom: 8px; font-size: 16px;">Todo en orden</h3>
+                    <p style="font-size: 14px;">No hay incidencias fisicas en este momento</p>
+                </div>
+            `;
+            return;
+        }
+
+        const itemsHTML = items.map(item => `
+            <div class="hardware-status-item" role="button" tabindex="0" onclick="window.empresaAlertsGlobal.goToHardwareDetails('${item.hardwareId || ''}')">
+                <div class="hardware-status-title">
+                    ${item.hardwareName}
+                </div>
+                <div class="hardware-status-info">
+                    <div><strong>${item.empresaName}</strong> - ${item.sedeName}</div>
+                </div>
+                ${item.hardwareId ? `<div class="hardware-status-id">ID: ${item.hardwareId}</div>` : ''}
+            </div>
+        `).join('');
+
+        panel.innerHTML = itemsHTML;
+    }
+
+    updateTabCounts(alertsCount, hardwareCount) {
+        const alertsBadge = document.getElementById('alertsTabCount');
+        const hardwareBadge = document.getElementById('hardwareTabCount');
+
+        if (alertsBadge && typeof alertsCount === 'number') {
+            alertsBadge.textContent = alertsCount;
+        }
+        if (hardwareBadge && typeof hardwareCount === 'number') {
+            hardwareBadge.textContent = hardwareCount;
+        }
+    }
+
+    switchPanelTab(tab) {
+        const alertsList = document.getElementById('globalAlertsList');
+        const hardwareList = document.getElementById('globalHardwareList');
+        const tabs = this.alertsPanel ? this.alertsPanel.querySelectorAll('.panel-tab') : [];
+
+        if (!alertsList || !hardwareList) return;
+
+        tabs.forEach(button => {
+            button.classList.toggle('active', button.dataset.tab === tab);
+        });
+
+        alertsList.classList.toggle('hidden', tab !== 'alerts');
+        hardwareList.classList.toggle('hidden', tab !== 'hardware');
+        this.activePanelTab = tab;
+    }
+
+    normalizeHardwareItems(data) {
+        if (!data) return [];
+        if (Array.isArray(data)) return data.map(item => this.normalizeHardwareItem(item));
+
+        const candidates = [
+            data.data,
+            data.items,
+            data.hardware,
+            data.result,
+            data.results
+        ];
+
+        const list = candidates.find(Array.isArray) || [];
+        return list.map(item => this.normalizeHardwareItem(item));
+    }
+
+    normalizeHardwareItem(item) {
+        const hardwareId = item?.hardware_id || item?.hardwareId || item?.id || item?._id || '';
+        const hardwareName = item?.hardware_nombre || item?.hardwareName || item?.nombre_hardware || item?.nombre || 'Hardware sin nombre';
+        const empresaName = item?.empresa_nombre || item?.empresaName || item?.empresa || item?.company_name || 'Empresa sin nombre';
+        const sedeName = item?.sede || item?.sede_nombre || item?.site || item?.location || 'Sede no especificada';
+        const stableId = hardwareId || `${hardwareName}-${empresaName}-${sedeName}`.replace(/\\s+/g, '_').toLowerCase();
+
+        return {
+            id: stableId,
+            hardwareId,
+            hardwareName,
+            empresaName,
+            sedeName
+        };
+    }
     
     showError() {
         const panel = document.getElementById('globalAlertsList');
@@ -595,12 +835,55 @@ class EmpresaAlertsGlobal {
             `;
         }
     }
+
+    showHardwareError() {
+        const panel = document.getElementById('globalHardwareList');
+        if (panel) {
+            panel.innerHTML = `
+                <div class="loading-state" style="color: #f87171;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>Error cargando estado fisico</span>
+                </div>
+            `;
+        }
+    }
+
+    checkForNewHardware(items) {
+        if (!items || items.length === 0) {
+            this.currentHardwareIds.clear();
+            return;
+        }
+
+        const newIds = new Set(items.map(item => item.id));
+
+        if (this.isHardwareFirstLoad) {
+            const neverShown = [...newIds].filter(id => !this.shownHardwareIds.has(id));
+            if (neverShown.length > 0) {
+                this.openAlertsPanel();
+                this.switchPanelTab('hardware');
+                this.markHardwareAsShown(neverShown);
+            }
+            this.currentHardwareIds = new Set(newIds);
+            this.isHardwareFirstLoad = false;
+            return;
+        }
+
+        const trulyNew = [...newIds].filter(id => !this.shownHardwareIds.has(id));
+        if (trulyNew.length > 0) {
+            this.openAlertsPanel();
+            this.switchPanelTab('hardware');
+            this.markHardwareAsShown(trulyNew);
+        }
+
+        this.currentHardwareIds = new Set(newIds);
+    }
     
     startAutoRefresh() {
         // Actualizar cada 10 segundos
         this.refreshInterval = setInterval(() => {
             //console.log('🔄 AUTO-REFRESH: Cargando alertas automáticamente...');
             this.loadAlerts();
+            this.loadHardwareStatus();
         }, 10000);
         
         //console.log('🔄 GLOBAL ALERTS: Auto-refresh configurado (10s)');
@@ -626,6 +909,7 @@ class EmpresaAlertsGlobal {
             } else {
                 this.startAutoRefresh();
                 this.loadAlerts(); // Cargar inmediatamente cuando regresa
+                this.loadHardwareStatus();
             }
         });
     }
@@ -643,6 +927,7 @@ class EmpresaAlertsGlobal {
                 overlay.classList.remove('hidden');
                 // Cargar alertas frescas al abrir
                 this.loadAlerts();
+                this.loadHardwareStatus();
             } else {
                 panel.classList.add('hidden');
                 overlay.classList.add('hidden');
@@ -696,6 +981,7 @@ class EmpresaAlertsGlobal {
             refreshBtn.disabled = true;
             
             await this.loadAlerts();
+            await this.loadHardwareStatus();
             
             setTimeout(() => {
                 refreshBtn.innerHTML = originalHTML;
@@ -703,6 +989,7 @@ class EmpresaAlertsGlobal {
             }, 1000);
         } else {
             await this.loadAlerts();
+            await this.loadHardwareStatus();
         }
     }
     
@@ -740,6 +1027,7 @@ class EmpresaAlertsGlobal {
             if (neverShownAlerts.length > 0) {
                 //console.log(`🚨 PRIMERA CARGA: ${neverShownAlerts.length} alerta(s) nueva(s) - ABRIENDO PANEL`);
                 this.openAlertsPanel();
+                this.switchPanelTab('alerts');
                 // Marcar como mostradas
                 this.markAlertsAsShown(neverShownAlerts);
             } else {
@@ -764,6 +1052,7 @@ class EmpresaAlertsGlobal {
             // Abrir el panel de alertas automáticamente
             //console.log('🚨 ABRIENDO PANEL DE ALERTAS PARA NUEVA ALERTA');
             this.openAlertsPanel();
+            this.switchPanelTab('alerts');
             
             // Marcar como mostradas
             this.markAlertsAsShown(trueNewAlertIds);
@@ -972,6 +1261,14 @@ class EmpresaAlertsGlobal {
         //console.log('🔗 DEBUG: Redirigiendo a /empresa/alertas');
         window.location.href = '/empresa/alertas';
     }
+
+    goToHardwareDetails(hardwareId) {
+        this.closeAlertsPanel();
+        if (hardwareId) {
+            sessionStorage.setItem('openHardwareId', hardwareId);
+        }
+        window.location.href = '/empresa/hardware';
+    }
     
     // MÉTODOS DE TESTING/DEBUGGING
     testNewAlert() {
@@ -1094,6 +1391,37 @@ class EmpresaAlertsGlobal {
             this.shownAlertIds.add(id);
         });
         this.saveShownAlertsToStorage();
+    }
+
+    // Cargar hardware ya mostrado desde localStorage
+    loadShownHardwareFromStorage() {
+        try {
+            const stored = localStorage.getItem(this.hardwareStorageKey);
+            if (stored) {
+                const shownIds = JSON.parse(stored);
+                this.shownHardwareIds = new Set(shownIds);
+            }
+        } catch (error) {
+            this.shownHardwareIds = new Set();
+        }
+    }
+
+    // Guardar hardware mostrado en localStorage
+    saveShownHardwareToStorage() {
+        try {
+            const shownIds = Array.from(this.shownHardwareIds);
+            localStorage.setItem(this.hardwareStorageKey, JSON.stringify(shownIds));
+        } catch (error) {
+            return;
+        }
+    }
+
+    // Marcar hardware como ya mostrado
+    markHardwareAsShown(hardwareIds) {
+        hardwareIds.forEach(id => {
+            this.shownHardwareIds.add(id);
+        });
+        this.saveShownHardwareToStorage();
     }
     
     // Limpiar historial (para testing)

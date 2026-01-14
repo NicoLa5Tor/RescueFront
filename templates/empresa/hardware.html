@@ -2100,6 +2100,7 @@ async function loadHardware() {
       // Renderizar hardware
       renderHardware(data.data);
       updateStats(data);
+      openHardwareFromSession(data.data);
     } else {
       //console.error('❌ Error en la respuesta del servidor:', data.errors);
       // Mostrar mensaje de error al usuario
@@ -2113,6 +2114,41 @@ async function loadHardware() {
     isLoadingHardware = false;
   }
 }
+
+let hardwareSessionOpenPending = false;
+function openHardwareFromSession(hardwareList) {
+  if (hardwareSessionOpenPending) return;
+
+  const hardwareId = sessionStorage.getItem('openHardwareId');
+  if (!hardwareId) return;
+
+  const maxRetries = 20;
+  let attempts = 0;
+
+  const tryOpen = () => {
+    const hasApiClient = !!window.hardwareCore?.apiClient;
+    if (window.viewHardware && typeof window.viewHardware === 'function' && hasApiClient) {
+      sessionStorage.removeItem('openHardwareId');
+      window.viewHardware(hardwareId);
+      return;
+    }
+
+    attempts += 1;
+    if (attempts < maxRetries) {
+      setTimeout(tryOpen, 400);
+    }
+  };
+
+  hardwareSessionOpenPending = true;
+  setTimeout(() => {
+    hardwareSessionOpenPending = false;
+    tryOpen();
+  }, 400);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  openHardwareFromSession();
+});
 
 async function createHardwareAPI(hardwareData) {
   try {
