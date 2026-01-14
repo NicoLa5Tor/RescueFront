@@ -576,11 +576,9 @@ class AdminHardwareNotifications {
 
     if (this.isFirstLoad) {
       if (newIds.size > 0) {
-        this.openPanel();
         this.showNewHardwarePopup(newlyAppeared.length || newIds.size);
       }
     } else if (newlyAppeared.length > 0) {
-      this.openPanel();
       this.showNewHardwarePopup(newlyAppeared.length);
     }
 

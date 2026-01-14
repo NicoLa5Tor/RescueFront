@@ -902,13 +902,9 @@ class EmpresaAlertsGlobal {
 
         if (this.isHardwareFirstLoad) {
             if (newIds.size > 0) {
-                this.openAlertsPanel();
-                this.switchPanelTab('hardware');
                 this.showHardwarePopup(newlyAppeared.length || newIds.size);
             }
         } else if (newlyAppeared.length > 0) {
-            this.openAlertsPanel();
-            this.switchPanelTab('hardware');
             this.showHardwarePopup(newlyAppeared.length);
         }
 
