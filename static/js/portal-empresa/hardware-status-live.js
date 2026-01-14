@@ -1,4 +1,4 @@
-class AdminHardwareStatusLive {
+class EmpresaHardwareStatusLive {
   constructor() {
     this.refreshInterval = null;
     this.activePhysicalIds = new Set();
@@ -7,7 +7,7 @@ class AdminHardwareStatusLive {
   }
 
   initialize() {
-    if (!window.location.pathname.startsWith('/admin/hardware')) return;
+    if (!window.location.pathname.startsWith('/empresa/hardware')) return;
     this.fetchStatus();
     this.startAutoRefresh();
   }
@@ -145,6 +145,6 @@ class AdminHardwareStatusLive {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  if (window.adminHardwareStatusLive) return;
-  window.adminHardwareStatusLive = new AdminHardwareStatusLive();
+  if (window.empresaHardwareStatusLive) return;
+  window.empresaHardwareStatusLive = new EmpresaHardwareStatusLive();
 });

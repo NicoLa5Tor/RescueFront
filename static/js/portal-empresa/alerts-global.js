@@ -898,29 +898,22 @@ class EmpresaAlertsGlobal {
         }
 
         const newIds = new Set(items.map(item => item.id));
+        const newlyAppeared = [...newIds].filter(id => !this.currentHardwareIds.has(id));
 
         if (this.isHardwareFirstLoad) {
-            const neverShown = [...newIds].filter(id => !this.shownHardwareIds.has(id));
-            if (neverShown.length > 0) {
+            if (newIds.size > 0) {
                 this.openAlertsPanel();
                 this.switchPanelTab('hardware');
-                this.showHardwarePopup(neverShown.length);
-                this.markHardwareAsShown(neverShown);
+                this.showHardwarePopup(newlyAppeared.length || newIds.size);
             }
-            this.currentHardwareIds = new Set(newIds);
-            this.isHardwareFirstLoad = false;
-            return;
-        }
-
-        const trulyNew = [...newIds].filter(id => !this.shownHardwareIds.has(id));
-        if (trulyNew.length > 0) {
+        } else if (newlyAppeared.length > 0) {
             this.openAlertsPanel();
             this.switchPanelTab('hardware');
-            this.showHardwarePopup(trulyNew.length);
-            this.markHardwareAsShown(trulyNew);
+            this.showHardwarePopup(newlyAppeared.length);
         }
 
         this.currentHardwareIds = new Set(newIds);
+        this.isHardwareFirstLoad = false;
     }
 
     showHardwarePopup(count) {

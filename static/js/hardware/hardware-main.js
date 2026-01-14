@@ -577,7 +577,7 @@ class HardwareMain {
     }
     if (physicalEstadoNormalized === 'inactivo' || physicalEstadoNormalized === 'inactive' || hardware.activa === false) {
       div.classList.add('hardware-physical-inactive');
-      div.style.cssText += 'background: rgba(239, 68, 68, 0.18) !important; border: 1px solid rgba(239, 68, 68, 0.35) !important; box-shadow: 0 10px 28px rgba(239, 68, 68, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.35) !important;';
+      div.style.cssText += 'background: rgba(239, 68, 68, 0.38) !important; border: 1px solid rgba(239, 68, 68, 0.6) !important; box-shadow: 0 12px 32px rgba(239, 68, 68, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.45) !important;';
     }
     
     // Set data attributes for filtering

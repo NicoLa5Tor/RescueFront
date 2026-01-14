@@ -572,27 +572,20 @@ class AdminHardwareNotifications {
     }
 
     const newIds = new Set(items.map(item => item.id));
+    const newlyAppeared = [...newIds].filter(id => !this.currentIds.has(id));
 
     if (this.isFirstLoad) {
-      const neverShown = [...newIds].filter(id => !this.shownIds.has(id));
-      if (neverShown.length > 0) {
+      if (newIds.size > 0) {
         this.openPanel();
-        this.showNewHardwarePopup(neverShown.length);
-        this.markShown(neverShown);
+        this.showNewHardwarePopup(newlyAppeared.length || newIds.size);
       }
-      this.currentIds = new Set(newIds);
-      this.isFirstLoad = false;
-      return;
-    }
-
-    const trulyNew = [...newIds].filter(id => !this.shownIds.has(id));
-    if (trulyNew.length > 0) {
+    } else if (newlyAppeared.length > 0) {
       this.openPanel();
-      this.showNewHardwarePopup(trulyNew.length);
-      this.markShown(trulyNew);
+      this.showNewHardwarePopup(newlyAppeared.length);
     }
 
     this.currentIds = new Set(newIds);
+    this.isFirstLoad = false;
   }
 
   loadShownFromStorage() {
