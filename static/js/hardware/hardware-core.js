@@ -527,6 +527,79 @@ class HardwareCore {
         }
       };
 
+      const formatPhysicalStatusValue = (value) => {
+        if (value === null || value === undefined) {
+          return 'N/A';
+        }
+        if (typeof value === 'boolean') {
+          return value ? 'Sí' : 'No';
+        }
+        if (Array.isArray(value)) {
+          return value.length ? value.join(', ') : 'N/A';
+        }
+        if (typeof value === 'object') {
+          const entries = Object.entries(value);
+          if (!entries.length) {
+            return 'N/A';
+          }
+          return entries
+            .map(([key, nestedValue]) => `${key}: ${formatPhysicalStatusValue(nestedValue)}`)
+            .join(' · ');
+        }
+        return String(value);
+      };
+
+      const renderPhysicalStatus = (physicalStatus) => {
+        const container = document.getElementById('viewHardwarePhysicalStatus');
+        if (!container) {
+          return;
+        }
+        container.innerHTML = '';
+
+        let statusData = physicalStatus;
+        if (typeof statusData === 'string') {
+          try {
+            statusData = JSON.parse(statusData);
+          } catch (e) {
+            statusData = null;
+          }
+        }
+
+        if (!statusData || typeof statusData !== 'object' || Array.isArray(statusData)) {
+          const empty = document.createElement('em');
+          empty.className = 'text-gray-200';
+          empty.textContent = 'Sin estado físico disponible';
+          container.appendChild(empty);
+          return;
+        }
+
+        const entries = Object.entries(statusData);
+        if (!entries.length) {
+          const empty = document.createElement('em');
+          empty.className = 'text-gray-200';
+          empty.textContent = 'Sin estado físico disponible';
+          container.appendChild(empty);
+          return;
+        }
+
+        entries.forEach(([key, value]) => {
+          const row = document.createElement('div');
+          row.className = 'flex flex-wrap items-start justify-between gap-2 rounded-lg bg-white/10 px-3 py-2';
+
+          const label = document.createElement('span');
+          label.className = 'text-white/90 font-semibold';
+          label.textContent = key;
+
+          const content = document.createElement('span');
+          content.className = 'text-white/90';
+          content.textContent = formatPhysicalStatusValue(value);
+
+          row.appendChild(label);
+          row.appendChild(content);
+          container.appendChild(row);
+        });
+      };
+
       // Extract nested data
       let datos = {};
       if (hardware.datos) {
@@ -604,6 +677,15 @@ class HardwareCore {
       // Creation date
       const fechaCreacion = this.formatCreationDate(hardware);
       this.setElementText('viewHardwareCreated', fechaCreacion);
+
+      const physicalStatus = getSafeValue(hardware, 'physical_status') ||
+        getSafeValue(hardware, 'datos.physical_status') ||
+        getSafeValue(datos, 'physical_status') ||
+        getSafeValue(hardware, 'physicalStatus') ||
+        getSafeValue(datos, 'physicalStatus') ||
+        getSafeValue(hardware, 'estado_fisico') ||
+        getSafeValue(datos, 'estado_fisico');
+      renderPhysicalStatus(physicalStatus);
 
       // Description
       const description = getSafeValue(datos, 'description') || 
