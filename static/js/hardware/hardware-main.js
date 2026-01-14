@@ -602,7 +602,10 @@ class HardwareMain {
     let statusClass = 'ios-status-available';
     let statusText = 'Disponible';
     
-    if (stock === 0 || status === 'out_of_stock') {
+    if (physicalEstadoNormalized === 'inactivo' || physicalEstadoNormalized === 'inactive') {
+      statusClass = 'ios-status-discontinued';
+      statusText = 'Inactivo';
+    } else if (stock === 0 || status === 'out_of_stock') {
       statusClass = 'ios-status-stock';
       statusText = 'Sin Stock';
     } else if (status === 'discontinued') {
