@@ -58,6 +58,7 @@ class EmpresaAlertsGlobal {
         // Cargar alertas iniciales
         await this.loadAlerts();
         await this.loadHardwareStatus();
+        this.removeHardwarePopupElements();
         
         // Configurar auto-refresh cada 30 segundos
         this.startAutoRefresh();
@@ -505,48 +506,6 @@ class EmpresaAlertsGlobal {
                     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
                 }
 
-                .hardware-popup {
-                    position: fixed;
-                    top: 18px;
-                    right: 18px;
-                    background: linear-gradient(135deg, #ef4444, #b91c1c);
-                    color: white;
-                    padding: 12px 16px;
-                    border-radius: 12px;
-                    box-shadow: 0 12px 24px rgba(185, 28, 28, 0.35);
-                    z-index: 1002;
-                    display: flex;
-                    align-items: center;
-                    gap: 10px;
-                    max-width: 320px;
-                    animation: hardwarePopupIn 0.35s ease;
-                }
-
-                .hardware-popup__icon {
-                    width: 34px;
-                    height: 34px;
-                    border-radius: 10px;
-                    background: rgba(255, 255, 255, 0.2);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                }
-
-                .hardware-popup__title {
-                    font-weight: 700;
-                    font-size: 13px;
-                    margin-bottom: 2px;
-                }
-
-                .hardware-popup__text {
-                    font-size: 12px;
-                    opacity: 0.9;
-                }
-
-                @keyframes hardwarePopupIn {
-                    from { transform: translateX(120%); opacity: 0; }
-                    to { transform: translateX(0); opacity: 1; }
-                }
                 
                 .panel-footer {
                     padding: 16px 20px;
@@ -902,40 +861,24 @@ class EmpresaAlertsGlobal {
 
         if (this.isHardwareFirstLoad) {
             if (newIds.size > 0) {
-                this.showHardwarePopup(newlyAppeared.length || newIds.size);
+                this.removeHardwarePopupElements();
+                this.openAlertsPanel();
+                this.switchPanelTab('hardware');
+                this.markHardwareAsShown(newlyAppeared.length ? newlyAppeared : Array.from(newIds));
             }
         } else if (newlyAppeared.length > 0) {
-            this.showHardwarePopup(newlyAppeared.length);
+            this.removeHardwarePopupElements();
+            this.openAlertsPanel();
+            this.switchPanelTab('hardware');
+            this.markHardwareAsShown(newlyAppeared);
         }
 
         this.currentHardwareIds = new Set(newIds);
         this.isHardwareFirstLoad = false;
     }
 
-    showHardwarePopup(count) {
-        if (!count) return;
-
-        const existing = document.querySelector('.hardware-popup');
-        if (existing) {
-            existing.remove();
-        }
-
-        const popup = document.createElement('div');
-        popup.className = 'hardware-popup';
-        popup.innerHTML = `
-            <div class="hardware-popup__icon">
-                <i class="fas fa-microchip"></i>
-            </div>
-            <div>
-                <div class="hardware-popup__title">Nuevo estado de hardware</div>
-                <div class="hardware-popup__text">Se detectaron ${count} cambio(s) nuevo(s)</div>
-            </div>
-        `;
-
-        document.body.appendChild(popup);
-        setTimeout(() => {
-            popup.remove();
-        }, 3500);
+    removeHardwarePopupElements() {
+        document.querySelectorAll('.hardware-popup').forEach(el => el.remove());
     }
     
     startAutoRefresh() {
