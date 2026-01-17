@@ -473,7 +473,9 @@
         });
         const payload = await response.json().catch(() => ({}));
         if (response.status !== 201 || payload.success === false) {
-          const message = (payload && payload.error) || 'No se pudo cargar el archivo.';
+          const message = response.status === 415
+            ? 'El tipo de archivo no está permitido.'
+            : (payload.detail || payload.error || 'No se pudo cargar el archivo.');
           throw new Error(message);
         }
 
