@@ -289,7 +289,7 @@
 
 <!-- Modal: Desactivar Tipo de Alerta -->
 <div id="toggleAlertTypeModal" class="ios-modal-backdrop toggle-modal hidden" role="dialog" aria-modal="true" aria-labelledby="toggleAlertTypeTitle">
-  <div class="ios-blur-modal-container max-w-md" id="toggleAlertTypeContainer">
+  <div class="ios-blur-modal-container flex flex-col w-full max-w-md !max-h-[85vh] overflow-hidden mx-auto" id="toggleAlertTypeContainer">
     <div class="ios-blur-header text-center">
       <div class="toggle-modal-icon deactivate mx-auto mb-4" id="toggleAlertTypeIcon">
         <i class="fas fa-power-off text-4xl" id="toggleAlertTypeIconFa"></i>
@@ -297,13 +297,13 @@
       <h2 id="toggleAlertTypeTitle" class="text-2xl font-semibold text-white">Desactivar tipo de alerta</h2>
     </div>
 
-    <div class="ios-blur-body space-y-6">
+    <div class="ios-blur-body flex-1 min-h-0 !max-h-none space-y-6">
       <p class="text-white/80 text-lg text-center" id="toggleAlertTypeMessage">¿Estás seguro de que quieres desactivar este tipo de alerta?</p>
 
       <div id="alertTypeDeactivateFeedback" class="hidden px-4 py-3 rounded-lg border border-red-400 bg-red-500/20 text-red-100 text-sm"></div>
     </div>
 
-    <div class="ios-blur-footer">
+    <div class="ios-blur-footer flex flex-col sm:flex-row gap-3 sm:justify-end">
       <button type="button" class="ios-blur-btn ios-blur-btn-secondary" onclick="closeDeactivateAlertTypeModal()">
         <i class="fas fa-times mr-2"></i>
         Cancelar
@@ -318,10 +318,10 @@
 
 <!-- Modal: Detalles Tipo de Alerta -->
 <div id="viewAlertTypeModal" class="ios-modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="viewAlertTypeTitle">
-  <div class="ios-blur-modal-container max-w-3xl">
+  <div class="ios-blur-modal-container flex flex-col w-full max-w-3xl lg:max-w-5xl xl:max-w-6xl !max-h-[92vh] sm:!max-h-[90vh] overflow-hidden">
     <div class="ios-blur-header">
-      <div class="flex items-center justify-between w-full">
-        <div class="flex items-center space-x-3">
+      <div class="flex flex-col items-start gap-4 w-full sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex items-center gap-3 flex-1 min-w-0">
           <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-red-500 via-orange-500 to-yellow-400 flex items-center justify-center shadow-lg">
             <i class="fas fa-bell text-white text-xl"></i>
           </div>
@@ -330,13 +330,13 @@
             <p class="text-sm text-white/70" id="viewAlertTypeSubtitle">Consulta la configuración completa</p>
           </div>
         </div>
-        <button type="button" class="ios-blur-btn ios-blur-btn-secondary !p-2" onclick="closeViewAlertTypeModal()" aria-label="Cerrar modal">
+        <button type="button" class="ios-blur-btn ios-blur-btn-secondary shrink-0 !p-2" onclick="closeViewAlertTypeModal()" aria-label="Cerrar modal">
           <i class="fas fa-times text-lg"></i>
         </button>
       </div>
     </div>
 
-    <div class="ios-blur-body space-y-6" id="viewAlertTypeBody">
+    <div class="ios-blur-body flex-1 min-h-0 !max-h-none space-y-6" id="viewAlertTypeBody">
       <div class="alert-type-detail-header">
         <div>
           <h3 class="alert-type-detail-title" id="alertDetailName">-</h3>
@@ -392,7 +392,7 @@
       <div id="alertDetailFeedback" class="hidden px-4 py-3 rounded-lg border border-red-400 bg-red-500/20 text-red-100 text-sm"></div>
     </div>
 
-    <div class="ios-blur-footer">
+    <div class="ios-blur-footer flex flex-col sm:flex-row gap-3 sm:justify-end">
       <button type="button" class="ios-blur-btn ios-blur-btn-secondary" onclick="closeViewAlertTypeModal()">
         <i class="fas fa-times mr-2"></i>
         Cerrar
@@ -403,10 +403,10 @@
 
 <!-- Modal: Crear Tipo de Alerta -->
 <div id="createAlertTypeModal" class="ios-modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="createAlertTypeTitle">
-  <div class="ios-blur-modal-container max-w-4xl">
+  <div class="ios-blur-modal-container flex flex-col w-full max-w-4xl lg:max-w-5xl xl:max-w-6xl !max-h-[92vh] sm:!max-h-[90vh] overflow-hidden">
     <div class="ios-blur-header">
-      <div class="flex items-center justify-between w-full">
-        <div class="flex items-center space-x-3">
+      <div class="flex flex-col items-start gap-4 w-full sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex items-center gap-3 flex-1 min-w-0">
           <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-red-500 via-orange-500 to-yellow-400 flex items-center justify-center shadow-lg">
             <i class="fas fa-bell text-white text-xl"></i>
           </div>
@@ -415,13 +415,13 @@
             <p class="text-sm text-white/70" id="createAlertTypeSubtitle">Define los atributos básicos y las recomendaciones iniciales</p>
           </div>
         </div>
-        <button type="button" class="ios-blur-btn ios-blur-btn-secondary !p-2" data-modal-close aria-label="Cerrar modal" onclick="closeCreateAlertTypeModal()">
+        <button type="button" class="ios-blur-btn ios-blur-btn-secondary shrink-0 !p-2" data-modal-close aria-label="Cerrar modal" onclick="closeCreateAlertTypeModal()">
           <i class="fas fa-times text-lg"></i>
         </button>
       </div>
     </div>
 
-    <form id="createAlertTypeForm" class="ios-blur-body space-y-6">
+    <form id="createAlertTypeForm" class="ios-blur-body flex-1 min-h-0 !max-h-none space-y-6">
       <div id="alertTypeFormFeedback" class="hidden px-4 py-3 rounded-lg border border-red-400 bg-red-500/20 text-red-100 text-sm"></div>
 
       <div class="form-grid">

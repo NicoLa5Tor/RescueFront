@@ -241,11 +241,11 @@
 
 <!-- Create/Edit Company Type Modal - EXACT HARDWARE STYLE -->
 <div id="companyTypeModal" class="ios-modal-backdrop hidden">
-  <div class="ios-blur-modal-container w-full max-w-4xl">
+  <div class="ios-blur-modal-container flex flex-col w-full max-w-4xl lg:max-w-5xl xl:max-w-6xl !max-h-[92vh] sm:!max-h-[90vh] overflow-hidden">
     <!-- Modal Header -->
     <div class="ios-blur-header">
-      <div class="flex items-center justify-between w-full">
-        <div class="flex items-center space-x-3">
+      <div class="flex flex-col items-start gap-4 w-full sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex items-center gap-3 flex-1 min-w-0">
           <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
             <i class="fas fa-layer-group text-white text-xl"></i>
           </div>
@@ -254,14 +254,14 @@
             <p class="text-sm text-white/70 dark:text-gray-300">Complete los campos para registrar el tipo</p>
           </div>
         </div>
-        <button type="button" class="ios-blur-btn ios-blur-btn-secondary !p-2 !min-w-0" onclick="closeCompanyTypeModal()" aria-label="Cerrar modal">
+        <button type="button" class="ios-blur-btn ios-blur-btn-secondary shrink-0 !p-2 !min-w-0" onclick="closeCompanyTypeModal()" aria-label="Cerrar modal">
           <i class="fas fa-times text-lg"></i>
         </button>
       </div>
     </div>
     
     <!-- Modal Body -->
-    <div class="ios-blur-body">
+    <div class="ios-blur-body flex-1 min-h-0 !max-h-none">
       <form id="companyTypeForm">
         <div class="form-grid">
           <!-- Nombre -->
@@ -316,7 +316,7 @@
     </div>
     
     <!-- Modal Footer -->
-    <div class="ios-blur-footer">
+    <div class="ios-blur-footer flex flex-col sm:flex-row gap-3 sm:justify-end">
       <button type="button" class="ios-blur-btn ios-blur-btn-secondary" onclick="closeCompanyTypeModal()">
         <i class="fas fa-times mr-2"></i>
         <span class="text-sm font-medium">Cancelar</span>
@@ -331,11 +331,11 @@
 
 <!-- View Details Modal - EXACT HARDWARE STYLE -->
 <div id="detailsModal" class="ios-modal-backdrop hidden">
-  <div class="ios-blur-modal-container w-full max-w-4xl">
+  <div class="ios-blur-modal-container flex flex-col w-full max-w-4xl lg:max-w-5xl xl:max-w-6xl !max-h-[92vh] sm:!max-h-[90vh] overflow-hidden">
     <!-- Modal Header -->
     <div class="ios-blur-header">
-      <div class="flex items-center justify-between w-full">
-        <div class="flex items-center space-x-3">
+      <div class="flex flex-col items-start gap-4 w-full sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex items-center gap-3 flex-1 min-w-0">
           <div class="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
             <i class="fas fa-eye text-white text-xl"></i>
           </div>
@@ -344,21 +344,21 @@
             <p class="text-sm text-white/70">Información completa del tipo seleccionado</p>
           </div>
         </div>
-        <button type="button" class="ios-blur-btn ios-blur-btn-secondary !p-2 !min-w-0" onclick="closeCompanyTypeDetailsModal()" aria-label="Cerrar modal">
+        <button type="button" class="ios-blur-btn ios-blur-btn-secondary shrink-0 !p-2 !min-w-0" onclick="closeCompanyTypeDetailsModal()" aria-label="Cerrar modal">
           <i class="fas fa-times text-lg"></i>
         </button>
       </div>
     </div>
     
     <!-- Modal Body -->
-    <div class="ios-blur-body">
+    <div class="ios-blur-body flex-1 min-h-0 !max-h-none">
       <div id="detailsContent" class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- Details will be loaded here using Hardware-style cards -->
       </div>
     </div>
     
     <!-- Modal Footer -->
-    <div class="ios-blur-footer">
+    <div class="ios-blur-footer flex flex-col sm:flex-row gap-3 sm:justify-end">
       <button type="button" class="ios-blur-btn ios-blur-btn-secondary" onclick="closeCompanyTypeDetailsModal()">
         <i class="fas fa-times mr-2"></i>
         Cerrar
@@ -369,18 +369,18 @@
 
 <!-- Enhanced Toggle Company Type Status Modal - EXACT COPY FROM HARDWARE -->
 <div id="toggleCompanyTypeModal" class="ios-modal-backdrop toggle-modal hidden">
-  <div class="ios-blur-modal-container max-w-md" id="toggleModalContainer">
+  <div class="ios-blur-modal-container flex flex-col w-full max-w-md !max-h-[85vh] overflow-hidden mx-auto" id="toggleModalContainer">
     <div class="ios-blur-header text-center">
       <div class="toggle-modal-icon mx-auto mb-4" id="toggleModalIcon">
         <i class="fas fa-power-off text-4xl" id="toggleModalIconFa"></i>
       </div>
       <h3 class="text-2xl font-bold text-white dark:text-white mb-2" id="toggleModalTitle">Activar Tipo de Empresa</h3>
     </div>
-    <div class="ios-blur-body text-center">
+    <div class="ios-blur-body flex-1 min-h-0 !max-h-none text-center">
       <p class="text-white/80 dark:text-gray-300 text-lg mb-6" id="toggleModalMessage">
         ¿Estás seguro de que quieres activar este tipo de empresa?
       </p>
-      <div class="flex gap-4 justify-center">
+      <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
         <button class="ios-blur-btn ios-blur-btn-secondary" onclick="closeCompanyTypeToggleModal()">
           <i class="fas fa-times mr-2"></i>
           <span class="text-sm font-medium">Cancelar</span>
@@ -396,14 +396,14 @@
 
 <!-- Client Update Success Modal - EXACT COPY FROM HARDWARE -->
 <div id="clientUpdateModal" class="ios-modal-backdrop hidden">
-  <div class="ios-blur-modal-container max-w-md" id="updateModalContainer">
+  <div class="ios-blur-modal-container flex flex-col w-full max-w-md !max-h-[85vh] overflow-hidden mx-auto" id="updateModalContainer">
     <div class="ios-blur-header text-center">
       <div class="client-update-icon mx-auto mb-4" id="updateModalIcon">
         <i class="fas fa-sync-alt text-4xl text-emerald-400" id="updateModalIconFa"></i>
       </div>
       <h3 class="text-2xl font-bold text-white dark:text-white mb-2" id="updateModalTitle">Tipo Actualizado</h3>
     </div>
-    <div class="ios-blur-body text-center">
+    <div class="ios-blur-body flex-1 min-h-0 !max-h-none text-center">
       <p class="text-white/80 dark:text-gray-300 text-lg mb-6" id="updateModalMessage">
         El tipo de empresa se ha actualizado exitosamente.
       </p>

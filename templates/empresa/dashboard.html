@@ -459,6 +459,40 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 
+<script>
+(function() {
+  const resetBodyScroll = () => {
+    const openModal = document.querySelector(
+      '.modal-backdrop:not(.hidden), .ios-modal-backdrop:not(.hidden), .system-info-modal-backdrop.show, .system-info-modal-backdrop:not(.hidden)'
+    );
+    if (openModal) return;
+
+    const body = document.body;
+    const html = document.documentElement;
+    body.classList.remove('modal-open', 'ios-modal-open', 'usuarios-modal-open', 'empresas-modal-open', 'company-types-modal-open');
+    body.style.overflow = '';
+    body.style.position = '';
+    body.style.top = '';
+    body.style.left = '';
+    body.style.width = '';
+    html.style.overflow = '';
+  };
+
+  const schedule = () => {
+    setTimeout(resetBodyScroll, 1200);
+    setTimeout(resetBodyScroll, 2500);
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', schedule);
+  } else {
+    schedule();
+  }
+
+  window.addEventListener('orientationchange', () => setTimeout(resetBodyScroll, 300));
+})();
+</script>
+
 {% block page_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
