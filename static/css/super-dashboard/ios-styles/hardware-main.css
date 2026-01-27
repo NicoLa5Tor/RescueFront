@@ -70,8 +70,6 @@ body.hardware-page {
 /* Modal open state */
 body.ios-modal-open {
   overflow: hidden;
-  position: fixed;
-  width: 100%;
 }
 
 /* Notification styles for hardware */

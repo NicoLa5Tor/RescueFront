@@ -137,9 +137,16 @@ class ModalManager {
     restoreBodyScroll(modalId = '', options = {}) {
         // Restaurar overflow
         document.body.style.overflow = '';
+        document.documentElement.style.overflow = '';
         
         // Remover todas las clases de modal conocidas
-        const modalClasses = ['modal-open', 'company-types-modal-open', 'ios-modal-open'];
+        const modalClasses = [
+            'modal-open',
+            'ios-modal-open',
+            'usuarios-modal-open',
+            'empresas-modal-open',
+            'company-types-modal-open'
+        ];
         modalClasses.forEach(className => {
             document.body.classList.remove(className);
         });
