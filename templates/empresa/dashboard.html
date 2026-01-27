@@ -414,6 +414,51 @@
 <!-- Sistema Global de Alertas para Empresa -->
 <script src="{{ url_for('static', filename='js/portal-empresa/alerts-global.js') }}"></script>
 
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const menuToggle = document.querySelector('.navbar__menu-toggle');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  if (!menuToggle || !sidebar || !overlay) return;
+  menuToggle.setAttribute('aria-expanded', 'false');
+
+  const isDesktop = () => window.matchMedia('(min-width: 1024px)').matches;
+
+  const openSidebar = () => {
+    if (isDesktop()) return;
+    sidebar.classList.add('sidebar--open');
+    sidebar.classList.remove('sidebar--closed');
+    overlay.classList.add('sidebar__overlay--visible');
+    menuToggle.setAttribute('aria-expanded', 'true');
+  };
+
+  const closeSidebar = () => {
+    if (isDesktop()) return;
+    sidebar.classList.remove('sidebar--open');
+    sidebar.classList.add('sidebar--closed');
+    overlay.classList.remove('sidebar__overlay--visible');
+    menuToggle.setAttribute('aria-expanded', 'false');
+  };
+
+  const toggleSidebar = () => {
+    if (sidebar.classList.contains('sidebar--open')) {
+      closeSidebar();
+    } else {
+      openSidebar();
+    }
+  };
+
+  menuToggle.addEventListener('click', toggleSidebar);
+  overlay.addEventListener('click', closeSidebar);
+  window.addEventListener('resize', () => {
+    if (isDesktop()) {
+      overlay.classList.remove('sidebar__overlay--visible');
+      menuToggle.setAttribute('aria-expanded', 'false');
+    }
+  });
+});
+</script>
+
 {% block page_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {

@@ -393,11 +393,11 @@ html:not(.dark) option {
 
   <!-- Enhanced View Usuario Modal - EXACT STYLE AS EMPRESAS -->
   <div id="viewUserModal" class="ios-modal-backdrop hidden">
-    <div class="ios-blur-modal-container w-full max-w-2xl">
+    <div class="ios-blur-modal-container flex flex-col w-full max-w-2xl !max-h-[92vh] sm:!max-h-[90vh] overflow-hidden">
       <!-- Modal Header -->
       <div class="ios-blur-header">
-        <div class="flex items-center justify-between w-full">
-          <div class="flex items-center space-x-3">
+        <div class="flex flex-col items-start gap-4 w-full sm:flex-row sm:items-center sm:justify-between">
+          <div class="flex items-center gap-3 flex-1 min-w-0">
             <div class="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
               <i class="fas fa-eye text-white text-xl"></i>
             </div>
@@ -406,21 +406,21 @@ html:not(.dark) option {
               <p class="text-sm text-white/70 dark:text-gray-300">Información completa del usuario seleccionado</p>
             </div>
           </div>
-          <button type="button" class="ios-blur-btn ios-blur-btn-secondary !p-2 !min-w-0" onclick="usuariosModals.closeViewModal()" aria-label="Cerrar modal">
+          <button type="button" class="ios-blur-btn ios-blur-btn-secondary shrink-0 !p-2 !min-w-0" onclick="usuariosModals.closeViewModal()" aria-label="Cerrar modal">
             <i class="fas fa-times text-lg"></i>
           </button>
         </div>
       </div>
       
       <!-- Modal Body -->
-      <div class="ios-blur-body">
+      <div class="ios-blur-body flex-1 min-h-0 !max-h-none">
         <div id="viewUserContent">
           <!-- Details will be loaded here -->
         </div>
       </div>
       
       <!-- Modal Footer -->
-      <div class="ios-blur-footer">
+      <div class="ios-blur-footer flex flex-col sm:flex-row gap-3 sm:justify-end">
         <button type="button" class="ios-blur-btn ios-blur-btn-secondary" onclick="usuariosModals.closeViewModal()">
           <i class="fas fa-times mr-2"></i>
           <span class="text-sm font-medium">Cerrar</span>
@@ -431,11 +431,11 @@ html:not(.dark) option {
 
   <!-- Edit User Modal - HARDWARE STYLE -->
   <div id="editUserModal" class="ios-modal-backdrop hidden">
-    <div class="ios-blur-modal-container w-full max-w-3xl">
+    <div class="ios-blur-modal-container flex flex-col w-full max-w-3xl sm:max-w-4xl lg:max-w-5xl xl:max-w-6xl !max-h-[92vh] sm:!max-h-[90vh] overflow-hidden">
       <!-- Modal Header -->
       <div class="ios-blur-header">
-        <div class="flex items-center justify-between w-full">
-          <div class="flex items-center space-x-3">
+        <div class="flex flex-col items-start gap-4 w-full sm:flex-row sm:items-center sm:justify-between">
+          <div class="flex items-center gap-3 flex-1 min-w-0">
             <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
               <i class="fas fa-user-edit text-white text-xl"></i>
             </div>
@@ -444,14 +444,14 @@ html:not(.dark) option {
               <p class="text-sm text-white/70 dark:text-gray-300">Modifica los datos del usuario</p>
             </div>
           </div>
-          <button type="button" class="ios-blur-btn ios-blur-btn-secondary !p-2 !min-w-0" onclick="usuariosModals.closeEditModal()" aria-label="Cerrar modal">
+          <button type="button" class="ios-blur-btn ios-blur-btn-secondary shrink-0 !p-2 !min-w-0" onclick="usuariosModals.closeEditModal()" aria-label="Cerrar modal">
             <i class="fas fa-times text-lg"></i>
           </button>
         </div>
       </div>
       
       <!-- Modal Body -->
-      <div class="ios-blur-body">
+      <div class="ios-blur-body flex-1 min-h-0 !max-h-none">
         <form id="editUserForm">
           <div class="form-grid">
             <!-- Nombre -->
@@ -567,7 +567,7 @@ html:not(.dark) option {
       </div>
       
       <!-- Modal Footer -->
-      <div class="ios-blur-footer">
+      <div class="ios-blur-footer flex flex-col sm:flex-row gap-3 sm:justify-end">
         <button type="button" class="ios-blur-btn ios-blur-btn-secondary" onclick="usuariosModals.closeEditModal()">
           <i class="fas fa-times mr-2"></i>
           <span class="text-sm font-medium">Cancelar</span>
@@ -582,18 +582,18 @@ html:not(.dark) option {
 
   <!-- Activate/Deactivate User Modal -->
   <div id="toggleUserModal" class="ios-modal-backdrop hidden">
-    <div class="ios-blur-modal-container max-w-md mx-auto">
+    <div class="ios-blur-modal-container flex flex-col w-full max-w-md !max-h-[85vh] overflow-hidden mx-auto">
       <div class="ios-blur-header text-center">
         <div class="toggle-modal-icon mx-auto mb-4">
           <i class="fas fa-power-off text-4xl"></i>
         </div>
         <h3 class="text-2xl font-bold text-white mb-2" id="toggleUserModalTitle">Activar Usuario</h3>
       </div>
-      <div class="ios-blur-body text-center">
+      <div class="ios-blur-body flex-1 min-h-0 !max-h-none text-center">
         <p class="text-white/80 text-lg mb-6" id="toggleUserModalMessage">
           ¿Estás seguro de que quieres cambiar el estado de este usuario?
         </p>
-        <div class="flex gap-4 justify-center">
+        <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
           <button class="ios-blur-btn ios-blur-btn-secondary" onclick="usuariosModals.closeToggleModal()">
             <i class="fas fa-times mr-2"></i>
             Cancelar
@@ -609,11 +609,11 @@ html:not(.dark) option {
 
   <!-- Create User Modal - HARDWARE STYLE -->
   <div id="createUserModal" class="ios-modal-backdrop hidden">
-    <div class="ios-blur-modal-container w-full max-w-3xl">
+    <div class="ios-blur-modal-container flex flex-col w-full max-w-3xl sm:max-w-4xl lg:max-w-5xl xl:max-w-6xl !max-h-[92vh] sm:!max-h-[90vh] overflow-hidden">
       <!-- Modal Header -->
       <div class="ios-blur-header">
-        <div class="flex items-center justify-between w-full">
-          <div class="flex items-center space-x-3">
+        <div class="flex flex-col items-start gap-4 w-full sm:flex-row sm:items-center sm:justify-between">
+          <div class="flex items-center gap-3 flex-1 min-w-0">
             <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
               <i class="fas fa-user-plus text-white text-xl"></i>
             </div>
@@ -622,14 +622,14 @@ html:not(.dark) option {
               <p class="text-sm text-white/70 dark:text-gray-300">Registra un nuevo usuario en el sistema</p>
             </div>
           </div>
-          <button type="button" class="ios-blur-btn ios-blur-btn-secondary !p-2 !min-w-0" onclick="usuariosModals.closeCreateModal()" aria-label="Cerrar modal">
+          <button type="button" class="ios-blur-btn ios-blur-btn-secondary shrink-0 !p-2 !min-w-0" onclick="usuariosModals.closeCreateModal()" aria-label="Cerrar modal">
             <i class="fas fa-times text-lg"></i>
           </button>
         </div>
       </div>
       
       <!-- Modal Body -->
-      <div class="ios-blur-body">
+      <div class="ios-blur-body flex-1 min-h-0 !max-h-none">
         <form id="createUserForm">
           <div class="form-grid">
             <!-- Nombre -->
@@ -745,7 +745,7 @@ html:not(.dark) option {
       </div>
       
       <!-- Modal Footer -->
-      <div class="ios-blur-footer">
+      <div class="ios-blur-footer flex flex-col sm:flex-row gap-3 sm:justify-end">
         <button type="button" class="ios-blur-btn ios-blur-btn-secondary" onclick="usuariosModals.closeCreateModal()">
           <i class="fas fa-times mr-2"></i>
           <span class="text-sm font-medium">Cancelar</span>
@@ -760,14 +760,14 @@ html:not(.dark) option {
 
   <!-- Update User Modal -->
   <div id="userUpdateModal" class="ios-modal-backdrop hidden">
-    <div class="ios-blur-modal-container max-w-md mx-auto">
+    <div class="ios-blur-modal-container flex flex-col w-full max-w-md !max-h-[85vh] overflow-hidden mx-auto">
       <div class="ios-blur-header text-center">
         <div class="client-update-icon mx-auto mb-4">
           <i class="fas fa-sync-alt text-4xl text-emerald-400"></i>
         </div>
         <h3 class="text-2xl font-bold text-white mb-2" id="userUpdateModalTitle">Usuario Actualizado</h3>
       </div>
-      <div class="ios-blur-body text-center">
+      <div class="ios-blur-body flex-1 min-h-0 !max-h-none text-center">
         <p class="text-white/80 text-lg mb-6" id="userUpdateModalMessage">
           El usuario se ha actualizado exitosamente.
         </p>

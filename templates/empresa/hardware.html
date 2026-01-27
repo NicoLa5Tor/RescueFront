@@ -176,11 +176,11 @@
 
 <!-- Create/Edit Hardware Modal - iOS STYLE LIKE EMPRESAS -->
 <div id="hardwareModal" class="ios-modal-backdrop hidden">
-  <div class="ios-blur-modal-container w-full max-w-4xl">
+  <div class="ios-blur-modal-container flex flex-col w-full max-w-4xl lg:max-w-5xl xl:max-w-6xl !max-h-[92vh] sm:!max-h-[90vh] overflow-hidden">
     <!-- Modal Header -->
     <div class="ios-blur-header">
-      <div class="flex items-center justify-between w-full">
-        <div class="flex items-center space-x-3">
+      <div class="flex flex-col items-start gap-4 w-full sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex items-center gap-3 flex-1 min-w-0">
           <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
             <i class="fas fa-microchip text-white text-xl"></i>
           </div>
@@ -189,14 +189,14 @@
             <p class="text-sm text-white/70">Complete los campos para registrar el hardware</p>
           </div>
         </div>
-        <button type="button" class="ios-blur-btn ios-blur-btn-secondary !p-2 !min-w-0" onclick="closeModal()" aria-label="Cerrar modal">
+        <button type="button" class="ios-blur-btn ios-blur-btn-secondary shrink-0 !p-2 !min-w-0" onclick="closeModal()" aria-label="Cerrar modal">
           <i class="fas fa-times text-lg"></i>
         </button>
       </div>
     </div>
     
     <!-- Modal Body -->
-    <div class="ios-blur-body">
+    <div class="ios-blur-body flex-1 min-h-0 !max-h-none">
       <form id="hardwareForm">
         <div class="form-grid">
           <!-- Nombre del Hardware -->
@@ -326,7 +326,7 @@
     </div>
     
     <!-- Modal Footer -->
-    <div class="ios-blur-footer">
+    <div class="ios-blur-footer flex flex-col sm:flex-row gap-3 sm:justify-end">
       <button type="button" class="ios-blur-btn ios-blur-btn-secondary" onclick="closeModal()">
         <i class="fas fa-times mr-2"></i>
         Cancelar
@@ -341,11 +341,11 @@
 
 <!-- View Hardware Details Modal - iOS STYLE LIKE EMPRESAS -->
 <div id="viewHardwareModal" class="ios-modal-backdrop hidden">
-  <div class="ios-blur-modal-container w-full max-w-4xl">
+  <div class="ios-blur-modal-container flex flex-col w-full max-w-4xl !max-h-[92vh] sm:!max-h-[90vh] overflow-hidden">
     <!-- Modal Header -->
     <div class="ios-blur-header">
-      <div class="flex items-center justify-between w-full">
-        <div class="flex items-center space-x-3">
+      <div class="flex flex-col items-start gap-4 w-full sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex items-center gap-3 flex-1 min-w-0">
           <div class="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
             <i class="fas fa-eye text-white text-xl"></i>
           </div>
@@ -354,14 +354,14 @@
             <p class="text-sm text-white/70">Información completa del hardware seleccionado</p>
           </div>
         </div>
-        <button type="button" class="ios-blur-btn ios-blur-btn-secondary !p-2 !min-w-0" onclick="closeViewModal()" aria-label="Cerrar modal">
+        <button type="button" class="ios-blur-btn ios-blur-btn-secondary shrink-0 !p-2 !min-w-0" onclick="closeViewModal()" aria-label="Cerrar modal">
           <i class="fas fa-times text-lg"></i>
         </button>
       </div>
     </div>
     
     <!-- Modal Body -->
-    <div class="ios-blur-body">
+    <div class="ios-blur-body flex-1 min-h-0 !max-h-none">
       <!-- Topic MQTT Header - Destacado -->
       <div class="col-span-1 md:col-span-2 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 rounded-2xl p-6 shadow-2xl mb-6 border-2 border-yellow-400">
         <div class="text-center">
@@ -500,18 +500,18 @@
 </div>
 <!-- Enhanced Toggle Hardware Status Modal - iOS STYLE LIKE EMPRESAS -->
 <div id="toggleHardwareModal" class="ios-modal-backdrop toggle-modal hidden">
-  <div class="ios-blur-modal-container max-w-md" id="toggleModalContainer">
+  <div class="ios-blur-modal-container flex flex-col w-full max-w-md !max-h-[85vh] overflow-hidden mx-auto" id="toggleModalContainer">
     <div class="ios-blur-header text-center">
       <div class="toggle-modal-icon mx-auto mb-4" id="toggleModalIcon">
         <i class="fas fa-power-off text-4xl" id="toggleModalIconFa"></i>
       </div>
       <h3 class="text-2xl font-bold text-white mb-2" id="toggleModalTitle">Activar Hardware</h3>
     </div>
-    <div class="ios-blur-body text-center">
+    <div class="ios-blur-body flex-1 min-h-0 !max-h-none text-center">
       <p class="text-white/80 text-lg mb-6" id="toggleModalMessage">
         ¿Estás seguro de que quieres activar este hardware?
       </p>
-      <div class="flex gap-4 justify-center">
+      <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
         <button class="ios-blur-btn ios-blur-btn-secondary" onclick="closeToggleModal()">
           <i class="fas fa-times mr-2"></i>
           Cancelar
@@ -527,11 +527,11 @@
 
 <!-- Location Modal - iOS STYLE LIKE EMPRESAS -->
 <div id="locationModal" class="ios-modal-backdrop hidden">
-  <div class="ios-blur-modal-container w-full max-w-6xl h-[90vh]">
+  <div class="ios-blur-modal-container flex flex-col w-full max-w-6xl h-[85vh] sm:h-[90vh] !max-h-[92vh] overflow-hidden">
     <!-- Modal Header -->
     <div class="ios-blur-header">
-      <div class="flex items-center justify-between w-full">
-        <div class="flex items-center space-x-3">
+      <div class="flex flex-col items-start gap-4 w-full sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex items-center gap-3 flex-1 min-w-0">
           <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
             <i class="fas fa-map-location-dot text-white text-xl"></i>
           </div>
@@ -540,25 +540,24 @@
             <p class="text-sm text-white/70" id="locationModalSubtitle">Visualizando ubicación en mapa</p>
           </div>
         </div>
-        <button type="button" class="ios-blur-btn ios-blur-btn-secondary !p-2 !min-w-0" onclick="closeLocationModal()" aria-label="Cerrar modal">
+        <button type="button" class="ios-blur-btn ios-blur-btn-secondary shrink-0 !p-2 !min-w-0" onclick="closeLocationModal()" aria-label="Cerrar modal">
           <i class="fas fa-times text-lg"></i>
         </button>
       </div>
     </div>
     
     <!-- Modal Body -->
-    <div class="ios-blur-body !p-0 flex-1">
-      <div class="w-full h-full min-h-[600px] rounded-xl overflow-hidden shadow-2xl">
+    <div class="ios-blur-body !p-0 flex-1 min-h-0 !max-h-none overflow-hidden">
+      <div class="w-full h-full min-h-[320px] sm:min-h-[500px] rounded-xl overflow-hidden shadow-2xl">
         <div 
           id="locationMap" 
           class="w-full h-full border-0 rounded-xl"
-          style="min-height: 600px;"
         ></div>
       </div>
     </div>
     
     <!-- Modal Footer -->
-    <div class="ios-blur-footer">
+    <div class="ios-blur-footer flex flex-col sm:flex-row gap-3 sm:justify-end">
       <button type="button" class="ios-blur-btn ios-blur-btn-secondary" onclick="closeLocationModal()">
         <i class="fas fa-times mr-2"></i>
         Cerrar
@@ -573,14 +572,14 @@
 
 <!-- Client Update Success Modal - iOS STYLE LIKE EMPRESAS -->
 <div id="clientUpdateModal" class="ios-modal-backdrop hidden">
-  <div class="ios-blur-modal-container max-w-md" id="updateModalContainer">
+  <div class="ios-blur-modal-container flex flex-col w-full max-w-md !max-h-[85vh] overflow-hidden mx-auto" id="updateModalContainer">
     <div class="ios-blur-header text-center">
       <div class="client-update-icon mx-auto mb-4" id="updateModalIcon">
         <i class="fas fa-sync-alt text-4xl text-emerald-400" id="updateModalIconFa"></i>
       </div>
       <h3 class="text-2xl font-bold text-white mb-2" id="updateModalTitle">Cliente Actualizado</h3>
     </div>
-    <div class="ios-blur-body text-center">
+    <div class="ios-blur-body flex-1 min-h-0 !max-h-none text-center">
       <p class="text-white/80 text-lg mb-6" id="updateModalMessage">
         El cliente se ha actualizado exitosamente.
       </p>
