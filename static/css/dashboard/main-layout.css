@@ -8,6 +8,27 @@ html, body {
     overflow-x: hidden;
 }
 
+@media (max-width: 1023px) {
+    html, body {
+        height: auto;
+    }
+
+    body {
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-y;
+        overscroll-behavior: auto;
+    }
+
+    #gsap-smoother-wrapper,
+    #gsap-smoother-content {
+        height: auto !important;
+        overflow: visible !important;
+        position: static !important;
+        touch-action: pan-y;
+    }
+}
+
 /* Estructura principal del layout */
 .dashboard-layout,
 .min-h-screen {
@@ -16,6 +37,14 @@ html, body {
     margin: 0;
     padding: 0;
     position: relative;
+}
+
+@media (max-width: 1023px) {
+    .dashboard-layout,
+    .min-h-screen {
+        display: block;
+        min-height: auto;
+    }
 }
 
 /* ===== NAVBAR ===== */
@@ -84,6 +113,14 @@ html, body {
     padding-bottom: var(--space-8);
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 1023px) {
+    .main-content {
+        overflow-y: visible;
+        overscroll-behavior: auto;
+        touch-action: pan-y;
+    }
 }
 
 @media (min-width: 640px) {

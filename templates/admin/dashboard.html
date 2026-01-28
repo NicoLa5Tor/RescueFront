@@ -512,12 +512,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <script>
 (function() {
-  const resetBodyScroll = () => {
-    const openModal = document.querySelector(
-      '.modal-backdrop:not(.hidden), .ios-modal-backdrop:not(.hidden), .system-info-modal-backdrop.show, .system-info-modal-backdrop:not(.hidden)'
-    );
-    if (openModal) return;
+  const isMobile = () => window.matchMedia('(max-width: 1023px)').matches;
+  if (!isMobile()) return;
 
+  const hasOpenModal = () => !!document.querySelector(
+    '.modal-backdrop:not(.hidden), .ios-modal-backdrop:not(.hidden), .system-info-modal-backdrop.show, .system-info-modal-backdrop:not(.hidden)'
+  );
+
+  const unlockScrollIfSafe = () => {
+    if (hasOpenModal()) return;
     const body = document.body;
     const html = document.documentElement;
     body.classList.remove('modal-open', 'ios-modal-open', 'usuarios-modal-open', 'empresas-modal-open', 'company-types-modal-open');
@@ -529,18 +532,24 @@ document.addEventListener('DOMContentLoaded', () => {
     html.style.overflow = '';
   };
 
-  const schedule = () => {
-    setTimeout(resetBodyScroll, 1200);
-    setTimeout(resetBodyScroll, 2500);
+  const observe = () => {
+    const observer = new MutationObserver(() => unlockScrollIfSafe());
+    observer.observe(document.body, { attributes: true, attributeFilter: ['class', 'style'] });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['style'] });
   };
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', schedule);
+    document.addEventListener('DOMContentLoaded', () => {
+      unlockScrollIfSafe();
+      observe();
+    });
   } else {
-    schedule();
+    unlockScrollIfSafe();
+    observe();
   }
 
-  window.addEventListener('orientationchange', () => setTimeout(resetBodyScroll, 300));
+  window.addEventListener('orientationchange', () => setTimeout(unlockScrollIfSafe, 300));
+  window.addEventListener('pageshow', unlockScrollIfSafe);
 })();
 </script>
 
