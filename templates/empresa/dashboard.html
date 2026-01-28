@@ -472,6 +472,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (hasOpenModal()) return;
     const body = document.body;
     const html = document.documentElement;
+    const mainContent = document.querySelector('.main-content');
     body.classList.remove('modal-open', 'ios-modal-open', 'usuarios-modal-open', 'empresas-modal-open', 'company-types-modal-open');
     body.style.overflow = '';
     body.style.position = '';
@@ -479,6 +480,14 @@ document.addEventListener('DOMContentLoaded', () => {
     body.style.left = '';
     body.style.width = '';
     html.style.overflow = '';
+
+    if (mainContent) {
+      mainContent.style.overflow = '';
+      mainContent.style.position = '';
+      mainContent.style.top = '';
+      mainContent.style.left = '';
+      mainContent.style.width = '';
+    }
   };
 
   const observe = () => {
