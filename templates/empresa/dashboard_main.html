@@ -377,6 +377,8 @@ function hideSystemInfo() {
     modal.classList.remove('show');
     modal.classList.add('closing');
 
+    releaseSystemModalScrollLock();
+
     // Después de la animación, ocultar completamente
     window.systemInfoModalCloseTimeout = setTimeout(() => {
       modal.classList.add('hidden');
