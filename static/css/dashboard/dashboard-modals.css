@@ -29,6 +29,12 @@ body.modal-open {
   animation: backdropFadeIn 0.3s ease-out forwards;
 }
 
+.system-info-modal-backdrop.closing {
+  display: flex !important;
+  opacity: 0;
+  pointer-events: none;
+}
+
 .system-info-modal-backdrop.hidden {
   display: none !important;
 }

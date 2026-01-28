@@ -465,7 +465,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!isMobile()) return;
 
   const hasOpenModal = () => !!document.querySelector(
-    '.modal-backdrop:not(.hidden), .ios-modal-backdrop:not(.hidden), .system-info-modal-backdrop.show'
+    '.modal-backdrop:not(.hidden), .ios-modal-backdrop:not(.hidden), .system-info-modal-backdrop.show, .system-info-modal-backdrop.closing'
   );
 
   const unlockScrollIfSafe = () => {

@@ -315,6 +315,8 @@ function showSystemInfo() {
     if (container) {
       container.classList.remove('animate-in', 'animate-out');
     }
+
+    modal.classList.remove('closing');
     
     if (window.modalManager) {
       window.modalManager.openModal('systemInfoModal', { modalClass: 'modal-open' });
@@ -348,10 +350,13 @@ function hideSystemInfo() {
       clearTimeout(window.systemInfoModalCloseTimeout);
     }
 
+    modal.classList.remove('show');
+    modal.classList.add('closing');
+
     // Después de la animación, ocultar completamente
     window.systemInfoModalCloseTimeout = setTimeout(() => {
-      modal.classList.remove('show');
       modal.classList.add('hidden');
+      modal.classList.remove('closing');
       if (container) {
         container.classList.remove('animate-out');
       }
