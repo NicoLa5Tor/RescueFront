@@ -334,6 +334,30 @@ function showSystemInfo() {
   }
 }
 
+function releaseSystemModalScrollLock() {
+  const hasOtherModal = !!document.querySelector(
+    '.modal-backdrop:not(.hidden), .ios-modal-backdrop:not(.hidden), .system-info-modal-backdrop.show, .system-info-modal-backdrop.closing'
+  );
+
+  if (hasOtherModal) {
+    return;
+  }
+
+  const body = document.body;
+  const html = document.documentElement;
+
+  body.classList.remove('modal-open', 'ios-modal-open', 'usuarios-modal-open', 'empresas-modal-open', 'company-types-modal-open');
+  html.classList.remove('modal-open', 'ios-modal-open', 'usuarios-modal-open', 'empresas-modal-open', 'company-types-modal-open');
+
+  body.style.overflow = '';
+  body.style.position = '';
+  body.style.top = '';
+  body.style.left = '';
+  body.style.right = '';
+  body.style.width = '';
+  html.style.overflow = '';
+}
+
 // Función para ocultar información del sistema
 function hideSystemInfo() {
   const modal = document.getElementById('systemInfoModal');
@@ -363,10 +387,9 @@ function hideSystemInfo() {
       
       if (window.modalManager) {
         window.modalManager.closeModal('systemInfoModal');
-      } else {
-        document.body.classList.remove('modal-open');
-        document.documentElement.classList.remove('modal-open');
       }
+
+      releaseSystemModalScrollLock();
     }, 300); // Duración de la animación
   }
 }
