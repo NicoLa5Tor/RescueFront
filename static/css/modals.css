@@ -1207,7 +1207,6 @@ select[class*="select-"] {
   position: relative;
   overflow: hidden;
 }
-
 /* Enhanced liquid wave animation */
 @keyframes liquidRipple {
   0% {
@@ -1219,7 +1218,6 @@ select[class*="select-"] {
     opacity: 0;
   }
 }
-
 .toggle-modal-icon::after,
 .client-update-icon::after {
   content: '';
@@ -1233,7 +1231,6 @@ select[class*="select-"] {
   transform: translate(-50%, -50%) scale(0);
   animation: liquidRipple 2s ease-out infinite;
 }
-
 /* Improved button interactivity */
 .ios-blur-btn:focus {
   outline: none !important;
@@ -1242,7 +1239,6 @@ select[class*="select-"] {
     0 12px 35px rgba(0, 0, 0, 0.15),
     inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
 }
-
 .ios-blur-btn-primary:focus {
   box-shadow: 
     0 0 0 3px rgba(59, 130, 246, 0.5),

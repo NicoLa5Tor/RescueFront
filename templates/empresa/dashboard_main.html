@@ -283,6 +283,11 @@ try {
 
 // Función para mostrar información del sistema
 function showSystemInfo() {
+  if (window.systemInfoModalCloseTimeout) {
+    clearTimeout(window.systemInfoModalCloseTimeout);
+    window.systemInfoModalCloseTimeout = null;
+  }
+
   // Actualizar información dinámica
   const kpisLoadedElement = document.getElementById('kpisLoadedStatus');
   const lastUpdateElement = document.getElementById('lastUpdateStatus');
@@ -311,20 +316,19 @@ function showSystemInfo() {
       container.classList.remove('animate-in', 'animate-out');
     }
     
-    // Mostrar backdrop primero
-    modal.classList.remove('hidden');
-    
-    // Forzar reflow para que la transición funcione
-    modal.offsetHeight;
-    
+    if (window.modalManager) {
+      window.modalManager.openModal('systemInfoModal', { modalClass: 'modal-open' });
+    } else {
+      modal.classList.remove('hidden');
+      document.body.classList.add('modal-open');
+      document.documentElement.classList.add('modal-open');
+    }
+
     // Aplicar clases de animación
     modal.classList.add('show');
     if (container) {
       container.classList.add('animate-in');
     }
-    
-    // Prevenir scroll del body completamente
-    document.body.classList.add('modal-open');
   }
 }
 
@@ -339,19 +343,25 @@ function hideSystemInfo() {
       container.classList.remove('animate-in');
       container.classList.add('animate-out');
     }
-    
-    // Remover clase show para iniciar fade out del backdrop
-    modal.classList.remove('show');
-    
+
+    if (window.systemInfoModalCloseTimeout) {
+      clearTimeout(window.systemInfoModalCloseTimeout);
+    }
+
     // Después de la animación, ocultar completamente
-    setTimeout(() => {
+    window.systemInfoModalCloseTimeout = setTimeout(() => {
+      modal.classList.remove('show');
       modal.classList.add('hidden');
       if (container) {
         container.classList.remove('animate-out');
       }
       
-      // Restaurar scroll del body
-      document.body.classList.remove('modal-open');
+      if (window.modalManager) {
+        window.modalManager.closeModal('systemInfoModal');
+      } else {
+        document.body.classList.remove('modal-open');
+        document.documentElement.classList.remove('modal-open');
+      }
     }, 300); // Duración de la animación
   }
 }
