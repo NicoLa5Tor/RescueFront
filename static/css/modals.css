@@ -61,6 +61,15 @@ body.empresas-modal-open {
   overflow: hidden !important;
 }
 
+/* Prevent dashboard content scrolling when any modal is open */
+body.modal-open .main-content,
+body.ios-modal-open .main-content,
+body.usuarios-modal-open .main-content,
+body.empresas-modal-open .main-content,
+body.company-types-modal-open .main-content {
+  overflow: hidden !important;
+}
+
 /* Modal Container */
 .modal-container {
   position: relative;
