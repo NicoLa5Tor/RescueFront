@@ -70,6 +70,16 @@ body.company-types-modal-open .main-content {
   overflow: hidden !important;
 }
 
+/* Lock root scrolling for mobile browsers */
+html.modal-open,
+html.ios-modal-open,
+html.usuarios-modal-open,
+html.empresas-modal-open,
+html.company-types-modal-open {
+  overflow: hidden !important;
+  height: 100% !important;
+}
+
 /* Modal Container */
 .modal-container {
   position: relative;

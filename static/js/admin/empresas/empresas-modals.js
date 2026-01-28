@@ -30,6 +30,8 @@ class EmpresasModalScrollManager {
     this.openModals = new Set();
     this.scrollPosition = 0;
     this.isLocked = false;
+    this.isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    this.boundPreventBackgroundScroll = this.preventBackgroundScroll.bind(this);
     this.init();
   }
 
@@ -101,12 +103,37 @@ class EmpresasModalScrollManager {
     //consoleç.log('🔒 Using CSS-only scroll lock to prevent white borders');
     
     const body = document.body;
+    const root = document.documentElement;
     
     // USAR SOLO CLASE CSS CON OVERSCROLL-BEHAVIOR PARA EVITAR BORDES BLANCOS
     body.classList.add('empresas-modal-open');
+    root.classList.add('empresas-modal-open');
+
+    if (this.isTouchDevice) {
+      body.style.position = 'fixed';
+      body.style.top = `-${this.scrollPosition}px`;
+      body.style.left = '0';
+      body.style.right = '0';
+      body.style.width = '100%';
+    }
+
+    document.addEventListener('touchmove', this.boundPreventBackgroundScroll, { passive: false });
+    document.addEventListener('wheel', this.boundPreventBackgroundScroll, { passive: false });
     
     this.isLocked = true;
     //consoleç.log('✅ CSS-only scroll lock applied');
+  }
+
+  preventBackgroundScroll(e) {
+    const target = e.target;
+    const isScrollable = target.closest(
+      '.ios-blur-body, .modal-body, .ios-blur-modal-container, .modal-container, .empresas-modal-scrollable, .scrollable'
+    );
+    const isFormField = target.closest('input, textarea, select, [contenteditable]');
+
+    if (!isScrollable && !isFormField) {
+      e.preventDefault();
+    }
   }
 
   unlockScroll() {
@@ -115,9 +142,24 @@ class EmpresasModalScrollManager {
     //consoleç.log('🔓 Using CSS-only scroll unlock to prevent white borders');
     
     const body = document.body;
+    const root = document.documentElement;
     
     // USAR SOLO CLASE CSS - NO MANIPULAR ESTILOS DIRECTAMENTE
     body.classList.remove('empresas-modal-open');
+    root.classList.remove('empresas-modal-open');
+
+    document.removeEventListener('touchmove', this.boundPreventBackgroundScroll);
+    document.removeEventListener('wheel', this.boundPreventBackgroundScroll);
+
+    if (this.isTouchDevice) {
+      const restoreY = this.scrollPosition;
+      body.style.position = '';
+      body.style.top = '';
+      body.style.left = '';
+      body.style.right = '';
+      body.style.width = '';
+      window.scrollTo(0, restoreY);
+    }
     
     this.isLocked = false;
     //consoleç.log('✅ CSS-only scroll unlock applied');
@@ -1497,15 +1539,8 @@ class EmpresasModals {
       if (confirmIcon) confirmIcon.className = 'fas fa-pause mr-2';
     }
     
-    // Show modal using modalManager
-    if (window.modalManager) {
-      window.modalManager.openModal('toggleEmpresaModal');
-    } else {
-      // Fallback
-      modal.classList.remove('hidden');
-      modal.style.display = 'flex';
-      document.body.classList.add('modal-open');
-    }
+    // Show modal using empresas modal manager
+    this.openModal('toggleEmpresaModal');
     
     //console.log('✅ Toggle modal should now be visible');
     
@@ -1540,24 +1575,13 @@ class EmpresasModals {
     }
   
     const resetAndHideToggleModal = () => {
-      // Use modalManager for consistent closing
-      if (window.modalManager) {
-        window.modalManager.closeModal('toggleEmpresaModal');
-      } else {
-        // Fallback
-        modal.classList.add('hidden');
-        modal.style.display = 'none';
-        document.body.classList.remove('modal-open');
-      }
+      this.closeModal('toggleEmpresaModal');
   
       // Reset button state
       if (confirmBtn) {
         confirmBtn.disabled = false;
         confirmBtn.innerHTML = '<i class="fas fa-check" id="toggleConfirmIcon"></i> <span id="toggleConfirmText">Confirmar</span>';
       }
-  
-      // Reset data
-      this.currentToggleEmpresa = null;
   
       //console.log('✅ Toggle modal closed and fully reset');
     };

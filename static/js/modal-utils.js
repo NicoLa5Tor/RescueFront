@@ -121,6 +121,7 @@ class ModalManager {
             // Aplicar clase específica si se proporciona, sino usar la genérica
             const modalClass = options.modalClass || this.getModalSpecificClass(modalId) || 'modal-open';
             document.body.classList.add(modalClass);
+            document.documentElement.classList.add(modalClass);
             
             // PREVENIR BORDES BLANCOS EN SCROLL - No manipular style.overflow directamente
             // El CSS ya tiene las reglas necesarias con overscroll-behavior
@@ -149,6 +150,7 @@ class ModalManager {
         ];
         modalClasses.forEach(className => {
             document.body.classList.remove(className);
+            document.documentElement.classList.remove(className);
         });
         
         //console.log('Body scroll enabled - all modal classes removed');
