@@ -657,6 +657,14 @@
     min-width: 0;
     flex: 1 1 calc(50% - 0.25rem);
   }
+
+  .empresa-item .ios-card-info {
+    grid-template-columns: 1fr;
+  }
+
+  .empresa-item .ios-info-item.full-width {
+    grid-column: auto;
+  }
 }
 
 @media (max-width: 480px) {

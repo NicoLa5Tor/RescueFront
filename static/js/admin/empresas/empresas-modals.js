@@ -30,8 +30,6 @@ class EmpresasModalScrollManager {
     this.openModals = new Set();
     this.scrollPosition = 0;
     this.isLocked = false;
-    this.isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    this.boundPreventBackgroundScroll = this.preventBackgroundScroll.bind(this);
     this.init();
   }
 
@@ -108,32 +106,9 @@ class EmpresasModalScrollManager {
     // USAR SOLO CLASE CSS CON OVERSCROLL-BEHAVIOR PARA EVITAR BORDES BLANCOS
     body.classList.add('empresas-modal-open');
     root.classList.add('empresas-modal-open');
-
-    if (this.isTouchDevice) {
-      body.style.position = 'fixed';
-      body.style.top = `-${this.scrollPosition}px`;
-      body.style.left = '0';
-      body.style.right = '0';
-      body.style.width = '100%';
-    }
-
-    document.addEventListener('touchmove', this.boundPreventBackgroundScroll, { passive: false });
-    document.addEventListener('wheel', this.boundPreventBackgroundScroll, { passive: false });
     
     this.isLocked = true;
     //consoleç.log('✅ CSS-only scroll lock applied');
-  }
-
-  preventBackgroundScroll(e) {
-    const target = e.target;
-    const isScrollable = target.closest(
-      '.ios-blur-body, .modal-body, .ios-blur-modal-container, .modal-container, .empresas-modal-scrollable, .scrollable'
-    );
-    const isFormField = target.closest('input, textarea, select, [contenteditable]');
-
-    if (!isScrollable && !isFormField) {
-      e.preventDefault();
-    }
   }
 
   unlockScroll() {
@@ -147,19 +122,6 @@ class EmpresasModalScrollManager {
     // USAR SOLO CLASE CSS - NO MANIPULAR ESTILOS DIRECTAMENTE
     body.classList.remove('empresas-modal-open');
     root.classList.remove('empresas-modal-open');
-
-    document.removeEventListener('touchmove', this.boundPreventBackgroundScroll);
-    document.removeEventListener('wheel', this.boundPreventBackgroundScroll);
-
-    if (this.isTouchDevice) {
-      const restoreY = this.scrollPosition;
-      body.style.position = '';
-      body.style.top = '';
-      body.style.left = '';
-      body.style.right = '';
-      body.style.width = '';
-      window.scrollTo(0, restoreY);
-    }
     
     this.isLocked = false;
     //consoleç.log('✅ CSS-only scroll unlock applied');
@@ -352,6 +314,11 @@ class EmpresasModals {
    * Create CRUD modal (create/edit) - EXACT STYLE AS COMPANY TYPES
    */
   createCrudModal() {
+    const existingModal = document.getElementById('empresaModal');
+    if (existingModal) {
+      return;
+    }
+
     const modalHTML = `
       <!-- Create/Edit Empresa Modal - EXACT COMPANY TYPES STYLE -->
       <div id="empresaModal" class="ios-modal-backdrop hidden">
@@ -494,6 +461,7 @@ class EmpresasModals {
             </button>
           </div>
         </div>
+      </div>
     `;
     document.body.insertAdjacentHTML('beforeend', modalHTML);
   }
@@ -502,6 +470,11 @@ class EmpresasModals {
    * Create view modal - EXACT STYLE AS COMPANY TYPES
    */
   createViewModal() {
+    const existingModal = document.getElementById('viewEmpresaModal');
+    if (existingModal) {
+      return;
+    }
+
     const modalHTML = `
       <!-- View Details Modal - EXACT COMPANY TYPES STYLE -->
       <div id="viewEmpresaModal" class="ios-modal-backdrop hidden">
@@ -548,6 +521,11 @@ class EmpresasModals {
    * Create success modal - EXACT STYLE AS COMPANY TYPES
    */
   createSuccessModal() {
+    const existingModal = document.getElementById('clientUpdateModal');
+    if (existingModal) {
+      return;
+    }
+
     const modalHTML = `
       <!-- Client Update Success Modal - EXACT COPY FROM COMPANY TYPES -->
       <div id="clientUpdateModal" class="ios-modal-backdrop hidden">

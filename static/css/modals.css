@@ -78,6 +78,7 @@ html.empresas-modal-open,
 html.company-types-modal-open {
   overflow: hidden !important;
   height: 100% !important;
+  overscroll-behavior: none !important;
 }
 
 /* Modal Container */
