@@ -334,10 +334,11 @@ function showSystemInfo() {
   }
 }
 
-function releaseSystemModalScrollLock() {
-  const hasOtherModal = !!document.querySelector(
-    '.modal-backdrop:not(.hidden), .ios-modal-backdrop:not(.hidden), .system-info-modal-backdrop.show, .system-info-modal-backdrop.closing'
-  );
+function releaseSystemModalScrollLock(ignoreSystemModal = false) {
+  const selector = ignoreSystemModal
+    ? '.modal-backdrop:not(.hidden), .ios-modal-backdrop:not(.hidden)'
+    : '.modal-backdrop:not(.hidden), .ios-modal-backdrop:not(.hidden), .system-info-modal-backdrop.show, .system-info-modal-backdrop.closing';
+  const hasOtherModal = !!document.querySelector(selector);
 
   if (hasOtherModal) {
     return;
@@ -387,7 +388,7 @@ function hideSystemInfo() {
     modal.classList.remove('show');
     modal.classList.add('closing');
 
-    releaseSystemModalScrollLock();
+    releaseSystemModalScrollLock(true);
 
     // Después de la animación, ocultar completamente
     window.systemInfoModalCloseTimeout = setTimeout(() => {
@@ -401,7 +402,7 @@ function hideSystemInfo() {
         window.modalManager.closeModal('systemInfoModal');
       }
 
-      releaseSystemModalScrollLock();
+      releaseSystemModalScrollLock(true);
     }, 300); // Duración de la animación
   }
 }
