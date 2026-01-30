@@ -348,7 +348,7 @@ async update_usuario(empresaId, usuarioId, data) {
 }
 
 async delete_usuario(empresaId, usuarioId) {
-    return this._request('DELETE', `/api/empresas/${empresaId}/usuarios/${usuarioId}`);
+    return this._request('DELETE', `/empresas/${empresaId}/usuarios/${usuarioId}`);
 }
 
 async toggle_usuario_status(empresaId, usuarioId, activo) {
