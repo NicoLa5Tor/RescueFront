@@ -319,7 +319,7 @@ class UsuariosModals {
           body: JSON.stringify(data)
         }),
       delete_usuario: (empresaId, userId) =>
-        fetch(buildApiUrl(`/empresas/${empresaId}/usuarios/${userId}`), {
+        fetch(buildApiUrl(`/api/empresas/${empresaId}/usuarios/${userId}`), {
           method: 'DELETE'
         })
     };

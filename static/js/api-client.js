@@ -326,7 +326,7 @@ class EndpointTestClient {
         return this._request('PATCH', `/api/empresas/${empresaId}/toggle-status`, { data: { activa } });
     }
 
-    // Multi-tenant (Usuarios por Empresa) endpoints
+// Multi-tenant (Usuarios por Empresa) endpoints
 async get_usuarios_by_empresa(empresaId) {
     return this._request('GET', `/empresas/${empresaId}/usuarios`);
 }
@@ -348,7 +348,7 @@ async update_usuario(empresaId, usuarioId, data) {
 }
 
 async delete_usuario(empresaId, usuarioId) {
-    return this._request('DELETE', `/empresas/${empresaId}/usuarios/${usuarioId}`);
+    return this._request('DELETE', `/api/empresas/${empresaId}/usuarios/${usuarioId}`);
 }
 
 async toggle_usuario_status(empresaId, usuarioId, activo) {
