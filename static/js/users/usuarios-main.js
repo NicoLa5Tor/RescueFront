@@ -624,6 +624,13 @@ class UsuariosMain {
                 title="${isActive ? 'Desactivar usuario' : 'Activar usuario'}">
           <i class="fas ${isActive ? 'fa-power-off' : 'fa-play'}"></i>
         </button>
+        ${!isActive ? `
+          <button class="ios-card-btn ios-card-btn-danger" 
+                  onclick="usuariosMain.deleteUsuario('${usuario._id}')" 
+                  title="Eliminar usuario inactivo">
+            <i class="fas fa-trash"></i>
+          </button>
+        ` : ''}
       </div>
     `;
 
@@ -804,6 +811,60 @@ class UsuariosMain {
       window.usuariosModals.openEditModal(usuarioId);
     } else {
       alert('Sistema de modales no disponible');
+    }
+  }
+
+  /**
+   * Delete usuario (solo inactivos)
+   */
+  deleteUsuario(usuarioId) {
+    if (!this.currentEmpresa && window.userRole === 'empresa' && window.empresaId) {
+      this.currentEmpresa = {
+        _id: window.empresaId,
+        nombre: window.empresaNombre || 'Mi Empresa'
+      };
+    }
+
+    const usuario = this.usuariosAll.find(u => u._id === usuarioId);
+    if (!usuario) {
+      this.showNotification('Usuario no encontrado', 'error');
+      return;
+    }
+
+    const isActive = usuario.activo === true || usuario.activo === 1 || usuario.activo === 'true';
+    if (isActive) {
+      this.showNotification('Solo puedes eliminar usuarios inactivos', 'error');
+      return;
+    }
+
+    if (window.usuariosModals) {
+      window.usuariosModals.showDeleteModal(usuarioId, usuario.nombre || 'Usuario');
+    } else {
+      const confirmed = confirm(`¿Eliminar definitivamente al usuario "${usuario.nombre || 'Usuario'}"?`);
+      if (confirmed) {
+        this.performDeleteUsuario(usuarioId);
+      }
+    }
+  }
+
+  async performDeleteUsuario(usuarioId) {
+    if (!this.currentEmpresa) {
+      this.showNotification('No hay empresa seleccionada', 'error');
+      return;
+    }
+
+    try {
+      const response = await this.apiClient.delete_usuario(this.currentEmpresa._id, usuarioId);
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        this.showNotification(data.message || 'Usuario eliminado correctamente', 'success');
+        await this.loadUsuarios();
+      } else {
+        this.showNotification(data.message || 'Error al eliminar usuario', 'error');
+      }
+    } catch (error) {
+      this.showNotification(`Error de conexión: ${error.message}`, 'error');
     }
   }
 

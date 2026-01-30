@@ -317,6 +317,9 @@ function showSystemInfo() {
     }
 
     modal.classList.remove('closing');
+    modal.style.display = 'flex';
+    modal.style.pointerEvents = 'auto';
+    modal.setAttribute('aria-hidden', 'false');
     
     if (window.modalManager) {
       window.modalManager.openModal('systemInfoModal', { modalClass: 'modal-open' });
@@ -347,6 +350,7 @@ function releaseSystemModalScrollLock(ignoreSystemModal = false) {
   const body = document.body;
   const html = document.documentElement;
   const mainContent = document.querySelector('.main-content');
+  const systemModal = document.getElementById('systemInfoModal');
 
   body.classList.remove('modal-open', 'ios-modal-open', 'usuarios-modal-open', 'empresas-modal-open', 'company-types-modal-open');
   html.classList.remove('modal-open', 'ios-modal-open', 'usuarios-modal-open', 'empresas-modal-open', 'company-types-modal-open');
@@ -366,6 +370,14 @@ function releaseSystemModalScrollLock(ignoreSystemModal = false) {
     mainContent.style.left = '';
     mainContent.style.right = '';
     mainContent.style.width = '';
+  }
+
+  if (systemModal && !systemModal.classList.contains('show')) {
+    systemModal.classList.add('hidden');
+    systemModal.classList.remove('closing');
+    systemModal.style.display = 'none';
+    systemModal.style.pointerEvents = 'none';
+    systemModal.setAttribute('aria-hidden', 'true');
   }
 }
 
@@ -387,6 +399,7 @@ function hideSystemInfo() {
 
     modal.classList.remove('show');
     modal.classList.add('closing');
+    modal.style.pointerEvents = 'none';
 
     releaseSystemModalScrollLock(true);
 
@@ -394,6 +407,9 @@ function hideSystemInfo() {
     window.systemInfoModalCloseTimeout = setTimeout(() => {
       modal.classList.add('hidden');
       modal.classList.remove('closing');
+      modal.style.display = 'none';
+      modal.style.pointerEvents = 'none';
+      modal.setAttribute('aria-hidden', 'true');
       if (container) {
         container.classList.remove('animate-out');
       }

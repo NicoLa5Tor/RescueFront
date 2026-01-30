@@ -241,6 +241,7 @@ class UsuariosModals {
     this.currentEditingUser = null;
     this.currentViewingUser = null;
     this.currentToggleUser = null;
+    this.currentDeleteUser = null;
     this.currentUser = null; // Para edición
     this.apiClient = null;
     this.especialidades = [];
@@ -426,7 +427,7 @@ class UsuariosModals {
    * Setup outside click to close modals
    */
   setupOutsideClickClose() {
-    const modals = ['toggleUserModal', 'createUserModal', 'editUserModal', 'viewUserModal', 'userUpdateModal'];
+    const modals = ['toggleUserModal', 'deleteUserModal', 'createUserModal', 'editUserModal', 'viewUserModal', 'userUpdateModal'];
     
     modals.forEach(modalId => {
       const modal = document.getElementById(modalId);
@@ -513,6 +514,9 @@ class UsuariosModals {
         break;
       case 'toggleUserModal':
         this.currentToggleUser = null;
+        break;
+      case 'deleteUserModal':
+        this.currentDeleteUser = null;
         break;
     }
   }
@@ -956,6 +960,43 @@ class UsuariosModals {
     }
   }
 
+  /**
+   * Show delete modal (solo inactivos)
+   */
+  showDeleteModal(userId, userName = 'Usuario') {
+    if (!userId) {
+      this.showNotification('Usuario inválido para eliminar', 'error');
+      return;
+    }
+
+    this.currentDeleteUser = {
+      id: userId,
+      name: userName
+    };
+
+    const title = document.getElementById('deleteUserModalTitle');
+    const message = document.getElementById('deleteUserModalMessage');
+    const name = document.getElementById('deleteUserModalName');
+
+    if (title) title.textContent = 'Eliminar Usuario Inactivo';
+    if (name) name.textContent = userName;
+    if (message) {
+      message.textContent = `¿Seguro que deseas eliminar definitivamente al usuario "${userName}"? Esta acción no se puede deshacer.`;
+    }
+
+    this.openModal('deleteUserModal');
+  }
+
+  closeDeleteModal() {
+    this.closeModal('deleteUserModal');
+
+    const confirmBtn = document.getElementById('deleteUserConfirmBtn');
+    if (confirmBtn) {
+      confirmBtn.disabled = false;
+      confirmBtn.innerHTML = '<i class="fas fa-trash mr-2"></i> Eliminar';
+    }
+  }
+
   async confirmToggle() {
     if (this.currentToggleUser && this.currentToggleUser.newStatus !== null) {
       const confirmBtn = document.getElementById('toggleUserConfirmBtn');
@@ -1019,6 +1060,66 @@ class UsuariosModals {
         this.showNotification('Error de conexión', 'error');
         this.closeToggleModal();
       }
+    }
+  }
+
+  async confirmDelete() {
+    const confirmBtn = document.getElementById('deleteUserConfirmBtn');
+    const originalContent = confirmBtn?.innerHTML;
+
+    try {
+      if (confirmBtn) {
+        confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Eliminando...';
+        confirmBtn.disabled = true;
+      }
+
+      let empresaId = window.usuariosMain?.currentEmpresa?._id;
+      if (!empresaId && window.userRole === 'empresa' && window.empresaId) {
+        empresaId = window.empresaId;
+      }
+
+      if (!empresaId || !this.currentDeleteUser?.id) {
+        this.showNotification('No hay empresa seleccionada', 'error');
+        if (confirmBtn && originalContent) {
+          confirmBtn.innerHTML = originalContent;
+          confirmBtn.disabled = false;
+        }
+        return;
+      }
+
+      const usuario = window.usuariosMain?.usuariosAll?.find(u => u._id === this.currentDeleteUser.id);
+      const isActive = usuario?.activo === true || usuario?.activo === 1 || usuario?.activo === 'true';
+      if (isActive) {
+        this.showNotification('Solo puedes eliminar usuarios inactivos', 'error');
+        if (confirmBtn && originalContent) {
+          confirmBtn.innerHTML = originalContent;
+          confirmBtn.disabled = false;
+        }
+        return;
+      }
+
+      const response = await this.apiClient.delete_usuario(empresaId, this.currentDeleteUser.id);
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        this.showNotification(data.message || 'Usuario eliminado correctamente', 'success');
+        if (window.usuariosMain && window.usuariosMain.refreshUsers) {
+          window.usuariosMain.refreshUsers();
+        }
+        this.closeDeleteModal();
+      } else {
+        if (confirmBtn && originalContent) {
+          confirmBtn.innerHTML = originalContent;
+          confirmBtn.disabled = false;
+        }
+        this.showNotification(data.message || 'Error al eliminar usuario', 'error');
+      }
+    } catch (error) {
+      if (confirmBtn) {
+        confirmBtn.disabled = false;
+        confirmBtn.innerHTML = '<i class="fas fa-trash mr-2"></i> Eliminar';
+      }
+      this.showNotification('Error de conexión', 'error');
     }
   }
 
@@ -1498,6 +1599,9 @@ class UsuariosModals {
   toggleUser(userId, currentStatus, userName) {
     this.showToggleModal(userId, currentStatus, userName);
   }
+  deleteUser(userId, userName) {
+    this.showDeleteModal(userId, userName);
+  }
 }
 
 // Initialize usuarios modals
@@ -1509,8 +1613,11 @@ window.openCreateUsuarioModal = () => usuariosModals.openCreateModal();
 window.viewUser = (userId) => usuariosModals.openViewModal(userId);
 window.editUser = (userId) => usuariosModals.openEditModal(userId);
 window.toggleUser = (userId, currentStatus, userName) => usuariosModals.showToggleModal(userId, currentStatus, userName);
+window.deleteUser = (userId, userName) => usuariosModals.showDeleteModal(userId, userName);
 // Modal control functions
 window.closeToggleModal = () => usuariosModals.closeToggleModal();
 window.confirmToggle = () => usuariosModals.confirmToggle();
+window.closeDeleteModal = () => usuariosModals.closeDeleteModal();
+window.confirmDelete = () => usuariosModals.confirmDelete();
 window.closeUpdateModal = () => usuariosModals.closeUpdateModal();
 ////console.log('👥 Usuarios modals module loaded - MODALSCROLLMANAGER VERSION');

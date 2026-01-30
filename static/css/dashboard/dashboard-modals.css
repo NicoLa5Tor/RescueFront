@@ -37,6 +37,11 @@ body.modal-open {
 
 .system-info-modal-backdrop.hidden {
   display: none !important;
+  pointer-events: none !important;
+}
+
+.system-info-modal-backdrop:not(.show) {
+  pointer-events: none !important;
 }
 
 .system-info-modal-container {
