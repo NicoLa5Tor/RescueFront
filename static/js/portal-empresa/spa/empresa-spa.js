@@ -28,11 +28,6 @@
       if (target.classList.contains('sidebar__link')) {
         target.classList.toggle('sidebar__link--active', isActive);
       }
-
-      if (target.classList.contains('navbar__pill')) {
-        target.classList.toggle('navbar__pill--primary', isActive);
-        target.classList.toggle('navbar__pill--muted', !isActive);
-      }
     });
   };
 
