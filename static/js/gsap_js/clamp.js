@@ -65,110 +65,13 @@
                 // Detectar si es móvil
                 const isMobile = window.innerWidth <= 768 || /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
                 
-                // Configurar estado inicial de las imágenes (simplificado para móvil)
-                if (isMobile) {
-                    gsap.set('.img-clamp', {
-                        opacity: 0,
-                        y: 60,
-                        scale: 0.9,
-                        filter: "brightness(0.8)"
-                    });
-                } else {
-                    gsap.set('.img-clamp', {
-                        opacity: 0,
-                        y: 120,
-                        scale: 0.7,
-                        rotationX: 35,
-                        rotationY: 15,
-                        filter: "blur(8px) brightness(0.5)"
-                    });
-                }
-                
-                // Función para ejecutar el reveal
-                const executeReveal = () => {
-                    if (isMobile) {
-                        // Animación simplificada para móvil
-                        gsap.to('.img-clamp', {
-                            opacity: 1,
-                            y: 0,
-                            scale: 1,
-                            filter: "brightness(1)",
-                            duration: 1.8,
-                            ease: "power2.out",
-                            stagger: {
-                                amount: 1,
-                                from: "start"
-                            }
-                        });
-                    } else {
-                        // Animación completa para desktop
-                        gsap.to('.img-clamp', {
-                            opacity: 1,
-                            y: 0,
-                            scale: 1,
-                            rotationX: 0,
-                            rotationY: 0,
-                            filter: "blur(0px) brightness(1)",
-                            duration: 2.5,
-                            ease: "power3.out",
-                            stagger: {
-                                amount: 1.5,
-                                from: "start",
-                                grid: "auto"
-                            }
-                        });
-                    }
-                };
-                
-                // Variable para controlar si ya se ejecutó el reveal
-                let revealExecuted = false;
-                
-                // Ejecutar reveal después del preloader o inmediatamente si ya está en viewport
-                const checkAndExecuteReveal = () => {
-                    if (revealExecuted) return; // Evitar ejecuciones múltiples
-                    
-                    const imagesContainer = document.querySelector('.images');
-                    if (!imagesContainer) return;
-                    
-                    const rect = imagesContainer.getBoundingClientRect();
-                    const isInViewport = rect.top < window.innerHeight && rect.bottom > 0;
-                    
-                    if (isInViewport || isMobile) {
-                        // En móvil siempre ejecutar inmediatamente para evitar bugs de scroll
-                        revealExecuted = true;
-                        setTimeout(executeReveal, isMobile ? 800 : 1200);
-                    } else {
-                        // Solo usar ScrollTrigger en desktop
-                        ScrollTrigger.create({
-                            trigger: '.images',
-                            start: "top 90%",
-                            once: true,
-                            onEnter: () => {
-                                if (!revealExecuted) {
-                                    revealExecuted = true;
-                                    executeReveal();
-                                }
-                            }
-                        });
-                    }
-                };
-                
-                // Ejecutar después de un pequeño delay para asegurar que todo esté listo
-                setTimeout(checkAndExecuteReveal, 500);
-                
-                // También escuchar eventos del preloader si existen
-                window.addEventListener('preloader:complete', () => {
-                    setTimeout(checkAndExecuteReveal, 800);
+                // Estado inicial visible (sin reveal)
+                gsap.set('.img-clamp', {
+                    opacity: 1,
+                    y: 0,
+                    scale: 1,
+                    filter: "brightness(1)"
                 });
-                
-                // Escuchar cuando la página esté completamente cargada
-                if (document.readyState === 'complete') {
-                    setTimeout(checkAndExecuteReveal, 300);
-                } else {
-                    window.addEventListener('load', () => {
-                        setTimeout(checkAndExecuteReveal, 300);
-                    });
-                }
                 
                 // Animaciones continuas removidas para mejorar performance del ScrollTrigger
                 

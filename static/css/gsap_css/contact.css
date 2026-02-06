@@ -134,7 +134,7 @@
 }
 
 #contact-us .contact-item:hover {
-    transform: translateX(10px);
+    transform: translateX(4px);
 }
 
 /* Form Elements */
@@ -228,6 +228,10 @@
     
     #contact-us .rocket-icon {
         font-size: 3rem;
+    }
+
+    #contact-us .contact-item:hover {
+        transform: none;
     }
 }
 

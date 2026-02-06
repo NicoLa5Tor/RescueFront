@@ -53,23 +53,12 @@ function waitForStylesAndHidePreloader() {
     // SALIR INMEDIATAMENTE si estamos en dashboard ANTES de tocar cualquier estilo
     if (dashboardPaths.some(path => currentPath.startsWith(path))) {
         //console.log('🏢 PRELOADER: Saltando en vista de dashboard para evitar conflictos de scroll');
-        // ASEGURAR que el scroll esté habilitado en vistas de dashboard
-        document.body.style.overflow = '';
-        document.documentElement.style.overflow = '';
-        document.body.style.position = '';
-        document.body.style.top = '';
-        document.body.style.left = '';
-        document.body.style.width = '';
         return;
     }
     
     const simplePreloader = document.getElementById('simple-preloader');
     
     if (!simplePreloader || !document.documentElement.classList.contains('show-simple-preloader')) {
-        // TAMBIÉN asegurar scroll habilitado si no hay preloader
-        document.body.style.overflow = '';
-        document.documentElement.style.overflow = '';
-        document.body.style.position = '';
         return;
     }
     
@@ -78,35 +67,6 @@ function waitForStylesAndHidePreloader() {
     // ============ FIJAR SCROLL EN POSICIÓN 0,0 DESDE EL INICIO ============
     // Mantener el scroll fijo en la posición superior hasta que el preloader termine
     //console.log('📍 SCROLL: Fijando posición en (0,0) desde el inicio del preloader');
-    
-    // Fijar posición de scroll inmediatamente
-    window.scrollTo(0, 0);
-    
-    // Prevenir cualquier tipo de scroll
-    document.body.style.overflow = 'hidden';
-    document.documentElement.style.overflow = 'hidden';
-    document.body.style.position = 'fixed';
-    document.body.style.top = '0';
-    document.body.style.left = '0';
-    document.body.style.width = '100%';
-    
-    // Función para mantener la posición fija
-    function maintainScrollPosition() {
-        window.scrollTo(0, 0);
-    }
-    
-    // Listeners para prevenir cualquier cambio de scroll
-    const preventScroll = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        window.scrollTo(0, 0);
-        return false;
-    };
-    
-    // Agregar listeners para mantener posición fija
-    window.addEventListener('scroll', maintainScrollPosition, { passive: false });
-    window.addEventListener('wheel', preventScroll, { passive: false });
-    window.addEventListener('touchmove', preventScroll, { passive: false });
     
     // Variable para controlar si el preloader está activo
     let preloaderKeyListenerActive = true;
@@ -128,7 +88,6 @@ function waitForStylesAndHidePreloader() {
         // Prevenir teclas que causan scroll (flechas, página arriba/abajo, espacio)
         if ([32, 33, 34, 35, 36, 37, 38, 39, 40].includes(e.keyCode)) {
             e.preventDefault();
-            window.scrollTo(0, 0);
         }
     };
     
@@ -385,19 +344,9 @@ function waitForStylesAndHidePreloader() {
         
         updateProgress(100, progressMessages[5]); // "Finalizando carga..."
         
-        // ============ OCULTAR SCROLL INSTANTÁNEAMENTE AL 100% ============
-        // Desactivar scroll inmediatamente cuando la barra llega al 100%
-        //console.log('🚫 SCROLL: Ocultando scroll instantáneamente al 100%');
-        
-        // Ocultar scroll del body inmediatamente
-        document.body.style.overflow = 'hidden';
-        document.documentElement.style.overflow = 'hidden';
-        
         // Desactivar pointer events del preloader inmediatamente
         simplePreloader.style.pointerEvents = 'none';
         simplePreloader.style.zIndex = '-1';
-        
-        //console.log('✅ SCROLL: Desactivado instantáneamente - Clicks desbloqueados');
         
         // Esperar un tick adicional para que los event listeners se registren
         setTimeout(() => {
@@ -423,31 +372,13 @@ function waitForStylesAndHidePreloader() {
                     // Remover la clase del HTML también
                     document.documentElement.classList.remove('show-simple-preloader');
                     
-                    // ============ LIMPIAR EVENT LISTENERS DE SCROLL ============
-                    // Remover todos los listeners que mantienen el scroll fijo
-                    window.removeEventListener('scroll', maintainScrollPosition);
-                    window.removeEventListener('wheel', preventScroll);
-                    window.removeEventListener('touchmove', preventScroll);
-                    
                     // ============ DESACTIVAR LISTENER DE TECLADO ============
                     // Desactivar el bloqueo de teclas para que funcionen normalmente
                     preloaderKeyListenerActive = false;
                     window.removeEventListener('keydown', keydownHandler);
                     
                     //console.log('⌨️ TECLADO: Event listener de bloqueo removido - Teclas funcionan normalmente');
-                    
-                    //console.log('🧹 SCROLL: Event listeners de bloqueo removidos');
-                    
-                    // ============ RESTAURAR SCROLL AL TERMINAR EL PRELOADER ============
-                    // Restaurar el scroll normal del body
-                    document.body.style.overflow = '';
-                    document.documentElement.style.overflow = '';
-                    document.body.style.position = '';
-                    document.body.style.top = '';
-                    document.body.style.left = '';
-                    document.body.style.width = '';
-                    
-                    //console.log('✅ SIMPLE PRELOADER: Ocultado completamente - Scroll restaurado - Event listeners limpiados - Interfaz completamente funcional');
+                    //console.log('✅ SIMPLE PRELOADER: Ocultado completamente - Teclado restaurado - Interfaz completamente funcional');
                 }, 1500); // 1.5 segundos para asegurar que la animación termine
                 
             }, 1500); // 1.5 segundos de duración mínima
@@ -476,11 +407,6 @@ window.addEventListener('load', function() {
         setTimeout(() => {
             //console.log('🎬 PRELOADER RESPALDO: Iniciando cierre con ocultación instantánea de scroll');
             
-            // ============ OCULTAR SCROLL INSTANTÁNEAMENTE TAMBIÉN EN RESPALDO ============
-            // Ocultar scroll del body inmediatamente
-            document.body.style.overflow = 'hidden';
-            document.documentElement.style.overflow = 'hidden';
-            
             // CLAVE: Desactivar pointer events inmediatamente también en el respaldo
             simplePreloader.style.pointerEvents = 'none';
             simplePreloader.style.zIndex = '-1';
@@ -498,12 +424,7 @@ window.addEventListener('load', function() {
                 // Remover la clase del HTML también
                 document.documentElement.classList.remove('show-simple-preloader');
                 
-                // ============ RESTAURAR SCROLL EN RESPALDO ============
-                // Restaurar el scroll normal del body
-                document.body.style.overflow = '';
-                document.documentElement.style.overflow = '';
-                
-                //console.log('✅ PRELOADER RESPALDO: Ocultado completamente - Scroll restaurado');
+                //console.log('✅ PRELOADER RESPALDO: Ocultado completamente');
             }, 1500); // 1.5 segundos pour asegurar que la animación termine
         }, 500);
     }
