@@ -50,13 +50,16 @@
 
 @media (min-width: 1024px) {
   .sidebar {
-      position: static;
+      position: sticky;
+      top: var(--navbar-height);
+      height: calc(100vh - var(--navbar-height));
       transform: translateX(0);
       z-index: 1;
       box-shadow: var(--shadow-card);
       /* Show sidebar by default on desktop */
       display: block;
-      margin-top: 6%; 
+      margin-top: 0;
+      overflow: hidden;
   }
 }
 
@@ -108,8 +111,7 @@
   flex-direction: column;
   height: 100%;
   padding: var(--space-3);
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden;
   /* Better scrolling on mobile */
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
@@ -287,7 +289,11 @@
 
 /* ===== NAVIGATION SECTION - Enhanced ===== */
 .sidebar__nav {
-  flex: 1;
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 2px;
+  -webkit-overflow-scrolling: touch;
   margin-bottom: var(--space-6);
 }
 
