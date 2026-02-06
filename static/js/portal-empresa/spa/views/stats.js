@@ -1,26 +1,8 @@
 (() => {
-  console.log('EMPRESA STATS: script loaded');
   let isFetching = false;
   let lastFetchAt = 0;
 
   const getEmpresaId = () => window.EMPRESA_ID || window.empresaId || '';
-
-  const loadStatsPayload = () => {
-    const statsElement = document.getElementById('empresaStatisticsData');
-    if (!statsElement) {
-      window.EMPRESA_STATISTICS = null;
-      return;
-    }
-
-    try {
-      const statsText = statsElement.textContent;
-      window.EMPRESA_STATISTICS = statsText && statsText !== 'null'
-        ? JSON.parse(statsText)
-        : null;
-    } catch (error) {
-      window.EMPRESA_STATISTICS = null;
-    }
-  };
 
   const setText = (id, value) => {
     const target = document.getElementById(id);
@@ -152,22 +134,6 @@
     }
   };
 
-  const forceStatsVisibility = () => {
-    const statsSection = document.querySelector('[data-spa-section="stats"]');
-    if (!statsSection || statsSection.classList.contains('is-hidden')) {
-      return;
-    }
-
-    const cards = document.querySelectorAll('[data-spa-section="stats"] .ios-stat-card');
-    cards.forEach(card => {
-      card.style.opacity = '1';
-      card.style.visibility = 'visible';
-      card.style.transform = 'none';
-    });
-
-    console.log('EMPRESA STATS: cards', cards.length);
-  };
-
   const fetchStats = async () => {
     if (isFetching) {
       return;
@@ -198,7 +164,6 @@
       const endpoint = `/api/empresas/${empresaId}/statistics`;
       const url = buildApiUrl ? buildApiUrl(endpoint) : `${baseUrl}${endpoint}`;
 
-      console.log('EMPRESA STATS: url', url);
       const response = await fetch(url, {
         method: 'GET',
         credentials: 'include',
@@ -207,32 +172,16 @@
         }
       });
 
-      let rawText = '';
-      try {
-        rawText = await response.clone().text();
-      } catch (error) {
-        rawText = '';
-      }
-
-      console.log('EMPRESA STATS: status', response.status);
-      console.log('EMPRESA STATS: raw', rawText);
-
       if (!response.ok) {
-        console.warn('EMPRESA STATS: response not ok', response.status);
         return;
       }
 
       const payload = await response.json();
-      console.log('EMPRESA STATS: payload', payload);
       if (payload?.success && payload.data) {
         const normalized = normalizeStats(payload.data);
-        window.EMPRESA_STATISTICS = normalized || payload.data;
-        updateStatsView(window.EMPRESA_STATISTICS);
-      } else {
-        console.warn('EMPRESA STATS: payload sin data', payload);
+        updateStatsView(normalized || payload.data);
       }
     } catch (error) {
-      console.warn('EMPRESA STATS: fetch error', error);
     } finally {
       isFetching = false;
     }
@@ -240,7 +189,6 @@
 
   const onViewChange = (view) => {
     if (view === 'stats') {
-      forceStatsVisibility();
       fetchStats();
     }
   };
@@ -250,10 +198,8 @@
   };
 
   document.addEventListener('DOMContentLoaded', () => {
-    loadStatsPayload();
     const activeView = window.empresaSpa?.getActiveView?.();
     if (activeView === 'stats') {
-      forceStatsVisibility();
       fetchStats();
     }
   });

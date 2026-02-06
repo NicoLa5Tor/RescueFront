@@ -69,6 +69,12 @@ body:not(.dark) .ios-stat-trend {
   color: #64748b !important;
 }
 
+:root:not(.dark) [data-spa-section="stats"] .ios-stat-icon,
+html:not(.dark) [data-spa-section="stats"] .ios-stat-icon,
+body:not(.dark) [data-spa-section="stats"] .ios-stat-icon {
+  color: #0f172a !important;
+}
+
 :root:not(.dark) .ios-blur-bg,
 html:not(.dark) .ios-blur-bg,
 body:not(.dark) .ios-blur-bg {
