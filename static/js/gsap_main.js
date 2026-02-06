@@ -68,30 +68,7 @@ function waitForStylesAndHidePreloader() {
     // Mantener el scroll fijo en la posición superior hasta que el preloader termine
     //console.log('📍 SCROLL: Fijando posición en (0,0) desde el inicio del preloader');
     
-    // Variable para controlar si el preloader está activo
-    let preloaderKeyListenerActive = true;
     
-    const keydownHandler = (e) => {
-        // Solo prevenir teclas si el preloader está activo Y no estamos en un input/textarea
-        if (!preloaderKeyListenerActive) return;
-        
-        const activeElement = document.activeElement;
-        const isInputActive = activeElement && (
-            activeElement.tagName === 'INPUT' || 
-            activeElement.tagName === 'TEXTAREA' || 
-            activeElement.contentEditable === 'true'
-        );
-        
-        // Si hay un input activo, no bloquear las teclas
-        if (isInputActive) return;
-        
-        // Prevenir teclas que causan scroll (flechas, página arriba/abajo, espacio)
-        if ([32, 33, 34, 35, 36, 37, 38, 39, 40].includes(e.keyCode)) {
-            e.preventDefault();
-        }
-    };
-    
-    window.addEventListener('keydown', keydownHandler);
     
     //console.log('🔒 SCROLL: Posición fijada en (0,0) - Todos los eventos de scroll bloqueados');
     
@@ -372,16 +349,10 @@ function waitForStylesAndHidePreloader() {
                     // Remover la clase del HTML también
                     document.documentElement.classList.remove('show-simple-preloader');
                     
-                    // ============ DESACTIVAR LISTENER DE TECLADO ============
-                    // Desactivar el bloqueo de teclas para que funcionen normalmente
-                    preloaderKeyListenerActive = false;
-                    window.removeEventListener('keydown', keydownHandler);
-                    
-                    //console.log('⌨️ TECLADO: Event listener de bloqueo removido - Teclas funcionan normalmente');
-                    //console.log('✅ SIMPLE PRELOADER: Ocultado completamente - Teclado restaurado - Interfaz completamente funcional');
-                }, 1500); // 1.5 segundos para asegurar que la animación termine
+                    //console.log('✅ SIMPLE PRELOADER: Ocultado completamente - Interfaz completamente funcional');
+                }, 700); // 0.7 segundos para asegurar que la animación termine
                 
-            }, 1500); // 1.5 segundos de duración mínima
+            }, 700); // 0.7 segundos de duración mínima
         }, 100); // 100ms adicionales para event listeners
     }).catch((error) => {
         //console.error('❌ PRELOADER: Error en carga de recursos:', error);
@@ -426,7 +397,7 @@ window.addEventListener('load', function() {
                 
                 //console.log('✅ PRELOADER RESPALDO: Ocultado completamente');
             }, 1500); // 1.5 segundos pour asegurar que la animación termine
-        }, 500);
+        }, 200);
     }
 });
 
