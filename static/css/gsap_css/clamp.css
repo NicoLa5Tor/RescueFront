@@ -26,17 +26,6 @@ header:not(.login-header) {
   background-color: var(--dark);
 }
 
-.sticky:not(.login-header) {
-  position: relative;
-  z-index: 100;
-  width: 100%;
-  background-color: rgba(17, 17, 17, 0.95);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  transition: all 0.3s ease;
-}
-
 button {
   cursor: pointer;
 }
@@ -47,12 +36,6 @@ button:hover {
 }
 
 
-
-.logo {
-  width: 150px;
-  max-width: 40vw;
-  filter: invert(1);
-}
 
 nav {
   margin-left: auto;
@@ -187,8 +170,4 @@ a {
 }
 .images {
   z-index: -1
-}
-
-.logo svg {
-  opacity: 0
 }

@@ -97,14 +97,7 @@
                 opacity: 0
             });
             
-            // También ocultar el botón de login inicialmente
-            const loginButton = document.querySelector('a.status-badge[href="/login"]');
-            if (loginButton) {
-                gsap.set(loginButton, {
-                    scale: 0.8,
-                    opacity: 0
-                });
-            }
+            
             
             //console.log('✅ HERO: Estados iniciales establecidos');
         },
@@ -125,74 +118,9 @@
                 }
             });
             
-            // Parallax mejorado para móviles
-            if (window.innerWidth > 768) {
-                // Usar GSAPMain directamente si gsapMain no está disponible
-                const gsapMain = this.gsapMain || window.GSAPMain;
-                if (gsapMain && gsapMain.createParallax) {
-                    gsapMain.createParallax('.gradient-orbs > div', 0.5, {
-                        trigger: '#hero'
-                    });
-                } else {
-                    //console.warn('🚨 HERO: createParallax no disponible, usando ScrollTrigger directo');
-                    // Fallback usando ScrollTrigger directamente
-                    gsap.to('.gradient-orbs > div', {
-                        yPercent: -50,
-                        ease: "none",
-                        scrollTrigger: {
-                            trigger: '#hero',
-                            start: "top bottom",
-                            end: "bottom top",
-                            scrub: true
-                        }
-                    });
-                }
-            }
+            // Parallax y fade-out desactivados para aliviar carga
             
-            // Fade out en scroll con mejor rendimiento
-            const fadeOutAnim = gsap.to('.hero-content', {
-                opacity: 0.1,
-                y: -50,
-                ease: "power2.inOut"
-            });
             
-            ScrollTrigger.create({
-                trigger: '#hero',
-                start: 'center center',
-                end: 'bottom center',
-                scrub: 1,
-                animation: fadeOutAnim
-            });
-            
-            this.animations.push(fadeOutAnim);
-            
-            // Hacer que el botón de login se pegue a la parte superior al hacer scroll
-            const loginButton = document.querySelector('a.status-badge[href="/login"]');
-            if (loginButton) {
-                ScrollTrigger.create({
-                    trigger: '#hero',
-                    start: 'bottom top',
-                    end: '+=99999',
-                    onEnter: () => {
-                        // Cuando salimos del hero, hacer el botón fixed
-                        gsap.set(loginButton, {
-                            position: 'fixed',
-                            top: '1rem',
-                            right: '1rem',
-                            zIndex: 50
-                        });
-                    },
-                    onLeaveBack: () => {
-                        // Cuando volvemos al hero, restaurar posición absoluta
-                        gsap.set(loginButton, {
-                            position: 'absolute',
-                            top: '1rem',
-                            right: '1rem',
-                            zIndex: 50
-                        });
-                    }
-                });
-            }
         },
         
         // Animar contenido
@@ -220,14 +148,6 @@
                 duration: 0.6,
                 ease: "back.out(1.7)"
             }, "-=0.4")
-            
-            // Botón de login
-            .to('a.status-badge[href="/login"]', {
-                scale: 1,
-                opacity: 1,
-                duration: 0.6,
-                ease: "back.out(1.7)"
-            }, "-=0.3")
             
             // Descripción
             .to('.hero-description', {
@@ -264,19 +184,7 @@
             
             this.animations.push(tl);
             
-            // Animación continua del hub solo en desktop (con delay)
-            if (window.innerWidth > 768) {
-                const hubAnim = gsap.to('.hub-core', {
-                    boxShadow: '0 0 80px rgba(239, 68, 68, 0.5), inset 0 0 40px rgba(239, 68, 68, 0.2)',
-                    duration: 2,
-                    repeat: -1,
-                    yoyo: true,
-                    ease: "power1.inOut",
-                    delay: 1 // Esperar a que termine la animación principal
-                });
-                
-                this.animations.push(hubAnim);
-            }
+            // Animación continua del hub desactivada para aliviar carga
             
             //console.log('✅ HERO: Timeline de animaciones creado');
         },
@@ -437,25 +345,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Inicializar GSAPMain
     GSAPMain.init();
 
-    // Transición con gradiente hacia el módulo Tunnel
-    const hero = document.querySelector('#hero');
-    const tunnel = document.querySelector('#tunnel');
-    const overlay = document.querySelector('#hero-tunnel-overlay');
-    if (hero && tunnel && overlay) {
-        gsap.set(tunnel, { opacity: 0 });
-        gsap.timeline({
-            scrollTrigger: {
-                trigger: tunnel,
-                start: 'top bottom',
-                end: 'bottom top',
-                scrub: true
-            }
-        })
-        .to(overlay, { opacity: 1, ease: 'none', duration: 0.5 })
-        .to(overlay, { opacity: 0, ease: 'none', duration: 0.5 })
-        .to(tunnel, { opacity: 1, ease: 'none' }, 0)
-        .to(hero, { opacity: 0, ease: 'none' }, 0);
-    }
+    
 });
 
 // Optimización de rendimiento para móviles

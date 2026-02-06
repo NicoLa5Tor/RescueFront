@@ -28,14 +28,7 @@
                 // Registrar plugins localmente (por si acaso)
                 gsap.registerPlugin(ScrollTrigger, DrawSVGPlugin);
                 
-                // ScrollTrigger para header sticky (pin)
-                ScrollTrigger.create({
-                    trigger: '.sticky',
-                    start: 'top 20px',
-                    end: 'max',
-                    pin: true,
-                    pinSpacing: false
-                });
+                
                 
                 // NO crear ScrollSmoother - usar el global de GSAPMain
                 

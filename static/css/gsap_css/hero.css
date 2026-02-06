@@ -173,65 +173,7 @@
     }
 }
 
-/* CTA Buttons */
-.cta-primary {
-    position: relative;
-    padding: 1rem 2rem;
-    background: transparent;
-    border: 2px solid #ef4444;
-    color: white;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    transition: all 0.3s ease;
-    overflow: hidden;
-}
-
-.button-bg {
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, #ef4444, #f97316);
-    transition: left 0.3s ease;
-    z-index: 0;
-}
-
-.cta-primary:hover .button-bg {
-    left: 0;
-}
-
-.cta-primary:hover {
-    border-color: #f97316;
-    transform: translateY(-2px);
-    box-shadow: 0 10px 30px rgba(239, 68, 68, 0.3);
-}
-
-.cta-secondary {
-    padding: 1rem 2rem;
-    background: rgba(3, 3, 3, 0.05);
-    border: 1px solid rgba(2, 1, 1, 0.1);
-    color: white;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    backdrop-filter: blur(10px);
-    transition: all 0.3s ease;
-}
-
-.cta-secondary:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.2);
-    transform: translateY(-2px);
-}
-
 /* Stats */
-.hero-stats {
-    opacity: 0;
-    transform: translateY(20px);
-}
-
 .stat-item {
     text-align: center;
     padding: 1rem;
