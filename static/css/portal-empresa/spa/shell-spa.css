@@ -106,6 +106,12 @@ body:not(.dark) .spa-sidebar__role {
   color: rgba(255, 255, 255, 0.5);
 }
 
+:root:not(.dark) .spa-sidebar__section-title,
+html:not(.dark) .spa-sidebar__section-title,
+body:not(.dark) .spa-sidebar__section-title {
+  color: #64748b;
+}
+
 /* Ocultar residuos del panel de alertas global */
 #globalAlertsPanel,
 #globalAlertsPanelOverlay,
