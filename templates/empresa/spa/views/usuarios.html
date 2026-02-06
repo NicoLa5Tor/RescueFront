@@ -181,11 +181,11 @@
         <div class="flex flex-col items-start gap-4 w-full sm:flex-row sm:items-center sm:justify-between">
           <div class="flex items-center gap-3 flex-1 min-w-0">
             <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-              <i class="fas fa-user-edit text-white text-xl"></i>
+              <i class="fas fa-user-edit text-gray-900 dark:text-white text-xl"></i>
             </div>
             <div>
-              <h3 class="text-2xl font-bold text-white dark:text-white">Editar Usuario</h3>
-              <p class="text-sm text-white/70 dark:text-gray-300">Modifica los datos del usuario</p>
+              <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Editar Usuario</h3>
+              <p class="text-sm text-gray-600 dark:text-gray-300">Modifica los datos del usuario</p>
             </div>
           </div>
           <button type="button" class="ios-blur-btn ios-blur-btn-secondary shrink-0 !p-2 !min-w-0" onclick="usuariosModals.closeEditModal()" aria-label="Cerrar modal">
@@ -200,7 +200,7 @@
           <div class="form-grid">
             <!-- Nombre -->
             <div class="form-group">
-              <label for="editUsername" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+              <label for="editUsername" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                 <i class="fas fa-user text-blue-400 mr-2"></i>Nombre Completo *
               </label>
               <input type="text" id="editUsername" class="ios-blur-input" required placeholder="Ej: Juan Pérez">
@@ -208,7 +208,7 @@
             
             <!-- Email -->
             <div class="form-group">
-              <label for="editUserEmail" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+              <label for="editUserEmail" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                 <i class="fas fa-envelope text-purple-400 mr-2"></i>Email *
               </label>
               <input type="email" id="editUserEmail" class="ios-blur-input" required placeholder="usuario@empresa.com">
@@ -216,7 +216,7 @@
             
             <!-- Cédula -->
             <div class="form-group">
-              <label for="editUserCedula" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+              <label for="editUserCedula" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                 <i class="fas fa-id-card text-cyan-400 mr-2"></i>Cédula *
               </label>
               <input type="text" id="editUserCedula" class="ios-blur-input" required placeholder="Número de cédula">
@@ -224,7 +224,7 @@
             
             <!-- Teléfono -->
             <div class="form-group">
-              <label for="editUserTelefono" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+              <label for="editUserTelefono" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                 <i class="fas fa-phone text-green-400 mr-2"></i>Teléfono
               </label>
               <input type="tel" id="editUserTelefono" class="ios-blur-input" required placeholder="Número de teléfono">
@@ -232,7 +232,7 @@
             
             <!-- Sede -->
             <div class="form-group">
-              <label for="editUserSede" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+              <label for="editUserSede" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                 <i class="fas fa-building text-orange-400 mr-2"></i>Sede *
               </label>
               <select id="editUserSede" class="ios-blur-input" required>
@@ -242,7 +242,7 @@
             
             <!-- Tipo de Turno -->
             <div class="form-group">
-              <label for="editUserTipoTurno" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+              <label for="editUserTipoTurno" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                 <i class="fas fa-clock text-red-400 mr-2"></i>Tipo de Turno *
               </label>
               <select id="editUserTipoTurno" class="ios-blur-input" required>
@@ -255,7 +255,7 @@
             
             <!-- Rol -->
             <div class="form-group">
-              <label for="editUserRol" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+              <label for="editUserRol" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                 <i class="fas fa-user-tag text-purple-400 mr-2"></i>Rol *
               </label>
               <select id="editUserRol" class="ios-blur-input" required>
@@ -265,7 +265,7 @@
             
             <!-- Especialidades -->
             <div class="form-group form-group-full">
-              <label class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+              <label class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                 <i class="fas fa-user-md text-yellow-400 mr-2"></i>Especialidades
               </label>
               <div id="editEspecialidadesContainer" class="space-y-3">
@@ -273,7 +273,7 @@
                   <button type="button" class="ios-blur-btn ios-blur-btn-primary !p-2 !min-w-0" onclick="usuariosModals.addEspecialidad('edit')">
                     <i class="fas fa-plus"></i>
                   </button>
-                  <span class="text-white/70 text-sm self-center">Agregar especialidad</span>
+                  <span class="text-gray-600 dark:text-white/70 text-sm self-center">Agregar especialidad</span>
                 </div>
                 <div id="editEspecialidadesList" class="space-y-2">
                   <!-- Especialidades will be displayed here -->
@@ -305,10 +305,10 @@
         <div class="toggle-modal-icon mx-auto mb-4">
           <i class="fas fa-power-off text-4xl"></i>
         </div>
-        <h3 class="text-2xl font-bold text-white mb-2" id="toggleUserModalTitle">Activar Usuario</h3>
+        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2" id="toggleUserModalTitle">Activar Usuario</h3>
       </div>
       <div class="ios-blur-body flex-1 min-h-0 !max-h-none text-center">
-        <p class="text-white/80 text-lg mb-6" id="toggleUserModalMessage">
+        <p class="text-gray-700 dark:text-white/80 text-lg mb-6" id="toggleUserModalMessage">
           ¿Estás seguro de que quieres cambiar el estado de este usuario?
         </p>
         <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
@@ -333,11 +333,11 @@
         <div class="flex flex-col items-start gap-4 w-full sm:flex-row sm:items-center sm:justify-between">
           <div class="flex items-center gap-3 flex-1 min-w-0">
             <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
-              <i class="fas fa-user-plus text-white text-xl"></i>
+              <i class="fas fa-user-plus text-gray-900 dark:text-white text-xl"></i>
             </div>
             <div>
-              <h3 class="text-2xl font-bold text-white dark:text-white">Crear Usuario</h3>
-              <p class="text-sm text-white/70 dark:text-gray-300">Registra un nuevo usuario en el sistema</p>
+              <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Crear Usuario</h3>
+              <p class="text-sm text-gray-600 dark:text-gray-300">Registra un nuevo usuario en el sistema</p>
             </div>
           </div>
           <button type="button" class="ios-blur-btn ios-blur-btn-secondary shrink-0 !p-2 !min-w-0" onclick="usuariosModals.closeCreateModal()" aria-label="Cerrar modal">
@@ -352,7 +352,7 @@
           <div class="form-grid">
             <!-- Nombre -->
             <div class="form-group">
-              <label for="createUsername" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+              <label for="createUsername" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                 <i class="fas fa-user text-blue-400 mr-2"></i>Nombre Completo *
               </label>
               <input type="text" id="createUsername" class="ios-blur-input" required placeholder="Ej: Juan Pérez">
@@ -360,7 +360,7 @@
             
             <!-- Email -->
             <div class="form-group">
-              <label for="createUserEmail" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+              <label for="createUserEmail" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                 <i class="fas fa-envelope text-purple-400 mr-2"></i>Email
               </label>
               <input type="email" id="createUserEmail" class="ios-blur-input" required placeholder="usuario@empresa.com">
@@ -368,7 +368,7 @@
             
             <!-- Cédula -->
             <div class="form-group">
-              <label for="createUserCedula" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+              <label for="createUserCedula" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                 <i class="fas fa-id-card text-cyan-400 mr-2"></i>Cédula *
               </label>
               <input type="text" id="createUserCedula" class="ios-blur-input" required placeholder="Número de cédula">
@@ -376,7 +376,7 @@
             
             <!-- Teléfono -->
             <div class="form-group">
-              <label for="createUserTelefono" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+              <label for="createUserTelefono" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                 <i class="fas fa-phone text-green-400 mr-2"></i>Teléfono
               </label>
               <input type="tel" id="createUserTelefono" class="ios-blur-input" required placeholder="Número de teléfono">
@@ -384,7 +384,7 @@
             
             <!-- Sede -->
             <div class="form-group">
-              <label for="createUserSede" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+              <label for="createUserSede" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                 <i class="fas fa-building text-orange-400 mr-2"></i>Sede *
               </label>
               <select id="createUserSede" class="ios-blur-input" required>
@@ -394,7 +394,7 @@
             
             <!-- Tipo de Turno -->
             <div class="form-group">
-              <label for="createUserTipoTurno" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+              <label for="createUserTipoTurno" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                 <i class="fas fa-clock text-red-400 mr-2"></i>Tipo de Turno *
               </label>
               <select id="createUserTipoTurno" class="ios-blur-input" required>
@@ -407,7 +407,7 @@
             
             <!-- Rol -->
             <div class="form-group">
-              <label for="createUserRol" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+              <label for="createUserRol" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                 <i class="fas fa-user-tag text-purple-400 mr-2"></i>Rol *
               </label>
               <select id="createUserRol" class="ios-blur-input" required>
@@ -417,7 +417,7 @@
             
             <!-- Especialidades -->
             <div class="form-group form-group-full">
-              <label class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+              <label class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                 <i class="fas fa-user-md text-yellow-400 mr-2"></i>Especialidades
               </label>
               <div id="createEspecialidadesContainer" class="space-y-3">
@@ -425,7 +425,7 @@
                   <button type="button" class="ios-blur-btn ios-blur-btn-primary !p-2 !min-w-0" onclick="usuariosModals.addEspecialidad('create')">
                     <i class="fas fa-plus"></i>
                   </button>
-                  <span class="text-white/70 text-sm self-center">Agregar especialidad</span>
+                  <span class="text-gray-600 dark:text-white/70 text-sm self-center">Agregar especialidad</span>
                 </div>
                 <div id="createEspecialidadesList" class="space-y-2">
                   <!-- Especialidades will be displayed here -->
@@ -457,10 +457,10 @@
         <div class="client-update-icon mx-auto mb-4">
           <i class="fas fa-sync-alt text-4xl text-emerald-400"></i>
         </div>
-        <h3 class="text-2xl font-bold text-white mb-2" id="userUpdateModalTitle">Usuario Actualizado</h3>
+        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2" id="userUpdateModalTitle">Usuario Actualizado</h3>
       </div>
       <div class="ios-blur-body flex-1 min-h-0 !max-h-none text-center">
-        <p class="text-white/80 text-lg mb-6" id="userUpdateModalMessage">
+        <p class="text-gray-700 dark:text-white/80 text-lg mb-6" id="userUpdateModalMessage">
           El usuario se ha actualizado exitosamente.
         </p>
         <button class="ios-blur-btn ios-blur-btn-primary mx-auto" onclick="usuariosModals.closeUpdateModal()">

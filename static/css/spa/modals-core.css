@@ -789,6 +789,7 @@ select[class*="select-"] {
   transition-delay: 0.1s;
 }
 
+
 /* Water ripple effect */
 .ios-blur-modal-container::before {
   content: '';
