@@ -396,6 +396,34 @@
     </div>
   </div>
 
+  <!-- Delete User Modal -->
+  <div id="userDeleteModal" class="ios-modal-backdrop hidden">
+    <div class="ios-blur-modal-container max-w-md mx-auto">
+      <div class="ios-blur-header text-center">
+        <div class="client-warning-icon mx-auto mb-4">
+          <i class="fas fa-trash text-4xl text-red-400"></i>
+        </div>
+        <h3 class="text-2xl font-bold text-white mb-2">Eliminar usuario</h3>
+        <p class="text-white/70 text-sm" id="deleteUserName"></p>
+      </div>
+      <div class="ios-blur-body text-center">
+        <p class="text-white/80 text-base mb-6">
+          Esta acción no se puede deshacer. Solo se puede eliminar si el usuario está inactivo.
+        </p>
+      </div>
+      <div class="ios-blur-footer">
+        <button class="ios-blur-btn ios-blur-btn-secondary" onclick="usuariosModals.closeDeleteModal()">
+          <i class="fas fa-times mr-2"></i>
+          <span class="text-sm font-medium">Cancelar</span>
+        </button>
+        <button class="ios-blur-btn ios-blur-btn-primary" id="deleteUserConfirmBtn" onclick="usuariosModals.confirmDelete()">
+          <i class="fas fa-trash mr-2"></i>
+          <span class="text-sm font-medium">Eliminar</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Create User Modal - HARDWARE STYLE -->
   <div id="createUserModal" class="ios-modal-backdrop hidden">
     <div class="ios-blur-modal-container w-full max-w-3xl">

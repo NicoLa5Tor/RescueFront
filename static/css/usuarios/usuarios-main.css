@@ -162,6 +162,17 @@
   box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
 }
 
+.ios-card-btn-danger {
+  background: linear-gradient(135deg, #ef4444, #b91c1c);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+}
+
+.ios-card-btn-danger:hover {
+  background: linear-gradient(135deg, #dc2626, #991b1b);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(239, 68, 68, 0.35);
+}
+
 /* Utilizar estilos del hardware para header */
 .usuarios-container .ios-header-container {
   opacity: 1;

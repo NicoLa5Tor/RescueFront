@@ -539,6 +539,8 @@ class UsuariosMain {
     const statusText = isActive ? '✅ Activo' : '⚫ Inactivo';
     const fechaCreacion = this.formatDate(usuario.fecha_creacion);
 
+    const canDelete = (window.userRole === 'admin' || window.userRole === 'super_admin');
+
     card.innerHTML = `
       <div class="ios-card-header">
         <div class="ios-card-icon">
@@ -624,6 +626,11 @@ class UsuariosMain {
                 title="${isActive ? 'Desactivar usuario' : 'Activar usuario'}">
           <i class="fas ${isActive ? 'fa-power-off' : 'fa-play'}"></i>
         </button>
+        ${!isActive && canDelete ? `
+        <button class="ios-card-btn ios-card-btn-danger" onclick="usuariosMain.deleteUsuario('${usuario._id}')" title="Eliminar usuario inactivo">
+          <i class="fas fa-trash"></i>
+        </button>
+        ` : ''}
       </div>
     `;
 
@@ -804,6 +811,76 @@ class UsuariosMain {
       window.usuariosModals.openEditModal(usuarioId);
     } else {
       alert('Sistema de modales no disponible');
+    }
+  }
+
+  /**
+   * Delete usuario (solo si esta inactivo)
+   */
+  async deleteUsuario(usuarioId) {
+    if (!(window.userRole === 'admin' || window.userRole === 'super_admin')) {
+      this.showNotification('Solo administradores pueden eliminar usuarios', 'error');
+      return;
+    }
+    if (!this.currentEmpresa && window.userRole === 'empresa' && window.empresaId) {
+      this.currentEmpresa = {
+        _id: window.empresaId,
+        nombre: window.empresaNombre || 'Mi Empresa'
+      };
+    }
+
+    if (!this.currentEmpresa || !usuarioId) {
+      return;
+    }
+
+    const usuario = this.usuariosAll.find(u => u._id === usuarioId);
+    if (!usuario) {
+      this.showNotification('Usuario no encontrado', 'error');
+      return;
+    }
+
+    const isActive = usuario.activo === true || usuario.activo === 1 || usuario.activo === 'true';
+    if (isActive) {
+      this.showNotification('Solo puedes eliminar usuarios inactivos', 'error');
+      return;
+    }
+
+    const userName = usuario.nombre || 'Usuario';
+    if (window.usuariosModals) {
+      window.usuariosModals.showDeleteModal(usuarioId, userName);
+      return;
+    }
+    await this.performDelete(usuarioId);
+  }
+
+  async performDelete(usuarioId) {
+    try {
+      let empresaId = this.currentEmpresa?._id;
+      if (!empresaId && window.userRole === 'empresa' && window.empresaId) {
+        empresaId = window.empresaId;
+      }
+
+      if (!empresaId) {
+        this.showNotification('No hay empresa seleccionada', 'error');
+        return;
+      }
+
+      const response = await this.apiClient.delete_usuario(empresaId, usuarioId);
+      let data = null;
+      try {
+        data = await response.json();
+      } catch (e) {
+        data = null;
+      }
+
+      if (response.ok && (!data || data.success !== false)) {
+        this.showNotification(data?.message || 'Usuario eliminado correctamente', 'success');
+        await this.loadUsuarios();
+      } else {
+        this.showNotification(data?.error || 'Error al eliminar el usuario', 'error');
+      }
+    } catch (error) {
+      this.showNotification('Error de conexión', 'error');
     }
   }
 

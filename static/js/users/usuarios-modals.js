@@ -241,6 +241,7 @@ class UsuariosModals {
     this.currentEditingUser = null;
     this.currentViewingUser = null;
     this.currentToggleUser = null;
+    this.currentDeleteUser = null;
     this.currentUser = null; // Para edición
     this.apiClient = null;
     this.especialidades = [];
@@ -1033,6 +1034,31 @@ class UsuariosModals {
     }
   }
 
+  // ===== DELETE USER MODAL =====
+
+  showDeleteModal(userId, userName) {
+    this.currentDeleteUser = { id: userId, name: userName };
+    const nameEl = document.getElementById('deleteUserName');
+    if (nameEl) {
+      nameEl.textContent = userName ? `Usuario: ${userName}` : '';
+    }
+    this.openModal('userDeleteModal');
+  }
+
+  closeDeleteModal() {
+    this.closeModal('userDeleteModal');
+    this.currentDeleteUser = null;
+  }
+
+  async confirmDelete() {
+    if (!this.currentDeleteUser || !window.usuariosMain) {
+      return;
+    }
+    const { id } = this.currentDeleteUser;
+    this.closeDeleteModal();
+    await window.usuariosMain.performDelete(id);
+  }
+
   // ===== CREATE USER MODAL =====
   
   /**
@@ -1512,5 +1538,8 @@ window.toggleUser = (userId, currentStatus, userName) => usuariosModals.showTogg
 // Modal control functions
 window.closeToggleModal = () => usuariosModals.closeToggleModal();
 window.confirmToggle = () => usuariosModals.confirmToggle();
+window.showDeleteUser = (userId, userName) => usuariosModals.showDeleteModal(userId, userName);
+window.closeDeleteUser = () => usuariosModals.closeDeleteModal();
+window.confirmDeleteUser = () => usuariosModals.confirmDelete();
 window.closeUpdateModal = () => usuariosModals.closeUpdateModal();
 ////console.log('👥 Usuarios modals module loaded - MODALSCROLLMANAGER VERSION');
