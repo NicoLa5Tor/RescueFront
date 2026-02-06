@@ -4,6 +4,12 @@
     return;
   }
 
+  const orphanSections = Array.from(document.querySelectorAll('.spa-view[data-spa-section]'))
+    .filter(section => !container.contains(section));
+  orphanSections.forEach(section => {
+    container.appendChild(section);
+  });
+
   const sections = Array.from(container.querySelectorAll('[data-spa-section]'));
 
   const setActiveView = (view) => {
@@ -29,6 +35,11 @@
         target.classList.toggle('sidebar__link--active', isActive);
       }
     });
+
+    const changeEvent = new CustomEvent('empresa:spa:view-change', {
+      detail: { view: resolved }
+    });
+    document.dispatchEvent(changeEvent);
   };
 
   const defaultView = container.getAttribute('data-spa-default') || sections[0]?.getAttribute('data-spa-section');

@@ -146,6 +146,9 @@
   <section class="spa-view is-hidden" data-spa-section="hardware">
     {% include "empresa/spa/views/hardware.html" %}
   </section>
+  <section class="spa-view is-hidden" data-spa-section="stats">
+    {% include "empresa/spa/views/stats.html" %}
+  </section>
   {% endcall %}
   {% endblock %}
 {% endcall %}
@@ -186,6 +189,7 @@
 
 {% block page_js %}{% endblock %}
 <script src="{{ url_for('static', filename='js/portal-empresa/spa/views/dashboard.js') }}"></script>
+<script src="{{ url_for('static', filename='js/portal-empresa/spa/views/stats.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/intlTelInput.min.js"></script>
 <script src="{{ url_for('static', filename='js/portal-empresa/spa/views/usuarios-data.js') }}"></script>
 <script src="{{ url_for('static', filename='js/portal-empresa/spa/views/usuarios-main.js') }}"></script>

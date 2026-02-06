@@ -1,0 +1,265 @@
+(() => {
+  console.log('EMPRESA STATS: script loaded');
+  let isFetching = false;
+  let lastFetchAt = 0;
+
+  const getEmpresaId = () => window.EMPRESA_ID || window.empresaId || '';
+
+  const loadStatsPayload = () => {
+    const statsElement = document.getElementById('empresaStatisticsData');
+    if (!statsElement) {
+      window.EMPRESA_STATISTICS = null;
+      return;
+    }
+
+    try {
+      const statsText = statsElement.textContent;
+      window.EMPRESA_STATISTICS = statsText && statsText !== 'null'
+        ? JSON.parse(statsText)
+        : null;
+    } catch (error) {
+      window.EMPRESA_STATISTICS = null;
+    }
+  };
+
+  const setText = (id, value) => {
+    const target = document.getElementById(id);
+    if (target) {
+      target.textContent = value;
+    }
+  };
+
+  const formatDate = (value) => {
+    if (!value) return '';
+    return String(value).slice(0, 19).replace('T', ' ');
+  };
+
+  const normalizeStats = (data) => {
+    if (!data || typeof data !== 'object') {
+      return null;
+    }
+
+    const empresa = data.empresa || {};
+    const usuarios = data.usuarios || {};
+    const hardware = data.hardware || {};
+    const alertas = data.alertas || {};
+
+    const usuariosTotal = usuarios.total ?? usuarios.total_usuarios ?? 0;
+    const usuariosActivos = usuarios.activos ?? usuarios.usuarios_activos ?? 0;
+    const usuariosInactivos = usuarios.inactivos ?? usuarios.usuarios_inactivos ?? 0;
+
+    const hardwareTotal = hardware.total ?? hardware.total_hardware ?? 0;
+    const hardwareActivos = hardware.activos ?? hardware.hardware_activo ?? 0;
+    const hardwareInactivos = hardware.inactivos ?? hardware.hardware_inactivo ?? 0;
+
+    const alertasTotal = alertas.total ?? alertas.total_alertas ?? 0;
+    const alertasActivas = alertas.activas ?? alertas.alertas_activas ?? 0;
+    const alertasInactivas = alertas.resueltas ?? alertas.alertas_inactivas ?? 0;
+
+    const actividad30d = alertas.alertas_recientes_30d ?? 0;
+
+    return {
+      empresa: {
+        id: empresa.id || empresa._id || '',
+        nombre: empresa.nombre || '',
+        activa: empresa.activa ?? true,
+        fecha_creacion: empresa.fecha_creacion || ''
+      },
+      usuarios: {
+        total: usuariosTotal,
+        activos: usuariosActivos,
+        inactivos: usuariosInactivos
+      },
+      hardware: {
+        total: hardwareTotal,
+        activos: hardwareActivos,
+        inactivos: hardwareInactivos,
+        por_tipo: hardware.por_tipo || {}
+      },
+      alertas: {
+        total: alertasTotal,
+        activas: alertasActivas,
+        resueltas: alertasInactivas,
+        por_prioridad: alertas.alertas_por_prioridad || {}
+      },
+      actividad_reciente: {
+        logs_ultimos_30_dias: actividad30d,
+        ultima_actividad: empresa.ultima_actividad || ''
+      }
+    };
+  };
+
+  const updateStatsView = (stats) => {
+    if (!stats || typeof stats !== 'object') {
+      return;
+    }
+
+    const empresa = stats.empresa || {};
+    const usuarios = stats.usuarios || {};
+    const hardware = stats.hardware || {};
+    const alertas = stats.alertas || {};
+    const actividad = stats.actividad_reciente || {};
+
+    const empresaName = empresa.nombre || '';
+    setText('empresaStatsName', empresaName);
+    setText('empresaStatsTitle', empresaName);
+    setText('empresaStatsInitials', empresaName.slice(0, 2).toUpperCase() || 'EM');
+    setText('empresaStatsCreated', (empresa.fecha_creacion || '').slice(0, 10));
+    setText('empresaStatsStatus', empresa.activa ? 'ACTIVA' : 'INACTIVA');
+
+    setText('empresaStatsUsuariosTotal', usuarios.total ?? 0);
+    setText('empresaStatsUsuariosActivos', usuarios.activos ?? 0);
+    setText('empresaStatsHardwareTotal', hardware.total ?? 0);
+    setText('empresaStatsHardwareActivos', hardware.activos ?? 0);
+    setText('empresaStatsAlertasTotal', alertas.total ?? 0);
+    setText('empresaStatsAlertasActivas', alertas.activas ?? 0);
+    setText('empresaStatsActividad30d', actividad.logs_ultimos_30_dias ?? 0);
+
+    setText('empresaStatsUsuariosActivosDetail', usuarios.activos ?? 0);
+    setText('empresaStatsUsuariosInactivos', usuarios.inactivos ?? 0);
+    setText('empresaStatsUsuariosTotalDetail', usuarios.total ?? 0);
+    setText('empresaStatsLogs30d', actividad.logs_ultimos_30_dias ?? 0);
+    setText('empresaStatsLastActivity', formatDate(actividad.ultima_actividad));
+
+    const hardwareList = document.getElementById('empresaStatsHardwareTipos');
+    if (hardwareList) {
+      hardwareList.innerHTML = '';
+      const porTipo = hardware.por_tipo || {};
+      Object.entries(porTipo).forEach(([tipo, cantidad]) => {
+        const row = document.createElement('div');
+        row.className = 'flex justify-between text-sm';
+        row.innerHTML = `
+          <span class="text-gray-600 dark:text-white/70">${tipo}</span>
+          <span class="text-black dark:text-white font-semibold">${cantidad}</span>
+        `;
+        hardwareList.appendChild(row);
+      });
+    }
+
+    const alertasList = document.getElementById('empresaStatsAlertasPrioridad');
+    if (alertasList) {
+      alertasList.innerHTML = '';
+      const porPrioridad = alertas.por_prioridad || {};
+      Object.entries(porPrioridad).forEach(([prioridad, cantidad]) => {
+        const row = document.createElement('div');
+        row.className = 'flex justify-between text-sm';
+        row.innerHTML = `
+          <span class="text-gray-600 dark:text-white/70">${prioridad}</span>
+          <span class="text-black dark:text-white font-semibold">${cantidad}</span>
+        `;
+        alertasList.appendChild(row);
+      });
+    }
+  };
+
+  const forceStatsVisibility = () => {
+    const statsSection = document.querySelector('[data-spa-section="stats"]');
+    if (!statsSection || statsSection.classList.contains('is-hidden')) {
+      return;
+    }
+
+    const cards = document.querySelectorAll('[data-spa-section="stats"] .ios-stat-card');
+    cards.forEach(card => {
+      card.style.opacity = '1';
+      card.style.visibility = 'visible';
+      card.style.transform = 'none';
+    });
+
+    console.log('EMPRESA STATS: cards', cards.length);
+  };
+
+  const fetchStats = async () => {
+    if (isFetching) {
+      return;
+    }
+
+    const now = Date.now();
+    if (now - lastFetchAt < 500) {
+      return;
+    }
+
+    const empresaId = getEmpresaId();
+    if (!empresaId) {
+      return;
+    }
+
+    try {
+      isFetching = true;
+      lastFetchAt = now;
+
+      const buildApiUrl = typeof window.__buildApiUrl === 'function'
+        ? window.__buildApiUrl
+        : null;
+      const baseUrl = buildApiUrl ? buildApiUrl('') : (window.__APP_CONFIG?.apiUrl || '');
+      if (!baseUrl && !buildApiUrl) {
+        return;
+      }
+
+      const endpoint = `/api/empresas/${empresaId}/statistics`;
+      const url = buildApiUrl ? buildApiUrl(endpoint) : `${baseUrl}${endpoint}`;
+
+      console.log('EMPRESA STATS: url', url);
+      const response = await fetch(url, {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      let rawText = '';
+      try {
+        rawText = await response.clone().text();
+      } catch (error) {
+        rawText = '';
+      }
+
+      console.log('EMPRESA STATS: status', response.status);
+      console.log('EMPRESA STATS: raw', rawText);
+
+      if (!response.ok) {
+        console.warn('EMPRESA STATS: response not ok', response.status);
+        return;
+      }
+
+      const payload = await response.json();
+      console.log('EMPRESA STATS: payload', payload);
+      if (payload?.success && payload.data) {
+        const normalized = normalizeStats(payload.data);
+        window.EMPRESA_STATISTICS = normalized || payload.data;
+        updateStatsView(window.EMPRESA_STATISTICS);
+      } else {
+        console.warn('EMPRESA STATS: payload sin data', payload);
+      }
+    } catch (error) {
+      console.warn('EMPRESA STATS: fetch error', error);
+    } finally {
+      isFetching = false;
+    }
+  };
+
+  const onViewChange = (view) => {
+    if (view === 'stats') {
+      forceStatsVisibility();
+      fetchStats();
+    }
+  };
+
+  window.exportEmpresaStats = () => {
+    alert('Funcionalidad de exportación en desarrollo');
+  };
+
+  document.addEventListener('DOMContentLoaded', () => {
+    loadStatsPayload();
+    const activeView = window.empresaSpa?.getActiveView?.();
+    if (activeView === 'stats') {
+      forceStatsVisibility();
+      fetchStats();
+    }
+  });
+
+  document.addEventListener('empresa:spa:view-change', (event) => {
+    onViewChange(event.detail?.view);
+  });
+
+})();

@@ -1311,17 +1311,101 @@ def empresa_dashboard():
     }
     
     if backend_data:
+        empresa_data = backend_data.get('empresa', {})
+        usuarios_data = backend_data.get('usuarios', {})
+        hardware_info = backend_data.get('hardware', {})
+        alertas_info = backend_data.get('alertas', {})
+
         dashboard_summary['kpis'].update({
-            'usuarios_total': backend_data.get('usuarios', {}).get('total_usuarios', 0),
-            'usuarios_activos': backend_data.get('usuarios', {}).get('usuarios_activos', 0),
-            'hardware_total': backend_data.get('hardware', {}).get('total_hardware', 0),
-            'alertas_activas': backend_data.get('alertas', {}).get('alertas_activas', 0)
+            'usuarios_total': usuarios_data.get('total_usuarios', 0),
+            'usuarios_activos': usuarios_data.get('usuarios_activos', 0),
+            'hardware_total': hardware_info.get('total_hardware', 0),
+            'alertas_activas': alertas_info.get('alertas_activas', 0)
         })
     else:
         print(f"⚠️ Dashboard KPIs fallback in use for empresa {empresa_id}")
 
+    empresa_statistics = {
+        'empresa': {
+            'id': empresa_id,
+            'nombre': empresa_nombre,
+            'activa': True,
+            'fecha_creacion': '2024-01-01'
+        },
+        'usuarios': {
+            'total': 0,
+            'activos': 0,
+            'inactivos': 0
+        },
+        'hardware': {
+            'total': 0,
+            'activos': 0,
+            'inactivos': 0,
+            'por_tipo': {
+                'botonera': 0,
+                'semaforo': 0,
+                'pantalla': 0
+            }
+        },
+        'alertas': {
+            'total': 0,
+            'activas': 0,
+            'resueltas': 0,
+            'por_prioridad': {
+                'alta': 0,
+                'media': 0,
+                'baja': 0
+            }
+        },
+        'actividad_reciente': {
+            'logs_ultimos_30_dias': 0,
+            'ultima_actividad': '2024-07-20T10:30:00Z'
+        }
+    }
+
+    if backend_data:
+        empresa_statistics = {
+            'empresa': {
+                'id': backend_data.get('empresa', {}).get('id', empresa_id),
+                'nombre': backend_data.get('empresa', {}).get('nombre', empresa_nombre),
+                'activa': backend_data.get('empresa', {}).get('activa', True),
+                'fecha_creacion': backend_data.get('empresa', {}).get('fecha_creacion', '2024-01-01')
+            },
+            'usuarios': {
+                'total': backend_data.get('usuarios', {}).get('total_usuarios', 0),
+                'activos': backend_data.get('usuarios', {}).get('usuarios_activos', 0),
+                'inactivos': backend_data.get('usuarios', {}).get('usuarios_inactivos', 0)
+            },
+            'hardware': {
+                'total': backend_data.get('hardware', {}).get('total_hardware', 0),
+                'activos': backend_data.get('hardware', {}).get('hardware_activo', 0),
+                'inactivos': backend_data.get('hardware', {}).get('hardware_inactivo', 0),
+                'por_tipo': backend_data.get('hardware', {}).get('por_tipo', {
+                    'botonera': 0,
+                    'semaforo': 0,
+                    'televisor': 0,
+                    'pantalla': 0
+                })
+            },
+            'alertas': {
+                'total': backend_data.get('alertas', {}).get('total_alertas', 0),
+                'activas': backend_data.get('alertas', {}).get('alertas_activas', 0),
+                'resueltas': backend_data.get('alertas', {}).get('alertas_inactivas', 0),
+                'por_prioridad': {
+                    'critica': backend_data.get('alertas', {}).get('alertas_por_prioridad', {}).get('critica', 0),
+                    'alta': backend_data.get('alertas', {}).get('alertas_por_prioridad', {}).get('alta', 0),
+                    'media': backend_data.get('alertas', {}).get('alertas_por_prioridad', {}).get('media', 0),
+                    'baja': backend_data.get('alertas', {}).get('alertas_por_prioridad', {}).get('baja', 0)
+                }
+            },
+            'actividad_reciente': {
+                'logs_ultimos_30_dias': backend_data.get('alertas', {}).get('alertas_recientes_30d', 0),
+                'ultima_actividad': backend_data.get('empresa', {}).get('ultima_actividad', '2024-07-20T10:30:00Z')
+            }
+        }
+
     default_view = request.args.get('view') or 'dashboard'
-    allowed_views = {'dashboard', 'usuarios', 'hardware'}
+    allowed_views = {'dashboard', 'usuarios', 'hardware', 'stats'}
     if default_view not in allowed_views:
         default_view = 'dashboard'
 
@@ -1342,6 +1426,7 @@ def empresa_dashboard():
         'empresa/dashboard.html',
         api_url=PROXY_PREFIX, 
         dashboard_summary=dashboard_summary,
+        empresa_statistics=empresa_statistics,
         active_page=default_view,
         default_view=default_view,
         hardware_data=hardware_data,
@@ -1361,7 +1446,7 @@ def empresa_usuarios():
 @require_role(['empresa'])
 def empresa_stats():
     """Estadísticas específicas de empresa usando datos reales del backend"""
-    return redirect(url_for('empresa_dashboard'))
+    return redirect(url_for('empresa_dashboard', view='stats'))
     # Get empresa info from session
     empresa_id = session.get('user', {}).get('id')
     empresa_username = session.get('user', {}).get('username')
