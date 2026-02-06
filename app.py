@@ -1167,6 +1167,7 @@ def admin_delete_image_folder(folder_name):
 @app.route('/empresa/hardware')
 @require_role(['empresa'])
 def empresa_hardware():
+    return redirect(url_for('empresa_dashboard'))
     """Gestión de hardware para empresa - Función única y simple"""
     empresa_id = session.get('user', {}).get('id')
     empresa_username = session.get('user', {}).get('username')
@@ -1320,7 +1321,7 @@ def empresa_dashboard():
         print(f"⚠️ Dashboard KPIs fallback in use for empresa {empresa_id}")
     
     return render_template(
-        'empresa/dashboard_main.html', 
+        'empresa/dashboard.html',
         api_url=PROXY_PREFIX, 
         dashboard_summary=dashboard_summary,
         active_page='dashboard',
@@ -1333,34 +1334,14 @@ def empresa_dashboard():
 @require_role(['empresa'])
 def empresa_usuarios():
     """Gestión de usuarios - Reutiliza vista admin/users.html"""
-    # Get empresa info from session
-    empresa_id = session.get('user', {}).get('id')
-    empresa_username = session.get('user', {}).get('username')
-
-    usuarios_data = g.api_client.get_usuarios_by_empresa(empresa_id)
-
-    stats = usuarios_data.get('usuarios_stats', {})
-    usuarios_list = usuarios_data.get('usuarios', [])
-    initial_total_users = stats.get('total_users', len(usuarios_list))
-    initial_active_users = stats.get('active_users', len([u for u in usuarios_list if u.get('activo')]))
-
-    return render_template(
-        'empresa/usuarios.html',
-        api_url=PROXY_PREFIX,
-        active_page='users',
-        user_role='empresa',
-        empresa_id=empresa_id,
-        empresa_username=empresa_username,
-        usuarios_data=usuarios_data,
-        initial_total_users=initial_total_users,
-        initial_active_users=initial_active_users
-    )
+    return redirect(url_for('empresa_dashboard'))
 
 
 @app.route('/empresa/stats')
 @require_role(['empresa'])
 def empresa_stats():
     """Estadísticas específicas de empresa usando datos reales del backend"""
+    return redirect(url_for('empresa_dashboard'))
     # Get empresa info from session
     empresa_id = session.get('user', {}).get('id')
     empresa_username = session.get('user', {}).get('username')
@@ -1483,6 +1464,7 @@ def empresa_stats():
 @app.route('/empresa/alertas')
 @require_role(['empresa'])
 def empresa_alertas():
+    return redirect(url_for('empresa_dashboard'))
     """Página de alertas activas para empresa"""
     # Get empresa info from session
     empresa_id = session.get('user', {}).get('id')
@@ -1500,6 +1482,7 @@ def empresa_alertas():
 @app.route('/empresa/alertas_inactivas')
 @require_role(['empresa'])
 def empresa_alertas_inactivas():
+    return redirect(url_for('empresa_dashboard'))
     """Página de alertas inactivas para empresa"""
     # Get empresa info from session
     empresa_id = session.get('user', {}).get('id')
@@ -1519,11 +1502,12 @@ def empresa_alertas_inactivas():
 @require_role(['empresa'])
 def empresa_empleados():
     """Alias para usuarios - Redirige a empresa_usuarios"""
-    return redirect(url_for('empresa_usuarios'))
+    return redirect(url_for('empresa_dashboard'))
 
 @app.route('/empresa/perfil')
 @require_role(['empresa'])
 def empresa_perfil():
+    return redirect(url_for('empresa_dashboard'))
     """Perfil de empresa - Redirige a stats por ahora"""
     return redirect(url_for('empresa_stats'))
 

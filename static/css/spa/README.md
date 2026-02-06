@@ -8,7 +8,7 @@ Esta carpeta contiene todos los estilos CSS organizados de forma modular para el
 
 ## Estructura de Archivos
 
-### 📄 `hardware-main.css`
+### 📄 `spa-global.css`
 **Archivo principal** que importa todos los módulos CSS.
 - Importa todos los otros archivos CSS de hardware
 - Contiene overrides específicos y utilidades generales
@@ -75,11 +75,11 @@ Esta carpeta contiene todos los estilos CSS organizados de forma modular para el
 ### En tu HTML:
 ```html
 <!-- Solo necesitas incluir el archivo principal -->
-<link href="{{ url_for('static', filename='css/hardware/hardware-main.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/spa/spa-global.css') }}" rel="stylesheet">
 ```
 
 ### Orden de Carga:
-El archivo `hardware-main.css` importa los módulos en el orden correcto:
+El archivo `spa-global.css` importa los módulos en el orden correcto:
 ```css
 /* 1. Estilos base */
 @import url('./forms.css');

@@ -1,4 +1,5 @@
 {% set current_route = request.endpoint %}
+{% set is_empresa_route = current_route and current_route.startswith('empresa') %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -89,7 +90,7 @@
     <link href="{{ url_for('static', filename='css/notification-fixes.css') }}" rel="stylesheet">
     
     <!-- Sticky Header CSS - Solo en páginas que no sean login -->
-    {% if current_route != 'login' %}
+    {% if current_route != 'login' and not is_empresa_route %}
     <link href="{{ url_for('static', filename='css/gsap_css/sticky-header.css') }}" rel="stylesheet">
     {% endif %}
     
@@ -353,7 +354,7 @@
     <div id="gsap-smoother-wrapper">
         <div id="gsap-smoother-content">
             <!-- Sticky Header Global - Solo visible en páginas que no sean login -->
-            {% if current_route != 'login' %}
+            {% if current_route != 'login' and not is_empresa_route %}
             <header class="sticky-header" id="globalStickyHeader">
             <a id="loginbutton" href="/empresa">
                 <svg version="1.1" id="Icons" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="-3.2 -3.2 38.40 38.40" xml:space="preserve" width="77px" height="77px" fill="#ffffff" stroke="#ffffff">
@@ -607,6 +608,7 @@
     });
     
     </script>
+    {% if current_route != 'login' and not is_empresa_route %}
     <script>
 // Mejorado sistema de visibilidad del botón de login
 (function() {
@@ -785,6 +787,7 @@
     
 })();
     </script>
+    {% endif %}
 
     <script src="{{ url_for('static', filename='js/utils/locale-time.js') }}"></script>
     <script src="{{ url_for('static', filename='js/utils/date-utils.js') }}"></script>

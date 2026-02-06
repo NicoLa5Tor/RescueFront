@@ -1,0 +1,11 @@
+{% macro spa_shell(active_page='dashboard') %}
+{% include "empresa/spa/parts/navbar.html" %}
+
+<div class="min-h-screen spa-shell">
+  {% include "empresa/spa/parts/sidebar.html" %}
+
+  <main class="main-content">
+    {{ caller() }}
+  </main>
+</div>
+{% endmacro %}

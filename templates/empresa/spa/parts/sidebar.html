@@ -1,0 +1,27 @@
+<aside class="sidebar spa-sidebar" id="sidebar">
+  <div class="sidebar__content">
+    <div class="spa-sidebar__header">
+      <div class="spa-sidebar__avatar">
+        <span class="user-initials">EM</span>
+      </div>
+      <div class="spa-sidebar__meta">
+        <p class="spa-sidebar__name">Empresa</p>
+        <p class="spa-sidebar__role">Panel de Control</p>
+      </div>
+    </div>
+    
+    <nav class="sidebar__nav">
+      <div class="sidebar__nav-section">
+        <div class="sidebar__nav-list" id="sidebarNav">
+          <div class="spa-sidebar__section-title">Navegación</div>
+          <a href="#" class="sidebar__link {% if active_page=='dashboard' %}sidebar__link--active{% endif %}" data-spa-view="dashboard">
+            <div class="sidebar__link-icon"><i class="fas fa-tachometer-alt"></i></div>
+            <span class="sidebar__link-text">Dashboard</span>
+          </a>
+        </div>
+      </div>
+    </nav>
+  </div>
+</aside>
+
+<div class="sidebar__overlay" id="sidebarOverlay"></div>
