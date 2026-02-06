@@ -19,7 +19,7 @@ Esta carpeta contiene todos los estilos CSS organizados de forma modular para el
 - Form input readonly styles
 - Estilos de formularios para hardware
 
-### 🗨️ `modals.css` (307 líneas)
+### 🗨️ `modals-core.css` (307 líneas)
 **Modales específicos de hardware**
 - Toggle modal para activar/desactivar hardware
 - Client update modal
@@ -95,7 +95,7 @@ El archivo `spa-global.css` importa los módulos en el orden correcto:
 @import url('./light-theme.css');
 
 /* 4. Modales específicos */
-@import url('./modals.css');
+@import url('./modals-core.css');
 
 /* 5. Optimizaciones de rendimiento */
 @import url('./performance.css');
