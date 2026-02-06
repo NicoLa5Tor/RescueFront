@@ -65,37 +65,12 @@
         setInitialStates: function() {
             //console.log('🎭 HERO: Estableciendo estados iniciales');
             
-            // Ocultar elementos que se van a animar INMEDIATAMENTE
-            gsap.set(['.title-word'], {
-                y: 30, // Reducido a 30px para coherencia con el espaciado aumentado
-                opacity: 0
-            });
-            
-            gsap.set(['.status-badge'], {
-                scale: 0,
-                opacity: 0
-            });
-            
-            gsap.set(['.hero-description'], {
-                y: 30,
-                opacity: 0
-            });
-            
-            // BOTONES CTA COMENTADOS - No animar elementos que no existen
-            // gsap.set(['.hero-buttons button'], {
-            //     y: 30,
-            //     opacity: 0
-            // });
-            
-            gsap.set(['.hero-stats'], {
-                y: 20,
-                opacity: 0
-            });
-            
-            gsap.set(['.hero-visual'], {
-                scale: 0.8,
-                opacity: 0
-            });
+            // Sin reveal: dejar elementos visibles desde el inicio
+            gsap.set(['.title-word'], { y: 0, opacity: 1 });
+            gsap.set(['.status-badge'], { scale: 1, opacity: 1 });
+            gsap.set(['.hero-description'], { y: 0, opacity: 1 });
+            gsap.set(['.hero-stats'], { y: 0, opacity: 1 });
+            gsap.set(['.hero-visual'], { scale: 1, opacity: 1 });
             
             
             
@@ -104,19 +79,8 @@
         
         // Configurar animaciones que se activan con scroll
         setupScrollTriggeredAnimations: function() {
-            // Timeline principal que se activa cuando el hero es visible
-            ScrollTrigger.create({
-                trigger: '#hero',
-                start: 'top 80%', // Empieza cuando el top del hero está al 80% del viewport
-                once: true, // Solo se ejecuta una vez
-                onEnter: () => {
-                    if (!this.hasAnimated) {
-                        //console.log('🎬 HERO: Iniciando animaciones de entrada');
-                        this.animateContent();
-                        this.hasAnimated = true;
-                    }
-                }
-            });
+            // Reveal desactivado: no timeline de entrada
+            this.hasAnimated = true;
             
             // Parallax y fade-out desactivados para aliviar carga
             
