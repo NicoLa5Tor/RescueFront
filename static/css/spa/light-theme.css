@@ -69,9 +69,9 @@ body:not(.dark) .ios-stat-trend {
   color: #64748b !important;
 }
 
-:root:not(.dark) [data-spa-section="stats"] .ios-stat-icon,
-html:not(.dark) [data-spa-section="stats"] .ios-stat-icon,
-body:not(.dark) [data-spa-section="stats"] .ios-stat-icon {
+:root:not(.dark) .ios-stat-icon,
+html:not(.dark) .ios-stat-icon,
+body:not(.dark) .ios-stat-icon {
   color: #0f172a !important;
 }
 
