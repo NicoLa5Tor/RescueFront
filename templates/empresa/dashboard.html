@@ -11,15 +11,13 @@
 <!-- Hardware iOS Design System (CSS principal que incluye todo) -->
 <link href="{{ url_for('static', filename='css/spa/spa-global.css') }}" rel="stylesheet">
 
-<!-- Super Dashboard iOS Styles SOLO para componentes específicos -->
-<link href="{{ url_for('static', filename='css/super-dashboard/super-dashboard-main.css') }}" rel="stylesheet">
-
 <!-- Global Text Theme CSS -->
 <link href="{{ url_for('static', filename='css/global-text-theme.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/portal-empresa/spa/shell-spa.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/portal-empresa/spa/navbar-spa.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/portal-empresa/spa/sidebar-spa.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/portal-empresa/spa/views/dashboard.css') }}" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/css/intlTelInput.css">
 
 <!-- CSS personalizado comentado - Usando solo CSS de hardware -->
 <style>
@@ -34,7 +32,6 @@
 }
 
 .ios-blur-modal-container {
-  margin-left: 0 !important;
   position: relative !important;
 }
 
@@ -137,14 +134,29 @@
 {% call spa_shell(active_page=active_page) %}
   {% block main_content %}
   {% from "empresa/spa/container.html" import spa_container %}
-  {% call spa_container() %}
-  {% include "empresa/spa/views/dashboard.html" %}
+  {% call spa_container(default_view='dashboard') %}
+  <section class="spa-view" data-spa-section="dashboard">
+    {% include "empresa/spa/views/dashboard.html" %}
+  </section>
+  <section class="spa-view is-hidden" data-spa-section="usuarios">
+    {% include "empresa/spa/views/usuarios.html" %}
+  </section>
   {% endcall %}
   {% endblock %}
 {% endcall %}
 {% endblock %}
 
 {% block extra_js %}
+<script>
+  window.currentUser = {{ session.get('user') | tojson }};
+  if (window.currentUser && !window.userRole) {
+    window.userRole = window.currentUser.role;
+  }
+  if (window.currentUser && window.currentUser.role === 'empresa') {
+    window.empresaId = window.currentUser.id || window.currentUser.empresa_id || '';
+    window.empresaNombre = window.currentUser.username || window.currentUser.nombre || 'Mi Empresa';
+  }
+</script>
 <!-- SPA Shell Scripts -->
 <script src="{{ url_for('static', filename='js/portal-empresa/spa/empresa-spa.js') }}"></script>
 <script src="{{ url_for('static', filename='js/portal-empresa/spa/shell.js') }}"></script>
@@ -154,6 +166,11 @@
 
 {% block page_js %}{% endblock %}
 <script src="{{ url_for('static', filename='js/portal-empresa/spa/views/dashboard.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/intlTelInput.min.js"></script>
+<script src="{{ url_for('static', filename='js/portal-empresa/spa/views/usuarios-data.js') }}"></script>
+<script src="{{ url_for('static', filename='js/portal-empresa/spa/views/usuarios-main.js') }}"></script>
+<script src="{{ url_for('static', filename='js/portal-empresa/spa/views/usuarios-modals.js') }}"></script>
+<script src="{{ url_for('static', filename='js/portal-empresa/spa/views/usuarios-view.js') }}"></script>
 
 {% endblock %}
 {% block footer %}{% endblock %}

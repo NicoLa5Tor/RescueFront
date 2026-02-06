@@ -30,22 +30,6 @@ body.modal-open {
   overflow: hidden !important;
 }
 
-/* Hide navbar and sidebar when modals are active - CRITICAL FIX */
-body.modal-open .navbar,
-body.ios-modal-open .navbar,
-body.usuarios-modal-open .navbar,
-body.empresas-modal-open .navbar,
-body.modal-open .sidebar,
-body.ios-modal-open .sidebar,
-body.usuarios-modal-open .sidebar,
-body.empresas-modal-open .sidebar {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-  transform: translateX(-100%) !important;
-}
-
 /* Prevent body scroll when iOS modal is open - WITHOUT POSITION FIXED */
 body.ios-modal-open {
   overflow: hidden !important;
@@ -658,19 +642,18 @@ select[class*="select-"] {
 /* Enhanced Modal Backdrop with iOS blur - EXACTO COMO EMPRESAS */
 .ios-modal-backdrop {
   position: fixed !important;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0 !important;
   background: rgba(0, 0, 0, 0.4) !important;
   backdrop-filter: blur(20px) saturate(1.8) brightness(0.8) !important;
   -webkit-backdrop-filter: blur(20px) saturate(1.8) brightness(0.8) !important;
-  z-index: var(--z-modal-backdrop, 10000);
+  z-index: var(--z-modal-backdrop, 10000) !important;
+  isolation: isolate;
   display: flex !important;
   align-items: flex-start !important;
   justify-content: center !important;
   padding: 1rem;
   padding-top: 1vh;
+  margin: 0 !important;
 }
 
 /* Hide modal completely when hidden class is present */
@@ -688,6 +671,7 @@ select[class*="select-"] {
   background: rgba(0, 0, 0, 0.4) !important;
   backdrop-filter: blur(20px) saturate(1.8) brightness(0.8) !important;
   -webkit-backdrop-filter: blur(20px) saturate(1.8) brightness(0.8) !important;
+  margin: 0 !important;
 }
 
 /* Special positioning for toggle modals - appear near current viewport */
@@ -699,6 +683,22 @@ select[class*="select-"] {
   /* Don't move the scroll position - use fixed position relative to viewport */
   overflow: hidden !important;
   /* Override the calculated padding-top to keep modal centered */
+}
+
+/* Centered modals (success/update) */
+.ios-modal-backdrop.modal-centered {
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  padding: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  margin: 0 !important;
+}
+
+.ios-modal-backdrop.modal-centered .ios-blur-modal-container {
+  margin: 0 auto !important;
 }
 
 /* Smaller container for toggle modals */

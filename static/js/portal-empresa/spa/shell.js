@@ -45,5 +45,9 @@
     const link = event.target.closest('[data-spa-view]');
     if (!link) return;
     event.preventDefault();
+    const view = link.getAttribute('data-spa-view');
+    if (window.empresaSpa?.setView) {
+      window.empresaSpa.setView(view);
+    }
   });
 })();

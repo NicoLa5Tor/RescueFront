@@ -15,6 +15,10 @@
   -webkit-overflow-scrolling: touch;
 }
 
+.spa-view.is-hidden {
+  display: none;
+}
+
 @media (min-width: 1024px) {
   .spa-shell .main-content {
     width: calc(100% - var(--sidebar-width));

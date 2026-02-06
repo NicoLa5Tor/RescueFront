@@ -4,10 +4,46 @@
     return;
   }
 
+  const sections = Array.from(container.querySelectorAll('[data-spa-section]'));
+
+  const setActiveView = (view) => {
+    if (!view) return;
+    let resolved = view;
+
+    sections.forEach(section => {
+      const name = section.getAttribute('data-spa-section');
+      const isActive = name === view;
+      section.classList.toggle('is-hidden', !isActive);
+      if (isActive) {
+        resolved = name;
+      }
+    });
+
+    container.dataset.activeView = resolved;
+
+    document.querySelectorAll('[data-spa-view]').forEach(target => {
+      const targetView = target.getAttribute('data-spa-view');
+      const isActive = targetView === resolved;
+
+      if (target.classList.contains('sidebar__link')) {
+        target.classList.toggle('sidebar__link--active', isActive);
+      }
+
+      if (target.classList.contains('navbar__pill')) {
+        target.classList.toggle('navbar__pill--primary', isActive);
+        target.classList.toggle('navbar__pill--muted', !isActive);
+      }
+    });
+  };
+
+  const defaultView = container.getAttribute('data-spa-default') || sections[0]?.getAttribute('data-spa-section');
+  if (defaultView) {
+    setActiveView(defaultView);
+  }
+
   window.empresaSpa = {
-    setContent: (html) => {
-      container.innerHTML = html;
-    },
-    getContainer: () => container
+    setView: setActiveView,
+    getContainer: () => container,
+    getActiveView: () => container.dataset.activeView || defaultView
   };
 })();

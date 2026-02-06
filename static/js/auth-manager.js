@@ -268,15 +268,64 @@ class AuthManager {
      */
     initializeLogoutButtons() {
         const logoutButtons = document.querySelectorAll('[data-logout]');
+        const logoutModal = document.getElementById('logoutConfirmModal');
+        const confirmButton = logoutModal?.querySelector('[data-logout-confirm]');
+        const cancelButton = logoutModal?.querySelector('[data-logout-cancel]');
+
+        const openModal = () => {
+            if (!logoutModal) return false;
+            logoutModal.classList.remove('hidden');
+            logoutModal.offsetHeight;
+            document.body.classList.add('ios-modal-open');
+            return true;
+        };
+
+        const closeModal = () => {
+            if (!logoutModal) return;
+            logoutModal.classList.add('hidden');
+            document.body.classList.remove('ios-modal-open');
+        };
+
+        if (logoutModal) {
+            logoutModal.addEventListener('click', (event) => {
+                if (event.target === logoutModal) {
+                    closeModal();
+                }
+            });
+        }
+
+        if (cancelButton) {
+            cancelButton.addEventListener('click', (event) => {
+                event.preventDefault();
+                closeModal();
+            });
+        }
+
+        if (confirmButton) {
+            confirmButton.addEventListener('click', async (event) => {
+                event.preventDefault();
+                closeModal();
+                this.showMessage('Cerrando sesión...', 'info');
+                const result = await this.logout();
+
+                if (!result.success) {
+                    this.showMessage('Error al cerrar sesión', 'error');
+                }
+            });
+        }
+
         logoutButtons.forEach(button => {
             button.addEventListener('click', async (e) => {
                 e.preventDefault();
-                
-                // Mostrar confirmación
+
+                if (openModal()) {
+                    return;
+                }
+
                 if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
                     this.showMessage('Cerrando sesión...', 'info');
                     const result = await this.logout();
-                    
+
                     if (!result.success) {
                         this.showMessage('Error al cerrar sesión', 'error');
                     }

@@ -75,14 +75,18 @@ body.hardware-page {
 /* Modal open state */
 body.ios-modal-open {
   overflow: hidden;
-  position: fixed;
-  width: 100%;
 }
 
 /* Notification styles for hardware */
 .enhanced-notification {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   z-index: 10000;
+}
+
+/* Notifications for usuarios fallback and legacy toasts */
+.usuario-notification,
+.fallback-notification {
+  z-index: 11000;
 }
 
 /* Form grid layout for hardware forms */
@@ -99,6 +103,30 @@ body.ios-modal-open {
 
 .form-group-full {
   grid-column: 1 / -1;
+}
+
+/* Intl-tel-input tweaks for SPA modals */
+.iti {
+  width: 100%;
+}
+
+.iti--separate-dial-code .iti__selected-flag {
+  min-width: 4.75rem;
+  padding: 0 0.75rem;
+}
+
+.iti--separate-dial-code .iti__selected-dial-code {
+  margin-left: 0.5rem;
+}
+
+.iti--separate-dial-code .ios-blur-input {
+  padding-left: 6.5rem !important;
+  width: 100% !important;
+  box-sizing: border-box;
+}
+
+.iti--separate-dial-code .iti__selected-dial-code {
+  color: rgba(255, 255, 255, 0.8);
 }
 
 @media (max-width: 768px) {
