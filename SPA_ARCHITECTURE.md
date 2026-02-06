@@ -24,6 +24,7 @@ static/js/portal-empresa/spa/
     hardware.js       - init/mount de hardware
     stats.js          - init/mount de stats
     alertas.js        - init/mount de alertas
+    alertas-create.js - modales y formulario de alertas
 
 ## Reglas
 

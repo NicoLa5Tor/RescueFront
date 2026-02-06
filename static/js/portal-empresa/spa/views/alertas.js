@@ -242,11 +242,8 @@ async function loadActiveAlerts() {
             const allAlerts = data.data;
             //console.log(`📋 Total alertas en esta página: ${allAlerts.length}`);
             
-            // Usar la información de paginación del backend
-            if (data.pagination) {
-                totalPages = data.pagination.total_pages || 1;
-                //console.log(`📄 Paginación: página ${currentPage} de ${totalPages}`);
-            }
+            const paginationInfo = extractPaginationInfo(data, allAlerts.length);
+            totalPages = paginationInfo.totalPages;
             
             // Guardar alertas actuales
             currentAlerts = allAlerts;
@@ -255,7 +252,7 @@ async function loadActiveAlerts() {
             cacheAlertsById(allAlerts);
             
             // Actualizar estadísticas y renderizar
-            updateStatsCards(allAlerts, data.pagination);
+            updateStatsCards(allAlerts, paginationInfo.totalItems);
             renderAlerts(allAlerts);
             updatePagination();
         } else {
@@ -274,8 +271,36 @@ async function loadActiveAlerts() {
     }
 }
 
-function updateStatsCards(alerts, pagination) {
-    const totalAlerts = pagination?.total_items || alerts.length;
+function extractPaginationInfo(data, fallbackCount) {
+    const pagination = data?.pagination || {};
+    const totalItems = pagination.total_items ??
+        pagination.totalItems ??
+        pagination.total ??
+        pagination.count ??
+        data?.total_items ??
+        data?.total ??
+        data?.count ??
+        fallbackCount;
+
+    let pages = pagination.total_pages ??
+        pagination.pages ??
+        pagination.totalPages ??
+        data?.total_pages ??
+        data?.pages ??
+        data?.totalPages;
+
+    if (!pages) {
+        pages = Math.max(1, Math.ceil((totalItems || 0) / alertsPerPage));
+    }
+
+    return {
+        totalItems: totalItems || fallbackCount,
+        totalPages: pages
+    };
+}
+
+function updateStatsCards(alerts, totalItems) {
+    const totalAlerts = totalItems || alerts.length;
     const activeAlerts = alerts.filter(a => a.activo).length;
     const criticalAlerts = alerts.filter(a => a.prioridad === 'critica').length;
     

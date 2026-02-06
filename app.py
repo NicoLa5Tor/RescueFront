@@ -1405,7 +1405,7 @@ def empresa_dashboard():
         }
 
     default_view = request.args.get('view') or 'dashboard'
-    allowed_views = {'dashboard', 'usuarios', 'hardware', 'stats'}
+    allowed_views = {'dashboard', 'usuarios', 'hardware', 'stats', 'alertas'}
     if default_view not in allowed_views:
         default_view = 'dashboard'
 
@@ -1569,7 +1569,7 @@ def empresa_stats():
 @app.route('/empresa/alertas')
 @require_role(['empresa'])
 def empresa_alertas():
-    return redirect(url_for('empresa_dashboard'))
+    return redirect(url_for('empresa_dashboard', view='alertas'))
     """Página de alertas activas para empresa"""
     # Get empresa info from session
     empresa_id = session.get('user', {}).get('id')

@@ -149,6 +149,9 @@
   <section class="spa-view is-hidden" data-spa-section="stats">
     {% include "empresa/spa/views/stats.html" %}
   </section>
+  <section class="spa-view is-hidden" data-spa-section="alertas">
+    {% include "empresa/spa/views/alertas.html" %}
+  </section>
   {% endcall %}
   {% endblock %}
 {% endcall %}
@@ -195,6 +198,13 @@
 <script src="{{ url_for('static', filename='js/portal-empresa/spa/views/usuarios-main.js') }}"></script>
 <script src="{{ url_for('static', filename='js/portal-empresa/spa/views/usuarios-modals.js') }}"></script>
 <script src="{{ url_for('static', filename='js/portal-empresa/spa/views/usuarios-view.js') }}"></script>
+<script src="{{ url_for('static', filename='js/portal-empresa/spa/views/alertas.js') }}"></script>
+<script src="{{ url_for('static', filename='js/portal-empresa/spa/views/alertas-create.js') }}"></script>
+<script>
+  if (typeof EndpointTestClient !== 'undefined' && !window.apiClient) {
+    window.apiClient = new EndpointTestClient();
+  }
+</script>
 
 {% endblock %}
 {% block footer %}{% endblock %}
