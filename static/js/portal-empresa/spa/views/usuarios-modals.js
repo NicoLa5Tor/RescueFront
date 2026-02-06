@@ -526,36 +526,36 @@ class UsuariosModals {
         `<span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-xs font-medium">${especialidad}</span>`
       ).join('');
     } else {
-      especialidadesHtml = '<span class="text-gray-500 dark:text-gray-400">Sin especialidades</span>';
+      especialidadesHtml = '<span class="text-white/70 dark:text-gray-400">Sin especialidades</span>';
     }
     
     const content = `
       <div class="space-y-4">
         <div class="flex items-center space-x-3">
           <div class="flex-shrink-0">
-            <i class="fas fa-user-circle fa-2x text-blue-600"></i>
+            <i class="fas fa-user-circle fa-2x text-white"></i>
           </div>
           <div>
-            <h4 class="text-lg font-semibold text-gray-900 dark:text-white">${nombre}</h4>
-            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Email: ${email}</p>
+            <h4 class="text-lg font-semibold text-white dark:text-white">${nombre}</h4>
+            <p class="text-sm font-medium text-white/70 dark:text-gray-400">Email: ${email}</p>
           </div>
         </div>
-        <div class="text-sm text-gray-600 dark:text-gray-300">
+        <div class="text-sm text-white/80 dark:text-gray-300">
           <p class="mb-1">Cédula: ${cedula}</p>
           <p class="mb-1">Teléfono: ${telefono}</p>
           <p class="mb-1">Estado: ${estado}</p>
         </div>
         <div class="text-sm">
-          <h5 class="font-semibold text-gray-900 dark:text-white mb-1">Especialidades</h5>
+          <h5 class="font-semibold text-white dark:text-white mb-1">Especialidades</h5>
           <div class="flex flex-wrap gap-2">
             ${especialidadesHtml}
           </div>
         </div>
         <div class="text-sm">
-          <h5 class="font-semibold text-gray-900 dark:text-white mb-1">Detalles Adicionales</h5>
-          <p class="mb-1">Sede: ${sede}</p>
-          <p class="mb-1">Tipo Turno: ${tipoTurno}</p>
-          <p>Rol: ${rol}</p>
+          <h5 class="font-semibold text-white dark:text-white mb-1">Detalles Adicionales</h5>
+          <p class="mb-1 text-white/80 dark:text-gray-300">Sede: ${sede}</p>
+          <p class="mb-1 text-white/80 dark:text-gray-300">Tipo Turno: ${tipoTurno}</p>
+          <p class="text-white/80 dark:text-gray-300">Rol: ${rol}</p>
         </div>
       </div>
     `;
