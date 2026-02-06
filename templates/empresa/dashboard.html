@@ -17,6 +17,8 @@
 <link href="{{ url_for('static', filename='css/portal-empresa/spa/navbar-spa.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/portal-empresa/spa/sidebar-spa.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/portal-empresa/spa/views/dashboard.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/portal-empresa/spa/views/hardware.css') }}" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/css/intlTelInput.css">
 
 <!-- CSS personalizado comentado - Usando solo CSS de hardware -->
@@ -134,12 +136,15 @@
 {% call spa_shell(active_page=active_page) %}
   {% block main_content %}
   {% from "empresa/spa/container.html" import spa_container %}
-  {% call spa_container(default_view='dashboard') %}
+  {% call spa_container(default_view=default_view or 'dashboard') %}
   <section class="spa-view" data-spa-section="dashboard">
     {% include "empresa/spa/views/dashboard.html" %}
   </section>
   <section class="spa-view is-hidden" data-spa-section="usuarios">
     {% include "empresa/spa/views/usuarios.html" %}
+  </section>
+  <section class="spa-view is-hidden" data-spa-section="hardware">
+    {% include "empresa/spa/views/hardware.html" %}
   </section>
   {% endcall %}
   {% endblock %}
@@ -156,12 +161,25 @@
     window.empresaId = window.currentUser.id || window.currentUser.empresa_id || '';
     window.empresaNombre = window.currentUser.username || window.currentUser.nombre || 'Mi Empresa';
   }
+  window.EMPRESA_ID = window.empresaId || {{ (empresa_id or '') | tojson }};
+  window.EMPRESA_USERNAME = window.empresaNombre || {{ (empresa_username or '') | tojson }};
 </script>
 <!-- SPA Shell Scripts -->
 <script src="{{ url_for('static', filename='js/portal-empresa/spa/empresa-spa.js') }}"></script>
 <script src="{{ url_for('static', filename='js/portal-empresa/spa/shell.js') }}"></script>
 <script src="{{ url_for('static', filename='js/portal-empresa/spa/theme-toggle.js') }}"></script>
 <script src="{{ url_for('static', filename='js/portal-empresa/alerts-global.js') }}"></script>
+<script src="{{ url_for('static', filename='js/hardware/location-modal-animations.js') }}"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="{{ url_for('static', filename='js/api-client.js') }}"></script>
+<script src="{{ url_for('static', filename='js/modal-utils.js') }}"></script>
+<script src="{{ url_for('static', filename='js/dashboard/basic-managers.js') }}"></script>
+<script src="{{ url_for('static', filename='js/hardware/hardware-validation.js') }}"></script>
+<script src="{{ url_for('static', filename='js/hardware/hardware-core.js') }}"></script>
+<script src="{{ url_for('static', filename='js/hardware/hardware-main.js') }}"></script>
+<script src="{{ url_for('static', filename='js/portal-empresa/hardware-status-live.js') }}"></script>
+<script src="{{ url_for('static', filename='js/hardware-debug-put.js') }}"></script>
+<script src="{{ url_for('static', filename='js/portal-empresa/spa/views/hardware-page.js') }}"></script>
 <script>
   window.EMPRESA_SPA_MODE = true;
 </script>

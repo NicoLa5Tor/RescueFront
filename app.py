@@ -1167,7 +1167,7 @@ def admin_delete_image_folder(folder_name):
 @app.route('/empresa/hardware')
 @require_role(['empresa'])
 def empresa_hardware():
-    return redirect(url_for('empresa_dashboard'))
+    return redirect(url_for('empresa_dashboard', view='hardware'))
     """Gestión de hardware para empresa - Función única y simple"""
     empresa_id = session.get('user', {}).get('id')
     empresa_username = session.get('user', {}).get('username')
@@ -1319,12 +1319,32 @@ def empresa_dashboard():
         })
     else:
         print(f"⚠️ Dashboard KPIs fallback in use for empresa {empresa_id}")
-    
+
+    default_view = request.args.get('view') or 'dashboard'
+    allowed_views = {'dashboard', 'usuarios', 'hardware'}
+    if default_view not in allowed_views:
+        default_view = 'dashboard'
+
+    hardware_data = {
+        'hardware_list': [],
+        'hardware_types': [],
+        'hardware_stats': {
+            'total_items': 0,
+            'active_items': 0,
+            'inactive_items': 0,
+            'available_items': 0,
+            'out_of_stock': 0,
+            'total_value': 0
+        }
+    }
+
     return render_template(
         'empresa/dashboard.html',
         api_url=PROXY_PREFIX, 
         dashboard_summary=dashboard_summary,
-        active_page='dashboard',
+        active_page=default_view,
+        default_view=default_view,
+        hardware_data=hardware_data,
         user_role='empresa',
         empresa_id=empresa_id,
         empresa_username=empresa_username

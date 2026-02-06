@@ -114,15 +114,6 @@
   color: #ffffff;
 }
 
-.dark .ios-hardware-card.hardware-physical-inactive {
-  background: rgba(239, 68, 68, 0.32) !important;
-  border: 1px solid rgba(248, 113, 113, 0.55) !important;
-  box-shadow:
-    0 12px 32px rgba(239, 68, 68, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
-  color: #ffffff;
-}
-
 .ios-hardware-card.hardware-physical-inactive .ios-card-title,
 .ios-hardware-card.hardware-physical-inactive .ios-card-subtitle,
 .ios-hardware-card.hardware-physical-inactive .ios-info-label,
@@ -139,6 +130,11 @@
 .ios-hardware-card.hardware-physical-inactive .ios-status-badge {
   background: rgba(255, 255, 255, 0.18) !important;
   color: #ffffff !important;
+}
+
+.ios-hardware-card.hardware-physical-inactive * {
+  color: #ffffff !important;
+  text-shadow: none !important;
 }
 
 /* ===== GLOBAL OPTIMIZATION STATES ===== */

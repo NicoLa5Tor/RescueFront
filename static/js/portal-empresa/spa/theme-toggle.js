@@ -1,17 +1,19 @@
 (() => {
-  const themeToggle = document.getElementById('themeToggle');
-  const themeIcon = document.getElementById('themeIcon');
-  if (!themeToggle || !themeIcon) return;
+  const resolveElements = () => ({
+    toggle: document.getElementById('themeToggle'),
+    icon: document.getElementById('themeIcon')
+  });
 
   const applyTheme = (isDark) => {
+    const { icon } = resolveElements();
     if (isDark) {
       document.documentElement.classList.add('dark');
       document.body.classList.add('dark');
-      themeIcon.className = 'fas fa-sun';
+      if (icon) icon.className = 'fas fa-sun';
     } else {
       document.documentElement.classList.remove('dark');
       document.body.classList.remove('dark');
-      themeIcon.className = 'fas fa-moon';
+      if (icon) icon.className = 'fas fa-moon';
     }
   };
 
@@ -22,10 +24,18 @@
     applyTheme(isDark);
   };
 
-  themeToggle.addEventListener('click', () => {
+  const toggleTheme = () => {
     const isDark = document.documentElement.classList.contains('dark');
     localStorage.setItem('theme', isDark ? 'light' : 'dark');
     applyTheme(!isDark);
+  };
+
+  window.empresaThemeToggle = toggleTheme;
+
+  document.addEventListener('click', (event) => {
+    const target = event.target.closest('#themeToggle');
+    if (!target) return;
+    toggleTheme();
   });
 
   loadTheme();

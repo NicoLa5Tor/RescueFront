@@ -575,7 +575,8 @@ class HardwareMain {
       );
       physicalEstadoNormalized = match ? 'inactivo' : '';
     }
-    if (physicalEstadoNormalized === 'inactivo' || physicalEstadoNormalized === 'inactive' || hardware.activa === false) {
+    const isInactive = physicalEstadoNormalized === 'inactivo' || physicalEstadoNormalized === 'inactive' || hardware.activa === false;
+    if (isInactive) {
       div.classList.add('hardware-physical-inactive');
       div.style.cssText += 'background: rgba(239, 68, 68, 0.38) !important; border: 1px solid rgba(239, 68, 68, 0.6) !important; box-shadow: 0 12px 32px rgba(239, 68, 68, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.45) !important;';
     }
@@ -616,35 +617,37 @@ class HardwareMain {
       statusText = 'Inactivo';
     }
     
+    const inactiveTextStyle = isInactive ? 'color: #ffffff !important;' : '';
+
     div.innerHTML = `
       <div class="ios-card-header">
         <div class="ios-card-icon">
           <i class="fas fa-microchip"></i>
         </div>
-        <span class="ios-status-badge ${statusClass}">
+        <span class="ios-status-badge ${statusClass}" style="${inactiveTextStyle}">
           ${statusText}
         </span>
       </div>
       
-      <h3 class="ios-card-title">${hardware.nombre || 'Sin nombre'}</h3>
-      <p class="ios-card-subtitle">${datos.brand || 'N/A'} • ${datos.model || 'N/A'}</p>
+      <h3 class="ios-card-title" style="${inactiveTextStyle}">${hardware.nombre || 'Sin nombre'}</h3>
+      <p class="ios-card-subtitle" style="${inactiveTextStyle}">${datos.brand || 'N/A'} • ${datos.model || 'N/A'}</p>
       
       <div class="ios-card-info">
         <div class="ios-info-item">
-          <span class="ios-info-label">Precio</span>
-          <span class="ios-info-value">$${datos.price || 0}</span>
+          <span class="ios-info-label" style="${inactiveTextStyle}">Precio</span>
+          <span class="ios-info-value" style="${inactiveTextStyle}">$${datos.price || 0}</span>
         </div>
         <div class="ios-info-item">
-          <span class="ios-info-label">Stock</span>
-          <span class="ios-info-value">${stock}</span>
+          <span class="ios-info-label" style="${inactiveTextStyle}">Stock</span>
+          <span class="ios-info-value" style="${inactiveTextStyle}">${stock}</span>
         </div>
         <div class="ios-info-item">
-          <span class="ios-info-label">Tipo</span>
-          <span class="ios-info-value">${hardware.tipo || 'N/A'}</span>
+          <span class="ios-info-label" style="${inactiveTextStyle}">Tipo</span>
+          <span class="ios-info-value" style="${inactiveTextStyle}">${hardware.tipo || 'N/A'}</span>
         </div>
         <div class="ios-info-item">
-          <span class="ios-info-label">Estado</span>
-          <span class="ios-info-value">${hardware.activa ? 'Activo' : 'Inactivo'}</span>
+          <span class="ios-info-label" style="${inactiveTextStyle}">Estado</span>
+          <span class="ios-info-value" style="${inactiveTextStyle}">${hardware.activa ? 'Activo' : 'Inactivo'}</span>
         </div>
       </div>
       
@@ -656,11 +659,12 @@ class HardwareMain {
         <button class="ios-card-btn ios-card-btn-primary" onclick="editHardware('${hardware._id}')" title="Editar">
           <i class="fas fa-edit"></i>
         </button>` : ''}
+        ${window.currentUser?.role !== 'empresa' ? `
         <button class="ios-card-btn ${hardware.activa ? 'ios-card-btn-warning' : 'ios-card-btn-success'}" 
                 onclick="toggleHardwareStatus('${hardware._id}', ${!hardware.activa})" 
                 title="${hardware.activa ? 'Desactivar' : 'Activar'}">
           <i class="fas ${hardware.activa ? 'fa-power-off' : 'fa-play'}"></i>
-        </button>
+        </button>` : ''}
         ${hardware.direccion_url && hardware.direccion_url.trim() !== '' ? 
           `<button class="ios-card-btn" onclick="openLocationModalFromCard('${hardware._id}', '${this.escapeQuotes(hardware.direccion_url)}')" title="Ver ubicación">
             <i class="fas fa-map-location-dot"></i>
@@ -976,6 +980,9 @@ window.hardwareMain = hardwareMain;
 
 // Backward compatibility functions
 window.toggleHardwareStatus = (id, activa) => {
+  if (window.currentUser?.role === 'empresa') {
+    return;
+  }
   if (window.hardwareModals && window.hardwareModals.showToggleModal) {
     window.hardwareModals.showToggleModal(id, activa);
   } else {
