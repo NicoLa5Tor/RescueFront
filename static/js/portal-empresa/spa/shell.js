@@ -49,5 +49,6 @@
     if (window.empresaSpa?.setView) {
       window.empresaSpa.setView(view);
     }
+    closeSidebar();
   });
 })();

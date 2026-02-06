@@ -6,8 +6,9 @@
   left: 0;
   bottom: 0;
   width: var(--sidebar-width-mobile);
-  z-index: 1;
+  z-index: var(--z-fixed);
   background: var(--glass-bg);
+  background-color: var(--glass-bg);
   backdrop-filter: var(--glass-backdrop);
   -webkit-backdrop-filter: var(--glass-backdrop);
   border-right: 1px solid var(--glass-border);
@@ -20,6 +21,18 @@
   -webkit-overflow-scrolling: touch;
   /* Better mobile performance */
   contain: layout style paint;
+}
+
+@media (max-width: 1023px) {
+  .sidebar {
+    background: var(--glass-bg-strong);
+    background-color: var(--glass-bg-strong);
+  }
+
+  .sidebar--open {
+    opacity: 1;
+    visibility: visible;
+  }
 }
 
 /* Responsive sidebar widths */
@@ -640,7 +653,7 @@
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.5);
-  z-index: 1;
+  z-index: var(--z-sticky);
   opacity: 0;
   visibility: hidden;
   transition: all var(--transition-normal);
@@ -648,11 +661,13 @@
   -webkit-backdrop-filter: blur(4px);
   /* Prevent scrolling behind overlay */
   overscroll-behavior: none;
+  pointer-events: none;
 }
 
 .sidebar__overlay--visible {
   opacity: 1;
   visibility: visible;
+  pointer-events: auto;
 }
 
 @media (min-width: 1024px) {
@@ -666,7 +681,6 @@
   background: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-  margin-top: 6%;
 }
 
 /* ===== DARK MODE ENHANCEMENTS ===== */
