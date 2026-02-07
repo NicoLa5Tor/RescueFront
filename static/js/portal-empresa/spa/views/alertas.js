@@ -1375,6 +1375,12 @@ function showDeactivateConfirmation() {
         //console.error('❌ No hay alerta seleccionada');
         return;
     }
+
+    if (window.modalManager && window.modalManager.isModalOpen('alertDetailModal')) {
+        const currentAlertId = selectedAlertId;
+        closeAlertModal();
+        selectedAlertId = currentAlertId;
+    }
     
     const alert = getAlertById(selectedAlertId);
     if (!alert) {
