@@ -1,7 +1,3 @@
-/**
- * Modal Utilities - Sistema de Gestión de Modales
- * Proporciona funciones globales para el manejo consistente de modales
- */
 
 class ModalManager {
     constructor() {
