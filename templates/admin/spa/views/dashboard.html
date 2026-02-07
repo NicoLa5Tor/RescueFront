@@ -110,6 +110,57 @@
   </div>
 
   <div class="ios-blur-bg mb-8">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
+      <h3 class="text-lg font-semibold text-white/90">Salud del Sistema</h3>
+      <span class="text-xs text-white/60">Metricas en vivo</span>
+    </div>
+    <div class="grid grid-cols-2 xl:grid-cols-6 gap-3">
+      <div class="glass-card p-3 theme-transition">
+        <p class="text-[10px] text-white/60 uppercase tracking-wide">CPU</p>
+        <p class="text-xl font-semibold text-white mt-1" id="systemCpu">--</p>
+        <p class="text-[11px] text-white/50">Uso actual</p>
+      </div>
+      <div class="glass-card p-3 theme-transition">
+        <p class="text-[10px] text-white/60 uppercase tracking-wide">Memoria</p>
+        <p class="text-xl font-semibold text-white mt-1" id="systemMemory">--</p>
+        <p class="text-[11px] text-white/50">Consumo</p>
+      </div>
+      <div class="glass-card p-3 theme-transition">
+        <p class="text-[10px] text-white/60 uppercase tracking-wide">Disco</p>
+        <p class="text-xl font-semibold text-white mt-1" id="systemDisk">--</p>
+        <p class="text-[11px] text-white/50">Capacidad</p>
+      </div>
+      <div class="glass-card p-3 theme-transition">
+        <p class="text-[10px] text-white/60 uppercase tracking-wide">Respuesta</p>
+        <p class="text-xl font-semibold text-white mt-1" id="responseTime">--</p>
+        <p class="text-[11px] text-white/50">Promedio</p>
+      </div>
+      <div class="glass-card p-3 theme-transition">
+        <p class="text-[10px] text-white/60 uppercase tracking-wide">Sesiones</p>
+        <p class="text-xl font-semibold text-white mt-1" id="activeSessions">--</p>
+        <p class="text-[11px] text-white/50">Activas</p>
+      </div>
+      <div class="glass-card p-3 theme-transition">
+        <p class="text-[10px] text-white/60 uppercase tracking-wide">RPM</p>
+        <p class="text-xl font-semibold text-white mt-1" id="requestsPerMinute">--</p>
+        <p class="text-[11px] text-white/50">Solicitudes</p>
+      </div>
+    </div>
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-3 mt-5">
+      <div class="glass-card p-4 theme-transition">
+        <p class="text-xs text-white/60 uppercase tracking-wide">Actividad Destacada</p>
+        <p class="text-lg font-semibold text-white mt-2" id="topActivityLabel">--</p>
+        <p class="text-xs text-white/50 mt-1" id="topActivityValue">Sin datos</p>
+      </div>
+      <div class="glass-card p-4 theme-transition">
+        <p class="text-xs text-white/60 uppercase tracking-wide">Categoria Principal</p>
+        <p class="text-lg font-semibold text-white mt-2" id="topDistributionLabel">--</p>
+        <p class="text-xs text-white/50 mt-1" id="topDistributionValue">Sin datos</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="ios-blur-bg mb-8">
     <div class="flex items-center justify-between mb-4">
       <h3 class="text-lg font-semibold text-white/90">Analitica</h3>
       <span class="text-xs text-white/60">Actualizado en tiempo real</span>
