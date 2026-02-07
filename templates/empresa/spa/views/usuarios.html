@@ -140,7 +140,7 @@
     <div class="ios-blur-modal-container flex flex-col w-full max-w-2xl !max-h-[92vh] sm:!max-h-[90vh] overflow-hidden">
       <!-- Modal Header -->
       <div class="ios-blur-header">
-        <div class="flex flex-col items-start gap-4 w-full sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex flex-col items-start gap-4 w-full sm:flex-row sm:items-center sm:justify-between relative">
           <div class="flex items-center gap-3 flex-1 min-w-0">
             <div class="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
               <i class="fas fa-eye text-white text-xl"></i>
@@ -178,18 +178,18 @@
     <div class="ios-blur-modal-container flex flex-col w-full max-w-3xl sm:max-w-4xl lg:max-w-5xl xl:max-w-6xl !max-h-[92vh] sm:!max-h-[90vh] overflow-hidden">
       <!-- Modal Header -->
       <div class="ios-blur-header">
-        <div class="flex flex-col items-start gap-4 w-full sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex items-center gap-3 w-full justify-between flex-nowrap">
           <div class="flex items-center gap-3 flex-1 min-w-0">
             <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
               <i class="fas fa-user-edit text-gray-900 dark:text-white text-xl"></i>
             </div>
-            <div>
-              <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Editar Usuario</h3>
-              <p class="text-sm text-gray-600 dark:text-gray-300">Modifica los datos del usuario</p>
+            <div class="min-w-0">
+              <h3 class="text-base sm:text-2xl font-bold text-gray-900 dark:text-white truncate">Editar Usuario</h3>
+              <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-300 hidden sm:block">Modifica los datos del usuario</p>
             </div>
           </div>
           <button type="button" class="ios-blur-btn ios-blur-btn-secondary shrink-0 !p-2 !min-w-0" onclick="usuariosModals.closeEditModal()" aria-label="Cerrar modal">
-            <i class="fas fa-times text-lg"></i>
+            <i class="fas fa-times text-base sm:text-lg"></i>
           </button>
         </div>
       </div>
@@ -273,7 +273,7 @@
                   <button type="button" class="ios-blur-btn ios-blur-btn-primary !p-2 !min-w-0" onclick="usuariosModals.addEspecialidad('edit')">
                     <i class="fas fa-plus"></i>
                   </button>
-                  <span class="text-gray-600 dark:text-white/70 text-sm self-center">Agregar especialidad</span>
+                  <span class="text-white/90 text-sm self-center">Agregar especialidad</span>
                 </div>
                 <div id="editEspecialidadesList" class="space-y-2">
                   <!-- Especialidades will be displayed here -->
@@ -425,7 +425,7 @@
                   <button type="button" class="ios-blur-btn ios-blur-btn-primary !p-2 !min-w-0" onclick="usuariosModals.addEspecialidad('create')">
                     <i class="fas fa-plus"></i>
                   </button>
-                  <span class="text-gray-600 dark:text-white/70 text-sm self-center">Agregar especialidad</span>
+                  <span class="text-white/90 text-sm self-center">Agregar especialidad</span>
                 </div>
                 <div id="createEspecialidadesList" class="space-y-2">
                   <!-- Especialidades will be displayed here -->
