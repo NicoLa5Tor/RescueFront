@@ -147,6 +147,20 @@ body:not(.dark) .alert-card__icon {
   color: #0f172a !important;
 }
 
+:root:not(.dark) .alert-card,
+html:not(.dark) .alert-card,
+body:not(.dark) .alert-card {
+  background: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08) !important;
+}
+
+:root:not(.dark) .alert-card:hover,
+html:not(.dark) .alert-card:hover,
+body:not(.dark) .alert-card:hover {
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.12) !important;
+}
+
 :root:not(.dark) .pagination-info span,
 html:not(.dark) .pagination-info span,
 body:not(.dark) .pagination-info span {
