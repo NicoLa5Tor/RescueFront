@@ -10,6 +10,18 @@
       </div>
     </div>
 
+    <nav class="sidebar__nav">
+      <div class="sidebar__nav-section">
+        <div class="sidebar__nav-list" id="sidebarNav">
+          <div class="spa-sidebar__section-title">Navegacion</div>
+          <a href="#" class="sidebar__link {% if active_page=='dashboard' %}sidebar__link--active{% endif %}" data-spa-view="dashboard">
+            <div class="sidebar__link-icon"><i class="fas fa-tachometer-alt"></i></div>
+            <span class="sidebar__link-text">Dashboard</span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
     <div class="sidebar__logout">
       <button class="sidebar__logout-btn" type="button" aria-label="Cerrar sesión">
         <i class="fas fa-sign-out-alt"></i>

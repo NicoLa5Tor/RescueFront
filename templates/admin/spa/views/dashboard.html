@@ -13,8 +13,8 @@
                 Control total del sistema multi-tenant
                 <span id="connectionStatus" class="inline-flex items-center space-x-2 mt-2 text-sm">
                   <span class="w-2 h-2 rounded-full bg-green-500" id="connectionIndicator"></span>
-                  <span class="text-white/70" id="connectionText">Conectado</span>
-                  <span class="text-white/50 text-xs" id="lastUpdateTime"></span>
+                  <span class="text-black dark:text-white" id="connectionText">Conectado</span>
+                  <span class="text-black dark:text-white text-xs" id="lastUpdateTime"></span>
                 </span>
               </p>
             </div>
@@ -111,73 +111,73 @@
 
   <div class="ios-blur-bg mb-8">
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
-      <h3 class="text-lg font-semibold text-white/90">Salud del Sistema</h3>
-      <span class="text-xs text-white/60">Metricas en vivo</span>
+      <h3 class="text-lg font-semibold text-black dark:text-white">Salud del Sistema</h3>
+      <span class="text-xs text-black dark:text-white">Metricas en vivo</span>
     </div>
     <div class="grid grid-cols-2 xl:grid-cols-6 gap-3">
       <div class="glass-card p-3 theme-transition">
-        <p class="text-[10px] text-white/60 uppercase tracking-wide">CPU</p>
-        <p class="text-xl font-semibold text-white mt-1" id="systemCpu">--</p>
-        <p class="text-[11px] text-white/50">Uso actual</p>
+        <p class="text-[10px] text-black dark:text-white uppercase tracking-wide">CPU</p>
+        <p class="text-xl font-semibold text-black dark:text-white mt-1" id="systemCpu">--</p>
+        <p class="text-[11px] text-black dark:text-white">Uso actual</p>
       </div>
       <div class="glass-card p-3 theme-transition">
-        <p class="text-[10px] text-white/60 uppercase tracking-wide">Memoria</p>
-        <p class="text-xl font-semibold text-white mt-1" id="systemMemory">--</p>
-        <p class="text-[11px] text-white/50">Consumo</p>
+        <p class="text-[10px] text-black dark:text-white uppercase tracking-wide">Memoria</p>
+        <p class="text-xl font-semibold text-black dark:text-white mt-1" id="systemMemory">--</p>
+        <p class="text-[11px] text-black dark:text-white">Consumo</p>
       </div>
       <div class="glass-card p-3 theme-transition">
-        <p class="text-[10px] text-white/60 uppercase tracking-wide">Disco</p>
-        <p class="text-xl font-semibold text-white mt-1" id="systemDisk">--</p>
-        <p class="text-[11px] text-white/50">Capacidad</p>
+        <p class="text-[10px] text-black dark:text-white uppercase tracking-wide">Disco</p>
+        <p class="text-xl font-semibold text-black dark:text-white mt-1" id="systemDisk">--</p>
+        <p class="text-[11px] text-black dark:text-white">Capacidad</p>
       </div>
       <div class="glass-card p-3 theme-transition">
-        <p class="text-[10px] text-white/60 uppercase tracking-wide">Respuesta</p>
-        <p class="text-xl font-semibold text-white mt-1" id="responseTime">--</p>
-        <p class="text-[11px] text-white/50">Promedio</p>
+        <p class="text-[10px] text-black dark:text-white uppercase tracking-wide">Respuesta</p>
+        <p class="text-xl font-semibold text-black dark:text-white mt-1" id="responseTime">--</p>
+        <p class="text-[11px] text-black dark:text-white">Promedio</p>
       </div>
       <div class="glass-card p-3 theme-transition">
-        <p class="text-[10px] text-white/60 uppercase tracking-wide">Sesiones</p>
-        <p class="text-xl font-semibold text-white mt-1" id="activeSessions">--</p>
-        <p class="text-[11px] text-white/50">Activas</p>
+        <p class="text-[10px] text-black dark:text-white uppercase tracking-wide">Sesiones</p>
+        <p class="text-xl font-semibold text-black dark:text-white mt-1" id="activeSessions">--</p>
+        <p class="text-[11px] text-black dark:text-white">Activas</p>
       </div>
       <div class="glass-card p-3 theme-transition">
-        <p class="text-[10px] text-white/60 uppercase tracking-wide">RPM</p>
-        <p class="text-xl font-semibold text-white mt-1" id="requestsPerMinute">--</p>
-        <p class="text-[11px] text-white/50">Solicitudes</p>
+        <p class="text-[10px] text-black dark:text-white uppercase tracking-wide">RPM</p>
+        <p class="text-xl font-semibold text-black dark:text-white mt-1" id="requestsPerMinute">--</p>
+        <p class="text-[11px] text-black dark:text-white">Solicitudes</p>
       </div>
     </div>
     <div class="grid grid-cols-1 xl:grid-cols-2 gap-3 mt-5">
       <div class="glass-card p-4 theme-transition">
-        <p class="text-xs text-white/60 uppercase tracking-wide">Actividad Destacada</p>
-        <p class="text-lg font-semibold text-white mt-2" id="topActivityLabel">--</p>
-        <p class="text-xs text-white/50 mt-1" id="topActivityValue">Sin datos</p>
+        <p class="text-xs text-black dark:text-white uppercase tracking-wide">Actividad Destacada</p>
+        <p class="text-lg font-semibold text-black dark:text-white mt-2" id="topActivityLabel">--</p>
+        <p class="text-xs text-black dark:text-white mt-1" id="topActivityValue">Sin datos</p>
       </div>
       <div class="glass-card p-4 theme-transition">
-        <p class="text-xs text-white/60 uppercase tracking-wide">Categoria Principal</p>
-        <p class="text-lg font-semibold text-white mt-2" id="topDistributionLabel">--</p>
-        <p class="text-xs text-white/50 mt-1" id="topDistributionValue">Sin datos</p>
+        <p class="text-xs text-black dark:text-white uppercase tracking-wide">Categoria Principal</p>
+        <p class="text-lg font-semibold text-black dark:text-white mt-2" id="topDistributionLabel">--</p>
+        <p class="text-xs text-black dark:text-white mt-1" id="topDistributionValue">Sin datos</p>
       </div>
     </div>
   </div>
 
   <div class="ios-blur-bg mb-8">
     <div class="flex items-center justify-between mb-4">
-      <h3 class="text-lg font-semibold text-white/90">Analitica</h3>
-      <span class="text-xs text-white/60">Actualizado en tiempo real</span>
+      <h3 class="text-lg font-semibold text-black dark:text-white">Analitica</h3>
+      <span class="text-xs text-black dark:text-white">Actualizado en tiempo real</span>
     </div>
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
       <div class="xl:col-span-2 glass-card chart-card theme-transition gsap-animated">
       <div class="chart-header">
         <div>
-          <h3 style="color: var(--text-primary) !important;" class="text-xl font-bold text-black dark:text-white">Actividad del Sistema</h3>
-          <p style="color: var(--text-secondary) !important;" class="text-sm text-gray-600 dark:text-gray-400">Métricas por empresa en tiempo real</p>
+          <h3 class="text-xl font-bold text-black dark:text-white">Actividad del Sistema</h3>
+          <p class="text-sm text-black dark:text-white">Métricas por empresa en tiempo real</p>
         </div>
       </div>
       <div class="p-6 relative">
         <div id="activityChartLoading" class="absolute inset-0 chart-loading-overlay hidden flex items-center justify-center z-10">
           <div class="text-center">
             <i class="fas fa-spinner fa-spin text-2xl text-gray-500 mb-2"></i>
-            <p class="text-sm text-gray-600">Cargando gráfico...</p>
+            <p class="text-sm text-black dark:text-white">Cargando gráfico...</p>
           </div>
         </div>
         <div class="h-64 sm:h-80">
@@ -189,15 +189,15 @@
       <div class="glass-card chart-card theme-transition gsap-animated">
       <div class="chart-header">
         <div>
-          <h3 style="color: var(--text-primary) !important;" class="text-xl font-bold text-black dark:text-white">Distribución</h3>
-          <p style="color: var(--text-secondary) !important;" class="text-sm text-gray-600 dark:text-gray-400">Por categorías</p>
+          <h3 class="text-xl font-bold text-black dark:text-white">Distribución</h3>
+          <p class="text-sm text-black dark:text-white">Por categorías</p>
         </div>
       </div>
       <div class="p-6 relative">
         <div id="distributionChartLoading" class="absolute inset-0 chart-loading-overlay hidden flex items-center justify-center z-10">
           <div class="text-center">
             <i class="fas fa-spinner fa-spin text-2xl text-gray-500 mb-2"></i>
-            <p class="text-sm text-gray-600">Cargando distribución...</p>
+            <p class="text-sm text-black dark:text-white">Cargando distribución...</p>
           </div>
         </div>
         <div class="h-64 sm:h-80">
@@ -210,8 +210,8 @@
 
   <div class="ios-blur-bg">
     <div class="flex items-center justify-between mb-4">
-      <h3 class="text-lg font-semibold text-white/90">Actividad Reciente</h3>
-      <span class="text-xs text-white/60">Ultimas altas</span>
+      <h3 class="text-lg font-semibold text-black dark:text-white">Actividad Reciente</h3>
+      <span class="text-xs text-black dark:text-white">Ultimas altas</span>
     </div>
     <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
       <div class="glass-card theme-transition gsap-animated">

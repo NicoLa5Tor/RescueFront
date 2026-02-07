@@ -6,6 +6,7 @@ class AdminSpaDashboard {
     this.refreshInterval = null;
     this.loadDashboardData();
     this.startAutoRefresh();
+    this.observeThemeChanges();
   }
 
   isAuthenticated() {
@@ -214,7 +215,7 @@ class AdminSpaDashboard {
     if (!container) return;
 
     if (companies.length === 0) {
-      container.innerHTML = '<p class="text-center text-gray-500 p-4">No hay empresas recientes</p>';
+      container.innerHTML = '<p class="text-center text-gray-600 dark:text-white/70 p-4">No hay empresas recientes</p>';
       return;
     }
 
@@ -234,15 +235,15 @@ class AdminSpaDashboard {
             <i class="fas fa-building"></i>
           </div>
           <div class="min-w-0 flex-1">
-            <p class="font-semibold text-white truncate">${companyName}</p>
-            <p class="text-xs sm:text-sm text-white/60 truncate">${companyType} • ${userCount} usuarios</p>
+            <p class="font-semibold text-black dark:text-white truncate">${companyName}</p>
+            <p class="text-xs sm:text-sm text-gray-600 dark:text-white/70 truncate">${companyType} • ${userCount} usuarios</p>
           </div>
         </div>
         <div class="w-full sm:w-auto text-left sm:text-right mt-3 sm:mt-0 shrink-0">
           <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold" style="${this.getStatusBadgeStyle(isActive)}">
             ${isActive ? 'Activa' : 'Inactiva'}
           </span>
-          <p class="text-[11px] text-white/50 mt-1">${new Date(createdDate).toLocaleDateString()}</p>
+          <p class="text-[11px] text-gray-500 dark:text-white/60 mt-1">${new Date(createdDate).toLocaleDateString()}</p>
         </div>
       `;
       container.appendChild(companyElement);
@@ -255,7 +256,7 @@ class AdminSpaDashboard {
     if (!container) return;
 
     if (users.length === 0) {
-      container.innerHTML = '<p class="text-center text-gray-500 p-4">No hay usuarios recientes</p>';
+      container.innerHTML = '<p class="text-center text-gray-600 dark:text-white/70 p-4">No hay usuarios recientes</p>';
       return;
     }
 
@@ -277,16 +278,16 @@ class AdminSpaDashboard {
             <span class="font-semibold">${initials}</span>
           </div>
           <div class="min-w-0 flex-1">
-            <p class="font-semibold text-white truncate">${userName}</p>
-            <p class="text-xs sm:text-sm text-white/60 truncate">${userEmail}</p>
-            <p class="text-[11px] text-white/50 truncate">${userCompany}</p>
+            <p class="font-semibold text-black dark:text-white truncate">${userName}</p>
+            <p class="text-xs sm:text-sm text-gray-600 dark:text-white/70 truncate">${userEmail}</p>
+            <p class="text-[11px] text-gray-500 dark:text-white/60 truncate">${userCompany}</p>
           </div>
         </div>
         <div class="w-full sm:w-auto text-left sm:text-right mt-3 sm:mt-0 shrink-0">
           <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold" style="${this.getStatusBadgeStyle(isActive)}">
             ${userRole}
           </span>
-          <p class="text-[11px] text-white/50 mt-1">${new Date(createdDate).toLocaleDateString()}</p>
+          <p class="text-[11px] text-gray-500 dark:text-white/60 mt-1">${new Date(createdDate).toLocaleDateString()}</p>
         </div>
       `;
       container.appendChild(userElement);
@@ -310,9 +311,7 @@ class AdminSpaDashboard {
       this.activityChart.destroy();
     }
 
-    const isDark = document.documentElement.classList.contains('dark');
-    const textColor = isDark ? '#e5e7eb' : '#374151';
-    const gridColor = isDark ? '#374151' : '#e5e7eb';
+    const { textPrimary, gridColor } = this.getChartThemeColors();
 
     this.activityChart = new Chart(ctx, {
       type: 'bar',
@@ -321,14 +320,14 @@ class AdminSpaDashboard {
         responsive: true,
         maintainAspectRatio: false,
         scales: {
-          x: { ticks: { color: textColor }, grid: { color: gridColor } },
-          y: { beginAtZero: true, ticks: { color: textColor }, grid: { color: gridColor } }
+          x: { ticks: { color: textPrimary }, grid: { color: gridColor } },
+          y: { beginAtZero: true, ticks: { color: textPrimary }, grid: { color: gridColor } }
         },
         plugins: {
           legend: {
             display: true,
             position: 'top',
-            labels: { color: textColor }
+            labels: { color: textPrimary }
           }
         }
       }
@@ -357,8 +356,7 @@ class AdminSpaDashboard {
       this.distributionChart.destroy();
     }
 
-    const isDark = document.documentElement.classList.contains('dark');
-    const textColor = isDark ? '#e5e7eb' : '#374151';
+    const { textPrimary } = this.getChartThemeColors();
 
     this.distributionChart = new Chart(ctx, {
       type: 'doughnut',
@@ -372,12 +370,60 @@ class AdminSpaDashboard {
             labels: {
               padding: 20,
               usePointStyle: true,
-              color: textColor
+              color: textPrimary
             }
           }
         }
       }
     });
+  }
+
+  observeThemeChanges() {
+    const target = document.documentElement;
+    if (!target || typeof MutationObserver === 'undefined') return;
+    this.themeObserver = new MutationObserver(() => {
+      this.applyChartTheme();
+    });
+    this.themeObserver.observe(target, { attributes: true, attributeFilter: ['class'] });
+  }
+
+  getChartThemeColors() {
+    const root = document.documentElement;
+    const body = document.body;
+    const isDark = root.classList.contains('dark') || (body && body.classList.contains('dark'));
+    if (isDark) {
+      return { textPrimary: '#ffffff', gridColor: 'rgba(255,255,255,0.2)' };
+    }
+    return { textPrimary: '#0f172a', gridColor: '#e5e7eb' };
+  }
+
+  applyChartTheme() {
+    const { textPrimary, gridColor } = this.getChartThemeColors();
+    if (this.activityChart) {
+      if (this.activityChart.options?.scales?.x?.ticks) {
+        this.activityChart.options.scales.x.ticks.color = textPrimary;
+      }
+      if (this.activityChart.options?.scales?.y?.ticks) {
+        this.activityChart.options.scales.y.ticks.color = textPrimary;
+      }
+      if (this.activityChart.options?.scales?.x?.grid) {
+        this.activityChart.options.scales.x.grid.color = gridColor;
+      }
+      if (this.activityChart.options?.scales?.y?.grid) {
+        this.activityChart.options.scales.y.grid.color = gridColor;
+      }
+      if (this.activityChart.options?.plugins?.legend?.labels) {
+        this.activityChart.options.plugins.legend.labels.color = textPrimary;
+      }
+      this.activityChart.update();
+    }
+
+    if (this.distributionChart) {
+      if (this.distributionChart.options?.plugins?.legend?.labels) {
+        this.distributionChart.options.plugins.legend.labels.color = textPrimary;
+      }
+      this.distributionChart.update();
+    }
   }
 
   updateElement(selector, value) {
