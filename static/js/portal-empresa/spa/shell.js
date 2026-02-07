@@ -46,7 +46,9 @@
     if (!link) return;
     event.preventDefault();
     const view = link.getAttribute('data-spa-view');
-    if (window.empresaSpa?.setView) {
+    if (window.adminSpa?.setView) {
+      window.adminSpa.setView(view);
+    } else if (window.empresaSpa?.setView) {
       window.empresaSpa.setView(view);
     }
     closeSidebar();

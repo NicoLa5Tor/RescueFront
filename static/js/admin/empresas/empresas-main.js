@@ -23,6 +23,11 @@ class EmpresasMain {
     this.currentView = 'dashboard'; // 'dashboard' shows all, 'forms' shows only active
     this.apiClient = null;
     this.isLoading = false;
+    this.lazyObserver = null;
+    this.lazySentinel = null;
+    this.renderIndex = 0;
+    this.renderBatchSize = 6;
+    this.lazyRenderMode = 'grid';
     this.buildApiUrl = window.__buildApiUrl || ((path = '') => {
       const base = window.__APP_CONFIG && window.__APP_CONFIG.apiUrl;
       if (!base) {
@@ -540,7 +545,7 @@ class EmpresasMain {
       //console.log('🔄 Forzando repintado de statsGrid...');
       statsGrid.style.display = 'none';
       statsGrid.offsetHeight; // Trigger reflow
-      statsGrid.style.display = 'grid';
+      statsGrid.style.display = 'flex';
       //console.log('🔄 Repintado forzado completado');
     }
 
@@ -573,11 +578,7 @@ class EmpresasMain {
     const isGridView = container.id === 'empresasGrid' || 
                        container.classList.contains('grid');
 
-    if (isGridView) {
-      this.renderEmpresasGrid(container);
-    } else {
-      this.renderEmpresasList(container);
-    }
+    this.initLazyRender(container, isGridView ? 'grid' : 'list');
 
     //console.log(`🎨 Renderizadas ${this.empresas.length} empresas`);
   }
@@ -600,6 +601,71 @@ class EmpresasMain {
       const item = this.createEmpresaListItem(empresa);
       container.appendChild(item);
     });
+  }
+
+  initLazyRender(container, mode) {
+    this.teardownLazyObserver();
+    container.innerHTML = '';
+    this.renderIndex = 0;
+    this.lazyRenderMode = mode;
+    this.appendNextBatch(container);
+
+    if (this.renderIndex >= this.empresas.length) {
+      return;
+    }
+
+    const sentinel = this.ensureLazySentinel(container);
+    const root = document.querySelector('.main-content') || null;
+
+    this.lazyObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        this.appendNextBatch(container);
+        if (this.renderIndex >= this.empresas.length) {
+          this.teardownLazyObserver();
+        }
+      });
+    }, {
+      root,
+      rootMargin: '200px',
+      threshold: 0.01
+    });
+
+    this.lazyObserver.observe(sentinel);
+  }
+
+  appendNextBatch(container) {
+    const slice = this.empresas.slice(this.renderIndex, this.renderIndex + this.renderBatchSize);
+    slice.forEach((empresa) => {
+      const element = this.lazyRenderMode === 'grid'
+        ? this.createEmpresaCard(empresa)
+        : this.createEmpresaListItem(empresa);
+      container.appendChild(element);
+    });
+    this.renderIndex += slice.length;
+  }
+
+  ensureLazySentinel(container) {
+    if (this.lazySentinel && this.lazySentinel.parentElement === container) {
+      return this.lazySentinel;
+    }
+
+    this.lazySentinel = document.createElement('div');
+    this.lazySentinel.className = 'h-6 w-full';
+    this.lazySentinel.setAttribute('data-empresas-lazy-sentinel', 'true');
+    container.appendChild(this.lazySentinel);
+    return this.lazySentinel;
+  }
+
+  teardownLazyObserver() {
+    if (this.lazyObserver) {
+      this.lazyObserver.disconnect();
+      this.lazyObserver = null;
+    }
+    if (this.lazySentinel && this.lazySentinel.parentElement) {
+      this.lazySentinel.parentElement.removeChild(this.lazySentinel);
+    }
+    this.lazySentinel = null;
   }
 
   /**
@@ -629,43 +695,43 @@ class EmpresasMain {
         </span>
       </div>
       
-      <h3 class="ios-card-title text-xl font-semibold text-gray-900 dark:text-white">${empresa.nombre || 'Sin nombre'}</h3>
-      <p class="ios-card-subtitle text-sm text-gray-600 dark:text-gray-400 leading-relaxed">${empresa.descripcion || empresa.ubicacion || 'Sin descripción'}</p>
+      <h3 class="ios-card-title text-xl font-semibold text-gray-900 dark:text-white break-words">${empresa.nombre || 'Sin nombre'}</h3>
+      <p class="ios-card-subtitle text-sm text-gray-600 dark:text-gray-400 leading-relaxed break-words">${empresa.descripcion || empresa.ubicacion || 'Sin descripción'}</p>
       
       <!-- Sección específica para empresas -->
-      <div class="ios-card-info">
+      <div class="ios-card-info grid grid-cols-1 sm:grid-cols-2 gap-2">
         <!-- Email - FILA COMPLETA -->
-        <div class="ios-info-item full-width">
+        <div class="ios-info-item full-width flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2 min-w-0">
           <span class="ios-info-label text-xs font-medium text-gray-600 dark:text-gray-400">
             <i class="fas fa-envelope text-blue-400 mr-1"></i>
             Email de contacto
           </span>
-          <span class="ios-info-value text-sm font-bold text-gray-900 dark:text-white">${empresa.email || 'N/A'}</span>
+          <span class="ios-info-value text-sm font-bold text-gray-900 dark:text-white break-all sm:text-right">${empresa.email || 'N/A'}</span>
         </div>
         
         <!-- Ubicación y Sedes - MISMA FILA -->
-        <div class="ios-info-item">
+        <div class="ios-info-item flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2 min-w-0">
           <span class="ios-info-label text-xs font-medium text-gray-600 dark:text-gray-400">
             <i class="fas fa-map-marker-alt text-green-400 mr-1"></i>
             Ubicación
           </span>
-          <span class="ios-info-value text-sm font-bold text-gray-900 dark:text-white">${empresa.ubicacion || 'N/A'}</span>
+          <span class="ios-info-value text-sm font-bold text-gray-900 dark:text-white break-words sm:text-right">${empresa.ubicacion || 'N/A'}</span>
         </div>
-        <div class="ios-info-item">
+        <div class="ios-info-item flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2 min-w-0">
           <span class="ios-info-label text-xs font-medium text-gray-600 dark:text-gray-400">
             <i class="fas fa-building text-purple-400 mr-1"></i>
             Sedes
           </span>
-          <span class="ios-info-value text-sm font-bold text-gray-900 dark:text-white">${empresa.sedes?.length || 1}</span>
+          <span class="ios-info-value text-sm font-bold text-gray-900 dark:text-white sm:text-right">${empresa.sedes?.length || 1}</span>
         </div>
         
         <!-- Fecha de creación - FILA COMPLETA -->
-        <div class="ios-info-item full-width">
+        <div class="ios-info-item full-width flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2 min-w-0">
           <span class="ios-info-label text-xs font-medium text-gray-600 dark:text-gray-400">
             <i class="fas fa-calendar text-orange-400 mr-1"></i>
             Fecha de registro
           </span>
-          <span class="ios-info-value text-sm font-bold text-gray-900 dark:text-white">${fechaCreacion}</span>
+          <span class="ios-info-value text-sm font-bold text-gray-900 dark:text-white sm:text-right">${fechaCreacion}</span>
         </div>
       </div>
       

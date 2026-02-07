@@ -28,6 +28,9 @@
   <section class="spa-view" data-spa-section="dashboard">
     {% include "admin/spa/views/dashboard.html" %}
   </section>
+  <section class="spa-view is-hidden" data-spa-section="empresas">
+    {% include "admin/spa/views/empresas.html" %}
+  </section>
   {% endcall %}
 {% endcall %}
 {% endblock %}
@@ -39,6 +42,12 @@
 <script src="{{ url_for('static', filename='js/portal-empresa/spa/theme-toggle.js') }}"></script>
 <script src="{{ url_for('static', filename='js/portal-empresa/spa/shell.js') }}"></script>
 <script src="{{ url_for('static', filename='js/api-client.js') }}"></script>
+<script src="{{ url_for('static', filename='js/modal-utils.js') }}"></script>
+<script src="{{ url_for('static', filename='js/hardware-animations.js') }}"></script>
+<script src="{{ url_for('static', filename='js/admin/spa/admin-spa.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="{{ url_for('static', filename='js/admin/spa/admin-dashboard.js') }}"></script>
+<script src="{{ url_for('static', filename='js/admin/empresas/empresas-main.js') }}"></script>
+<script src="{{ url_for('static', filename='js/admin/empresas/empresas-modals.js') }}"></script>
+<script src="{{ url_for('static', filename='js/admin/spa/views/empresas.js') }}"></script>
 {% endblock %}
