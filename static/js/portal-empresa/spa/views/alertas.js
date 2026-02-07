@@ -376,7 +376,7 @@ function renderAlerts(alerts) {
                         isEmpresaOrigin ? 'alert-origin-empresa' : 
                         'alert-origin-system'
                     }">
-                        <i class="fas fa-${
+                        <i class="fas alert-card__icon fa-${
                             isUserOrigin ? 'user' : 
                             isHardwareOrigin ? 'microchip' : 
                             isEmpresaOrigin ? 'building' : 
@@ -385,12 +385,12 @@ function renderAlerts(alerts) {
                     </div>
                 </div>
                 
-                <div class="flex-1 min-w-0">
+                <div class="flex-1 min-w-0 alert-card__content">
                     <div class="flex items-center justify-between">
-                        <h3 class="text-lg font-semibold text-white truncate">
+                        <h3 class="text-lg font-semibold text-white truncate alert-card__title">
                             ${alertTypeName}
                         </h3>
-                        <div class="flex items-center space-x-2">
+                        <div class="flex items-center space-x-2 alert-card__badges">
                             <span class="px-2 py-1 rounded-full text-xs font-medium ${getPriorityClass(alert.prioridad)}">
                                 ${alert.prioridad.toUpperCase()}
                             </span>
@@ -409,12 +409,12 @@ function renderAlerts(alerts) {
                     </div>
                     
                     <div class="mt-2">
-                        <p class="text-sm text-gray-300">
+                        <p class="text-sm text-gray-300 alert-card__meta">
                             <i class="fas fa-building mr-1"></i>
                             <strong>${alert.empresa_nombre}</strong> - ${alert.sede}
                         </p>
                         ${alert.descripcion ? `
-                            <p class="text-xs text-gray-400 mt-1 truncate">
+                            <p class="text-xs text-gray-400 mt-1 truncate alert-card__description">
                                 ${alert.descripcion}
                             </p>
                         ` : ''}
@@ -422,7 +422,7 @@ function renderAlerts(alerts) {
                     
                     <!-- Mostrar información de contactos con estados -->
                     ${alert.numeros_telefonicos && alert.numeros_telefonicos.length > 0 ? `
-                        <div class="mt-2 text-xs text-gray-300 space-y-1">
+                        <div class="mt-2 text-xs text-gray-300 space-y-1 alert-card__contacts">
                             ${alert.numeros_telefonicos.slice(0,2).map(contacto => `
                                 <div class="flex justify-between items-center">
                                     <span class="font-medium">${contacto.nombre}</span>
@@ -446,7 +446,7 @@ function renderAlerts(alerts) {
                                 </div>
                             `).join('')}
                             ${alert.numeros_telefonicos.length > 2 ? `
-                                <div class="text-center text-gray-500 text-xs">
+                                <div class="text-center text-gray-500 text-xs alert-card__more">
                                     +${alert.numeros_telefonicos.length - 2} contactos más
                                 </div>
                             ` : ''}
@@ -454,7 +454,7 @@ function renderAlerts(alerts) {
                     ` : ''}
                     
                     <div class="mt-3 flex items-center justify-between">
-                        <span class="alert-timestamp text-gray-400">
+                        <span class="alert-timestamp text-gray-400 alert-card__timestamp">
                             <i class="fas fa-clock mr-1"></i>
                             ${getTimeAgo(alert.fecha_creacion)}
                         </span>

@@ -105,6 +105,48 @@ body:not(.dark) .pagination-info {
   font-weight: 600;
 }
 
+:root:not(.dark) .alert-card__title,
+html:not(.dark) .alert-card__title,
+body:not(.dark) .alert-card__title {
+  color: #0f172a !important;
+}
+
+:root:not(.dark) .alert-card__meta,
+html:not(.dark) .alert-card__meta,
+body:not(.dark) .alert-card__meta {
+  color: #334155 !important;
+}
+
+:root:not(.dark) .alert-card__description,
+html:not(.dark) .alert-card__description,
+body:not(.dark) .alert-card__description {
+  color: #475569 !important;
+}
+
+:root:not(.dark) .alert-card__contacts,
+html:not(.dark) .alert-card__contacts,
+body:not(.dark) .alert-card__contacts {
+  color: #334155 !important;
+}
+
+:root:not(.dark) .alert-card__timestamp,
+html:not(.dark) .alert-card__timestamp,
+body:not(.dark) .alert-card__timestamp {
+  color: #475569 !important;
+}
+
+:root:not(.dark) .alert-card__more,
+html:not(.dark) .alert-card__more,
+body:not(.dark) .alert-card__more {
+  color: #64748b !important;
+}
+
+:root:not(.dark) .alert-card__icon,
+html:not(.dark) .alert-card__icon,
+body:not(.dark) .alert-card__icon {
+  color: #0f172a !important;
+}
+
 :root:not(.dark) .pagination-info span,
 html:not(.dark) .pagination-info span,
 body:not(.dark) .pagination-info span {
