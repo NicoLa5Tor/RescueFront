@@ -70,6 +70,27 @@ document.addEventListener('DOMContentLoaded', function() {
         alertsPanel.style.transitionProperty = 'opacity, transform';
     }
 
+    // Observer simple para nuevas tarjetas de alerta
+    const alertsContainer = document.getElementById('alertsContainer');
+    if (alertsContainer) {
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                mutation.addedNodes.forEach(function(node) {
+                    if (node.nodeType === 1 && node.classList.contains('alert-card')) {
+                        if (window.applyCardOptimizations) {
+                            window.applyCardOptimizations(node);
+                        }
+                    }
+                });
+            });
+        });
+
+        observer.observe(alertsContainer, {
+            childList: true,
+            subtree: true
+        });
+    }
+
     // Actualizar alertas automáticamente cada 5 segundos
     setInterval(() => {
         refreshAlertsQuietly();
@@ -343,7 +364,9 @@ function renderAlerts(alerts) {
         noAlertsMsg.classList.add('hidden');
     }
     
-    const alertsHTML = alerts.map(alert => {
+    const fragment = document.createDocumentFragment();
+
+    alerts.forEach(alert => {
         // Determinar el origen de la alerta con soporte para alertas de empresa
         const isUserOrigin = alert.data?.origen === 'usuario_movil' || alert.activacion_alerta?.tipo_activacion === 'usuario';
         const isHardwareOrigin = alert.data?.tipo_mensaje === 'alarma' || alert.activacion_alerta?.tipo_activacion === 'hardware';
@@ -366,8 +389,10 @@ function renderAlerts(alerts) {
             originLabel = 'Sistema';
         }
         
-        return `
-        <div class="alert-card ios-hardware-card alert-priority-${alert.prioridad}" onclick="showAlertDetails('${alert._id}')">
+        const card = document.createElement('div');
+        card.className = `alert-card ios-hardware-card alert-priority-${alert.prioridad}`;
+        card.addEventListener('click', () => showAlertDetails(alert._id));
+        card.innerHTML = `
             <div class="flex items-start space-x-4">
                 <div class="flex-shrink-0">
                     <div class="w-16 h-16 rounded-xl flex items-center justify-center ${
@@ -477,9 +502,9 @@ function renderAlerts(alerts) {
             </div>
             
         <div class="ios-card-shimmer"></div>
-        </div>
         `;
-    }).join('');
+        fragment.appendChild(card);
+    });
 
     // Guardar posición actual del scroll y deshabilitar transiciones
     const scrollTop = container.scrollTop;
@@ -487,7 +512,8 @@ function renderAlerts(alerts) {
 
     // Inyectar alertas en el contenedor
     //console.log('🎨 RENDER ALERTS: Inyectando HTML en container...');
-    container.innerHTML = alertsHTML;
+    container.innerHTML = '';
+    container.appendChild(fragment);
 
     // Limitar transiciones de los elementos de alerta
     const alertElements = container.querySelectorAll('.alert-card');
