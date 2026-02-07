@@ -630,7 +630,7 @@ async function refreshOpenAlertModal() {
         return;
     }
 
-    const alert = await findAlertById(selectedAlertId);
+    const alert = await findAlertById(selectedAlertId, true);
     if (!alert) return;
 
     const content = document.getElementById('alertDetailsContent');
@@ -660,7 +660,37 @@ async function refreshOpenAlertModal() {
     const empresaName = alert.empresa_nombre || 'Empresa';
     subtitle.textContent = `${displayName} - ${empresaName}`;
 
-    content.innerHTML = generateModalContent(alert, isUserOrigin, isHardwareOrigin);
+    const existingMapWrapper = content.querySelector('#alertLocationMapWrapper');
+    if (existingMapWrapper) {
+        const tempContainer = document.createElement('div');
+        tempContainer.innerHTML = generateModalContent(alert, isUserOrigin, isHardwareOrigin);
+        const nextSections = tempContainer.querySelectorAll('.modal-section');
+        const currentSections = content.querySelectorAll('.modal-section');
+
+        const sectionCount = Math.min(nextSections.length, currentSections.length);
+        for (let i = 0; i < sectionCount; i++) {
+            const currentSection = currentSections[i];
+            if (currentSection.querySelector('#alertLocationMapWrapper') || currentSection.querySelector('iframe')) {
+                const nextMapWrapper = nextSections[i].querySelector('#alertLocationMapWrapper');
+                if (nextMapWrapper) {
+                    const nextMap = nextMapWrapper.querySelector('#alertLocationMap');
+                    const currentMap = existingMapWrapper.querySelector('#alertLocationMap');
+                    if (nextMap && currentMap) {
+                        const nextSrc = nextMap.getAttribute('src');
+                        if (nextSrc && currentMap.getAttribute('src') !== nextSrc) {
+                            currentMap.setAttribute('src', nextSrc);
+                        }
+                    }
+                }
+                continue;
+            }
+            currentSection.innerHTML = nextSections[i].innerHTML;
+        }
+    } else {
+        content.innerHTML = generateModalContent(alert, isUserOrigin, isHardwareOrigin);
+    }
+
+    updateModalLocationContent(content, alert);
 
     // Remove reveal animations and transitions on refresh
     const sections = content.querySelectorAll('.modal-section');
@@ -676,6 +706,109 @@ async function refreshOpenAlertModal() {
     requestAnimationFrame(() => {
         content.classList.remove('transition-none');
     });
+}
+
+function updateModalLocationContent(content, alert) {
+    if (!content || !alert) return;
+
+    const empresaNode = content.querySelector('[data-alert-empresa]');
+    if (empresaNode) {
+        empresaNode.textContent = alert.empresa_nombre || 'Empresa';
+    }
+
+    const sedeNode = content.querySelector('[data-alert-sede]');
+    if (sedeNode) {
+        sedeNode.textContent = alert.sede || 'Sin sede';
+    }
+
+    const direccionNode = content.querySelector('[data-alert-direccion]');
+    if (direccionNode) {
+        const direccion = alert.ubicacion?.direccion || '';
+        direccionNode.textContent = direccion || 'Dirección no especificada';
+    }
+
+    const googleUrl = alert.ubicacion?.url_maps || '';
+    const osmUrl = alert.ubicacion?.url_open_maps || '';
+
+    const googleLink = content.querySelector('[data-alert-map-google]');
+    if (googleLink) {
+        if (googleUrl) {
+            googleLink.setAttribute('href', googleUrl);
+            googleLink.classList.remove('hidden');
+        } else {
+            googleLink.classList.add('hidden');
+        }
+    }
+
+    const osmLink = content.querySelector('[data-alert-map-osm]');
+    if (osmLink) {
+        if (osmUrl) {
+            osmLink.setAttribute('href', osmUrl);
+            osmLink.classList.remove('hidden');
+        } else {
+            osmLink.classList.add('hidden');
+        }
+    }
+
+    const toggleBtn = content.querySelector('[data-alert-map-toggle]');
+    if (toggleBtn) {
+        if (googleUrl && osmUrl) {
+            toggleBtn.dataset.googleUrl = googleUrl;
+            toggleBtn.dataset.osmUrl = osmUrl;
+            toggleBtn.classList.remove('hidden');
+        } else {
+            toggleBtn.classList.add('hidden');
+        }
+    }
+
+    const coords = extractAlertCoords(googleUrl, osmUrl);
+    const coordsNode = content.querySelector('[data-alert-coords]');
+    if (coordsNode) {
+        if (coords) {
+            coordsNode.textContent = `📍 ${coords.lat.toFixed(6)}, ${coords.lng.toFixed(6)}`;
+            coordsNode.classList.remove('hidden');
+        } else {
+            coordsNode.textContent = '⚠️ Coordenadas no disponibles';
+            coordsNode.classList.add('hidden');
+        }
+    }
+
+    const mapFrame = content.querySelector('#alertLocationMap');
+    if (mapFrame && coords) {
+        const nextSrc = buildEmbeddedMapSrc(coords.lat, coords.lng);
+        if (nextSrc && mapFrame.getAttribute('src') !== nextSrc) {
+            mapFrame.setAttribute('src', nextSrc);
+        }
+    }
+}
+
+function extractAlertCoords(googleUrl, osmUrl) {
+    let lat = null;
+    let lng = null;
+
+    if (googleUrl) {
+        const googleMatch = googleUrl.match(/place\/(-?\d+\.\d+),(-?\d+\.\d+)/);
+        if (googleMatch) {
+            lat = parseFloat(googleMatch[1]);
+            lng = parseFloat(googleMatch[2]);
+        }
+    }
+
+    if (!lat && osmUrl) {
+        const osmMatch = osmUrl.match(/mlat=(-?\d+\.\d+).*mlon=(-?\d+\.\d+)/);
+        if (osmMatch) {
+            lat = parseFloat(osmMatch[1]);
+            lng = parseFloat(osmMatch[2]);
+        }
+    }
+
+    if (!lat || !lng) return null;
+    return { lat, lng };
+}
+
+function buildEmbeddedMapSrc(lat, lng) {
+    if (lat == null || lng == null) return '';
+    return `https://www.openstreetmap.org/export/embed.html?bbox=${lng - 0.01},${lat - 0.01},${lng + 0.01},${lat + 0.01}&layer=mapnik&marker=${lat},${lng}`;
 }
 
 function generateModalContent(alert, isUserOrigin, isHardwareOrigin) {
@@ -729,7 +862,7 @@ function generateModalContent(alert, isUserOrigin, isHardwareOrigin) {
                         }">
                             ${isUserOrigin ? 'MÓVIL' : isHardwareOrigin ? 'AUTO' : 'SYS'}
                         </span>
-                        <span class="px-2 py-1 rounded-full text-xs font-bold ${getPriorityClass(alert.prioridad)}">
+                        <span class="px-2 py-1 rounded-full text-xs font-bold ${getPriorityClass(alert.prioridad)} alert-modal-priority">
                             ${alert.prioridad.toUpperCase()}
                         </span>
                         <span class="px-2 py-1 rounded-full text-xs font-bold bg-indigo-500/30 text-indigo-200 text-center">
@@ -767,7 +900,7 @@ function generateModalContent(alert, isUserOrigin, isHardwareOrigin) {
                                     isHardwareOrigin ? 'microchip' : 'exclamation-triangle'
                                 } text-white text-3xl"></i>
                             </div>
-                            <h3 class="text-lg font-bold text-white mb-2">
+                            <h3 class="text-lg font-bold text-white mb-2 alert-modal-title">
                                 ${alert.nombre_alerta || 'Alerta'}
                             </h3>
                           
@@ -788,7 +921,7 @@ function generateModalContent(alert, isUserOrigin, isHardwareOrigin) {
                                     isHardwareOrigin ? 'microchip' : 'exclamation-triangle'
                                 } text-white text-3xl"></i>
                             </div>
-                            <h3 class="text-lg font-bold text-white mb-2">
+                            <h3 class="text-lg font-bold text-white mb-2 alert-modal-title">
                                 ${isUserOrigin ? 'Alerta de Usuario' : 
                                   isHardwareOrigin ? 'Alerta de Hardware' : 
                                   'Alerta del Sistema'}
@@ -963,11 +1096,11 @@ function generateModalContent(alert, isUserOrigin, isHardwareOrigin) {
                             <div class="grid grid-cols-2 gap-4 pb-3">
                                 <div>
                                     <span class="text-indigo-200 text-sm block">Empresa:</span>
-                                    <span class="text-white font-medium">${alert.empresa_nombre}</span>
+                                    <span class="text-white font-medium" data-alert-empresa>${alert.empresa_nombre}</span>
                                 </div>
                                 <div>
                                     <span class="text-indigo-200 text-sm block">Sede:</span>
-                                    <span class="text-white font-medium">${alert.sede}</span>
+                                    <span class="text-white font-medium" data-alert-sede>${alert.sede}</span>
                                 </div>
                             </div>
                             
@@ -1816,35 +1949,32 @@ function generateLocationContent(alert) {
     }
     
     return `
-        <div>
+        <div data-alert-location>
             <span class="text-indigo-200 text-sm block mb-2">📍 Dirección Física:</span>
-            <p class="text-white font-medium mb-3">${direccion || 'Dirección no especificada'}</p>
+            <p class="text-white font-medium mb-3" data-alert-direccion>${direccion || 'Dirección no especificada'}</p>
             
             <!-- Mapa embebido más grande -->
             ${generateEmbeddedMap(googleUrl, osmUrl)}
             
             <!-- Enlaces a mapas -->
             <div class="flex flex-wrap gap-2">
-                ${googleUrl ? `
-                    <a href="${googleUrl}" target="_blank" 
-                       class="inline-flex items-center px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors">
-                        <i class="fas fa-map-marked-alt mr-2"></i>Google Maps
-                    </a>
-                ` : ''}
-                ${osmUrl ? `
-                    <a href="${osmUrl}" target="_blank" 
-                       class="inline-flex items-center px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm rounded-lg transition-colors">
-                        <i class="fas fa-map mr-2"></i>OpenStreetMaps
-                    </a>
-                ` : ''}
-                ${googleUrl && osmUrl ? `
-                    <button onclick="toggleMapProvider(this)" 
-                            class="inline-flex items-center px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded-lg transition-colors"
-                            data-google-url="${googleUrl}"
-                            data-osm-url="${osmUrl}">
-                        <i class="fas fa-exchange-alt mr-2"></i>Cambiar Mapa
-                    </button>
-                ` : ''}
+                <a href="${googleUrl || '#'}" target="_blank"
+                   class="inline-flex items-center px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors${googleUrl ? '' : ' hidden'}"
+                   data-alert-map-google>
+                    <i class="fas fa-map-marked-alt mr-2"></i>Google Maps
+                </a>
+                <a href="${osmUrl || '#'}" target="_blank"
+                   class="inline-flex items-center px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm rounded-lg transition-colors${osmUrl ? '' : ' hidden'}"
+                   data-alert-map-osm>
+                    <i class="fas fa-map mr-2"></i>OpenStreetMaps
+                </a>
+                <button onclick="toggleMapProvider(this)"
+                        class="inline-flex items-center px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded-lg transition-colors${googleUrl && osmUrl ? '' : ' hidden'}"
+                        data-alert-map-toggle
+                        data-google-url="${googleUrl}"
+                        data-osm-url="${osmUrl}">
+                    <i class="fas fa-exchange-alt mr-2"></i>Cambiar Mapa
+                </button>
             </div>
         </div>
     `;
@@ -1874,10 +2004,11 @@ function generateEmbeddedMap(googleUrl, osmUrl) {
     
     if (lat && lng) {
         return `
-            <div class="mb-4">
+            <div class="mb-4" id="alertLocationMapWrapper">
                 <div class="bg-black/20 rounded-lg overflow-hidden">
                     <iframe 
-                        src="https://www.openstreetmap.org/export/embed.html?bbox=${lng-0.01},${lat-0.01},${lng+0.01},${lat+0.01}&layer=mapnik&marker=${lat},${lng}"
+                        id="alertLocationMap"
+                        src="${buildEmbeddedMapSrc(lat, lng)}"
                         width="100%" 
                         height="280" 
                         style="border-radius: 8px;"
@@ -1885,7 +2016,7 @@ function generateEmbeddedMap(googleUrl, osmUrl) {
                         title="Mapa de ubicación">
                     </iframe>
                     <div class="p-3 bg-black/40 text-center">
-                        <span class="text-white text-sm font-mono">
+                        <span class="text-white text-sm font-mono" data-alert-coords>
                             📍 ${lat.toFixed(6)}, ${lng.toFixed(6)}
                         </span>
                     </div>
