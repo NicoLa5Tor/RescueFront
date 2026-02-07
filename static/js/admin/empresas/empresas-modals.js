@@ -278,7 +278,7 @@ class EmpresasModals {
     const modalHTML = `
       <!-- Enhanced Toggle Empresa Status Modal - EXACTO DEL HARDWARE -->
       <div id="toggleEmpresaModal" class="ios-modal-backdrop toggle-modal hidden">
-        <div class="ios-blur-modal-container max-w-md" id="toggleModalContainer">
+        <div class="ios-blur-modal-container" id="toggleModalContainer">
           <div class="ios-blur-header text-center">
             <div class="toggle-modal-icon mx-auto mb-4" id="toggleModalIcon">
               <i class="fas fa-power-off text-4xl" id="toggleModalIconFa"></i>
@@ -313,7 +313,7 @@ class EmpresasModals {
     const modalHTML = `
       <!-- Create/Edit Empresa Modal - EXACT COMPANY TYPES STYLE -->
       <div id="empresaModal" class="ios-modal-backdrop hidden">
-        <div class="ios-blur-modal-container w-full max-w-2xl">
+        <div class="ios-blur-modal-container flex flex-col w-full max-w-3xl sm:max-w-4xl lg:max-w-5xl xl:max-w-6xl !max-h-[92vh] sm:!max-h-[90vh] overflow-hidden">
           <!-- Modal Header -->
           <div class="ios-blur-header">
             <div class="flex items-center justify-between w-full">
@@ -441,14 +441,14 @@ class EmpresasModals {
           </div>
           
           <!-- Modal Footer -->
-          <div class="ios-blur-footer">
-            <button type="button" class="ios-blur-btn ios-blur-btn-secondary" onclick="empresasModals.closeCrudModal()">
+          <div class="ios-blur-footer flex flex-row items-center gap-3">
+            <button type="button" class="ios-blur-btn ios-blur-btn-secondary !text-xs !px-3 !py-2" onclick="empresasModals.closeCrudModal()">
               <i class="fas fa-times mr-2"></i>
-              <span class="text-sm font-medium">Cancelar</span>
+              <span class="text-xs font-medium">Cancelar</span>
             </button>
-            <button type="submit" form="empresaForm" class="ios-blur-btn ios-blur-btn-primary" id="empresaSubmitBtn">
+            <button type="submit" form="empresaForm" class="ios-blur-btn ios-blur-btn-primary !text-xs !px-3 !py-2" id="empresaSubmitBtn">
               <i class="fas fa-save mr-2"></i>
-              <span class="text-sm font-medium">Crear Empresa</span>
+              <span class="text-xs font-medium">Crear Empresa</span>
             </button>
           </div>
         </div>
@@ -463,7 +463,7 @@ class EmpresasModals {
     const modalHTML = `
       <!-- View Details Modal - EXACT COMPANY TYPES STYLE -->
       <div id="viewEmpresaModal" class="ios-modal-backdrop hidden">
-        <div class="ios-blur-modal-container w-full max-w-2xl">
+        <div class="ios-blur-modal-container flex flex-col w-full max-w-2xl !max-h-[92vh] sm:!max-h-[90vh] overflow-hidden">
           <!-- Modal Header -->
           <div class="ios-blur-header">
             <div class="flex items-center justify-between w-full">
@@ -509,7 +509,7 @@ class EmpresasModals {
     const modalHTML = `
       <!-- Client Update Success Modal - EXACT COPY FROM COMPANY TYPES -->
       <div id="clientUpdateModal" class="ios-modal-backdrop hidden">
-        <div class="ios-blur-modal-container max-w-md" id="updateModalContainer">
+        <div class="ios-blur-modal-container" id="updateModalContainer">
           <div class="ios-blur-header text-center">
             <div class="client-update-icon mx-auto mb-4" id="updateModalIcon">
               <i class="fas fa-sync-alt text-4xl text-emerald-400" id="updateModalIconFa"></i>
@@ -1125,12 +1125,14 @@ class EmpresasModals {
       const sedeItem = document.createElement('div');
       sedeItem.className = 'empresa-sede-item';
       sedeItem.innerHTML = `
-        <input type="text" class="ios-blur-input flex-1" value="${sede}" 
-               placeholder="Nombre de la sede" 
-               onchange="empresasModals.updateSede(${index}, this.value)">
-        <button type="button" class="ios-blur-btn ios-blur-btn-secondary !p-2 !min-w-0" onclick="empresasModals.removeSede(${index})">
-          <i class="fas fa-trash"></i>
-        </button>
+        <div class="flex items-center gap-2">
+          <input type="text" class="ios-blur-input flex-1 min-w-0" value="${sede}" 
+                 placeholder="Nombre de la sede" 
+                 onchange="empresasModals.updateSede(${index}, this.value)">
+          <button type="button" class="ios-blur-btn ios-blur-btn-secondary !p-2 !min-w-0 flex-shrink-0" onclick="empresasModals.removeSede(${index})">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
       `;
       container.appendChild(sedeItem);
     });
@@ -1182,8 +1184,8 @@ class EmpresasModals {
       const rolItem = document.createElement('div');
       rolItem.className = 'empresa-rol-item flex flex-col sm:flex-row sm:items-center gap-2';
       rolItem.innerHTML = `
-        <div class="flex-1 flex flex-col sm:flex-row sm:items-center gap-2">
-          <input type="text" class="ios-blur-input empresa-rol-input flex-1" value="${rol.nombre || ''}" 
+        <div class="flex-1 flex flex-col sm:flex-row sm:items-center gap-2 min-w-0">
+          <input type="text" class="ios-blur-input empresa-rol-input flex-1 min-w-0" value="${rol.nombre || ''}" 
                  placeholder="Nombre del rol" 
                  onchange="empresasModals.updateRolNombre(${index}, this.value)">
           <label class="inline-flex items-center gap-2 text-xs font-medium text-white/80 dark:text-gray-300">
@@ -1192,7 +1194,7 @@ class EmpresasModals {
             Puede generar alertas
           </label>
         </div>
-        <button type="button" class="ios-blur-btn ios-blur-btn-secondary !p-2 !min-w-0" onclick="empresasModals.removeRol(${index})">
+        <button type="button" class="ios-blur-btn ios-blur-btn-secondary !p-2 !min-w-0 flex-shrink-0" onclick="empresasModals.removeRol(${index})">
           <i class="fas fa-trash"></i>
         </button>
       `;
@@ -1509,18 +1511,9 @@ class EmpresasModals {
     
     //console.log('✅ Toggle modal should now be visible');
     
-    // GSAP animation
-    if (typeof gsap !== 'undefined') {
-      gsap.set(container, { scale: 0.8, opacity: 0 });
-      gsap.to(container, {
-        scale: 1,
-        opacity: 1,
-        duration: 0.3,
-        ease: "power2.out"
-      });
-    } else {
-      container.style.transform = 'scale(1)';
-      container.style.opacity = '1';
+    if (container) {
+      container.style.transform = '';
+      container.style.opacity = '';
     }
   }
 
@@ -1562,18 +1555,7 @@ class EmpresasModals {
       //console.log('✅ Toggle modal closed and fully reset');
     };
   
-    // GSAP close animation
-    if (typeof gsap !== 'undefined' && container) {
-      gsap.to(container, {
-        scale: 0.8,
-        opacity: 0,
-        duration: 0.2,
-        ease: "power2.in",
-        onComplete: resetAndHideToggleModal
-      });
-    } else {
-      resetAndHideToggleModal();
-    }
+    resetAndHideToggleModal();
   }
   
   /**

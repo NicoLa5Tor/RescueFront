@@ -13,14 +13,12 @@ class EmpresasMain {
   constructor() {
     this.empresas = [];
     this.empresasAll = []; // Incluye inactivas para dashboard
-    this.tiposEmpresa = [];
     this.currentFilters = {
       search: '',
       location: '',
       status: '',
       activa: 'active'
     };
-    this.currentView = 'dashboard'; // 'dashboard' shows all, 'forms' shows only active
     this.apiClient = null;
     this.isLoading = false;
     this.lazyObserver = null;
@@ -178,24 +176,6 @@ class EmpresasMain {
       createBtn.addEventListener('click', () => this.openCreateModal());
     }
 
-    // Refresh button
-    const refreshBtn = document.getElementById('refreshEmpresasBtn');
-    if (refreshBtn) {
-      refreshBtn.addEventListener('click', () => this.loadEmpresas());
-    }
-
-    // View toggle buttons
-    const gridViewBtn = document.getElementById('gridViewBtn');
-    const tableViewBtn = document.getElementById('tableViewBtn');
-    
-    if (gridViewBtn) {
-      gridViewBtn.addEventListener('click', () => this.switchToGridView());
-    }
-    
-    if (tableViewBtn) {
-      tableViewBtn.addEventListener('click', () => this.switchToTableView());
-    }
-
     //console.log('🎯 Event listeners configurados');
   }
 
@@ -211,10 +191,7 @@ class EmpresasMain {
     // PRIMERO: Cargar datos del backend
     await this.loadEmpresas();
     
-    // SEGUNDO: Cargar tipos de empresa en paralelo
-    await this.loadTiposEmpresa();
-    
-    // TERCERO: Populate location filter after loading empresas
+    // SEGUNDO: Populate location filter after loading empresas
     this.populateLocationFilter();
     
     //console.log('📍 DEBUG: loadInitialData() terminado');
@@ -285,45 +262,6 @@ class EmpresasMain {
     } finally {
       this.isLoading = false;
     }
-  }
-
-  /**
-   * Load tipos de empresa for filtering
-   */
-  async loadTiposEmpresa() {
-    try {
-      //console.log('🔄 Cargando tipos de empresa...');
-      
-      const response = await this.apiClient.get_tipos_empresa();
-      
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success && Array.isArray(data.data)) {
-          this.tiposEmpresa = data.data;
-          this.populateTipoDropdown();
-          //console.log(`✅ ${this.tiposEmpresa.length} tipos de empresa cargados`);
-        }
-      }
-    } catch (error) {
-      //console.error('⚠️ Error cargando tipos de empresa:', error);
-    }
-  }
-
-  /**
-   * Populate tipo dropdown
-   */
-  populateTipoDropdown() {
-    const dropdown = document.getElementById('empresasTipoFilter');
-    if (!dropdown) return;
-
-    dropdown.innerHTML = '<option value="">Todos los tipos</option>';
-    
-    this.tiposEmpresa.forEach(tipo => {
-      const option = document.createElement('option');
-      option.value = tipo._id;
-      option.textContent = tipo.nombre;
-      dropdown.appendChild(option);
-    });
   }
 
   /**
@@ -433,12 +371,6 @@ class EmpresasMain {
     };
     
     //console.log('📊 Estadísticas calculadas:', stats);
-
-    // Update count in header
-    const countElement = document.getElementById('empresasCount');
-    if (countElement) {
-      countElement.textContent = `${stats.filtered} empresas mostradas de ${stats.total} totales`;
-    }
 
     // Update stats cards if they exist
     //console.log('📊 Llamando updateStatsCards con:', stats);
@@ -1050,34 +982,6 @@ class EmpresasMain {
   }
 
   /**
-   * Switch to grid view
-   */
-  switchToGridView() {
-    const gridBtn = document.getElementById('gridViewBtn');
-    const tableBtn = document.getElementById('tableViewBtn');
-    
-    if (gridBtn) gridBtn.classList.add('active');
-    if (tableBtn) tableBtn.classList.remove('active');
-    
-    // TODO: Implement view switching logic
-    //console.log('📱 Cambiando a vista de tarjetas');
-  }
-
-  /**
-   * Switch to table view
-   */
-  switchToTableView() {
-    const gridBtn = document.getElementById('gridViewBtn');
-    const tableBtn = document.getElementById('tableViewBtn');
-    
-    if (gridBtn) gridBtn.classList.remove('active');
-    if (tableBtn) tableBtn.classList.add('active');
-    
-    // TODO: Implement view switching logic
-    //console.log('📊 Cambiando a vista de tabla');
-  }
-
-  /**
    * Open create empresa modal
    */
   openCreateModal() {
@@ -1180,25 +1084,6 @@ class EmpresasMain {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-  }
-
-  /**
-   * Toggle filter visibility
-   */
-  toggleFilter() {
-    // For now, just show a simple interface
-    const filterState = this.currentFilters.activa !== 'all';
-    
-    if (filterState) {
-      // Clear all filters
-      this.clearFilters();
-      this.showEnhancedNotification('Filtros removidos - mostrando todas las empresas', 'info');
-    } else {
-      // Apply active filter
-      this.currentFilters.activa = 'active';
-      this.applyFilters();
-      this.showEnhancedNotification('Mostrando solo empresas activas', 'info');
-    }
   }
 
   /**
