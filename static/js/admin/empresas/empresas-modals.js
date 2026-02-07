@@ -47,12 +47,6 @@ class EmpresasModalScrollManager {
     style.textContent = `
       .empresas-modal-scroll-locked { overflow: hidden !important; }
       .empresas-modal-scrollable { overflow-y: auto; -webkit-overflow-scrolling: touch; }
-      .empresas-modal-backdrop {
-        position: fixed !important; top: 0 !important; left: 0 !important; 
-        right: 0 !important; bottom: 0 !important; z-index: 9999999 !important;
-        display: flex; align-items: center; justify-content: center; padding: 1rem;
-        background: rgba(0, 0, 0, 0.8) !important;
-      }
     `;
     document.head.appendChild(style);
   }
@@ -69,9 +63,7 @@ class EmpresasModalScrollManager {
     
     const modal = document.getElementById(modalId);
     if (modal) {
-      // Aplicar clases y estilos para centrado perfecto
       modal.classList.remove('hidden');
-      modal.className = modal.className.replace('hidden', '').trim() + ' empresas-modal-backdrop';
       modal.style.display = 'flex';
     }
     
@@ -86,7 +78,6 @@ class EmpresasModalScrollManager {
     const modal = document.getElementById(modalId);
     if (modal) {
       modal.classList.add('hidden');
-      modal.classList.remove('empresas-modal-backdrop');
       modal.style.display = 'none';
     }
     
@@ -278,18 +269,18 @@ class EmpresasModals {
     const modalHTML = `
       <!-- Enhanced Toggle Empresa Status Modal - EXACTO DEL HARDWARE -->
       <div id="toggleEmpresaModal" class="ios-modal-backdrop toggle-modal hidden">
-        <div class="ios-blur-modal-container" id="toggleModalContainer">
+        <div class="ios-blur-modal-container flex flex-col w-full max-w-md !max-h-[85vh] overflow-hidden mx-auto" id="toggleModalContainer">
           <div class="ios-blur-header text-center">
             <div class="toggle-modal-icon mx-auto mb-4" id="toggleModalIcon">
               <i class="fas fa-power-off text-4xl" id="toggleModalIconFa"></i>
             </div>
-            <h3 class="text-2xl font-bold text-white mb-2" id="toggleModalTitle">Activar Empresa</h3>
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2" id="toggleModalTitle">Activar Empresa</h3>
           </div>
-          <div class="ios-blur-body text-center">
-            <p class="text-white/80 text-lg mb-6" id="toggleModalMessage">
+          <div class="ios-blur-body flex-1 min-h-0 !max-h-none text-center">
+            <p class="text-gray-700 dark:text-white/80 text-lg mb-6" id="toggleModalMessage">
               ¿Estás seguro de que quieres activar esta empresa?
             </p>
-            <div class="flex gap-4 justify-center">
+            <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
               <button class="ios-blur-btn ios-blur-btn-secondary" onclick="empresasModals.closeToggleModal()">
                 <i class="fas fa-times mr-2"></i>
                 Cancelar
@@ -316,29 +307,29 @@ class EmpresasModals {
         <div class="ios-blur-modal-container flex flex-col w-full max-w-3xl sm:max-w-4xl lg:max-w-5xl xl:max-w-6xl !max-h-[92vh] sm:!max-h-[90vh] overflow-hidden">
           <!-- Modal Header -->
           <div class="ios-blur-header">
-            <div class="flex items-center justify-between w-full">
-              <div class="flex items-center space-x-3">
+            <div class="flex flex-col items-start gap-4 w-full sm:flex-row sm:items-center sm:justify-between">
+              <div class="flex items-center gap-3 flex-1 min-w-0">
                 <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-                  <i class="fas fa-building text-white text-xl"></i>
+                  <i class="fas fa-building text-gray-900 dark:text-white text-xl"></i>
                 </div>
                 <div>
-                  <h3 class="text-2xl font-bold text-white dark:text-white" id="empresaModalTitle">Nueva Empresa</h3>
-                  <p class="text-sm text-white/70 dark:text-gray-300">Complete los campos para registrar la empresa</p>
+                  <h3 class="text-2xl font-bold text-gray-900 dark:text-white" id="empresaModalTitle">Nueva Empresa</h3>
+                  <p class="text-sm text-gray-600 dark:text-gray-300">Complete los campos para registrar la empresa</p>
                 </div>
               </div>
-              <button type="button" class="ios-blur-btn ios-blur-btn-secondary !p-2 !min-w-0" onclick="empresasModals.closeCrudModal()" aria-label="Cerrar modal">
+              <button type="button" class="ios-blur-btn ios-blur-btn-secondary shrink-0 !p-2 !min-w-0" onclick="empresasModals.closeCrudModal()" aria-label="Cerrar modal">
                 <i class="fas fa-times text-lg"></i>
               </button>
             </div>
           </div>
           
           <!-- Modal Body -->
-          <div class="ios-blur-body">
+          <div class="ios-blur-body flex-1 min-h-0 !max-h-none">
             <form id="empresaForm">
               <div class="form-grid">
                 <!-- Nombre -->
                 <div class="form-group">
-                  <label for="empresaNombre" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+                  <label for="empresaNombre" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                     <i class="fas fa-building text-blue-400 mr-2"></i>Nombre de la Empresa *
                   </label>
                   <input type="text" id="empresaNombre" class="ios-blur-input" required
@@ -347,7 +338,7 @@ class EmpresasModals {
                 
                 <!-- Username -->
                 <div class="form-group">
-                  <label for="empresaUsername" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+                  <label for="empresaUsername" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                     <i class="fas fa-user text-purple-400 mr-2"></i>Nombre de Usuario *
                   </label>
                   <input type="text" id="empresaUsername" class="ios-blur-input" required
@@ -356,7 +347,7 @@ class EmpresasModals {
                 
                 <!-- Email -->
                 <div class="form-group">
-                  <label for="empresaEmail" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+                  <label for="empresaEmail" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                     <i class="fas fa-envelope text-cyan-400 mr-2"></i>Email *
                   </label>
                   <input type="email" id="empresaEmail" class="ios-blur-input" required
@@ -365,7 +356,7 @@ class EmpresasModals {
                 
                 <!-- Ubicación -->
                 <div class="form-group">
-                  <label for="empresaUbicacion" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+                  <label for="empresaUbicacion" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                     <i class="fas fa-map-marker-alt text-green-400 mr-2"></i>Ubicación *
                   </label>
                   <input type="text" id="empresaUbicacion" class="ios-blur-input" required
@@ -374,7 +365,7 @@ class EmpresasModals {
                 
                 <!-- Tipo de Empresa -->
                 <div class="form-group">
-                  <label for="empresaTipo" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+                  <label for="empresaTipo" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                     <i class="fas fa-tags text-pink-400 mr-2"></i>Tipo de Empresa *
                   </label>
                   <select id="empresaTipo" class="ios-blur-input" required>
@@ -385,7 +376,7 @@ class EmpresasModals {
                 
                 <!-- Descripción -->
                 <div class="form-group form-group-full">
-                  <label for="empresaDescripcion" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+                  <label for="empresaDescripcion" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                     <i class="fas fa-align-left text-orange-400 mr-2"></i>Descripción *
                   </label>
                   <textarea id="empresaDescripcion" class="ios-blur-input !min-h-[6rem] resize-y" rows="3" required
@@ -394,7 +385,7 @@ class EmpresasModals {
                 
                 <!-- Contraseña -->
                 <div class="form-group" id="passwordGroup">
-                  <label for="empresaPassword" class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+                  <label for="empresaPassword" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                     <i class="fas fa-lock text-red-400 mr-2"></i>Contraseña *
                   </label>
                   <input type="password" id="empresaPassword" class="ios-blur-input" required
@@ -403,7 +394,7 @@ class EmpresasModals {
                 
                 <!-- Sedes -->
                 <div class="form-group form-group-full">
-                  <label class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+                  <label class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                     <i class="fas fa-building text-yellow-400 mr-2"></i>Sedes
                   </label>
                   <div id="sedesContainer" class="empresa-sedes-container">
@@ -411,7 +402,7 @@ class EmpresasModals {
                       <button type="button" class="ios-blur-btn ios-blur-btn-primary !p-2 !min-w-0" onclick="empresasModals.addSede()">
                         <i class="fas fa-plus"></i>
                       </button>
-                      <span class="text-white/70 text-sm self-center">Agregar sede</span>
+                      <span class="text-white/90 text-sm self-center">Agregar sede</span>
                     </div>
                     <div id="sedesList" class="space-y-2">
                       <!-- Sedes will be displayed here -->
@@ -421,7 +412,7 @@ class EmpresasModals {
                 
                 <!-- Roles -->
                 <div class="form-group form-group-full">
-                  <label class="block text-sm font-semibold text-white/90 dark:text-gray-200 mb-2">
+                  <label class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                     <i class="fas fa-user-tag text-purple-400 mr-2"></i>Roles
                   </label>
                   <div id="rolesContainer" class="empresa-roles-container">
@@ -429,7 +420,7 @@ class EmpresasModals {
                       <button type="button" class="ios-blur-btn ios-blur-btn-primary !p-2 !min-w-0" onclick="empresasModals.addRol()">
                         <i class="fas fa-plus"></i>
                       </button>
-                      <span class="text-white/70 text-sm self-center">Agregar rol</span>
+                      <span class="text-white/90 text-sm self-center">Agregar rol</span>
                     </div>
                     <div id="rolesList" class="space-y-2">
                       <!-- Roles will be displayed here -->
@@ -441,14 +432,14 @@ class EmpresasModals {
           </div>
           
           <!-- Modal Footer -->
-          <div class="ios-blur-footer flex flex-row items-center gap-3">
-            <button type="button" class="ios-blur-btn ios-blur-btn-secondary !text-xs !px-3 !py-2" onclick="empresasModals.closeCrudModal()">
+          <div class="ios-blur-footer flex flex-col sm:flex-row gap-3 sm:justify-end">
+            <button type="button" class="ios-blur-btn ios-blur-btn-secondary" onclick="empresasModals.closeCrudModal()">
               <i class="fas fa-times mr-2"></i>
-              <span class="text-xs font-medium">Cancelar</span>
+              <span class="text-sm font-medium">Cancelar</span>
             </button>
-            <button type="submit" form="empresaForm" class="ios-blur-btn ios-blur-btn-primary !text-xs !px-3 !py-2" id="empresaSubmitBtn">
-              <i class="fas fa-save mr-2"></i>
-              <span class="text-xs font-medium">Crear Empresa</span>
+            <button type="submit" form="empresaForm" class="ios-blur-btn ios-blur-btn-primary" id="empresaSubmitBtn">
+              <i class="fas fa-plus mr-2" id="empresaSubmitIcon"></i>
+              <span class="text-sm font-medium" id="empresaSubmitText">Crear Empresa</span>
             </button>
           </div>
         </div>
@@ -466,8 +457,8 @@ class EmpresasModals {
         <div class="ios-blur-modal-container flex flex-col w-full max-w-2xl !max-h-[92vh] sm:!max-h-[90vh] overflow-hidden">
           <!-- Modal Header -->
           <div class="ios-blur-header">
-            <div class="flex items-center justify-between w-full">
-              <div class="flex items-center space-x-3">
+            <div class="flex flex-col items-start gap-4 w-full sm:flex-row sm:items-center sm:justify-between relative">
+              <div class="flex items-center gap-3 flex-1 min-w-0">
                 <div class="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
                   <i class="fas fa-eye text-white text-xl"></i>
                 </div>
@@ -476,21 +467,21 @@ class EmpresasModals {
                   <p class="text-sm text-white/70 dark:text-gray-300">Información completa de la empresa seleccionada</p>
                 </div>
               </div>
-              <button type="button" class="ios-blur-btn ios-blur-btn-secondary !p-2 !min-w-0" onclick="empresasModals.closeViewModal()" aria-label="Cerrar modal">
+              <button type="button" class="ios-blur-btn ios-blur-btn-secondary shrink-0 !p-2 !min-w-0" onclick="empresasModals.closeViewModal()" aria-label="Cerrar modal">
                 <i class="fas fa-times text-lg"></i>
               </button>
             </div>
           </div>
           
           <!-- Modal Body -->
-          <div class="ios-blur-body">
+          <div class="ios-blur-body flex-1 min-h-0 !max-h-none">
             <div id="viewEmpresaContent">
               <!-- Details will be loaded here -->
             </div>
           </div>
           
           <!-- Modal Footer -->
-          <div class="ios-blur-footer">
+          <div class="ios-blur-footer flex flex-col sm:flex-row gap-3 sm:justify-end">
             <button type="button" class="ios-blur-btn ios-blur-btn-secondary" onclick="empresasModals.closeViewModal()">
               <i class="fas fa-times mr-2"></i>
               <span class="text-sm font-medium">Cerrar</span>
@@ -508,16 +499,16 @@ class EmpresasModals {
   createSuccessModal() {
     const modalHTML = `
       <!-- Client Update Success Modal - EXACT COPY FROM COMPANY TYPES -->
-      <div id="clientUpdateModal" class="ios-modal-backdrop hidden">
-        <div class="ios-blur-modal-container" id="updateModalContainer">
+      <div id="clientUpdateModal" class="ios-modal-backdrop modal-centered hidden">
+        <div class="ios-blur-modal-container flex flex-col w-full max-w-md !max-h-[85vh] overflow-hidden mx-auto" id="updateModalContainer">
           <div class="ios-blur-header text-center">
             <div class="client-update-icon mx-auto mb-4" id="updateModalIcon">
               <i class="fas fa-sync-alt text-4xl text-emerald-400" id="updateModalIconFa"></i>
             </div>
-            <h3 class="text-2xl font-bold text-white dark:text-white mb-2" id="updateModalTitle">Empresa Actualizada</h3>
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2" id="updateModalTitle">Empresa Actualizada</h3>
           </div>
-          <div class="ios-blur-body text-center">
-            <p class="text-white/80 dark:text-gray-300 text-lg mb-6" id="updateModalMessage">
+          <div class="ios-blur-body flex-1 min-h-0 !max-h-none text-center">
+            <p class="text-gray-700 dark:text-white/80 text-lg mb-6" id="updateModalMessage">
               La empresa se ha actualizado exitosamente.
             </p>
             <button class="ios-blur-btn ios-blur-btn-primary mx-auto" onclick="empresasModals.closeSuccessModal()">
@@ -656,8 +647,18 @@ class EmpresasModals {
       this.currentEditingEmpresa = null;
       
       // Set modal title and button text
-      document.getElementById('empresaModalTitle').innerHTML = '<i class="fas fa-plus"></i> Nueva Empresa';
-      document.getElementById('empresaSubmitBtn').innerHTML = '<i class="fas fa-save"></i> Crear Empresa';
+      const title = document.getElementById('empresaModalTitle');
+      if (title) {
+        title.textContent = 'Nueva Empresa';
+      }
+      const submitText = document.getElementById('empresaSubmitText');
+      if (submitText) {
+        submitText.textContent = 'Crear Empresa';
+      }
+      const submitIcon = document.getElementById('empresaSubmitIcon');
+      if (submitIcon) {
+        submitIcon.className = 'fas fa-plus mr-2';
+      }
       
       // Reset form
       this.resetForm();
@@ -686,8 +687,18 @@ class EmpresasModals {
       this.currentEditingEmpresa = empresaId;
       
       // Set modal title and button text
-      document.getElementById('empresaModalTitle').innerHTML = '<i class="fas fa-edit"></i> Editar Empresa';
-      document.getElementById('empresaSubmitBtn').innerHTML = '<i class="fas fa-save"></i> Actualizar Empresa';
+      const title = document.getElementById('empresaModalTitle');
+      if (title) {
+        title.textContent = 'Editar Empresa';
+      }
+      const submitText = document.getElementById('empresaSubmitText');
+      if (submitText) {
+        submitText.textContent = 'Actualizar Empresa';
+      }
+      const submitIcon = document.getElementById('empresaSubmitIcon');
+      if (submitIcon) {
+        submitIcon.className = 'fas fa-save mr-2';
+      }
       
       // Hide password field for edit
       document.getElementById('passwordGroup').style.display = 'none';
