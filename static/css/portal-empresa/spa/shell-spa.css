@@ -111,13 +111,3 @@ html:not(.dark) .spa-sidebar__section-title,
 body:not(.dark) .spa-sidebar__section-title {
   color: #64748b;
 }
-
-/* Ocultar residuos del panel de alertas global */
-#globalAlertsPanel,
-#globalAlertsPanelOverlay,
-.empresa-alerts-panel,
-.empresa-alerts-overlay {
-  display: none !important;
-  visibility: hidden !important;
-  pointer-events: none !important;
-}

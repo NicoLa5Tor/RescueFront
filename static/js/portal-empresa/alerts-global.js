@@ -25,6 +25,8 @@ class EmpresaAlertsGlobal {
         this.isHardwareFirstLoad = true;
         this.localStorageKey = 'empresa_alerts_shown'; // Clave localStorage
         this.hardwareStorageKey = 'empresa_hardware_shown';
+        this.badgeInitAttempts = 0;
+        this.maxBadgeInitAttempts = 10;
         
         this.initializeSystem();
     }
@@ -87,12 +89,18 @@ class EmpresaAlertsGlobal {
     }
     
     createNotificationBadge() {
+        if (this.headerButton || this.notificationBadge) {
+            return;
+        }
         // Buscar el botón de notificaciones del header
         const headerNotificationBtn = document.querySelector('.navbar__action[aria-label="Notifications"]');
         const notificationBadge = document.querySelector('.navbar__notification-badge');
         
         if (!headerNotificationBtn || !notificationBadge) {
-            //console.warn('🏢 GLOBAL ALERTS: No se encontró el icono de notificaciones del header');
+            this.badgeInitAttempts += 1;
+            if (this.badgeInitAttempts <= this.maxBadgeInitAttempts) {
+                setTimeout(() => this.createNotificationBadge(), 300);
+            }
             return;
         }
         
@@ -131,47 +139,47 @@ class EmpresaAlertsGlobal {
     createFloatingAlertsPanel() {
         const panelHTML = `
             <div id="globalAlertsPanel" class="empresa-alerts-panel hidden">
-                <div class="panel-header">
-                    <div class="panel-title">
+                <div class="empresa-alerts-panel__header">
+                    <div class="empresa-alerts-panel__title">
                         <i class="fas fa-bell"></i>
                         Centro de alertas
                     </div>
-                    <button class="panel-close" onclick="window.empresaAlertsGlobal.closeAlertsPanel()">
+                    <button class="empresa-alerts-panel__close" onclick="window.empresaAlertsGlobal.closeAlertsPanel()">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
 
-                <div class="panel-tabs">
-                    <button class="panel-tab active" data-tab="alerts" onclick="window.empresaAlertsGlobal.switchPanelTab('alerts')">
+                <div class="empresa-alerts-panel__tabs">
+                    <button class="empresa-alerts-panel__tab active" data-tab="alerts" onclick="window.empresaAlertsGlobal.switchPanelTab('alerts')">
                         Alertas
-                        <span class="panel-tab-count" id="alertsTabCount">0</span>
+                        <span class="empresa-alerts-panel__tab-count" id="alertsTabCount">0</span>
                     </button>
-                    <button class="panel-tab" data-tab="hardware" onclick="window.empresaAlertsGlobal.switchPanelTab('hardware')">
+                    <button class="empresa-alerts-panel__tab" data-tab="hardware" onclick="window.empresaAlertsGlobal.switchPanelTab('hardware')">
                         Hardware
-                        <span class="panel-tab-count" id="hardwareTabCount">0</span>
+                        <span class="empresa-alerts-panel__tab-count" id="hardwareTabCount">0</span>
                     </button>
                 </div>
                 
-                <div class="panel-body" id="globalAlertsList">
-                    <div class="loading-state">
+                <div class="empresa-alerts-panel__body" id="globalAlertsList">
+                    <div class="empresa-alerts-panel__loading">
                         <i class="fas fa-spinner fa-spin"></i>
                         <span>Cargando alertas...</span>
                     </div>
                 </div>
 
-                <div class="panel-body hidden" id="globalHardwareList">
-                    <div class="loading-state">
+                <div class="empresa-alerts-panel__body hidden" id="globalHardwareList">
+                    <div class="empresa-alerts-panel__loading">
                         <i class="fas fa-spinner fa-spin"></i>
                         <span>Verificando hardware...</span>
                     </div>
                 </div>
                 
-                <div class="panel-footer">
-                    <a href="/empresa/alertas" class="panel-action-btn">
+                <div class="empresa-alerts-panel__footer">
+                    <a href="/empresa/alertas" class="empresa-alerts-panel__action">
                         <i class="fas fa-list"></i>
                         Ver Todas las Alertas
                     </a>
-                    <button class="panel-action-btn secondary" onclick="window.empresaAlertsGlobal.refreshAlerts()">
+                    <button class="empresa-alerts-panel__action empresa-alerts-panel__action--secondary" onclick="window.empresaAlertsGlobal.refreshAlerts()">
                         <i class="fas fa-sync-alt"></i>
                         Actualizar
                     </button>
@@ -191,40 +199,6 @@ class EmpresaAlertsGlobal {
     injectStyles() {
         const styles = `
             <style id="empresaAlertsGlobalStyles">
-                /* Badge de notificación */
-                .empresa-alerts-badge {
-                    position: fixed;
-                    top: 20px;
-                    right: 20px;
-                    background: linear-gradient(135deg, #dc2626, #b91c1c);
-                    color: white;
-                    padding: 12px 16px;
-                    border-radius: 12px;
-                    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
-                    cursor: pointer;
-                    z-index: 1000;
-                    display: flex;
-                    align-items: center;
-                    gap: 12px;
-                    transition: all 0.3s ease;
-                    backdrop-filter: blur(10px);
-                    border: 1px solid rgba(255, 255, 255, 0.1);
-                }
-                
-                .empresa-alerts-badge:hover {
-                    transform: translateY(-2px);
-                    box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
-                }
-                
-                .empresa-alerts-badge.pulse {
-                    animation: alertPulse 2s infinite;
-                }
-                
-                @keyframes alertPulse {
-                    0%, 100% { transform: scale(1); }
-                    50% { transform: scale(1.05); }
-                }
-                
                 /* Animación de brillo para el badge del header */
                 @keyframes alertGlow {
                     0%, 100% {
@@ -237,48 +211,13 @@ class EmpresaAlertsGlobal {
                     }
                 }
                 
-                .badge-icon {
-                    position: relative;
-                    font-size: 20px;
-                }
-                
-                .badge-count {
-                    position: absolute;
-                    top: -8px;
-                    right: -8px;
-                    background: #fbbf24;
-                    color: #1f2937;
-                    font-size: 11px;
-                    font-weight: bold;
-                    padding: 2px 6px;
-                    border-radius: 10px;
-                    min-width: 18px;
-                    text-align: center;
-                }
-                
-                .badge-text {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 2px;
-                }
-                
-                .badge-title {
-                    font-weight: 600;
-                    font-size: 14px;
-                }
-                
-                .badge-subtitle {
-                    font-size: 11px;
-                    opacity: 0.8;
-                }
-                
                 /* Panel flotante */
                 .empresa-alerts-panel {
                     position: fixed;
                     top: 50%;
                     right: 20px;
                     transform: translateY(-50%);
-                    width: 400px;
+                    width: 420px;
                     max-height: 80vh;
                     background: rgba(17, 24, 39, 0.95);
                     backdrop-filter: blur(20px);
@@ -297,7 +236,7 @@ class EmpresaAlertsGlobal {
                     pointer-events: none;
                 }
                 
-                .panel-header {
+                .empresa-alerts-panel__header {
                     padding: 20px;
                     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
                     display: flex;
@@ -305,14 +244,14 @@ class EmpresaAlertsGlobal {
                     justify-content: space-between;
                 }
 
-                .panel-tabs {
+                .empresa-alerts-panel__tabs {
                     display: flex;
                     gap: 8px;
                     padding: 12px 16px;
                     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
                 }
 
-                .panel-tab {
+                .empresa-alerts-panel__tab {
                     flex: 1;
                     background: rgba(255, 255, 255, 0.08);
                     border: 1px solid rgba(255, 255, 255, 0.12);
@@ -329,13 +268,13 @@ class EmpresaAlertsGlobal {
                     transition: all 0.2s ease;
                 }
 
-                .panel-tab.active {
+                .empresa-alerts-panel__tab.active {
                     background: rgba(59, 130, 246, 0.25);
                     color: #ffffff;
                     border-color: rgba(59, 130, 246, 0.45);
                 }
 
-                .panel-tab-count {
+                .empresa-alerts-panel__tab-count {
                     min-width: 20px;
                     height: 20px;
                     border-radius: 999px;
@@ -348,7 +287,7 @@ class EmpresaAlertsGlobal {
                     justify-content: center;
                 }
                 
-                .panel-title {
+                .empresa-alerts-panel__title {
                     color: white;
                     font-weight: 600;
                     font-size: 16px;
@@ -358,11 +297,11 @@ class EmpresaAlertsGlobal {
                     flex: 1;
                 }
                 
-                .panel-title i {
+                .empresa-alerts-panel__title i {
                     color: #fbbf24;
                 }
                 
-                .panel-close {
+                .empresa-alerts-panel__close {
                     background: none;
                     border: none;
                     color: rgba(255, 255, 255, 0.6);
@@ -373,65 +312,65 @@ class EmpresaAlertsGlobal {
                     transition: all 0.2s ease;
                 }
                 
-                .panel-close:hover {
+                .empresa-alerts-panel__close:hover {
                     background: rgba(255, 255, 255, 0.1);
                     color: white;
                 }
                 
-                .panel-body {
+                .empresa-alerts-panel__body {
                     flex: 1;
                     overflow-y: auto;
                     padding: 0;
                     max-height: 400px;
                 }
 
-                .panel-body.hidden {
+                .empresa-alerts-panel__body.hidden {
                     display: none;
                 }
                 
-                .loading-state {
+                .empresa-alerts-panel__loading {
                     padding: 40px 20px;
                     text-align: center;
                     color: rgba(255, 255, 255, 0.6);
                     font-size: 14px;
                 }
                 
-                .loading-state i {
+                .empresa-alerts-panel__loading i {
                     font-size: 24px;
                     margin-bottom: 12px;
                     display: block;
                 }
                 
-                .alert-item {
+                .empresa-alerts-panel__item {
                     padding: 16px 20px;
                     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
                     transition: all 0.2s ease;
                     cursor: pointer;
                 }
                 
-                .alert-item:hover {
+                .empresa-alerts-panel__item:hover {
                     background: rgba(255, 255, 255, 0.05);
                 }
                 
-                .alert-item:last-child {
+                .empresa-alerts-panel__item:last-child {
                     border-bottom: none;
                 }
                 
-                .alert-header {
+                .empresa-alerts-panel__item-header {
                     display: flex;
                     align-items: center;
                     justify-content: space-between;
                     margin-bottom: 8px;
                 }
                 
-                .alert-title {
+                .empresa-alerts-panel__item-title {
                     color: white;
                     font-weight: 600;
                     font-size: 14px;
                     flex: 1;
                 }
                 
-                .alert-priority {
+                .empresa-alerts-panel__priority {
                     font-size: 10px;
                     font-weight: 700;
                     padding: 2px 8px;
@@ -439,82 +378,46 @@ class EmpresaAlertsGlobal {
                     text-transform: uppercase;
                 }
                 
-                .alert-priority.critica {
+                .empresa-alerts-panel__priority.critica {
                     background: #dc2626;
                     color: white;
                 }
                 
-                .alert-priority.alta {
+                .empresa-alerts-panel__priority.alta {
                     background: #ea580c;
                     color: white;
                 }
                 
-                .alert-priority.media {
+                .empresa-alerts-panel__priority.media {
                     background: #eab308;
                     color: #1f2937;
                 }
                 
-                .alert-priority.baja {
+                .empresa-alerts-panel__priority.baja {
                     background: #16a34a;
                     color: white;
                 }
                 
-                .alert-info {
+                .empresa-alerts-panel__item-info {
                     color: rgba(255, 255, 255, 0.7);
                     font-size: 12px;
                     line-height: 1.4;
                 }
                 
-                .alert-time {
+                .empresa-alerts-panel__item-meta {
                     color: rgba(255, 255, 255, 0.5);
                     font-size: 11px;
                     margin-top: 4px;
                 }
-
-                .hardware-status-item {
-                    padding: 16px 20px;
-                    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-                    transition: all 0.2s ease;
-                    cursor: pointer;
-                }
-
-                .hardware-status-item:hover {
-                    background: rgba(255, 255, 255, 0.05);
-                }
-
-                .hardware-status-item:last-child {
-                    border-bottom: none;
-                }
-
-                .hardware-status-title {
-                    color: white;
-                    font-weight: 600;
-                    font-size: 14px;
-                    margin-bottom: 6px;
-                }
-
-                .hardware-status-info {
-                    color: rgba(255, 255, 255, 0.7);
-                    font-size: 12px;
-                    line-height: 1.4;
-                }
-
-                .hardware-status-id {
-                    color: rgba(255, 255, 255, 0.45);
-                    font-size: 11px;
-                    margin-top: 4px;
-                    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-                }
-
                 
-                .panel-footer {
+                .empresa-alerts-panel__footer {
                     padding: 16px 20px;
                     border-top: 1px solid rgba(255, 255, 255, 0.1);
                     display: flex;
                     gap: 8px;
                 }
                 
-                .panel-action-btn {
+                .empresa-alerts-panel__action {
                     flex: 1;
                     background: linear-gradient(135deg, #3b82f6, #2563eb);
                     color: white;
@@ -533,17 +436,17 @@ class EmpresaAlertsGlobal {
                     gap: 6px;
                 }
                 
-                .panel-action-btn.secondary {
+                .empresa-alerts-panel__action--secondary {
                     background: rgba(255, 255, 255, 0.1);
                     border: 1px solid rgba(255, 255, 255, 0.2);
                 }
                 
-                .panel-action-btn:hover {
+                .empresa-alerts-panel__action:hover {
                     transform: translateY(-1px);
                     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
                 }
                 
-                .panel-action-btn.secondary:hover {
+                .empresa-alerts-panel__action--secondary:hover {
                     background: rgba(255, 255, 255, 0.2);
                     box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
                 }
@@ -577,16 +480,6 @@ class EmpresaAlertsGlobal {
                         width: calc(100vw - 40px);
                         right: 20px;
                         left: 20px;
-                    }
-                    
-                    .empresa-alerts-badge {
-                        right: 10px;
-                        top: 10px;
-                        padding: 8px 12px;
-                    }
-                    
-                    .badge-text {
-                        display: none;
                     }
                 }
             </style>
@@ -717,18 +610,18 @@ class EmpresaAlertsGlobal {
             const priorityClass = alert.prioridad || 'media';
             
             return `
-                <div class="alert-item" onclick="window.empresaAlertsGlobal.goToAlertDetails('${alert._id}')">
-                    <div class="alert-header">
-                        <div class="alert-title">
+                <div class="empresa-alerts-panel__item" onclick="window.empresaAlertsGlobal.goToAlertDetails('${alert._id}')">
+                    <div class="empresa-alerts-panel__item-header">
+                        <div class="empresa-alerts-panel__item-title">
                             ${alert.hardware_nombre || alert.nombre_alerta || 'Alerta de Sistema'}
                         </div>
-                        <span class="alert-priority ${priorityClass}">${priorityClass}</span>
+                        <span class="empresa-alerts-panel__priority ${priorityClass}">${priorityClass}</span>
                     </div>
-                    <div class="alert-info">
+                    <div class="empresa-alerts-panel__item-info">
                         <div><strong>${alert.empresa_nombre}</strong> - ${alert.sede}</div>
                         ${alert.descripcion ? `<div>${alert.descripcion.substring(0, 80)}...</div>` : ''}
                     </div>
-                    <div class="alert-time">${timeAgo}</div>
+                    <div class="empresa-alerts-panel__item-meta">${timeAgo}</div>
                 </div>
             `;
         }).join('');
@@ -752,14 +645,14 @@ class EmpresaAlertsGlobal {
         }
 
         const itemsHTML = items.map(item => `
-            <div class="hardware-status-item" role="button" tabindex="0" onclick="window.empresaAlertsGlobal.goToHardwareDetails('${item.hardwareId || ''}')">
-                <div class="hardware-status-title">
+            <div class="empresa-alerts-panel__item" role="button" tabindex="0" onclick="window.empresaAlertsGlobal.goToHardwareDetails('${item.hardwareId || ''}')">
+                <div class="empresa-alerts-panel__item-title">
                     ${item.hardwareName}
                 </div>
-                <div class="hardware-status-info">
+                <div class="empresa-alerts-panel__item-info">
                     <div><strong>${item.empresaName}</strong> - ${item.sedeName}</div>
                 </div>
-                ${item.hardwareId ? `<div class="hardware-status-id">ID: ${item.hardwareId}</div>` : ''}
+                ${item.hardwareId ? `<div class="empresa-alerts-panel__item-meta">ID: ${item.hardwareId}</div>` : ''}
             </div>
         `).join('');
 
@@ -781,7 +674,7 @@ class EmpresaAlertsGlobal {
     switchPanelTab(tab) {
         const alertsList = document.getElementById('globalAlertsList');
         const hardwareList = document.getElementById('globalHardwareList');
-        const tabs = this.alertsPanel ? this.alertsPanel.querySelectorAll('.panel-tab') : [];
+        const tabs = this.alertsPanel ? this.alertsPanel.querySelectorAll('.empresa-alerts-panel__tab') : [];
 
         if (!alertsList || !hardwareList) return;
 
@@ -830,7 +723,7 @@ class EmpresaAlertsGlobal {
         const panel = document.getElementById('globalAlertsList');
         if (panel) {
             panel.innerHTML = `
-                <div class="loading-state" style="color: #f87171;">
+                <div class="empresa-alerts-panel__loading" style="color: #f87171;">
                     <i class="fas fa-exclamation-triangle"></i>
                     <span>Error cargando alertas</span>
                 </div>
@@ -842,7 +735,7 @@ class EmpresaAlertsGlobal {
         const panel = document.getElementById('globalHardwareList');
         if (panel) {
             panel.innerHTML = `
-                <div class="loading-state" style="color: #f87171;">
+                <div class="empresa-alerts-panel__loading" style="color: #f87171;">
                     <i class="fas fa-exclamation-triangle"></i>
                     <span>Error cargando estado fisico</span>
                 </div>
@@ -915,6 +808,14 @@ class EmpresaAlertsGlobal {
                 this.loadHardwareStatus();
             }
         });
+
+        document.addEventListener('click', (event) => {
+            const target = event.target.closest('.navbar__action[aria-label="Notifications"]');
+            if (target) {
+                event.preventDefault();
+                this.toggleAlertsPanel();
+            }
+        });
     }
     
     // Métodos públicos para interacción UI
@@ -977,7 +878,7 @@ class EmpresaAlertsGlobal {
     }
     
     async refreshAlerts() {
-        const refreshBtn = document.querySelector('.panel-action-btn.secondary');
+        const refreshBtn = document.querySelector('.empresa-alerts-panel__action--secondary');
         if (refreshBtn) {
             const originalHTML = refreshBtn.innerHTML;
             refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Actualizando...';
@@ -1259,6 +1160,11 @@ class EmpresaAlertsGlobal {
         // Guardar el ID de la alerta para abrir automáticamente
         sessionStorage.setItem('openAlertId', alertId);
         //console.log('🔗 DEBUG: ID guardado en sessionStorage:', alertId);
+
+        if (window.empresaSpa && typeof window.empresaSpa.setView === 'function') {
+            this.openAlertInSpa(alertId);
+            return;
+        }
         
         // Redirigir a la vista de alertas
         //console.log('🔗 DEBUG: Redirigiendo a /empresa/alertas');
@@ -1270,7 +1176,64 @@ class EmpresaAlertsGlobal {
         if (hardwareId) {
             sessionStorage.setItem('openHardwareId', hardwareId);
         }
+
+        if (window.empresaSpa && typeof window.empresaSpa.setView === 'function') {
+            this.openHardwareInSpa(hardwareId);
+            return;
+        }
+
         window.location.href = '/empresa/hardware';
+    }
+
+    openAlertInSpa(alertId) {
+        const triggerOpen = () => {
+            setTimeout(() => {
+                if (typeof window.showAlertDetails === 'function') {
+                    window.showAlertDetails(alertId);
+                }
+            }, 700);
+        };
+
+        if (window.empresaSpa?.getActiveView && window.empresaSpa.getActiveView() === 'alertas') {
+            triggerOpen();
+            return;
+        }
+
+        const onViewChange = (event) => {
+            if (event?.detail?.view === 'alertas') {
+                document.removeEventListener('empresa:spa:view-change', onViewChange);
+                triggerOpen();
+            }
+        };
+
+        document.addEventListener('empresa:spa:view-change', onViewChange);
+        window.empresaSpa.setView('alertas');
+    }
+
+    openHardwareInSpa(hardwareId) {
+        const triggerOpen = () => {
+            if (!hardwareId) return;
+            setTimeout(() => {
+                if (typeof window.viewHardware === 'function') {
+                    window.viewHardware(hardwareId);
+                }
+            }, 700);
+        };
+
+        if (window.empresaSpa?.getActiveView && window.empresaSpa.getActiveView() === 'hardware') {
+            triggerOpen();
+            return;
+        }
+
+        const onViewChange = (event) => {
+            if (event?.detail?.view === 'hardware') {
+                document.removeEventListener('empresa:spa:view-change', onViewChange);
+                triggerOpen();
+            }
+        };
+
+        document.addEventListener('empresa:spa:view-change', onViewChange);
+        window.empresaSpa.setView('hardware');
     }
     
     // MÉTODOS DE TESTING/DEBUGGING
@@ -1442,14 +1405,12 @@ class EmpresaAlertsGlobal {
         this.stopAutoRefresh();
         
         // Remover elementos UI
-        const badge = document.getElementById('globalAlertsBadge');
         const panel = document.getElementById('globalAlertsPanel');
         const overlay = document.getElementById('globalAlertsPanelOverlay');
         const styles = document.getElementById('empresaAlertsGlobalStyles');
         const newAlertModal = document.getElementById('newAlertNotificationModal');
         const newAlertOverlay = document.getElementById('newAlertNotificationOverlay');
         
-        if (badge) badge.remove();
         if (panel) panel.remove();
         if (overlay) overlay.remove();
         if (styles) styles.remove();
@@ -1475,3 +1436,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 500);
     }
 });
+
+window.openEmpresaAlertsPanel = function () {
+    if (typeof EmpresaAlertsGlobal === 'undefined') return;
+    if (!window.empresaAlertsGlobal) {
+        window.empresaAlertsGlobal = new EmpresaAlertsGlobal();
+    }
+    if (window.empresaAlertsGlobal) {
+        window.empresaAlertsGlobal.openAlertsPanel();
+        window.empresaAlertsGlobal.switchPanelTab('alerts');
+    }
+};
