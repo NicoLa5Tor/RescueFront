@@ -106,6 +106,7 @@
 
 <div id="alertDetailModal" class="ios-modal-backdrop hidden">
   <div class="ios-blur-modal-container flex flex-col w-full max-w-6xl !max-h-[92vh] sm:!max-h-[90vh] overflow-hidden">
+    <!-- Modal Header -->
     <div class="ios-blur-header">
       <div class="flex flex-col items-start gap-4 w-full sm:flex-row sm:items-center sm:justify-between">
         <div class="flex items-center gap-3 flex-1 min-w-0">
@@ -123,11 +124,14 @@
       </div>
     </div>
     
+    <!-- Modal Body -->
     <div class="ios-blur-body flex-1 min-h-0 !max-h-none">
       <div id="alertDetailsContent" class="space-y-6">
+        <!-- Content will be populated by JavaScript -->
       </div>
     </div>
     
+    <!-- Modal Footer -->
     <div class="ios-blur-footer flex flex-col sm:flex-row gap-3 sm:justify-end">
       <button type="button" class="ios-blur-btn ios-blur-btn-secondary" onclick="closeAlertModal()">
         <i class="fas fa-times mr-2"></i>
@@ -143,6 +147,7 @@
 
 <div id="deactivateAlertModal" class="ios-modal-backdrop hidden">
   <div class="ios-blur-modal-container flex flex-col w-full max-w-md !max-h-[85vh] overflow-hidden mx-auto">
+    <!-- Modal Header -->
     <div class="ios-blur-header">
       <div class="flex flex-col items-start gap-4 w-full sm:flex-row sm:items-center sm:justify-between">
         <div class="flex items-center gap-3 flex-1 min-w-0">
@@ -160,6 +165,7 @@
       </div>
     </div>
     
+    <!-- Modal Body -->
     <div class="ios-blur-body flex-1 min-h-0 !max-h-none">
       <div class="text-center">
         <p class="text-white/80 text-lg mb-6" id="deactivateModalMessage">
@@ -167,25 +173,34 @@
         </p>
       </div>
       
+      <!-- Campo de mensaje de desactivación -->
       <div class="mt-4">
         <label for="mensajeDesactivacion" class="block text-white/80 text-sm font-medium mb-2">
           <i class="fas fa-comment mr-2"></i>Mensaje de desactivación
         </label>
-        <textarea id="mensajeDesactivacion" rows="3" class="ios-textarea w-full" placeholder="Ingresa el motivo de desactivación..."></textarea>
-        <div class="text-right text-xs text-white/60 mt-1">
-          <span id="mensajeDesactivacionCount">0</span>/200
+        <textarea 
+          id="mensajeDesactivacion" 
+          rows="3"
+          maxlength="500"
+          class="w-full px-3 py-2 bg-black/20 border border-white/20 rounded-lg text-white placeholder-white/50 focus:border-orange-400 focus:ring-1 focus:ring-orange-400 transition-colors resize-none"
+          placeholder="Describe el motivo de la desactivación (máx. 500 caracteres)..."
+        ></textarea>
+        <div class="flex justify-between mt-1">
+          <span class="text-white/50 text-xs">Será incluido en las notificaciones</span>
+          <span id="charCounter" class="text-white/50 text-xs">0/500</span>
         </div>
       </div>
     </div>
     
+    <!-- Modal Footer -->
     <div class="ios-blur-footer flex flex-col sm:flex-row gap-3 sm:justify-end">
       <button type="button" class="ios-blur-btn ios-blur-btn-secondary" onclick="closeDeactivateModal()">
         <i class="fas fa-times mr-2"></i>
         Cancelar
       </button>
-      <button type="button" class="ios-blur-btn ios-blur-btn-primary" onclick="confirmDeactivateAlert()" id="confirmDeactivateBtn">
-        <i class="fas fa-power-off mr-2"></i>
-        Confirmar
+      <button type="button" class="ios-blur-btn ios-blur-btn-primary" id="deactivateConfirmBtn" onclick="confirmDeactivateAlert()">
+        <i class="fas fa-power-off mr-2" id="deactivateConfirmIcon"></i>
+        <span id="deactivateConfirmText">Desactivar</span>
       </button>
     </div>
   </div>
@@ -193,6 +208,7 @@
 
 <div id="createAlertModal" class="ios-modal-backdrop hidden">
   <div class="ios-blur-modal-container flex flex-col w-full max-w-3xl sm:max-w-4xl lg:max-w-5xl xl:max-w-6xl !max-h-[92vh] sm:!max-h-[90vh] overflow-hidden">
+    <!-- Modal Header -->
     <div class="ios-blur-header">
       <div class="flex flex-col items-start gap-4 w-full sm:flex-row sm:items-center sm:justify-between">
         <div class="flex items-center gap-3 flex-1 min-w-0">
@@ -210,8 +226,10 @@
       </div>
     </div>
     
+    <!-- Modal Body -->
     <div class="ios-blur-body flex-1 min-h-0 !max-h-none">
       <form id="createAlertForm" class="space-y-6">
+        <!-- Tipo de Alerta -->
         <div class="form-group">
           <label for="tipoAlerta" class="block text-sm font-semibold text-white/90 mb-2">
             <i class="fas fa-exclamation-triangle text-red-400 mr-2"></i>Tipo de Alerta *
@@ -224,23 +242,26 @@
           </p>
         </div>
 
+        <!-- Sede -->
         <div class="form-group">
           <label for="sedeAlerta" class="block text-sm font-semibold text-white/90 mb-2">
             <i class="fas fa-building text-blue-400 mr-2"></i>Sede de la Empresa *
           </label>
           <select id="sedeAlerta" class="ios-blur-input" required>
             <option value="">Seleccionar sede...</option>
+            <!-- Las sedes se cargarán dinámicamente -->
           </select>
         </div>
 
+        <!-- Dirección -->
         <div class="form-group">
           <label for="direccionAlerta" class="block text-sm font-semibold text-white/90 mb-2">
             <i class="fas fa-map-marker-alt text-purple-400 mr-2"></i>Dirección de la Emergencia *
           </label>
-          <input
-            type="text"
-            id="direccionAlerta"
-            class="ios-blur-input"
+          <input 
+            type="text" 
+            id="direccionAlerta" 
+            class="ios-blur-input" 
             required
             maxlength="200"
             placeholder="Ej: Calle 13 #10-15, Bogotá, Colombia"
@@ -251,6 +272,7 @@
           </div>
         </div>
 
+        <!-- Prioridad -->
         <div class="form-group">
           <label for="prioridadAlerta" class="block text-sm font-semibold text-white/90 mb-2">
             <i class="fas fa-star text-yellow-400 mr-2"></i>Prioridad *
@@ -264,14 +286,15 @@
           </select>
         </div>
 
+        <!-- Descripción -->
         <div class="form-group">
           <label for="descripcionAlerta" class="block text-sm font-semibold text-white/90 mb-2">
             <i class="fas fa-align-left text-green-400 mr-2"></i>Descripción de la Emergencia *
           </label>
-          <textarea
-            id="descripcionAlerta"
-            class="ios-blur-input !min-h-[6rem] resize-y"
-            rows="4"
+          <textarea 
+            id="descripcionAlerta" 
+            class="ios-blur-input !min-h-[6rem] resize-y" 
+            rows="4" 
             required
             maxlength="500"
             placeholder="Describe la situación de emergencia, ubicación específica, personas afectadas, etc..."
@@ -282,6 +305,7 @@
           </div>
         </div>
 
+        <!-- Información adicional -->
         <div class="bg-black/20 rounded-lg p-4 border border-white/10">
           <h4 class="text-white font-medium mb-3 flex items-center">
             <i class="fas fa-info-circle text-blue-400 mr-2"></i>
@@ -296,6 +320,7 @@
       </form>
     </div>
     
+    <!-- Modal Footer -->
     <div class="ios-blur-footer flex flex-col sm:flex-row gap-3 sm:justify-end">
       <button type="button" class="ios-blur-btn ios-blur-btn-secondary" onclick="closeCreateAlertModal()">
         <i class="fas fa-times mr-2"></i>
