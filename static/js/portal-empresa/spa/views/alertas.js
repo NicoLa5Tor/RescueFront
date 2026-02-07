@@ -26,6 +26,18 @@ const buildAlertsApiUrl = window.__buildApiUrl || function(path = '') {
     const normalizedPath = path.startsWith('/') ? path : `/${path}`;
     return `${normalizedBase}${normalizedPath}`;
 };
+
+function resolveAlertImageUrl(imageUrl) {
+    if (!imageUrl) return '';
+    if (/^data:/i.test(imageUrl)) return imageUrl;
+    if (/^https?:\/\//i.test(imageUrl)) return imageUrl;
+    if (imageUrl.startsWith('/proxy/')) return imageUrl;
+    try {
+        return buildAlertsApiUrl(imageUrl);
+    } catch (error) {
+        return imageUrl;
+    }
+}
 let reconnectAttempts = 0;
 const maxReconnectAttempts = 5;
 const reconnectDelay = 3000; // 3 segundos
@@ -616,6 +628,8 @@ async function showAlertDetails(alertId) {
     content.innerHTML = generateModalContent(alert, isUserOrigin, isHardwareOrigin);
     
     // Configurar botón de toggle
+    toggleBtn.style.display = '';
+    toggleBtn.style.display = '';
     toggleBtn.innerHTML = `<i class="fas fa-${alert.activo ? 'toggle-off' : 'toggle-on'} mr-2"></i><span id="toggleStatusText">${alert.activo ? 'Desactivar' : 'Activar'}</span>`;
     
     // Abrir modal
@@ -816,6 +830,8 @@ function generateModalContent(alert, isUserOrigin, isHardwareOrigin) {
     //console.log('🔍 Topics otros hardware:', alert.topics_otros_hardware);
     //console.log('🔍 Data completa:', alert.data);
     
+    const alertImageUrl = resolveAlertImageUrl(alert.image_alert);
+
     return `
         <!-- Header detallado con información del origen de la alerta -->
         <div class="mb-4 p-4 rounded-lg ${
@@ -880,13 +896,13 @@ function generateModalContent(alert, isUserOrigin, isHardwareOrigin) {
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
                 <!-- Imagen y tipo de alerta con diferenciación por origen -->
                 <div class="lg:col-span-1">
-                    ${alert.image_alert ? `
+                    ${alertImageUrl ? `
                         <div class="modal-section bg-gradient-to-br ${
                             isUserOrigin ? 'from-purple-500 to-pink-600' : 
                             isHardwareOrigin ? 'from-blue-500 to-cyan-600' : 
                             'from-gray-500 to-gray-600'
                         } rounded-lg p-4 text-center h-full">
-                            <img src="${alert.image_alert}" 
+                            <img src="${alertImageUrl}" 
                                  alt="${alert.nombre_alerta || 'Tipo de alerta'}" 
                                  class="w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 object-contain rounded-lg mb-3 border-2 border-white/20 modal-image mx-auto"
                                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
@@ -2828,6 +2844,7 @@ window.generateSpecificLocationContent = generateSpecificLocationContent;
 window.generateAssociatedHardwareContent = generateAssociatedHardwareContent;
 window.generateOriginDetailsContent = generateOriginDetailsContent;
 window.toggleMapProvider = toggleMapProvider;
+window.resolveAlertImageUrl = resolveAlertImageUrl;
 window.extractCoordsFromGoogleMapsUrl = extractCoordsFromGoogleMapsUrl;
 window.extractCoordsFromOSMUrl = extractCoordsFromOSMUrl;
 window.extractCoordsFromOSMEmbed = extractCoordsFromOSMEmbed;

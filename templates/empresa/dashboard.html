@@ -153,9 +153,13 @@
   <section class="spa-view is-hidden" data-spa-section="alertas">
     {% include "empresa/spa/views/alertas.html" %}
   </section>
+  <section class="spa-view is-hidden" data-spa-section="alertas-inactivas">
+    {% include "empresa/spa/views/alertas_inactivas.html" %}
+  </section>
   {% endcall %}
   {% endblock %}
 {% endcall %}
+{% include "empresa/spa/views/alertas_detail_modal.html" %}
 {% endblock %}
 
 {% block extra_js %}
@@ -201,6 +205,7 @@
 <script src="{{ url_for('static', filename='js/portal-empresa/spa/views/usuarios-view.js') }}"></script>
 <script src="{{ url_for('static', filename='js/portal-empresa/spa/views/alertas.js') }}"></script>
 <script src="{{ url_for('static', filename='js/portal-empresa/spa/views/alertas-create.js') }}"></script>
+<script src="{{ url_for('static', filename='js/portal-empresa/spa/views/alertas-inactivas.js') }}"></script>
 <script>
   if (typeof EndpointTestClient !== 'undefined' && !window.apiClient) {
     window.apiClient = new EndpointTestClient();
