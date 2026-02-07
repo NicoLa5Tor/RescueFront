@@ -146,7 +146,7 @@ class LoginHandler {
             switch(role) {
                 case 'super_admin':
                     //console.log('🛡️ Redirigiendo a Super Admin Dashboard');
-                    window.location.href = '/admin/super-dashboard';
+                    window.location.href = '/admin';
                     break;
                 case 'empresa':
                     //console.log('🏢 Redirigiendo a Dashboard de Empresa');
@@ -154,11 +154,11 @@ class LoginHandler {
                     break;
                 default:
                     //console.warn('⚠️ Rol desconocido, redirigiendo a dashboard por defecto');
-                    window.location.href = '/admin/super-dashboard';
+                    window.location.href = '/admin';
             }
         } else {
             //console.warn('⚠️ No se encontró información de usuario/rol, redirigiendo por defecto');
-            window.location.href = '/admin/super-dashboard';
+            window.location.href = '/admin';
         }
     }
 

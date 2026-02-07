@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Admin SPA - Rescue{% endblock %}
+
+{% block extra_css %}
+<link href="{{ url_for('static', filename='css/output.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/spa/variables.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/spa/spa-global.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/global-text-theme.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/portal-empresa/spa/shell-spa.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/portal-empresa/spa/navbar-spa.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/portal-empresa/spa/sidebar-spa.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/portal-empresa/spa/views/dashboard.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/super-dashboard/super-dashboard-main.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block footer %}{% endblock %}
+
+{% block navbar %}{% endblock %}
+
+{% block content %}
+{% from "admin/spa/shell.html" import spa_shell %}
+{% call spa_shell() %}
+  {% from "admin/spa/container.html" import spa_container %}
+  {% call spa_container(default_view='dashboard') %}
+  <section class="spa-view" data-spa-section="dashboard">
+    {% include "admin/spa/views/dashboard.html" %}
+  </section>
+  {% endcall %}
+{% endcall %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  window.currentUser = {{ session.get('user') | tojson }};
+</script>
+<script src="{{ url_for('static', filename='js/api-client.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/admin/spa/admin-dashboard.js') }}"></script>
+{% endblock %}

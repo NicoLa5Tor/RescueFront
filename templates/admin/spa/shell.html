@@ -1,0 +1,11 @@
+{% macro spa_shell() %}
+{% include "admin/spa/parts/navbar.html" %}
+
+<div class="min-h-screen spa-shell">
+  {% include "admin/spa/parts/sidebar.html" %}
+
+  <main class="main-content">
+    {{ caller() }}
+  </main>
+</div>
+{% endmacro %}

@@ -112,7 +112,7 @@ def require_role(allowed_roles):
                     if user_role == 'empresa':
                         return redirect(url_for('empresa_dashboard'))
                     elif user_role == 'super_admin':
-                        return redirect(url_for('super_admin_dashboard'))
+                        return redirect(url_for('admin_dashboard'))
                     else:
                         # Unknown role, redirect to login
                         return redirect(url_for('login'))
@@ -203,7 +203,7 @@ def login():
             if user_role == 'empresa':
                 response = make_response(redirect(url_for('empresa_dashboard')))
             else:
-                response = make_response(redirect(url_for('super_admin_dashboard')))
+                response = make_response(redirect(url_for('admin_dashboard')))
             
             # TRANSFERIR las cookies del backend usando requests.cookies
             for cookie in res.cookies:
@@ -396,16 +396,16 @@ def proxy_api(endpoint):
 @app.route('/admin')
 @require_role(['super_admin'])
 def admin_dashboard():
-    """Dashboard principal - Redirigir automáticamente al super-dashboard para admin"""
-    # Redirigir automáticamente al super-dashboard
-    return redirect(url_for('super_admin_dashboard'))
+    """Dashboard principal SPA (maqueta)"""
+    return render_template('admin/spa_dashboard.html')
 
 @app.route('/admin/super-dashboard')
 @require_role(['super_admin'])
 def super_admin_dashboard():
-    """Super Admin Dashboard - Exclusivo para super_admin - DATOS REALES ÚNICAMENTE"""
+    """Legacy dashboard - redirige a la SPA admin."""
+    return redirect(url_for('admin_dashboard'))
+
     #print(f"🔥 SUPER ADMIN DASHBOARD: Iniciando carga de datos REALES...")
-    
     try:
         auth_token = request.cookies.get('auth_token')
         if not auth_token:
