@@ -1,9 +1,10 @@
 class AdminSpaDashboard {
   constructor() {
-    this.client = new EndpointTestClient();
+    this.client = window.AdminSpaApi?.getClient?.() || new EndpointTestClient();
     this.activityChart = null;
     this.distributionChart = null;
     this.refreshInterval = null;
+    this.isActive = true;
     this.loadDashboardData();
     this.startAutoRefresh();
     this.observeThemeChanges();
@@ -20,6 +21,7 @@ class AdminSpaDashboard {
   }
 
   async loadDashboardData() {
+    if (!this.isActive) return;
     if (!this.isAuthenticated()) {
       this.showLoginRequired();
       return;
@@ -43,6 +45,8 @@ class AdminSpaDashboard {
         this.loadDistributionChart(),
         this.loadPerformanceMetrics()
       ]);
+
+      if (!this.isActive) return;
 
       console.log('[admin-spa] Dashboard payload:', {
         stats,
@@ -534,10 +538,30 @@ class AdminSpaDashboard {
       this.showLoginRequired();
     }
   }
+
+  destroy() {
+    this.isActive = false;
+
+    if (this.refreshInterval) {
+      clearInterval(this.refreshInterval);
+      this.refreshInterval = null;
+    }
+
+    if (this.themeObserver) {
+      this.themeObserver.disconnect();
+      this.themeObserver = null;
+    }
+
+    if (this.activityChart) {
+      this.activityChart.destroy();
+      this.activityChart = null;
+    }
+
+    if (this.distributionChart) {
+      this.distributionChart.destroy();
+      this.distributionChart = null;
+    }
+  }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  const container = document.querySelector('[data-admin-spa]');
-  if (!container) return;
-  window.adminSpaDashboard = new AdminSpaDashboard();
-});
+window.AdminSpaDashboard = AdminSpaDashboard;

@@ -71,6 +71,14 @@ class EmpresasMain {
    */
   async setupApiClient() {
     try {
+      if (window.AdminSpaApi?.getClient) {
+        const apiClient = window.AdminSpaApi.getClient();
+        if (apiClient) {
+          this.apiClient = apiClient;
+          return;
+        }
+      }
+
       // Use global API client if available
       if (window.apiClient) {
         this.apiClient = window.apiClient;
@@ -1188,11 +1196,15 @@ class EmpresasMain {
   }
 }
 
-// Initialize empresas system
-const empresasMain = new EmpresasMain();
+const initEmpresasMain = () => {
+  if (window.empresasMain) {
+    return window.empresasMain;
+  }
+  window.empresasMain = new EmpresasMain();
+  return window.empresasMain;
+};
 
-// Export for debugging
-window.empresasMain = empresasMain;
+window.initEmpresasMain = initEmpresasMain;
 
 // Backward compatibility functions
 window.toggleEmpresaStatus = (id, currentStatus, empresaName) => {
@@ -1222,9 +1234,13 @@ window.openCreateEmpresaModal = () => {
   }
 };
 
-window.loadEmpresas = () => empresasMain.loadEmpresas();
-window.editEmpresa = (id) => empresasMain.editEmpresa(id);
-window.viewEmpresa = (id) => empresasMain.viewEmpresa(id);
-window.clearFilters = () => empresasMain.clearFilters();
+window.loadEmpresas = () => window.empresasMain?.loadEmpresas();
+window.editEmpresa = (id) => window.empresasMain?.editEmpresa(id);
+window.viewEmpresa = (id) => window.empresasMain?.viewEmpresa(id);
+window.clearFilters = () => window.empresasMain?.clearFilters();
+
+if (!window.ADMIN_SPA_MANUAL_INIT) {
+  initEmpresasMain();
+}
 
 //console.log('🏢 Empresas main module loaded');

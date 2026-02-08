@@ -39,16 +39,20 @@
 {% block extra_js %}
 <script>
   window.currentUser = {{ session.get('user') | tojson }};
+  window.ADMIN_SPA_MANUAL_INIT = true;
 </script>
 <script src="{{ url_for('static', filename='js/portal-empresa/spa/theme-toggle.js') }}"></script>
 <script src="{{ url_for('static', filename='js/portal-empresa/spa/shell.js') }}"></script>
 <script src="{{ url_for('static', filename='js/api-client.js') }}"></script>
+<script src="{{ url_for('static', filename='js/admin/spa/store.js') }}"></script>
+<script src="{{ url_for('static', filename='js/admin/spa/api.js') }}"></script>
 <script src="{{ url_for('static', filename='js/modal-utils.js') }}"></script>
 <script src="{{ url_for('static', filename='js/hardware-animations.js') }}"></script>
-<script src="{{ url_for('static', filename='js/admin/spa/admin-spa.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="{{ url_for('static', filename='js/admin/spa/admin-dashboard.js') }}"></script>
 <script src="{{ url_for('static', filename='js/admin/empresas/empresas-main.js') }}"></script>
 <script src="{{ url_for('static', filename='js/admin/empresas/empresas-modals.js') }}"></script>
+<script src="{{ url_for('static', filename='js/admin/spa/views/dashboard.js') }}"></script>
 <script src="{{ url_for('static', filename='js/admin/spa/views/empresas.js') }}"></script>
+<script src="{{ url_for('static', filename='js/admin/spa/router.js') }}"></script>
 {% endblock %}

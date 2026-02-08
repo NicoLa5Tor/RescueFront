@@ -198,6 +198,14 @@ class EmpresasModals {
    * Setup API client
    */
   setupApiClient() {
+    if (window.AdminSpaApi?.getClient) {
+      const apiClient = window.AdminSpaApi.getClient();
+      if (apiClient) {
+        this.apiClient = apiClient;
+        return;
+      }
+    }
+
     if (window.empresasMain && window.empresasMain.apiClient) {
       this.apiClient = window.empresasMain.apiClient;
     } else if (window.apiClient) {
@@ -1700,16 +1708,24 @@ class EmpresasModals {
   }
 }
 
-// Initialize empresas modals
-const empresasModals = new EmpresasModals();
+const initEmpresasModals = () => {
+  if (window.empresasModals) {
+    return window.empresasModals;
+  }
+  window.empresasModals = new EmpresasModals();
+  return window.empresasModals;
+};
 
-// Export for global access
-window.empresasModals = empresasModals;
+window.initEmpresasModals = initEmpresasModals;
 
 // Backward compatibility functions
-window.openCreateEmpresaModal = () => empresasModals.openCreateModal();
-window.openEditEmpresaModal = (id) => empresasModals.openEditModal(id);
-window.openViewEmpresaModal = (id) => empresasModals.openViewModal(id);
-window.toggleEmpresaStatus = (id, activa) => empresasModals.showToggleModal(id, activa);
+window.openCreateEmpresaModal = () => window.empresasModals?.openCreateModal();
+window.openEditEmpresaModal = (id) => window.empresasModals?.openEditModal(id);
+window.openViewEmpresaModal = (id) => window.empresasModals?.openViewModal(id);
+window.toggleEmpresaStatus = (id, activa) => window.empresasModals?.showToggleModal(id, activa);
+
+if (!window.ADMIN_SPA_MANUAL_INIT) {
+  initEmpresasModals();
+}
 
 //console.log('🏢 Empresas modals module loaded');
