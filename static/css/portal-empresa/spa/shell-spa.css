@@ -13,6 +13,44 @@
   height: calc(100vh - var(--navbar-height));
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 116, 139, 0.45) transparent;
+}
+
+/* Scrollbar estilo SPA para Chrome/Edge */
+.spa-shell .main-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.spa-shell .main-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.spa-shell .main-content::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.45);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.spa-shell .main-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.7);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.dark .spa-shell .main-content {
+  scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+}
+
+.dark .spa-shell .main-content::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.22);
+  background-clip: padding-box;
+}
+
+.dark .spa-shell .main-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.35);
+  background-clip: padding-box;
 }
 
 .spa-view.is-hidden {

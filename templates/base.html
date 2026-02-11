@@ -94,6 +94,9 @@
     {% endif %}
     
     {% block extra_css %}{% endblock %}
+
+    <!-- Scrollbar global (todas las vistas) -->
+    <link href="{{ url_for('static', filename='css/scrollbar-global.css') }}" rel="stylesheet">
     
     <!-- RESCUE Loader Styles -->
     <style>
@@ -304,9 +307,7 @@
                 transform: translateY(0);
             }
         }
-        
-        
-        
+
     </style>
     
 </head>
