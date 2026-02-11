@@ -11,7 +11,7 @@
  * IMPLEMENTANDO MODALSCROLLMANAGER PARA APERTURA PERFECTA
  */
 
-const buildApiUrl = window.__buildApiUrl || function(path = '') {
+const adminUsuariosBuildApiUrl = window.__buildApiUrl || function(path = '') {
   const base = window.__APP_CONFIG && window.__APP_CONFIG.apiUrl;
   if (!base) {
     throw new Error('API URL no configurada');
@@ -229,8 +229,8 @@ class UsuariosModals {
    * Setup API client
    */
   setupApiClient() {
-    if (window.EmpresaSpaApi?.getClient) {
-      const apiClient = window.EmpresaSpaApi.getClient();
+    if (window.AdminSpaApi?.getClient) {
+      const apiClient = window.AdminSpaApi.getClient();
       if (apiClient) {
         this.apiClient = apiClient;
         return;
@@ -253,29 +253,29 @@ class UsuariosModals {
    */
   createBasicApiClient() {
     return {
-      get_usuarios_by_empresa: (empresaId) => fetch(buildApiUrl(`/empresas/${empresaId}/usuarios`)),
-      get_usuario: (empresaId, userId) => fetch(buildApiUrl(`/empresas/${empresaId}/usuarios/${userId}`)),
-      get_empresa: (empresaId) => fetch(buildApiUrl(`/empresas/${empresaId}`)),
+      get_usuarios_by_empresa: (empresaId) => fetch(adminUsuariosBuildApiUrl(`/empresas/${empresaId}/usuarios`)),
+      get_usuario: (empresaId, userId) => fetch(adminUsuariosBuildApiUrl(`/empresas/${empresaId}/usuarios/${userId}`)),
+      get_empresa: (empresaId) => fetch(adminUsuariosBuildApiUrl(`/empresas/${empresaId}`)),
       toggle_usuario_status: (empresaId, userId, activo) => 
-        fetch(buildApiUrl(`/empresas/${empresaId}/usuarios/${userId}/toggle-status`), {
+        fetch(adminUsuariosBuildApiUrl(`/empresas/${empresaId}/usuarios/${userId}/toggle-status`), {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ activo })
         }),
       update_usuario: (empresaId, userId, data) =>
-        fetch(buildApiUrl(`/empresas/${empresaId}/usuarios/${userId}`), {
+        fetch(adminUsuariosBuildApiUrl(`/empresas/${empresaId}/usuarios/${userId}`), {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
         }),
       create_usuario: (empresaId, data) =>
-        fetch(buildApiUrl(`/empresas/${empresaId}/usuarios`), {
+        fetch(adminUsuariosBuildApiUrl(`/empresas/${empresaId}/usuarios`), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
         }),
       delete_usuario: (empresaId, userId) =>
-        fetch(buildApiUrl(`/empresas/${empresaId}/usuarios/${userId}`), {
+        fetch(adminUsuariosBuildApiUrl(`/empresas/${empresaId}/usuarios/${userId}`), {
           method: 'DELETE'
         })
     };
@@ -1472,23 +1472,7 @@ class UsuariosModals {
 
   window.initUsuariosModals = initUsuariosModals;
 
-  const viewName = 'usuarios';
-  const mount = () => {
-    initUsuariosModals();
-  };
-  const unmount = () => {};
-
-  window.EmpresaSpaViews = window.EmpresaSpaViews || {};
-  const existing = window.EmpresaSpaViews[viewName];
-  if (Array.isArray(existing)) {
-    existing.push({ mount, unmount });
-  } else if (existing) {
-    window.EmpresaSpaViews[viewName] = [existing, { mount, unmount }];
-  } else {
-    window.EmpresaSpaViews[viewName] = [{ mount, unmount }];
-  }
-
-  if (!window.EMPRESA_SPA_MANUAL_INIT) {
+  if (!window.ADMIN_SPA_MANUAL_INIT) {
     initUsuariosModals();
   }
 

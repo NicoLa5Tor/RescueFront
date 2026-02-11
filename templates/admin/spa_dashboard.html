@@ -5,6 +5,7 @@
 <link href="{{ url_for('static', filename='css/output.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/spa/variables.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/spa/spa-global.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/spa/modals-core.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/global-text-theme.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/spa/light-theme.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/portal-empresa/spa/shell-spa.css') }}" rel="stylesheet">
@@ -13,7 +14,28 @@
 <link href="{{ url_for('static', filename='css/portal-empresa/spa/views/dashboard.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/alerts/alerts-styles.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/super-dashboard/super-dashboard-main.css') }}" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/css/intlTelInput.css">
 <style>
+/* Corregir modales para que se muestren por encima del navbar y sin offset */
+.ios-modal-backdrop,
+.modal-backdrop {
+  margin-left: 0 !important;
+  width: 100vw !important;
+  position: fixed !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: var(--z-modal-backdrop, 10000) !important;
+}
+
+.ios-blur-modal-container {
+  position: relative !important;
+}
+
+.ios-blur-body {
+  margin-left: 0 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
 </style>
 {% endblock %}
 
@@ -32,6 +54,9 @@
   <section class="spa-view is-hidden" data-spa-section="empresas">
     {% include "admin/spa/views/empresas.html" %}
   </section>
+  <section class="spa-view is-hidden" data-spa-section="usuarios">
+    {% include "admin/spa/views/usuarios.html" %}
+  </section>
   {% endcall %}
 {% endcall %}
 {% endblock %}
@@ -40,6 +65,7 @@
 <script>
   window.currentUser = {{ session.get('user') | tojson }};
   window.ADMIN_SPA_MANUAL_INIT = true;
+  window.EMPRESA_SPA_MANUAL_INIT = true;
 </script>
 <script src="{{ url_for('static', filename='js/portal-empresa/spa/theme-toggle.js') }}"></script>
 <script src="{{ url_for('static', filename='js/portal-empresa/spa/shell.js') }}"></script>
@@ -49,10 +75,14 @@
 <script src="{{ url_for('static', filename='js/modal-utils.js') }}"></script>
 <script src="{{ url_for('static', filename='js/hardware-animations.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/intlTelInput.min.js"></script>
 <script src="{{ url_for('static', filename='js/admin/spa/admin-dashboard.js') }}"></script>
 <script src="{{ url_for('static', filename='js/admin/empresas/empresas-main.js') }}"></script>
 <script src="{{ url_for('static', filename='js/admin/empresas/empresas-modals.js') }}"></script>
+<script src="{{ url_for('static', filename='js/admin/spa/views/usuarios-main.js') }}"></script>
+<script src="{{ url_for('static', filename='js/admin/spa/views/usuarios-modals.js') }}"></script>
 <script src="{{ url_for('static', filename='js/admin/spa/views/dashboard.js') }}"></script>
 <script src="{{ url_for('static', filename='js/admin/spa/views/empresas.js') }}"></script>
+<script src="{{ url_for('static', filename='js/admin/spa/views/usuarios.js') }}"></script>
 <script src="{{ url_for('static', filename='js/admin/spa/router.js') }}"></script>
 {% endblock %}
