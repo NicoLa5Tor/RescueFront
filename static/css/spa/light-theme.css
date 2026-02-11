@@ -236,6 +236,16 @@ body:not(.dark) .ios-card-btn {
     inset 0 1px 0 rgba(255, 255, 255, 0.85) !important;
 }
 
+:root:not(.dark) .ios-card-btn:not(.ios-card-btn-primary):not(.ios-card-btn-success):not(.ios-card-btn-warning):not(.ios-card-btn-danger) i,
+html:not(.dark) .ios-card-btn:not(.ios-card-btn-primary):not(.ios-card-btn-success):not(.ios-card-btn-warning):not(.ios-card-btn-danger) i,
+body:not(.dark) .ios-card-btn:not(.ios-card-btn-primary):not(.ios-card-btn-success):not(.ios-card-btn-warning):not(.ios-card-btn-danger) i,
+:root:not(.dark) .ios-card-btn:not(.ios-card-btn-primary):not(.ios-card-btn-success):not(.ios-card-btn-warning):not(.ios-card-btn-danger) svg,
+html:not(.dark) .ios-card-btn:not(.ios-card-btn-primary):not(.ios-card-btn-success):not(.ios-card-btn-warning):not(.ios-card-btn-danger) svg,
+body:not(.dark) .ios-card-btn:not(.ios-card-btn-primary):not(.ios-card-btn-success):not(.ios-card-btn-warning):not(.ios-card-btn-danger) svg {
+  color: #0f172a !important;
+  fill: #0f172a !important;
+}
+
 :root:not(.dark) .ios-action-btn-primary,
 html:not(.dark) .ios-action-btn-primary,
 body:not(.dark) .ios-action-btn-primary,
@@ -247,6 +257,28 @@ body:not(.dark) .ios-card-btn-primary {
   color: #ffffff !important;
   box-shadow:
     0 12px 26px rgba(37, 99, 235, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+}
+
+:root:not(.dark) .ios-card-btn-success,
+html:not(.dark) .ios-card-btn-success,
+body:not(.dark) .ios-card-btn-success {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  border: 1px solid rgba(16, 185, 129, 0.3) !important;
+  color: #ffffff !important;
+  box-shadow:
+    0 12px 26px rgba(16, 185, 129, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+}
+
+:root:not(.dark) .ios-card-btn-warning,
+html:not(.dark) .ios-card-btn-warning,
+body:not(.dark) .ios-card-btn-warning {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+  border: 1px solid rgba(245, 158, 11, 0.3) !important;
+  color: #ffffff !important;
+  box-shadow:
+    0 12px 26px rgba(245, 158, 11, 0.22),
     inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
 }
 

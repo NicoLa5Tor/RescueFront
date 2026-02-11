@@ -8,6 +8,7 @@
 <link href="{{ url_for('static', filename='css/spa/modals-core.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/global-text-theme.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/spa/light-theme.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/spa/location-modal.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/portal-empresa/spa/shell-spa.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/portal-empresa/spa/navbar-spa.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/portal-empresa/spa/sidebar-spa.css') }}" rel="stylesheet">
@@ -57,6 +58,9 @@
   <section class="spa-view is-hidden" data-spa-section="usuarios">
     {% include "admin/spa/views/usuarios.html" %}
   </section>
+  <section class="spa-view is-hidden" data-spa-section="hardware">
+    {% include "admin/spa/views/hardware.html" %}
+  </section>
   {% endcall %}
 {% endcall %}
 {% endblock %}
@@ -81,8 +85,11 @@
 <script src="{{ url_for('static', filename='js/admin/empresas/empresas-modals.js') }}"></script>
 <script src="{{ url_for('static', filename='js/admin/spa/views/usuarios-main.js') }}"></script>
 <script src="{{ url_for('static', filename='js/admin/spa/views/usuarios-modals.js') }}"></script>
+<script src="{{ url_for('static', filename='js/admin/spa/views/hardware-main.js') }}"></script>
+<script src="{{ url_for('static', filename='js/admin/spa/views/hardware-modals.js') }}"></script>
 <script src="{{ url_for('static', filename='js/admin/spa/views/dashboard.js') }}"></script>
 <script src="{{ url_for('static', filename='js/admin/spa/views/empresas.js') }}"></script>
 <script src="{{ url_for('static', filename='js/admin/spa/views/usuarios.js') }}"></script>
+<script src="{{ url_for('static', filename='js/admin/spa/views/hardware.js') }}"></script>
 <script src="{{ url_for('static', filename='js/admin/spa/router.js') }}"></script>
 {% endblock %}

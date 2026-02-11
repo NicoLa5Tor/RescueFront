@@ -24,8 +24,26 @@ class UsuariosMain {
     };
     this.apiClient = null;
     this.isLoading = false;
+    this.sectionRoot = null;
+    this.batchSize = 3;
+    this.visibleUsuariosCount = 0;
+    this.lazyObserver = null;
+    this.lazySentinel = null;
+    this.lazyButton = null;
     
     this.initializeComponents();
+  }
+
+  getSectionRoot() {
+    if (!this.sectionRoot || this.sectionRoot === document || !this.sectionRoot.isConnected) {
+      const candidate = document.querySelector('[data-spa-section="usuarios"]');
+      this.sectionRoot = candidate || document;
+    }
+    return this.sectionRoot;
+  }
+
+  getElement(id) {
+    return this.getSectionRoot().querySelector(`#${id}`);
   }
 
   /**
@@ -87,7 +105,7 @@ class UsuariosMain {
    */
   setupEventListeners() {
     // Search input
-    const searchInput = document.getElementById('searchInput');
+    const searchInput = this.getElement('searchInput');
     if (searchInput) {
       searchInput.addEventListener('input', (e) => {
         this.currentFilters.search = e.target.value.toLowerCase();
@@ -96,7 +114,7 @@ class UsuariosMain {
     }
 
     // Empresa selector
-    const empresaSelector = document.getElementById('empresaSelector');
+    const empresaSelector = this.getElement('empresaSelector');
     if (empresaSelector) {
       empresaSelector.addEventListener('change', (e) => {
         const empresaId = e.target.value;
@@ -109,7 +127,7 @@ class UsuariosMain {
     }
 
     // Status filter
-    const statusFilter = document.getElementById('statusFilter');
+    const statusFilter = this.getElement('statusFilter');
     if (statusFilter) {
       statusFilter.addEventListener('change', (e) => {
         this.currentFilters.status = e.target.value;
@@ -118,7 +136,7 @@ class UsuariosMain {
     }
 
     // Include inactive filter
-    const includeInactiveFilter = document.getElementById('includeInactiveFilter');
+    const includeInactiveFilter = this.getElement('includeInactiveFilter');
     if (includeInactiveFilter) {
       includeInactiveFilter.addEventListener('change', (e) => {
         this.currentFilters.activa = e.target.value;
@@ -182,7 +200,7 @@ class UsuariosMain {
    * Populate empresa selector
    */
   populateEmpresaSelector() {
-    const selector = document.getElementById('empresaSelector');
+    const selector = this.getElement('empresaSelector');
     if (!selector) return;
 
     selector.innerHTML = '<option value="">Selecciona una empresa...</option>';
@@ -219,10 +237,10 @@ class UsuariosMain {
    * Update empresa info display
    */
   updateEmpresaInfo(empresa) {
-    const infoDiv = document.getElementById('selectedEmpresaInfo');
-    const initialsSpan = document.getElementById('empresaInitials');
-    const nameH3 = document.getElementById('selectedEmpresaName');
-    const locationP = document.getElementById('selectedEmpresaLocation');
+    const infoDiv = this.getElement('selectedEmpresaInfo');
+    const initialsSpan = this.getElement('empresaInitials');
+    const nameH3 = this.getElement('selectedEmpresaName');
+    const locationP = this.getElement('selectedEmpresaLocation');
     
     if (infoDiv && initialsSpan && nameH3 && locationP) {
       const initials = this.getIniciales(empresa.nombre);
@@ -271,6 +289,7 @@ class UsuariosMain {
 
       if (data.success && Array.isArray(data.data)) {
         this.usuariosAll = data.data;
+        this.usuarios = [...this.usuariosAll];
         // Store backend statistics if available
         this.backendStats = data.stats || null;
         //console.log(`✅ ${this.usuariosAll.length} usuarios cargados desde backend`);
@@ -316,7 +335,7 @@ class UsuariosMain {
     this.usuariosAll = [];
     this.currentEmpresa = null;
     
-    const infoDiv = document.getElementById('selectedEmpresaInfo');
+    const infoDiv = this.getElement('selectedEmpresaInfo');
     if (infoDiv) {
       infoDiv.classList.add('hidden');
     }
@@ -334,8 +353,8 @@ class UsuariosMain {
    */
   showFilters() {
     //console.log('📊 Ejecutando showFilters()');
-    const filtersDiv = document.getElementById('usuariosFilters');
-    const statsDiv = document.getElementById('usuariosStatsGrid');
+    const filtersDiv = this.getElement('usuariosFilters');
+    const statsDiv = this.getElement('usuariosStatsGrid');
     
     console.log('📊 Elementos encontrados:', {
       filtersDiv: !!filtersDiv,
@@ -365,7 +384,8 @@ class UsuariosMain {
    * Force visibility of stat cards (useful if GSAP animations fail)
    */
   ensureStatsVisibility() {
-    const cards = document.querySelectorAll('#usuariosStatsGrid .ios-stat-card');
+    const root = this.getSectionRoot();
+    const cards = root.querySelectorAll('#usuariosStatsGrid .ios-stat-card');
     cards.forEach(card => {
       card.style.opacity = '1';
       card.style.transform = 'none';
@@ -378,8 +398,8 @@ class UsuariosMain {
    * Hide filters section
    */
   hideFilters() {
-    const filtersDiv = document.getElementById('usuariosFilters');
-    const statsDiv = document.getElementById('usuariosStatsGrid');
+    const filtersDiv = this.getElement('usuariosFilters');
+    const statsDiv = this.getElement('usuariosStatsGrid');
     
     if (filtersDiv) {
       filtersDiv.style.display = 'none';
@@ -429,7 +449,7 @@ class UsuariosMain {
       };
 
       Object.entries(elements).forEach(([elementId, value]) => {
-        const element = document.getElementById(elementId);
+        const element = this.getElement(elementId);
         console.log(`  - ${elementId}:`, { found: !!element, value: value });
         if (element) {
           element.textContent = value;
@@ -481,7 +501,7 @@ class UsuariosMain {
       //console.log('📊 Actualizando elementos DOM:', elements);
       
       Object.entries(elements).forEach(([elementId, value]) => {
-        const element = document.getElementById(elementId);
+        const element = this.getElement(elementId);
         console.log(`  - ${elementId}:`, { found: !!element, value: value });
         if (element) {
           element.textContent = value;
@@ -507,7 +527,7 @@ class UsuariosMain {
    * Render usuarios list
    */
   renderUsuarios() {
-    const container = document.getElementById('usuariosGrid');
+    const container = this.getElement('usuariosGrid');
 
     if (!container) {
       //console.warn('⚠️ Contenedor de usuarios no encontrado');
@@ -515,18 +535,110 @@ class UsuariosMain {
     }
 
     container.innerHTML = '';
+    this.removeLazySentinel();
+    this.visibleUsuariosCount = 0;
 
     if (this.usuarios.length === 0) {
       this.showEmptyState(container);
       return;
     }
 
-    this.usuarios.forEach(usuario => {
-      const card = this.createUsuarioCard(usuario);
-      container.appendChild(card);
-    });
+    this.renderNextUsuariosBatch();
 
     //console.log(`🎨 Renderizados ${this.usuarios.length} usuarios`);
+  }
+
+  renderNextUsuariosBatch() {
+    const container = this.getElement('usuariosGrid');
+    if (!container) return;
+    if (!this.usuarios || this.usuarios.length === 0) return;
+
+    const start = this.visibleUsuariosCount;
+    const nextItems = this.usuarios.slice(start, start + this.batchSize);
+
+    if (!nextItems.length) {
+      this.removeLazySentinel();
+      return;
+    }
+
+    const fragment = document.createDocumentFragment();
+    nextItems.forEach(usuario => {
+      const card = this.createUsuarioCard(usuario);
+      fragment.appendChild(card);
+    });
+
+    container.appendChild(fragment);
+    this.visibleUsuariosCount += nextItems.length;
+
+    if (this.visibleUsuariosCount < this.usuarios.length) {
+      this.ensureLazySentinel();
+    } else {
+      this.removeLazySentinel();
+    }
+  }
+
+  ensureLazySentinel() {
+    const container = this.getElement('usuariosGrid');
+    if (!container) return;
+
+    if (!this.lazySentinel) {
+      const sentinel = document.createElement('div');
+      sentinel.id = 'usuariosLazySentinel';
+      this.lazySentinel = sentinel;
+    }
+
+    const useManual = !('IntersectionObserver' in window);
+    if (useManual) {
+      this.lazySentinel.className = 'col-span-full flex justify-center py-4';
+      if (!this.lazyButton) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'ios-action-btn';
+        button.textContent = 'Cargar mas';
+        button.addEventListener('click', () => this.renderNextUsuariosBatch());
+        this.lazyButton = button;
+      }
+      this.lazySentinel.innerHTML = '';
+      this.lazySentinel.appendChild(this.lazyButton);
+    } else {
+      this.lazySentinel.className = 'col-span-full h-6';
+      this.lazySentinel.innerHTML = '';
+    }
+
+    if (this.lazySentinel.parentElement !== container) {
+      container.appendChild(this.lazySentinel);
+    }
+
+    if (!useManual) {
+      this.setupLazyObserver();
+    }
+  }
+
+  setupLazyObserver() {
+    if (!this.lazySentinel || !('IntersectionObserver' in window)) return;
+
+    if (this.lazyObserver) {
+      this.lazyObserver.disconnect();
+    }
+
+    this.lazyObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          this.renderNextUsuariosBatch();
+        }
+      });
+    }, { root: null, rootMargin: '200px 0px', threshold: 0.1 });
+
+    this.lazyObserver.observe(this.lazySentinel);
+  }
+
+  removeLazySentinel() {
+    if (this.lazyObserver) {
+      this.lazyObserver.disconnect();
+    }
+    if (this.lazySentinel && this.lazySentinel.parentElement) {
+      this.lazySentinel.parentElement.removeChild(this.lazySentinel);
+    }
   }
 
   /**
@@ -649,6 +761,7 @@ class UsuariosMain {
    * Show empty state
    */
   showEmptyState(container) {
+    this.removeLazySentinel();
     const hasFilters = this.currentFilters.search || 
                        this.currentFilters.status !== '';
     
@@ -693,8 +806,10 @@ class UsuariosMain {
    * Show loading state
    */
   showLoadingState() {
-    const container = document.getElementById('usuariosGrid');
+    const container = this.getElement('usuariosGrid');
     if (container) {
+      this.removeLazySentinel();
+      this.visibleUsuariosCount = 0;
       container.innerHTML = `
         <div class="text-center py-12 col-span-full">
           <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
@@ -715,8 +830,10 @@ class UsuariosMain {
    * Show error state
    */
   showError(message) {
-    const container = document.getElementById('usuariosGrid');
+    const container = this.getElement('usuariosGrid');
     if (container) {
+      this.removeLazySentinel();
+      this.visibleUsuariosCount = 0;
       container.innerHTML = `
         <div class="text-center py-12 col-span-full">
           <i class="fas fa-exclamation-triangle text-4xl text-red-400 mb-4"></i>
@@ -965,9 +1082,9 @@ class UsuariosMain {
     };
 
     // Reset form elements
-    const searchInput = document.getElementById('searchInput');
-    const statusFilter = document.getElementById('statusFilter');
-    const includeInactiveFilter = document.getElementById('includeInactiveFilter');
+    const searchInput = this.getElement('searchInput');
+    const statusFilter = this.getElement('statusFilter');
+    const includeInactiveFilter = this.getElement('includeInactiveFilter');
 
     if (searchInput) searchInput.value = '';
     if (statusFilter) statusFilter.value = '';
