@@ -973,10 +973,19 @@ class HardwareMain {
 }
 
 // Initialize hardware system
-const hardwareMain = new HardwareMain();
+const initHardwareMain = () => {
+  if (window.hardwareMain) {
+    return window.hardwareMain;
+  }
+  window.hardwareMain = new HardwareMain();
+  return window.hardwareMain;
+};
 
-// Export for debugging
-window.hardwareMain = hardwareMain;
+window.initHardwareMain = initHardwareMain;
+
+if (!window.EMPRESA_SPA_MANUAL_INIT) {
+  initHardwareMain();
+}
 
 // Backward compatibility functions
 window.toggleHardwareStatus = (id, activa) => {
@@ -992,11 +1001,12 @@ window.toggleHardwareStatus = (id, activa) => {
 
 // Global function for loading sedes - called from HTML onchange
 window.loadSedesByEmpresa = () => {
-  if (hardwareMain) {
-    hardwareMain.loadSedesByEmpresa();
-  } else {
-    ////console.warn('Hardware main not available for loadSedesByEmpresa');
+  const instance = window.hardwareMain || (window.initHardwareMain ? window.initHardwareMain() : null);
+  if (instance) {
+    instance.loadSedesByEmpresa();
+    return;
   }
+  ////console.warn('Hardware main not available for loadSedesByEmpresa');
 };
 
 ////console.log('🏗️ Hardware main module loaded');

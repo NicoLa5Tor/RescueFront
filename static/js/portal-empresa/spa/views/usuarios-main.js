@@ -64,6 +64,14 @@ class UsuariosMain {
    * Setup API client
    */
   async setupApiClient() {
+    if (window.EmpresaSpaApi?.getClient) {
+      const apiClient = window.EmpresaSpaApi.getClient();
+      if (apiClient) {
+        this.apiClient = apiClient;
+        return;
+      }
+    }
+
     // Use global API client if available
     if (window.EndpointTestClient) {
       this.apiClient = new window.EndpointTestClient();
@@ -1052,9 +1060,63 @@ class UsuariosMain {
   }
 }
 
-// Initialize usuarios system
-const usuariosMain = new UsuariosMain();
-window.usuariosMain = usuariosMain;
+(() => {
+  const initUsuariosMain = () => {
+    if (window.usuariosMain) {
+      return window.usuariosMain;
+    }
+    window.usuariosMain = new UsuariosMain();
+    return window.usuariosMain;
+  };
+
+  window.initUsuariosMain = initUsuariosMain;
+
+  const viewName = 'usuarios';
+  const mount = () => {
+    initUsuariosMain();
+    if (window.initUsuariosModals) {
+      window.initUsuariosModals();
+    }
+  };
+  const unmount = () => {};
+
+  window.EmpresaSpaViews = window.EmpresaSpaViews || {};
+  const existing = window.EmpresaSpaViews[viewName];
+  if (Array.isArray(existing)) {
+    existing.push({ mount, unmount });
+  } else if (existing) {
+    window.EmpresaSpaViews[viewName] = [existing, { mount, unmount }];
+  } else {
+    window.EmpresaSpaViews[viewName] = [{ mount, unmount }];
+  }
+
+  if (!window.EMPRESA_SPA_MANUAL_INIT) {
+    initUsuariosMain();
+  }
+
+  const handleViewChange = (view) => {
+    if (view === viewName) {
+      mount();
+    }
+  };
+
+  document.addEventListener('empresa:spa:view-change', (event) => {
+    handleViewChange(event.detail?.view);
+  });
+
+  const ensureInitialView = () => {
+    const activeView = window.empresaSpa?.getActiveView?.();
+    if (activeView) {
+      handleViewChange(activeView);
+    }
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', ensureInitialView, { once: true });
+  } else {
+    ensureInitialView();
+  }
+})();
 
 // Export functions for global access
 window.clearUsuariosFilters = () => {

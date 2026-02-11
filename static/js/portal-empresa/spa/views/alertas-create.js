@@ -4,8 +4,12 @@ let empresaData = null;
 let createModalManager = null;
 let alertTypesCache = [];
 let alertTypesLoading = false;
-// ========== INICIALIZACIÓN ==========
-document.addEventListener('DOMContentLoaded', function() {
+let alertasCreateInitialized = false;
+
+const initAlertasCreate = () => {
+    if (alertasCreateInitialized) return;
+    alertasCreateInitialized = true;
+
     ////console.log('🚨 Inicializando sistema de creación de alertas...');
     
     // Configurar modal manager
@@ -24,7 +28,33 @@ document.addEventListener('DOMContentLoaded', function() {
     setupCreateAlertEventListeners();
     
     //console.log('✅ Sistema de creación de alertas inicializado');
-});
+};
+
+(() => {
+    const viewName = 'alertas';
+    const mount = () => {
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initAlertasCreate, { once: true });
+            return;
+        }
+        initAlertasCreate();
+    };
+    const unmount = () => {};
+
+    window.EmpresaSpaViews = window.EmpresaSpaViews || {};
+    const existing = window.EmpresaSpaViews[viewName];
+    if (Array.isArray(existing)) {
+        existing.push({ mount, unmount });
+    } else if (existing) {
+        window.EmpresaSpaViews[viewName] = [existing, { mount, unmount }];
+    } else {
+        window.EmpresaSpaViews[viewName] = [{ mount, unmount }];
+    }
+
+    if (!window.EMPRESA_SPA_MANUAL_INIT) {
+        mount();
+    }
+})();
 
 
 function showCreateAlertModal() {

@@ -10,6 +10,8 @@ let totalInactivePages = 1;
 let currentInactiveAlerts = [];
 let selectedInactiveAlertId = null;
 let inactiveAlertsPerPage = 5; // Igual que las alertas activas
+let inactiveInitialized = false;
+let inactiveActive = false;
 
 // Cache de alertas inactivas por ID
 let inactiveAlertsCache = new Map();
@@ -34,7 +36,10 @@ const buildInactiveAlertsApiUrl = window.__buildApiUrl || function(path = '') {
 };
 
 // ========== INICIALIZACIÓN ==========
-document.addEventListener('DOMContentLoaded', function() {
+const setupInactiveAlertsView = () => {
+    if (inactiveInitialized) return;
+    inactiveInitialized = true;
+
     //console.log('🚫 ALERTAS INACTIVAS: Página de alertas inactivas inicializada');
     
     // Inicializar sistema de cache
@@ -48,6 +53,13 @@ document.addEventListener('DOMContentLoaded', function() {
         //console.warn('⚠️ ModalManager no está disponible');
     }
     
+    //console.log('✅ ALERTAS INACTIVAS: Sistema completamente inicializado');
+};
+
+const startInactiveAlertsView = () => {
+    if (inactiveActive) return;
+    inactiveActive = true;
+
     // Cargar alertas inactivas iniciales
     loadInactiveAlerts();
     
@@ -57,9 +69,41 @@ document.addEventListener('DOMContentLoaded', function() {
             window.checkForAutoOpenInactiveAlert();
         }
     }, 1500);
-    
-    //console.log('✅ ALERTAS INACTIVAS: Sistema completamente inicializado');
-});
+};
+
+const stopInactiveAlertsView = () => {
+    inactiveActive = false;
+};
+
+const viewName = 'alertas-inactivas';
+const mount = () => {
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            setupInactiveAlertsView();
+            startInactiveAlertsView();
+        }, { once: true });
+        return;
+    }
+    setupInactiveAlertsView();
+    startInactiveAlertsView();
+};
+const unmount = () => {
+    stopInactiveAlertsView();
+};
+
+window.EmpresaSpaViews = window.EmpresaSpaViews || {};
+const existing = window.EmpresaSpaViews[viewName];
+if (Array.isArray(existing)) {
+    existing.push({ mount, unmount });
+} else if (existing) {
+    window.EmpresaSpaViews[viewName] = [existing, { mount, unmount }];
+} else {
+    window.EmpresaSpaViews[viewName] = [{ mount, unmount }];
+}
+
+if (!window.EMPRESA_SPA_MANUAL_INIT) {
+    mount();
+}
 
 // ========== FUNCIONES PRINCIPALES DE ALERTAS INACTIVAS ==========
 async function loadInactiveAlerts() {

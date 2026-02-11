@@ -153,24 +153,34 @@
       isFetching = true;
       lastFetchAt = now;
 
-      const buildApiUrl = typeof window.__buildApiUrl === 'function'
-        ? window.__buildApiUrl
-        : null;
-      const baseUrl = buildApiUrl ? buildApiUrl('') : (window.__APP_CONFIG?.apiUrl || '');
-      if (!baseUrl && !buildApiUrl) {
-        return;
-      }
-
       const endpoint = `/api/empresas/${empresaId}/statistics`;
-      const url = buildApiUrl ? buildApiUrl(endpoint) : `${baseUrl}${endpoint}`;
+      const api = window.EmpresaSpaApi || null;
+      let response;
 
-      const response = await fetch(url, {
-        method: 'GET',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json'
+      if (api?.request) {
+        response = await api.request(endpoint, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+      } else {
+        const buildApiUrl = typeof window.__buildApiUrl === 'function'
+          ? window.__buildApiUrl
+          : null;
+        const baseUrl = buildApiUrl ? buildApiUrl('') : (window.__APP_CONFIG?.apiUrl || '');
+        if (!baseUrl && !buildApiUrl) {
+          return;
         }
-      });
+        const url = buildApiUrl ? buildApiUrl(endpoint) : `${baseUrl}${endpoint}`;
+        response = await fetch(url, {
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+      }
 
       if (!response.ok) {
         return;
@@ -187,25 +197,34 @@
     }
   };
 
-  const onViewChange = (view) => {
-    if (view === 'stats') {
-      fetchStats();
-    }
-  };
-
   window.exportEmpresaStats = () => {
     alert('Funcionalidad de exportación en desarrollo');
   };
 
-  document.addEventListener('DOMContentLoaded', () => {
-    const activeView = window.empresaSpa?.getActiveView?.();
-    if (activeView === 'stats') {
-      fetchStats();
-    }
-  });
+  const viewName = 'stats';
 
-  document.addEventListener('empresa:spa:view-change', (event) => {
-    onViewChange(event.detail?.view);
-  });
+  const mount = () => {
+    fetchStats();
+  };
+
+  const unmount = () => {};
+
+  window.EmpresaSpaViews = window.EmpresaSpaViews || {};
+  const existing = window.EmpresaSpaViews[viewName];
+  if (Array.isArray(existing)) {
+    existing.push({ mount, unmount });
+  } else if (existing) {
+    window.EmpresaSpaViews[viewName] = [existing, { mount, unmount }];
+  } else {
+    window.EmpresaSpaViews[viewName] = [{ mount, unmount }];
+  }
+
+  if (!window.EMPRESA_SPA_MANUAL_INIT) {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', mount, { once: true });
+    } else {
+      mount();
+    }
+  }
 
 })();

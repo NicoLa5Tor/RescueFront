@@ -1,15 +1,6 @@
 (() => {
-  const summaryElement = document.getElementById('dashboardSummaryData');
-  if (summaryElement) {
-    try {
-      const summaryText = summaryElement.textContent;
-      window.DASHBOARD_SUMMARY = summaryText && summaryText !== 'null'
-        ? JSON.parse(summaryText)
-        : null;
-    } catch (error) {
-      window.DASHBOARD_SUMMARY = null;
-    }
-  }
+  const viewName = 'dashboard';
+  let initialized = false;
 
   const updateSystemInfo = () => {
     const kpisLoadedElement = document.getElementById('kpisLoadedStatus');
@@ -84,7 +75,46 @@
     });
   };
 
-  document.addEventListener('DOMContentLoaded', () => {
+  const init = () => {
+    if (initialized) return;
+    initialized = true;
+
+    const summaryElement = document.getElementById('dashboardSummaryData');
+    if (summaryElement) {
+      try {
+        const summaryText = summaryElement.textContent;
+        window.DASHBOARD_SUMMARY = summaryText && summaryText !== 'null'
+          ? JSON.parse(summaryText)
+          : null;
+      } catch (error) {
+        window.DASHBOARD_SUMMARY = null;
+      }
+    }
+
     bindModalControls();
-  });
+  };
+
+  const mount = () => {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init, { once: true });
+      return;
+    }
+    init();
+  };
+
+  const unmount = () => {};
+
+  window.EmpresaSpaViews = window.EmpresaSpaViews || {};
+  const existing = window.EmpresaSpaViews[viewName];
+  if (Array.isArray(existing)) {
+    existing.push({ mount, unmount });
+  } else if (existing) {
+    window.EmpresaSpaViews[viewName] = [existing, { mount, unmount }];
+  } else {
+    window.EmpresaSpaViews[viewName] = [{ mount, unmount }];
+  }
+
+  if (!window.EMPRESA_SPA_MANUAL_INIT) {
+    mount();
+  }
 })();

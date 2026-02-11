@@ -229,6 +229,14 @@ class UsuariosModals {
    * Setup API client
    */
   setupApiClient() {
+    if (window.EmpresaSpaApi?.getClient) {
+      const apiClient = window.EmpresaSpaApi.getClient();
+      if (apiClient) {
+        this.apiClient = apiClient;
+        return;
+      }
+    }
+
     if (window.usuariosMain && window.usuariosMain.apiClient) {
       this.apiClient = window.usuariosMain.apiClient;
     } else if (window.apiClient) {
@@ -1453,20 +1461,48 @@ class UsuariosModals {
   }
 }
 
-// Initialize usuarios modals
-const usuariosModals = new UsuariosModals();
-// Export for global access
-window.usuariosModals = usuariosModals;
-// Backward compatibility functions
-window.openCreateUsuarioModal = () => usuariosModals.openCreateModal();
-window.viewUser = (userId) => usuariosModals.openViewModal(userId);
-window.editUser = (userId) => usuariosModals.openEditModal(userId);
-window.toggleUser = (userId, currentStatus, userName) => usuariosModals.showToggleModal(userId, currentStatus, userName);
-// Modal control functions
-window.closeToggleModal = () => usuariosModals.closeToggleModal();
-window.confirmToggle = () => usuariosModals.confirmToggle();
-window.showDeleteUser = (userId, userName) => usuariosModals.showDeleteModal(userId, userName);
-window.closeDeleteUser = () => usuariosModals.closeDeleteModal();
-window.confirmDeleteUser = () => usuariosModals.confirmDelete();
-window.closeUpdateModal = () => usuariosModals.closeUpdateModal();
-////console.log('👥 Usuarios modals module loaded - MODALSCROLLMANAGER VERSION');
+(() => {
+  const initUsuariosModals = () => {
+    if (window.usuariosModals) {
+      return window.usuariosModals;
+    }
+    window.usuariosModals = new UsuariosModals();
+    return window.usuariosModals;
+  };
+
+  window.initUsuariosModals = initUsuariosModals;
+
+  const viewName = 'usuarios';
+  const mount = () => {
+    initUsuariosModals();
+  };
+  const unmount = () => {};
+
+  window.EmpresaSpaViews = window.EmpresaSpaViews || {};
+  const existing = window.EmpresaSpaViews[viewName];
+  if (Array.isArray(existing)) {
+    existing.push({ mount, unmount });
+  } else if (existing) {
+    window.EmpresaSpaViews[viewName] = [existing, { mount, unmount }];
+  } else {
+    window.EmpresaSpaViews[viewName] = [{ mount, unmount }];
+  }
+
+  if (!window.EMPRESA_SPA_MANUAL_INIT) {
+    initUsuariosModals();
+  }
+
+  // Backward compatibility functions
+  window.openCreateUsuarioModal = () => window.usuariosModals?.openCreateModal();
+  window.viewUser = (userId) => window.usuariosModals?.openViewModal(userId);
+  window.editUser = (userId) => window.usuariosModals?.openEditModal(userId);
+  window.toggleUser = (userId, currentStatus, userName) => window.usuariosModals?.showToggleModal(userId, currentStatus, userName);
+  // Modal control functions
+  window.closeToggleModal = () => window.usuariosModals?.closeToggleModal();
+  window.confirmToggle = () => window.usuariosModals?.confirmToggle();
+  window.showDeleteUser = (userId, userName) => window.usuariosModals?.showDeleteModal(userId, userName);
+  window.closeDeleteUser = () => window.usuariosModals?.closeDeleteModal();
+  window.confirmDeleteUser = () => window.usuariosModals?.confirmDelete();
+  window.closeUpdateModal = () => window.usuariosModals?.closeUpdateModal();
+  ////console.log('👥 Usuarios modals module loaded - MODALSCROLLMANAGER VERSION');
+})();

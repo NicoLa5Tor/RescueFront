@@ -172,24 +172,24 @@
     window.empresaId = window.currentUser.id || window.currentUser.empresa_id || '';
     window.empresaNombre = window.currentUser.username || window.currentUser.nombre || 'Mi Empresa';
   }
+  window.EMPRESA_SPA_MANUAL_INIT = true;
   window.EMPRESA_ID = window.empresaId || {{ (empresa_id or '') | tojson }};
   window.EMPRESA_USERNAME = window.empresaNombre || {{ (empresa_username or '') | tojson }};
 </script>
 <!-- SPA Shell Scripts -->
-<script src="{{ url_for('static', filename='js/portal-empresa/spa/empresa-spa.js') }}"></script>
 <script src="{{ url_for('static', filename='js/portal-empresa/spa/shell.js') }}"></script>
 <script src="{{ url_for('static', filename='js/portal-empresa/spa/theme-toggle.js') }}"></script>
 <script src="{{ url_for('static', filename='js/portal-empresa/alerts-global.js') }}"></script>
 <script src="{{ url_for('static', filename='js/hardware/location-modal-animations.js') }}"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script src="{{ url_for('static', filename='js/api-client.js') }}"></script>
+<script src="{{ url_for('static', filename='js/portal-empresa/spa/store.js') }}"></script>
+<script src="{{ url_for('static', filename='js/portal-empresa/spa/api.js') }}"></script>
 <script src="{{ url_for('static', filename='js/modal-utils.js') }}"></script>
-<script src="{{ url_for('static', filename='js/dashboard/basic-managers.js') }}"></script>
 <script src="{{ url_for('static', filename='js/hardware/hardware-validation.js') }}"></script>
 <script src="{{ url_for('static', filename='js/hardware/hardware-core.js') }}"></script>
 <script src="{{ url_for('static', filename='js/hardware/hardware-main.js') }}"></script>
 <script src="{{ url_for('static', filename='js/portal-empresa/hardware-status-live.js') }}"></script>
-<script src="{{ url_for('static', filename='js/hardware-debug-put.js') }}"></script>
 <script src="{{ url_for('static', filename='js/portal-empresa/spa/views/hardware-page.js') }}"></script>
 <script>
   window.EMPRESA_SPA_MODE = true;
@@ -206,6 +206,7 @@
 <script src="{{ url_for('static', filename='js/portal-empresa/spa/views/alertas.js') }}"></script>
 <script src="{{ url_for('static', filename='js/portal-empresa/spa/views/alertas-create.js') }}"></script>
 <script src="{{ url_for('static', filename='js/portal-empresa/spa/views/alertas-inactivas.js') }}"></script>
+<script src="{{ url_for('static', filename='js/portal-empresa/spa/router.js') }}"></script>
 <script>
   if (typeof EndpointTestClient !== 'undefined' && !window.apiClient) {
     window.apiClient = new EndpointTestClient();

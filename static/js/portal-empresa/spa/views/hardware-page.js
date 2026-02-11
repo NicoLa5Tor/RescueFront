@@ -1,40 +1,116 @@
-document.addEventListener('DOMContentLoaded', function() {
+(() => {
+  const viewName = 'hardware';
+  let hardwareViewInitialized = false;
+  let hardwareViewActive = false;
+  let hardwareObserver = null;
+  let visibilityIntervalId = null;
+
+  const setupHardwareView = () => {
+    if (hardwareViewInitialized) return;
+    hardwareViewInitialized = true;
+
     ////console.log('🛠️ Hardware page loaded WITHOUT GSAP - Performance optimized');
-    
-    // Observer simple para tarjetas nuevas usando el sistema global
+    initializeModals();
+    initializeHardwareApiClient();
+    openHardwareFromSession();
+    initializeFilterListeners();
+  };
+
+  const startHardwareObserver = () => {
+    if (hardwareObserver) {
+      hardwareObserver.disconnect();
+      hardwareObserver = null;
+    }
+
     const hardwareGrid = document.getElementById('hardwareGrid');
-    if (hardwareGrid) {
-      const observer = new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutation) {
-          mutation.addedNodes.forEach(function(node) {
-            if (node.nodeType === 1 && node.classList.contains('ios-hardware-card')) {
-              //console.log('👀 Nueva tarjeta detectada, usando sistema global...');
-              // Usar la función global del sistema base
-              if (window.applyCardOptimizations) {
-                window.applyCardOptimizations(node);
-              }
+    if (!hardwareGrid) return;
+
+    hardwareObserver = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        mutation.addedNodes.forEach(function(node) {
+          if (node.nodeType === 1 && node.classList.contains('ios-hardware-card')) {
+            //console.log('👀 Nueva tarjeta detectada, usando sistema global...');
+            // Usar la función global del sistema base
+            if (window.applyCardOptimizations) {
+              window.applyCardOptimizations(node);
             }
-          });
+          }
         });
       });
-      
-      observer.observe(hardwareGrid, {
-        childList: true,
-        subtree: true
-      });
-      
-      //console.log('👀 Observer configurado para detectar nuevas tarjetas');
+    });
+    
+    hardwareObserver.observe(hardwareGrid, {
+      childList: true,
+      subtree: true
+    });
+    
+    //console.log('👀 Observer configurado para detectar nuevas tarjetas');
+  };
+
+  const startHardwareView = () => {
+    if (hardwareViewActive) return;
+    hardwareViewActive = true;
+
+    setupHardwareView();
+    startHardwareObserver();
+
+    if (!visibilityIntervalId) {
+      // Usar el sistema global de visibilidad cada 500ms
+      visibilityIntervalId = setInterval(() => {
+        if (window.ensureCardsVisibility) {
+          window.ensureCardsVisibility();
+        }
+      }, 500);
     }
-    
-    // Usar el sistema global de visibilidad cada 500ms
-    setInterval(() => {
-      if (window.ensureCardsVisibility) {
-        window.ensureCardsVisibility();
-      }
-    }, 500);
-    
+
+    if (window.initHardwareMain) {
+      window.initHardwareMain();
+    }
+
     //console.log('✅ Hardware page optimizations applied successfully - Using GLOBAL SYSTEM');
-  });
+  };
+
+  const stopHardwareView = () => {
+    if (!hardwareViewActive) return;
+    hardwareViewActive = false;
+
+    if (visibilityIntervalId) {
+      clearInterval(visibilityIntervalId);
+      visibilityIntervalId = null;
+    }
+
+    if (hardwareObserver) {
+      hardwareObserver.disconnect();
+      hardwareObserver = null;
+    }
+  };
+
+  const mount = () => {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', startHardwareView, { once: true });
+      return;
+    }
+    setTimeout(startHardwareView, 0);
+  };
+
+  const unmount = () => {
+    stopHardwareView();
+  };
+
+  window.EmpresaSpaViews = window.EmpresaSpaViews || {};
+  const existing = window.EmpresaSpaViews[viewName];
+  if (Array.isArray(existing)) {
+    existing.push({ mount, unmount });
+  } else if (existing) {
+    window.EmpresaSpaViews[viewName] = [existing, { mount, unmount }];
+  } else {
+    window.EmpresaSpaViews[viewName] = [{ mount, unmount }];
+  }
+
+  if (!window.EMPRESA_SPA_MANUAL_INIT) {
+    mount();
+  }
+})();
 
 // Initialize modals when page loads
 function initializeModals() {
@@ -561,7 +637,6 @@ function openLocationModalFromCard(hardwareId, locationUrl) {
 window.openLocationModalFromCard = openLocationModalFromCard;
 
 // Initialize when DOM is ready
-document.addEventListener('DOMContentLoaded', initializeModals);
 
 // NOTE: Las funciones openCreateModal() y editHardware() están ahora
 // implementadas en hardware-core.js y exportadas al objeto window
@@ -1166,24 +1241,28 @@ function checkModalElements() {
   return { ...updateElements };
 }
 
-// Get token from session and initialize
-fetch(window.__buildApiUrl('/health'))
-  .then(response => {
-    if (response.ok) {
-      apiClient = new EndpointTestClient();
-      //console.log('API Client initialized');
-      
-      // Check modal elements
-      setTimeout(checkModalElements, 1000);
-      
-      // Initialize filter listeners first
-      initializeFilterListeners();
-      
-      // NO cargar datos aquí - ya lo hace hardware-main.js
-      //console.log('✅ API Client listo, hardware-main.js se encargará de cargar datos');
-    }
-  })
-  .catch(err => console.error('Error initializing API client:', err));
+const initializeHardwareApiClient = () => {
+  if (apiClient) return;
+
+  // Get token from session and initialize
+  fetch(window.__buildApiUrl('/health'))
+    .then(response => {
+      if (response.ok) {
+        apiClient = new EndpointTestClient();
+        //console.log('API Client initialized');
+        
+        // Check modal elements
+        setTimeout(checkModalElements, 1000);
+        
+        // Initialize filter listeners first
+        initializeFilterListeners();
+        
+        // NO cargar datos aquí - ya lo hace hardware-main.js
+        //console.log('✅ API Client listo, hardware-main.js se encargará de cargar datos');
+      }
+    })
+    .catch(err => console.error('Error initializing API client:', err));
+};
 
 // Functions for CRUD operations
 let isLoadingHardware = false;
@@ -1313,9 +1392,6 @@ function openHardwareFromSession(hardwareList) {
   }, 400);
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  openHardwareFromSession();
-});
 
 async function createHardwareAPI(hardwareData) {
   try {
@@ -2199,28 +2275,36 @@ if (typeof window.loadHardware === 'function') {
 }
 
 // Initialize on DOM load
-document.addEventListener('DOMContentLoaded', initializeFilterListeners);
 
 // Close modal when clicking outside
-document.getElementById('hardwareModal').addEventListener('click', function(e) {
-  if (e.target === this) {
-    closeModal();
-  }
-});
+const hardwareModal = document.getElementById('hardwareModal');
+if (hardwareModal) {
+  hardwareModal.addEventListener('click', function(e) {
+    if (e.target === this) {
+      closeModal();
+    }
+  });
+}
 
 // Close view modal when clicking outside
-document.getElementById('viewHardwareModal').addEventListener('click', function(e) {
-  if (e.target === this) {
-    closeViewModal();
-  }
-});
+const viewHardwareModal = document.getElementById('viewHardwareModal');
+if (viewHardwareModal) {
+  viewHardwareModal.addEventListener('click', function(e) {
+    if (e.target === this) {
+      closeViewModal();
+    }
+  });
+}
 
 // Close client update modal when clicking outside
-document.getElementById('clientUpdateModal').addEventListener('click', function(e) {
-  if (e.target === this) {
-    closeUpdateModal();
-  }
-});
+const clientUpdateModal = document.getElementById('clientUpdateModal');
+if (clientUpdateModal) {
+  clientUpdateModal.addEventListener('click', function(e) {
+    if (e.target === this) {
+      closeUpdateModal();
+    }
+  });
+}
 
 // Close modal with Escape key
 document.addEventListener('keydown', function(e) {
@@ -2230,11 +2314,11 @@ document.addEventListener('keydown', function(e) {
     const viewModal = document.getElementById('viewHardwareModal');
     const updateModal = document.getElementById('clientUpdateModal');
     
-    if (!hardwareModal.classList.contains('hidden')) {
+    if (hardwareModal && !hardwareModal.classList.contains('hidden')) {
       closeModal();
-    } else if (!viewModal.classList.contains('hidden')) {
+    } else if (viewModal && !viewModal.classList.contains('hidden')) {
       closeViewModal();
-    } else if (!updateModal.classList.contains('hidden')) {
+    } else if (updateModal && !updateModal.classList.contains('hidden')) {
       closeUpdateModal();
     }
   }

@@ -87,7 +87,6 @@
     
     <!-- Main CSS -->
     <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/notification-fixes.css') }}" rel="stylesheet">
     
     <!-- Sticky Header CSS - Solo en páginas que no sean login -->
     {% if current_route != 'login' and not is_empresa_route and not is_admin_route %}

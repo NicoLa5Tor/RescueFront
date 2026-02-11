@@ -1,4 +1,7 @@
 (() => {
+  const viewName = 'usuarios';
+  let initialized = false;
+
   const applyCardOptimizations = (card) => {
     if (window.HardwareAnimations) {
       return;
@@ -52,8 +55,34 @@
     });
   };
 
-  document.addEventListener('DOMContentLoaded', () => {
+  const init = () => {
+    if (initialized) return;
+    initialized = true;
     applyOptimizationsToExistingCards();
     configureUsuariosModals();
-  });
+  };
+
+  const mount = () => {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init, { once: true });
+      return;
+    }
+    init();
+  };
+
+  const unmount = () => {};
+
+  window.EmpresaSpaViews = window.EmpresaSpaViews || {};
+  const existing = window.EmpresaSpaViews[viewName];
+  if (Array.isArray(existing)) {
+    existing.push({ mount, unmount });
+  } else if (existing) {
+    window.EmpresaSpaViews[viewName] = [existing, { mount, unmount }];
+  } else {
+    window.EmpresaSpaViews[viewName] = [{ mount, unmount }];
+  }
+
+  if (!window.EMPRESA_SPA_MANUAL_INIT) {
+    mount();
+  }
 })();

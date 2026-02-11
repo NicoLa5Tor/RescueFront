@@ -50,16 +50,18 @@ let cacheMetadata = {
     cacheHits: 0,
     cacheMisses: 0
 };
+let alertasInitialized = false;
+let alertasActive = false;
+let refreshIntervalId = null;
+let alertsObserver = null;
+let cacheCleanupIntervalId = null;
 
 // ========== INICIALIZACIÓN ==========
-document.addEventListener('DOMContentLoaded', function() {
+const setupAlertasView = () => {
+    if (alertasInitialized) return;
+    alertasInitialized = true;
+
     ////console.log('🚨 ALERTAS: Página de alertas inicializada');
-    
-    // Inicializar sistema de cache silencioso
-    initializeCacheSystem();
-    
-    // Inicializar conexión WebSocket
-    connectWebSocket();
     
     // Configurar el modal manager para el modal de alertas
     if (window.modalManager) {
@@ -72,20 +74,24 @@ document.addEventListener('DOMContentLoaded', function() {
     // Configurar contador de caracteres para el textarea de mensaje
     setupMessageCharacterCounter();
 
-    // Cargar alertas iniciales
-    loadActiveAlerts();
-
     // Limitar transiciones del contenedor del listado
     const alertsPanel = document.getElementById('alertsContainer');
     if (alertsPanel) {
         alertsPanel.classList.add('transition-opacity', 'duration-300');
         alertsPanel.style.transitionProperty = 'opacity, transform';
     }
+};
+
+const startAlertsObserver = () => {
+    if (alertsObserver) {
+        alertsObserver.disconnect();
+        alertsObserver = null;
+    }
 
     // Observer simple para nuevas tarjetas de alerta
     const alertsContainer = document.getElementById('alertsContainer');
     if (alertsContainer) {
-        const observer = new MutationObserver(function(mutations) {
+        alertsObserver = new MutationObserver(function(mutations) {
             mutations.forEach(function(mutation) {
                 mutation.addedNodes.forEach(function(node) {
                     if (node.nodeType === 1 && node.classList.contains('alert-card')) {
@@ -97,14 +103,31 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
-        observer.observe(alertsContainer, {
+        alertsObserver.observe(alertsContainer, {
             childList: true,
             subtree: true
         });
     }
+};
+
+const startAlertasView = () => {
+    if (alertasActive) return;
+    alertasActive = true;
+
+    // Inicializar conexión WebSocket
+    connectWebSocket();
+
+    if (!cacheCleanupIntervalId) {
+        initializeCacheSystem();
+    }
+
+    // Cargar alertas iniciales
+    loadActiveAlerts();
+
+    startAlertsObserver();
 
     // Actualizar alertas automáticamente cada 5 segundos
-    setInterval(() => {
+    refreshIntervalId = setInterval(() => {
         refreshAlertsQuietly();
     }, 5000);
 
@@ -112,10 +135,99 @@ document.addEventListener('DOMContentLoaded', function() {
     checkForAutoOpenAlert();
     
     //console.log('✅ ALERTAS: Sistema completamente inicializado con cache inteligente y WebSocket');
-});
+};
+
+const stopAlertasView = () => {
+    if (!alertasActive) return;
+    alertasActive = false;
+
+    if (refreshIntervalId) {
+        clearInterval(refreshIntervalId);
+        refreshIntervalId = null;
+    }
+
+    if (alertsObserver) {
+        alertsObserver.disconnect();
+        alertsObserver = null;
+    }
+
+    if (cacheCleanupIntervalId) {
+        clearInterval(cacheCleanupIntervalId);
+        cacheCleanupIntervalId = null;
+    }
+
+    if (websocket) {
+        websocket.close();
+        websocket = null;
+        window.websocket = null;
+    }
+};
+
+const initAlertasView = () => {
+    setupAlertasView();
+    startAlertasView();
+};
+
+(() => {
+    const viewName = 'alertas';
+    const mount = () => {
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initAlertasView, { once: true });
+            return;
+        }
+        initAlertasView();
+    };
+    const unmount = () => {
+        stopAlertasView();
+    };
+
+    window.EmpresaSpaViews = window.EmpresaSpaViews || {};
+    const existing = window.EmpresaSpaViews[viewName];
+    if (Array.isArray(existing)) {
+        existing.push({ mount, unmount });
+    } else if (existing) {
+        window.EmpresaSpaViews[viewName] = [existing, { mount, unmount }];
+    } else {
+        window.EmpresaSpaViews[viewName] = [{ mount, unmount }];
+    }
+
+    if (!window.EMPRESA_SPA_MANUAL_INIT) {
+        mount();
+    }
+
+    const handleViewChange = (view) => {
+        if (view === viewName) {
+            mount();
+            return;
+        }
+        if (alertasActive) {
+            unmount();
+        }
+    };
+
+    document.addEventListener('empresa:spa:view-change', (event) => {
+        handleViewChange(event.detail?.view);
+    });
+
+    const ensureInitialView = () => {
+        const activeView = window.empresaSpa?.getActiveView?.();
+        if (activeView) {
+            handleViewChange(activeView);
+        }
+    };
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', ensureInitialView, { once: true });
+    } else {
+        ensureInitialView();
+    }
+})();
 
 // ========== FUNCIONES DE WEBSOCKET ==========
 function connectWebSocket() {
+    if (!alertasActive) {
+        return;
+    }
     if (!websocketUrl) {
         console.warn('⚠️ WebSocket URL no configurado en la aplicación');
         return;
@@ -1943,7 +2055,10 @@ function clearAlertsCache(keepRecent = false) {
 }
 
 function initializeCacheSystem() {
-    setInterval(() => {
+    if (cacheCleanupIntervalId) {
+        return;
+    }
+    cacheCleanupIntervalId = setInterval(() => {
         clearAlertsCache(true);
     }, 10 * 60 * 1000); // 10 minutos
 }

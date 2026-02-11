@@ -1,8 +1,5 @@
 /* static/css/critical.css */
 
-/* Importar corrección de modales */
-@import url('modal-fixes.css');
-
 /* Asegurar altura mínima del viewport */
 html, body {
     overflow-x: hidden;
