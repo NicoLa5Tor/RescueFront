@@ -229,7 +229,6 @@ function connectWebSocket() {
         return;
     }
     if (!websocketUrl) {
-        console.warn('⚠️ WebSocket URL no configurado en la aplicación');
         return;
     }
 
@@ -693,7 +692,6 @@ async function showAlertDetails(alertId) {
     //console.log('✅ Alerta encontrada:', alert);
     selectedAlertId = alertId;
 
-    console.log('[alerts-main] Opening alert modal. Locale:', window.detectedUserLocale, 'Timezone:', window.detectedUserZone, 'ISO:', alert.fecha_creacion);
     
     const modal = document.getElementById('alertDetailModal');
     if (!modal) {

@@ -112,14 +112,6 @@ class SecurityCleanup {
         // Verificar window.currentUser
         if (window.currentUser) {
             //console.log('✅ window.currentUser configurado correctamente');
-            console.log('👤 Datos de usuario:', {
-                id: window.currentUser.id ? '✅' : '❌',
-                role: window.currentUser.role ? '✅' : '❌',
-                email: window.currentUser.email ? '✅' : '❌'
-            });
-        } else {
-            console.warn('⚠️ window.currentUser no está configurado');
-            console.warn('   💡 Esto puede causar problemas de autenticación');
         }
         
         // Verificar AuthManager

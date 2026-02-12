@@ -238,7 +238,6 @@
           }
         })
         .catch((error) => {
-          console.error('Error cargando archivos del folder:', error);
           setStatus('error', error.message || 'No se pudieron cargar los archivos de la carpeta.');
           updateCounter();
         })
@@ -491,7 +490,6 @@
           closeUploadModal();
         }, 800);
       } catch (error) {
-        console.error('Error cargando archivo:', error);
         showUploadFeedback(error.message || 'No se pudo cargar el archivo.', 'error');
       } finally {
         setUploadSubmitting(false);
@@ -545,7 +543,6 @@
           closeCreateFolderModal();
         }, 800);
       } catch (error) {
-        console.error('Error creando directorio:', error);
         showCreateFeedback(error.message || 'No se pudo crear el directorio.', 'error');
       } finally {
         setCreateSubmitting(false);
@@ -592,7 +589,6 @@
           closeDeleteFolderModal();
         }, 700);
       } catch (error) {
-        console.error('Error eliminando directorio:', error);
         showDeleteFeedback(error.message || 'No se pudo eliminar el directorio.', 'error');
       } finally {
         setDeleteSubmitting(false);

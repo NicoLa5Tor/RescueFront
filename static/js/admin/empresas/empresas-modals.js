@@ -163,6 +163,7 @@ class EmpresasModals {
     this.apiClient = null;
     this.sedes = [];
     this.roles = [];
+    this.successModalId = 'empresasUpdateModal';
     
     // Inicializar ModalScrollManager
     this.modalManager = new EmpresasModalScrollManager();
@@ -505,18 +506,21 @@ class EmpresasModals {
    * Create success modal - EXACT STYLE AS COMPANY TYPES
    */
   createSuccessModal() {
+    if (document.getElementById(this.successModalId)) {
+      return;
+    }
     const modalHTML = `
       <!-- Client Update Success Modal - EXACT COPY FROM COMPANY TYPES -->
-      <div id="clientUpdateModal" class="ios-modal-backdrop modal-centered hidden">
+      <div id="${this.successModalId}" class="ios-modal-backdrop modal-centered hidden">
         <div class="ios-blur-modal-container flex flex-col w-full max-w-md !max-h-[85vh] overflow-hidden mx-auto" id="updateModalContainer">
           <div class="ios-blur-header text-center">
             <div class="client-update-icon mx-auto mb-4" id="updateModalIcon">
               <i class="fas fa-sync-alt text-4xl text-emerald-400" id="updateModalIconFa"></i>
             </div>
-            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2" id="updateModalTitle">Empresa Actualizada</h3>
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2" id="empresasUpdateModalTitle">Empresa Actualizada</h3>
           </div>
           <div class="ios-blur-body flex-1 min-h-0 !max-h-none text-center">
-            <p class="text-gray-700 dark:text-white/80 text-lg mb-6" id="updateModalMessage">
+            <p class="text-gray-700 dark:text-white/80 text-lg mb-6" id="empresasUpdateModalMessage">
               La empresa se ha actualizado exitosamente.
             </p>
             <button class="ios-blur-btn ios-blur-btn-primary mx-auto" onclick="empresasModals.closeSuccessModal()">
@@ -1304,7 +1308,7 @@ class EmpresasModals {
       case 'toggleEmpresaModal':
         this.currentToggleEmpresa = null;
         break;
-      case 'clientUpdateModal':
+      case 'empresasUpdateModal':
         // No specific data to reset for success modal
         break;
     }
@@ -1333,7 +1337,7 @@ class EmpresasModals {
   }
 
   closeSuccessModal() {
-    this.closeModal('clientUpdateModal');
+    this.closeModal(this.successModalId);
   }
 
   /**
@@ -1341,23 +1345,26 @@ class EmpresasModals {
    */
   showSuccessModal(message) {
     // Set dynamic title based on message
-    const title = document.getElementById('updateModalTitle');
-    const messageEl = document.getElementById('updateModalMessage');
+    const modal = document.getElementById(this.successModalId);
+    const title = modal ? modal.querySelector('#empresasUpdateModalTitle') : null;
+    const messageEl = modal ? modal.querySelector('#empresasUpdateModalMessage') : null;
     
-    if (message.includes('creada')) {
+    if (title && message.includes('creada')) {
       title.textContent = '¡Empresa Creada!';
-    } else if (message.includes('actualizada')) {
+    } else if (title && message.includes('actualizada')) {
       title.textContent = '¡Empresa Actualizada!';
-    } else if (message.includes('activada')) {
+    } else if (title && message.includes('activada')) {
       title.textContent = '¡Empresa Activada!';
-    } else if (message.includes('desactivada')) {
+    } else if (title && message.includes('desactivada')) {
       title.textContent = '¡Empresa Desactivada!';
-    } else {
+    } else if (title) {
       title.textContent = '¡Operación Exitosa!';
     }
     
-    messageEl.textContent = message;
-    this.openModal('clientUpdateModal');
+    if (messageEl) {
+      messageEl.textContent = message;
+    }
+    this.openModal(this.successModalId);
   }
 
   /**
@@ -1484,13 +1491,13 @@ class EmpresasModals {
     
     // Get modal elements
     const modal = document.getElementById('toggleEmpresaModal');
-    const container = document.getElementById('toggleModalContainer');
-    const icon = document.getElementById('toggleModalIcon');
-    const iconFa = document.getElementById('toggleModalIconFa');
-    const title = document.getElementById('toggleModalTitle');
-    const message = document.getElementById('toggleModalMessage');
-    const confirmText = document.getElementById('toggleConfirmText');
-    const confirmIcon = document.getElementById('toggleConfirmIcon');
+    const container = modal ? modal.querySelector('#toggleModalContainer') : null;
+    const icon = modal ? modal.querySelector('#toggleModalIcon') : null;
+    const iconFa = modal ? modal.querySelector('#toggleModalIconFa') : null;
+    const title = modal ? modal.querySelector('#toggleModalTitle') : null;
+    const message = modal ? modal.querySelector('#toggleModalMessage') : null;
+    const confirmText = modal ? modal.querySelector('#toggleConfirmText') : null;
+    const confirmIcon = modal ? modal.querySelector('#toggleConfirmIcon') : null;
     
     if (!modal || !container || !title || !message) {
       //console.error('❌ Toggle modal elements missing!');
@@ -1543,8 +1550,8 @@ class EmpresasModals {
     //console.log('🔄 Closing toggle modal');
   
     const modal = document.getElementById('toggleEmpresaModal');
-    const container = document.getElementById('toggleModalContainer');
-    const confirmBtn = document.getElementById('toggleConfirmBtn');
+    const container = modal ? modal.querySelector('#toggleModalContainer') : null;
+    const confirmBtn = modal ? modal.querySelector('#toggleConfirmBtn') : null;
   
     if (!modal) {
       //console.error('❌ Modal not found when trying to close');
@@ -1583,11 +1590,14 @@ class EmpresasModals {
   async confirmToggle() {
     if (this.currentToggleEmpresa && this.currentToggleEmpresa.newStatus !== null) {
       // Show loading state
-      const confirmBtn = document.getElementById('toggleConfirmBtn');
-      const originalContent = confirmBtn.innerHTML;
+      const modal = document.getElementById('toggleEmpresaModal');
+      const confirmBtn = modal ? modal.querySelector('#toggleConfirmBtn') : null;
+      const originalContent = confirmBtn ? confirmBtn.innerHTML : '';
   
-      confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
-      confirmBtn.disabled = true;
+      if (confirmBtn) {
+        confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+        confirmBtn.disabled = true;
+      }
   
       try {
         const { id, newStatus } = this.currentToggleEmpresa;
@@ -1606,15 +1616,19 @@ class EmpresasModals {
             setTimeout(() => window.empresasMain.loadEmpresas(), 1000);
           }
         } else {
-          confirmBtn.innerHTML = originalContent;
-          confirmBtn.disabled = false;
+          if (confirmBtn) {
+            confirmBtn.innerHTML = originalContent;
+            confirmBtn.disabled = false;
+          }
           this.showNotification('Error: ' + (data.errors?.[0] || 'Error desconocido'), 'error');
         }
   
       } catch (error) {
         //console.error('💥 Error al ejecutar toggle:', error);
-        confirmBtn.innerHTML = originalContent;
-        confirmBtn.disabled = false;
+        if (confirmBtn) {
+          confirmBtn.innerHTML = originalContent;
+          confirmBtn.disabled = false;
+        }
         this.showNotification('Error de conexión', 'error');
       }
     }

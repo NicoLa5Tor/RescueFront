@@ -78,23 +78,19 @@ class EndpointTestClient {
                     
                     // NUEVO: Detectar si es sesión inválida vs token expirado
                     if (errorMessage.includes('Sesión inválida') || errorMessage.includes('Invalid session')) {
-                        console.log('❌ Invalid session detected, redirecting to login');
                         this.processQueue(new Error('Invalid session'));
                         this._redirectToLogin();
                         return Promise.reject(new Error('Invalid session'));
                     }
                 } catch (parseError) {
                     // If can't parse response, continue with normal flow
-                    console.log('⚠️ Could not parse 401 response, continuing with token refresh');
                 }
                 
-                console.log('🔄 Access token expired, attempting refresh...');
                 if (this.isRefreshing) {
                     return new Promise((resolve, reject) => {
                         this.failedQueue.push({ resolve, reject });
                     }).then(() => {
                         // Retry this queued request after refresh completes
-                        console.log('🔄 Executing queued request after refresh');
                         return fetch(url, config);
                     }).catch(err => {
                         return Promise.reject(err);
@@ -111,12 +107,10 @@ class EndpointTestClient {
                     });
 
                     if (refreshResponse.ok) {
-                        console.log('✅ Token refreshed successfully');
                         this.processQueue(null);
                         this.isRefreshing = false;
                         
                         // Retry the original request with fresh token
-                        console.log('🔄 Retrying original request after refresh');
                         return fetch(url, config);
                     } else {
                         // Check if refresh failed due to invalid session
@@ -125,14 +119,11 @@ class EndpointTestClient {
                             const refreshErrorMessage = refreshErrorData?.message || '';
                             
                             if (refreshErrorMessage.includes('Sesión inválida') || refreshErrorMessage.includes('Invalid session')) {
-                                console.log('❌ Session invalidated, redirecting to login');
                                 this.processQueue(new Error('Session invalidated'));
                             } else {
-                                console.log('❌ Token refresh failed, redirecting to login');
                                 this.processQueue(new Error('Token refresh failed'));
                             }
                         } catch (parseError) {
-                            console.log('❌ Token refresh failed, redirecting to login');
                             this.processQueue(new Error('Token refresh failed'));
                         }
                         
@@ -141,13 +132,11 @@ class EndpointTestClient {
                         return Promise.reject(new Error('Authentication failed'));
                     }
                 } catch (error) {
-                    console.error('❌ Error during token refresh:', error);
                     this.processQueue(error);
                     this.isRefreshing = false;
                     
                     // NO redirigir a login si es error de red durante refresh
                     if (this._isNetworkError(error)) {
-                        console.log('🌐 Network error during refresh - tokens may still be valid');
                         return Promise.reject(new Error('Sin conexión durante refresh - revisa tu internet'));
                     }
                     
@@ -158,11 +147,8 @@ class EndpointTestClient {
 
             return response;
         } catch (error) {
-            console.error('❌ Request failed:', error);
-            
             // NO redirigir a login si es error de red
             if (this._isNetworkError(error)) {
-                console.log('🌐 Network error - tokens still valid');
                 throw new Error('Sin conexión - revisa tu internet');
             }
             
@@ -188,7 +174,6 @@ class EndpointTestClient {
         
         // Redirect to login
         if (window.location.pathname !== '/login') {
-            console.log('🔄 Redirecting to login due to authentication failure');
             window.location.href = '/login';
         }
     }

@@ -26,7 +26,6 @@ class SessionManager {
             }
             return [];
         } catch (error) {
-            console.error('Error loading sessions:', error);
             return [];
         }
     }
@@ -44,7 +43,6 @@ class SessionManager {
             }
             return false;
         } catch (error) {
-            console.error('Error closing session:', error);
             return false;
         }
     }
@@ -62,7 +60,6 @@ class SessionManager {
             }
             return false;
         } catch (error) {
-            console.error('Error closing all sessions:', error);
             return false;
         }
     }
@@ -73,7 +70,6 @@ class SessionManager {
     renderSessionsWidget(containerId) {
         const container = document.getElementById(containerId);
         if (!container) {
-            console.error('Container not found:', containerId);
             return;
         }
 

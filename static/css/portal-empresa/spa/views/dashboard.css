@@ -23,3 +23,25 @@
 .chart-loading-overlay p {
   color: var(--text-primary) !important;
 }
+
+.chart-card {
+  min-width: 0;
+}
+
+.chart-canvas-wrap {
+  width: 100%;
+  min-height: 200px;
+  height: clamp(220px, 40vw, 320px);
+}
+
+.chart-canvas-wrap canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+@media (max-width: 640px) {
+  .chart-canvas-wrap {
+    height: 220px;
+  }
+}

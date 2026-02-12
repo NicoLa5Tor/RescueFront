@@ -5,9 +5,12 @@ class AdminSpaDashboard {
     this.distributionChart = null;
     this.refreshInterval = null;
     this.isActive = true;
+    this.chartResizeObserver = null;
+    this.resizeHandler = null;
     this.loadDashboardData();
     this.startAutoRefresh();
     this.observeThemeChanges();
+    this.setupChartResizeHandling();
   }
 
   isAuthenticated() {
@@ -48,14 +51,6 @@ class AdminSpaDashboard {
 
       if (!this.isActive) return;
 
-      console.log('[admin-spa] Dashboard payload:', {
-        stats,
-        recentCompanies,
-        recentUsers,
-        activityChart,
-        distributionChart,
-        performanceMetrics
-      });
 
       this.updateStatsSection(stats, performanceMetrics);
       this.updateRecentCompaniesSection(recentCompanies);
@@ -316,6 +311,7 @@ class AdminSpaDashboard {
     }
 
     const { textPrimary, gridColor } = this.getChartThemeColors();
+    const layout = this.getChartLayoutOptions();
 
     this.activityChart = new Chart(ctx, {
       type: 'bar',
@@ -323,19 +319,32 @@ class AdminSpaDashboard {
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        layout: { padding: layout.padding },
         scales: {
-          x: { ticks: { color: textPrimary }, grid: { color: gridColor } },
-          y: { beginAtZero: true, ticks: { color: textPrimary }, grid: { color: gridColor } }
+          x: {
+            ticks: {
+              color: textPrimary,
+              maxTicksLimit: layout.maxTicks,
+              font: { size: layout.tickFont }
+            },
+            grid: { color: gridColor }
+          },
+          y: {
+            beginAtZero: true,
+            ticks: { color: textPrimary, font: { size: layout.tickFont } },
+            grid: { color: gridColor }
+          }
         },
         plugins: {
           legend: {
-            display: true,
-            position: 'top',
-            labels: { color: textPrimary }
+            display: !layout.isCompact,
+            position: layout.legendPosition,
+            labels: { color: textPrimary, font: { size: layout.tickFont } }
           }
         }
       }
     });
+    this.applyChartLayout();
   }
 
   updateDistributionChart(data) {
@@ -361,6 +370,7 @@ class AdminSpaDashboard {
     }
 
     const { textPrimary } = this.getChartThemeColors();
+    const layout = this.getChartLayoutOptions();
 
     this.distributionChart = new Chart(ctx, {
       type: 'doughnut',
@@ -370,16 +380,19 @@ class AdminSpaDashboard {
         maintainAspectRatio: false,
         plugins: {
           legend: {
-            position: 'bottom',
+            position: layout.legendPosition,
             labels: {
-              padding: 20,
+              padding: layout.legendPadding,
               usePointStyle: true,
-              color: textPrimary
+              color: textPrimary,
+              font: { size: layout.tickFont },
+              boxWidth: layout.legendBox
             }
           }
         }
       }
     });
+    this.applyChartLayout();
   }
 
   observeThemeChanges() {
@@ -391,6 +404,44 @@ class AdminSpaDashboard {
     this.themeObserver.observe(target, { attributes: true, attributeFilter: ['class'] });
   }
 
+  setupChartResizeHandling() {
+    this.resizeHandler = () => {
+      this.applyChartLayout();
+      this.resizeCharts();
+    };
+    window.addEventListener('resize', this.resizeHandler);
+
+    if (typeof ResizeObserver === 'undefined') return;
+
+    this.chartResizeObserver = new ResizeObserver(() => {
+      this.applyChartLayout();
+      this.resizeCharts();
+    });
+
+    const activityWrapper = document.getElementById('dashboardChart')?.parentElement;
+    const distributionWrapper = document.getElementById('distributionChart')?.parentElement;
+
+    if (activityWrapper) {
+      this.chartResizeObserver.observe(activityWrapper);
+    }
+    if (distributionWrapper) {
+      this.chartResizeObserver.observe(distributionWrapper);
+    }
+  }
+
+  getChartLayoutOptions() {
+    const isCompact = window.matchMedia('(max-width: 640px)').matches;
+    return {
+      isCompact,
+      legendPosition: isCompact ? 'bottom' : 'top',
+      legendPadding: isCompact ? 12 : 20,
+      legendBox: isCompact ? 8 : 10,
+      tickFont: isCompact ? 10 : 12,
+      maxTicks: isCompact ? 4 : 8,
+      padding: isCompact ? 8 : 16
+    };
+  }
+
   getChartThemeColors() {
     const root = document.documentElement;
     const body = document.body;
@@ -399,6 +450,55 @@ class AdminSpaDashboard {
       return { textPrimary: '#ffffff', gridColor: 'rgba(255,255,255,0.2)' };
     }
     return { textPrimary: '#0f172a', gridColor: '#e5e7eb' };
+  }
+
+  applyChartLayout() {
+    const layout = this.getChartLayoutOptions();
+
+    if (this.activityChart) {
+      const legend = this.activityChart.options?.plugins?.legend;
+      if (legend) {
+        legend.display = !layout.isCompact;
+        legend.position = layout.legendPosition;
+        if (legend.labels) {
+          legend.labels.font = { size: layout.tickFont };
+        }
+      }
+      const scales = this.activityChart.options?.scales;
+      if (scales?.x?.ticks) {
+        scales.x.ticks.maxTicksLimit = layout.maxTicks;
+        scales.x.ticks.font = { size: layout.tickFont };
+      }
+      if (scales?.y?.ticks) {
+        scales.y.ticks.font = { size: layout.tickFont };
+      }
+      if (this.activityChart.options?.layout) {
+        this.activityChart.options.layout.padding = layout.padding;
+      }
+      this.activityChart.update('none');
+    }
+
+    if (this.distributionChart) {
+      const legend = this.distributionChart.options?.plugins?.legend;
+      if (legend) {
+        legend.position = layout.legendPosition;
+        if (legend.labels) {
+          legend.labels.padding = layout.legendPadding;
+          legend.labels.font = { size: layout.tickFont };
+          legend.labels.boxWidth = layout.legendBox;
+        }
+      }
+      this.distributionChart.update('none');
+    }
+  }
+
+  resizeCharts() {
+    if (this.activityChart) {
+      this.activityChart.resize();
+    }
+    if (this.distributionChart) {
+      this.distributionChart.resize();
+    }
   }
 
   applyChartTheme() {
@@ -550,6 +650,16 @@ class AdminSpaDashboard {
     if (this.themeObserver) {
       this.themeObserver.disconnect();
       this.themeObserver = null;
+    }
+
+    if (this.resizeHandler) {
+      window.removeEventListener('resize', this.resizeHandler);
+      this.resizeHandler = null;
+    }
+
+    if (this.chartResizeObserver) {
+      this.chartResizeObserver.disconnect();
+      this.chartResizeObserver = null;
     }
 
     if (this.activityChart) {

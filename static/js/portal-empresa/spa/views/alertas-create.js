@@ -278,7 +278,6 @@ async function loadAlertTypesForAlert(forceReload = false) {
             handleAlertTypesError(new Error('No se encontraron tipos de alerta activos'));
         }
     } catch (error) {
-        console.error('Error cargando tipos de alerta activos para empresa:', error);
         alertTypesCache = [];
         populateAlertTypesDropdown([]);
         handleAlertTypesError(error);
@@ -366,7 +365,6 @@ function setAlertTypeSelectLoading(loading) {
 
 function handleAlertTypesError(error) {
     if (error) {
-        console.warn('Tipos de alerta: using fallback state', error);
     }
     const { helper } = getAlertTypeSelectElements();
     if (helper) {
@@ -896,7 +894,6 @@ function validateCreateAlertData(data) {
  */
 async function sendCreateAlertRequest(alertData) {
     try {
-        console.log('📡 Payload enviado para crear alerta:', alertData);
         
         // Verificar que tenemos el cliente API disponible
         if (!window.apiClient) {

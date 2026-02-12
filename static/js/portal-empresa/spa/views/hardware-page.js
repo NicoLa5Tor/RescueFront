@@ -1261,7 +1261,7 @@ const initializeHardwareApiClient = () => {
         //console.log('✅ API Client listo, hardware-main.js se encargará de cargar datos');
       }
     })
-    .catch(err => console.error('Error initializing API client:', err));
+    .catch(() => {});
 };
 
 // Functions for CRUD operations

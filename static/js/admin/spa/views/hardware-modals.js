@@ -250,13 +250,19 @@
 
     openHardwareToggleModal(id, activa) {
       if (!id) return;
-      this.toggleState = { id, activa: Boolean(activa) };
 
       const hardware = this.getHardwareFromCache(id);
+      const currentActive = hardware?.activa !== false;
+      const targetActive = typeof activa === 'boolean'
+        ? (activa === currentActive ? !activa : activa)
+        : !currentActive;
+
+      this.toggleState = { id, activa: targetActive };
+
       const name = hardware?.nombre || 'este hardware';
 
-      const title = activa ? 'Activar Hardware' : 'Desactivar Hardware';
-      const message = activa
+      const title = targetActive ? 'Activar Hardware' : 'Desactivar Hardware';
+      const message = targetActive
         ? `Estas seguro de que quieres activar ${name}?`
         : `Estas seguro de que quieres desactivar ${name}?`;
 
@@ -267,19 +273,19 @@
         ? toggleModal.querySelector('#toggleConfirmText')
         : document.getElementById('toggleConfirmText');
       if (confirmText) {
-        confirmText.textContent = activa ? 'Activar' : 'Desactivar';
+        confirmText.textContent = targetActive ? 'Activar' : 'Desactivar';
       }
 
       const icon = document.getElementById('toggleModalIconFa');
       if (icon) {
-        icon.className = `fas ${activa ? 'fa-play' : 'fa-power-off'} text-4xl`;
+        icon.className = `fas ${targetActive ? 'fa-play' : 'fa-power-off'} text-4xl`;
       }
 
       const confirmIcon = toggleModal
         ? toggleModal.querySelector('#toggleConfirmIcon')
         : document.getElementById('toggleConfirmIcon');
       if (confirmIcon) {
-        confirmIcon.className = `fas ${activa ? 'fa-check' : 'fa-power-off'} mr-2`;
+        confirmIcon.className = `fas ${targetActive ? 'fa-check' : 'fa-power-off'} mr-2`;
       }
 
       this.modalManager.open('toggleHardwareModal');
