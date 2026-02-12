@@ -182,6 +182,68 @@ body:not(.dark) .ios-filter-label {
   color: #475569 !important;
 }
 
+:root:not(.dark) select.ios-blur-input,
+html:not(.dark) select.ios-blur-input,
+body:not(.dark) select.ios-blur-input {
+  background-image:
+    linear-gradient(45deg, transparent 50%, rgba(15, 23, 42, 0.75) 50%),
+    linear-gradient(135deg, rgba(15, 23, 42, 0.75) 50%, transparent 50%);
+  background-position:
+    calc(100% - 20px) 50%,
+    calc(100% - 14px) 50%;
+  background-size: 6px 6px;
+  background-repeat: no-repeat;
+  padding-right: 2.75rem !important;
+}
+
+:root:not(.dark) .ios-hardware-card.alert-type-card--global,
+html:not(.dark) .ios-hardware-card.alert-type-card--global,
+body:not(.dark) .ios-hardware-card.alert-type-card--global {
+  background: linear-gradient(135deg, rgba(30, 64, 175, 0.48), rgba(56, 189, 248, 0.35)) !important;
+  border: 1px solid rgba(125, 211, 252, 0.55) !important;
+  box-shadow:
+    0 18px 36px rgba(15, 23, 42, 0.45),
+    inset 0 1px 0 rgba(148, 197, 253, 0.4) !important;
+}
+
+:root:not(.dark) .ios-hardware-card.alert-type-card--global .ios-card-title,
+html:not(.dark) .ios-hardware-card.alert-type-card--global .ios-card-title,
+body:not(.dark) .ios-hardware-card.alert-type-card--global .ios-card-title {
+  color: #e2e8f0 !important;
+}
+
+:root:not(.dark) .ios-hardware-card.alert-type-card--global .ios-card-subtitle,
+html:not(.dark) .ios-hardware-card.alert-type-card--global .ios-card-subtitle,
+body:not(.dark) .ios-hardware-card.alert-type-card--global .ios-card-subtitle,
+:root:not(.dark) .ios-hardware-card.alert-type-card--global .ios-info-label,
+html:not(.dark) .ios-hardware-card.alert-type-card--global .ios-info-label,
+body:not(.dark) .ios-hardware-card.alert-type-card--global .ios-info-label,
+:root:not(.dark) .ios-hardware-card.alert-type-card--global .ios-info-value,
+html:not(.dark) .ios-hardware-card.alert-type-card--global .ios-info-value,
+body:not(.dark) .ios-hardware-card.alert-type-card--global .ios-info-value,
+:root:not(.dark) .ios-hardware-card.alert-type-card--global .alert-type-card__section-title,
+html:not(.dark) .ios-hardware-card.alert-type-card--global .alert-type-card__section-title,
+body:not(.dark) .ios-hardware-card.alert-type-card--global .alert-type-card__section-title,
+:root:not(.dark) .ios-hardware-card.alert-type-card--global .alert-type-card__list,
+html:not(.dark) .ios-hardware-card.alert-type-card--global .alert-type-card__list,
+body:not(.dark) .ios-hardware-card.alert-type-card--global .alert-type-card__list,
+:root:not(.dark) .ios-hardware-card.alert-type-card--global .alert-type-card__sound-player,
+html:not(.dark) .ios-hardware-card.alert-type-card--global .alert-type-card__sound-player,
+body:not(.dark) .ios-hardware-card.alert-type-card--global .alert-type-card__sound-player,
+:root:not(.dark) .ios-hardware-card.alert-type-card--global .alert-type-card__sound-player p,
+html:not(.dark) .ios-hardware-card.alert-type-card--global .alert-type-card__sound-player p,
+body:not(.dark) .ios-hardware-card.alert-type-card--global .alert-type-card__sound-player p {
+  color: rgba(226, 232, 240, 0.9) !important;
+}
+
+:root:not(.dark) .ios-hardware-card.alert-type-card--global .alert-scope-badge,
+html:not(.dark) .ios-hardware-card.alert-type-card--global .alert-scope-badge,
+body:not(.dark) .ios-hardware-card.alert-type-card--global .alert-scope-badge {
+  background: rgba(14, 165, 233, 0.32) !important;
+  color: #e2e8f0 !important;
+  border-color: rgba(125, 211, 252, 0.45) !important;
+}
+
 :root:not(.dark) .ios-card-title,
 html:not(.dark) .ios-card-title,
 body:not(.dark) .ios-card-title,

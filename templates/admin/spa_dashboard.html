@@ -14,6 +14,7 @@
 <link href="{{ url_for('static', filename='css/portal-empresa/spa/sidebar-spa.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/portal-empresa/spa/views/dashboard.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/alerts/alerts-styles.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/alerts/alert-types.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/super-dashboard/super-dashboard-main.css') }}" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/css/intlTelInput.css">
 <style>
@@ -61,6 +62,9 @@
   <section class="spa-view is-hidden" data-spa-section="hardware">
     {% include "admin/spa/views/hardware.html" %}
   </section>
+  <section class="spa-view is-hidden" data-spa-section="alert-types">
+    {% include "admin/spa/views/alert_types.html" %}
+  </section>
   {% endcall %}
 {% endcall %}
 {% endblock %}
@@ -87,9 +91,11 @@
 <script src="{{ url_for('static', filename='js/admin/spa/views/usuarios-modals.js') }}"></script>
 <script src="{{ url_for('static', filename='js/admin/spa/views/hardware-main.js') }}"></script>
 <script src="{{ url_for('static', filename='js/admin/spa/views/hardware-modals.js') }}"></script>
+<script src="{{ url_for('static', filename='js/admin/spa/views/alert-types-main.js') }}"></script>
 <script src="{{ url_for('static', filename='js/admin/spa/views/dashboard.js') }}"></script>
 <script src="{{ url_for('static', filename='js/admin/spa/views/empresas.js') }}"></script>
 <script src="{{ url_for('static', filename='js/admin/spa/views/usuarios.js') }}"></script>
 <script src="{{ url_for('static', filename='js/admin/spa/views/hardware.js') }}"></script>
+<script src="{{ url_for('static', filename='js/admin/spa/views/alert-types.js') }}"></script>
 <script src="{{ url_for('static', filename='js/admin/spa/router.js') }}"></script>
 {% endblock %}
