@@ -61,6 +61,20 @@
   width: 100%;
 }
 
+select.ios-filter-input {
+  -webkit-appearance: none;
+  appearance: none;
+  padding-right: 2.75rem !important;
+  background-image:
+    linear-gradient(45deg, transparent 50%, rgba(255, 255, 255, 0.85) 50%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.85) 50%, transparent 50%);
+  background-position:
+    calc(100% - 20px) 50%,
+    calc(100% - 14px) 50%;
+  background-size: 6px 6px;
+  background-repeat: no-repeat;
+}
+
 /* Fix for light mode - ensure text is visible in Chrome */
 :root:not(.dark) .ios-filter-input,
 body:not(.dark) .ios-filter-input,

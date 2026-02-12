@@ -184,7 +184,10 @@ body:not(.dark) .ios-filter-label {
 
 :root:not(.dark) select.ios-blur-input,
 html:not(.dark) select.ios-blur-input,
-body:not(.dark) select.ios-blur-input {
+body:not(.dark) select.ios-blur-input,
+:root:not(.dark) select.ios-filter-input,
+html:not(.dark) select.ios-filter-input,
+body:not(.dark) select.ios-filter-input {
   background-image:
     linear-gradient(45deg, transparent 50%, rgba(15, 23, 42, 0.75) 50%),
     linear-gradient(135deg, rgba(15, 23, 42, 0.75) 50%, transparent 50%);
@@ -355,4 +358,21 @@ html:not(.dark) .ios-hardware-card.hardware-physical-inactive *,
 body:not(.dark) .ios-hardware-card.hardware-physical-inactive * {
   color: #ffffff !important;
   text-shadow: none !important;
+}
+
+:root:not(.dark) .ios-header-pill,
+html:not(.dark) .ios-header-pill,
+body:not(.dark) .ios-header-pill {
+  background: rgba(255, 255, 255, 0.92) !important;
+  border: 1px solid rgba(15, 23, 42, 0.12) !important;
+  color: #0f172a !important;
+  box-shadow:
+    0 10px 22px rgba(15, 23, 42, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85) !important;
+}
+
+:root:not(.dark) .ios-header-pill a,
+html:not(.dark) .ios-header-pill a,
+body:not(.dark) .ios-header-pill a {
+  color: inherit !important;
 }
