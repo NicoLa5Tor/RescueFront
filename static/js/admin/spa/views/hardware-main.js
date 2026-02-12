@@ -19,6 +19,7 @@
       this.lazyButton = null;
       this.initialized = false;
       this.isLoading = false;
+      this.sessionOpenPending = false;
       this.elements = {};
       this.buildApiUrl = window.__buildApiUrl || ((path = '') => {
         const base = window.__APP_CONFIG && window.__APP_CONFIG.apiUrl;
@@ -62,6 +63,7 @@
     activate() {
       this.cacheElements();
       this.applyFilters();
+      this.openHardwareFromSession();
     }
 
     cacheElements() {
@@ -176,6 +178,7 @@
           this.hardware = data.data;
           this.updateStats(this.hardware);
           this.applyFilters();
+          this.openHardwareFromSession();
         } else {
           this.hardware = [];
           this.updateStats([]);
@@ -518,10 +521,10 @@
       card.dataset.stock = String(stock);
       card.dataset.activa = active ? 'true' : 'false';
       card.dataset.hardwareId = hardware._id || '';
+      card.dataset.physicalInactive = physicalInactive ? 'true' : 'false';
 
       if (physicalInactive) {
         card.classList.add('hardware-physical-inactive');
-        card.style.cssText += 'background: rgba(239, 68, 68, 0.38) !important; border: 1px solid rgba(239, 68, 68, 0.6) !important; box-shadow: 0 12px 32px rgba(239, 68, 68, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.45) !important;';
       }
 
       card.innerHTML = `
@@ -662,6 +665,37 @@
       }
 
       return false;
+    }
+
+    openHardwareFromSession() {
+      if (this.sessionOpenPending) return;
+
+      const hardwareId = sessionStorage.getItem('openHardwareId');
+      if (!hardwareId) return;
+
+      const maxRetries = 20;
+      let attempts = 0;
+
+      const tryOpen = () => {
+        if (typeof window.openHardwareViewModal === 'function') {
+          sessionStorage.removeItem('openHardwareId');
+          window.openHardwareViewModal(hardwareId);
+          return;
+        }
+
+        attempts += 1;
+        if (attempts < maxRetries) {
+          setTimeout(tryOpen, 400);
+        } else {
+          sessionStorage.removeItem('openHardwareId');
+        }
+      };
+
+      this.sessionOpenPending = true;
+      setTimeout(() => {
+        this.sessionOpenPending = false;
+        tryOpen();
+      }, 400);
     }
 
     escapeHtml(value) {

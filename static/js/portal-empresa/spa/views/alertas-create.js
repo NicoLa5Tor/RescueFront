@@ -270,8 +270,6 @@ async function loadAlertTypesForAlert(forceReload = false) {
 
         const payload = await response.json().catch(() => ({}));
         const normalizedTypes = normalizeEmpresaAlertTypesPayload(payload, empresaId);
-        console.log('⚠️ Alert types payload (empresa):', payload);
-        console.log('✅ Normalized alert types:', normalizedTypes);
 
         alertTypesCache = normalizedTypes;
         populateAlertTypesDropdown(alertTypesCache);

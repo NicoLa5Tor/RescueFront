@@ -107,9 +107,18 @@
     };
     var markers = [];
 
+    function getRenderSize() {
+      var width = container.clientWidth || window.innerWidth;
+      var height = container.clientHeight || window.innerHeight;
+      width = Math.max(1, Math.floor(width));
+      height = Math.max(1, Math.floor(height));
+      return { width: width, height: height };
+    }
+
     //Get window size
-    var ww = window.innerWidth,
-      wh = window.innerHeight;
+    var size = getRenderSize();
+    var ww = size.width,
+      wh = size.height;
 
     var composer, params = {
         exposure: 1.3,
@@ -158,13 +167,13 @@
 
     //set up render pass with performance optimization
     var renderScene = new THREE.RenderPass( scene, camera );
-    var bloomPass = new THREE.UnrealBloomPass( new THREE.Vector2( window.innerWidth, window.innerHeight ), 1.5, 0.4, 0.85 );
+    var bloomPass = new THREE.UnrealBloomPass( new THREE.Vector2( ww, wh ), 1.5, 0.4, 0.85 );
     bloomPass.renderToScreen = true;
     bloomPass.threshold = params.bloomThreshold;
     bloomPass.strength = isMobile() ? params.bloomStrength * 0.7 : params.bloomStrength; // Reduce bloom on mobile
     bloomPass.radius = params.bloomRadius;
     composer = new THREE.EffectComposer( renderer );
-    composer.setSize( window.innerWidth, window.innerHeight );
+    composer.setSize( ww, wh );
     composer.addPass( renderScene );
     composer.addPass( bloomPass );
 
@@ -777,10 +786,10 @@
     var spikeyTexture = new THREE.TextureLoader().load('https://s3-us-west-2.amazonaws.com/s.cdpn.io/68819/spikey.png');
 
     var particleCount = isMobile() ? 3000 : isTablet() ? 5000 : 6800, // Reduce particles on mobile
-        particles1 = new THREE.Geometry(),
-        particles2 = new THREE.Geometry(),
-        particles3 = new THREE.Geometry(),
-        pMaterial = new THREE.ParticleBasicMaterial({
+        particles1 = [],
+        particles2 = [],
+        particles3 = [],
+        pMaterial = new THREE.PointsMaterial({
           color: 0xFFFFFF,
           size: isMobile() ? .3 : .5, // Smaller particles on mobile
           map: spikeyTexture,
@@ -794,7 +803,7 @@
           pY = Math.random() * 50 - 25,
           pZ = Math.random() * 500 - 250,
           particle = new THREE.Vector3(pX, pY, pZ);
-      particles1.vertices.push(particle);
+      particles1.push(particle);
     }
 
     for (var p = 0; p < particleCount; p++) {
@@ -802,7 +811,7 @@
           pY = Math.random() * 10 - 5,
           pZ = Math.random() * 500,
           particle = new THREE.Vector3(pX, pY, pZ);
-      particles2.vertices.push(particle);
+      particles2.push(particle);
     }
 
     for (var p = 0; p < particleCount; p++) {
@@ -810,12 +819,16 @@
           pY = Math.random() * 10 - 5,
           pZ = Math.random() * 500,
           particle = new THREE.Vector3(pX, pY, pZ);
-      particles3.vertices.push(particle);
+      particles3.push(particle);
     }
 
-    var particleSystem1 = new THREE.ParticleSystem(particles1, pMaterial);
-    var particleSystem2 = new THREE.ParticleSystem(particles2, pMaterial);
-    var particleSystem3 = new THREE.ParticleSystem(particles3, pMaterial);
+    var particlesGeometry1 = new THREE.BufferGeometry().setFromPoints(particles1);
+    var particlesGeometry2 = new THREE.BufferGeometry().setFromPoints(particles2);
+    var particlesGeometry3 = new THREE.BufferGeometry().setFromPoints(particles3);
+
+    var particleSystem1 = new THREE.Points(particlesGeometry1, pMaterial);
+    var particleSystem2 = new THREE.Points(particlesGeometry2, pMaterial);
+    var particleSystem3 = new THREE.Points(particlesGeometry3, pMaterial);
 
     scene.add(particleSystem1);
     scene.add(particleSystem2);
@@ -859,8 +872,9 @@
 
     // Enhanced responsive resize handler
     function handleResize() {
-      var width = window.innerWidth;
-      var height = window.innerHeight;
+      var size = getRenderSize();
+      var width = size.width;
+      var height = size.height;
 
       camera.aspect = width / height;
       camera.fov = isMobile() ? 50 : 45; // Adjust FOV based on screen size

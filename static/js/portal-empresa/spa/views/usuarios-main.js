@@ -337,11 +337,6 @@ class UsuariosMain {
     const filtersDiv = document.getElementById('usuariosFilters');
     const statsDiv = document.getElementById('usuariosStatsGrid');
     
-    console.log('📊 Elementos encontrados:', {
-      filtersDiv: !!filtersDiv,
-      statsDiv: !!statsDiv
-    });
-    
     if (filtersDiv) {
       filtersDiv.style.display = 'block';
       //console.log('📊 Filtros mostrados - display:', filtersDiv.style.display);
@@ -430,12 +425,8 @@ class UsuariosMain {
 
       Object.entries(elements).forEach(([elementId, value]) => {
         const element = document.getElementById(elementId);
-        console.log(`  - ${elementId}:`, { found: !!element, value: value });
         if (element) {
           element.textContent = value;
-          //console.log(`    ✓ Actualizado ${elementId} = ${value}`);
-        } else {
-          //console.warn(`    ⚠️ Elemento ${elementId} no encontrado`);
         }
       });
 
@@ -482,12 +473,8 @@ class UsuariosMain {
       
       Object.entries(elements).forEach(([elementId, value]) => {
         const element = document.getElementById(elementId);
-        console.log(`  - ${elementId}:`, { found: !!element, value: value });
         if (element) {
           element.textContent = value;
-          console.log(`    ✓ Actualizado ${elementId} = ${value}`);
-        } else {
-          console.warn(`    ⚠️ Elemento ${elementId} no encontrado`);
         }
       });
 

@@ -69,4 +69,8 @@
     setView,
     getActiveView: () => activeView
   };
+
+  if (window.initAdminHardwareNotifications) {
+    window.initAdminHardwareNotifications().start();
+  }
 })();
