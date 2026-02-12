@@ -3,8 +3,8 @@
 
 {% block extra_css %}
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-<link href="{{ url_for('static', filename='css/output.css') }}" rel="stylesheet">
-<link href="{{ url_for('static', filename='css/login.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/output.css') }}?v=2" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/login.css') }}?v=2" rel="stylesheet">
 {% endblock %}
 
 {% block navbar %}
@@ -163,9 +163,9 @@
 <div id="notificationContainer" class="fixed top-4 right-4 z-50 space-y-2 lg:right-4 max-w-xs lg:max-w-sm"></div>
 {% endblock %}
 {% block extra_js %}
-<script src="{{ url_for('static', filename='js/api-client.js') }}"></script>
-<script src="{{ url_for('static', filename='js/auth-manager.js') }}"></script>
-<script src="{{ url_for('static', filename='js/login-handler.js') }}"></script>
-<script src="{{ url_for('static', filename='js/login_visuals.js') }}"></script>
+<script src="{{ url_for('static', filename='js/api-client.js') }}?v=2"></script>
+<script src="{{ url_for('static', filename='js/auth-manager.js') }}?v=2"></script>
+<script src="{{ url_for('static', filename='js/login-handler.js') }}?v=2"></script>
+<script src="{{ url_for('static', filename='js/login_visuals.js') }}?v=2"></script>
 {% endblock %}
 {% block footer %}{% endblock %}

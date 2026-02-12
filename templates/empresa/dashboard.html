@@ -3,22 +3,22 @@
 
 {% block extra_css %}
 <!-- External Libraries -->
-    <link href="{{ url_for('static', filename='css/output.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/output.css') }}?v=2" rel="stylesheet">
 
 <!-- Dashboard CSS básico -->
-<link href="{{ url_for('static', filename='css/spa/variables.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/spa/variables.css') }}?v=2" rel="stylesheet">
 
 <!-- Hardware iOS Design System (CSS principal que incluye todo) -->
-<link href="{{ url_for('static', filename='css/spa/spa-global.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/spa/spa-global.css') }}?v=2" rel="stylesheet">
 
 <!-- Global Text Theme CSS -->
-<link href="{{ url_for('static', filename='css/global-text-theme.css') }}" rel="stylesheet">
-<link href="{{ url_for('static', filename='css/portal-empresa/spa/shell-spa.css') }}" rel="stylesheet">
-<link href="{{ url_for('static', filename='css/portal-empresa/spa/navbar-spa.css') }}" rel="stylesheet">
-<link href="{{ url_for('static', filename='css/portal-empresa/spa/sidebar-spa.css') }}" rel="stylesheet">
-<link href="{{ url_for('static', filename='css/portal-empresa/spa/views/dashboard.css') }}" rel="stylesheet">
-<link href="{{ url_for('static', filename='css/portal-empresa/spa/views/hardware.css') }}" rel="stylesheet">
-<link href="{{ url_for('static', filename='css/alerts/alerts-styles.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/global-text-theme.css') }}?v=2" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/portal-empresa/spa/shell-spa.css') }}?v=2" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/portal-empresa/spa/navbar-spa.css') }}?v=2" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/portal-empresa/spa/sidebar-spa.css') }}?v=2" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/portal-empresa/spa/views/dashboard.css') }}?v=2" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/portal-empresa/spa/views/hardware.css') }}?v=2" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/alerts/alerts-styles.css') }}?v=2" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/css/intlTelInput.css">
 
@@ -177,36 +177,36 @@
   window.EMPRESA_USERNAME = window.empresaNombre || {{ (empresa_username or '') | tojson }};
 </script>
 <!-- SPA Shell Scripts -->
-<script src="{{ url_for('static', filename='js/portal-empresa/spa/shell.js') }}"></script>
-<script src="{{ url_for('static', filename='js/portal-empresa/spa/theme-toggle.js') }}"></script>
-<script src="{{ url_for('static', filename='js/portal-empresa/alerts-global.js') }}"></script>
-<script src="{{ url_for('static', filename='js/hardware/location-modal-animations.js') }}"></script>
+<script src="{{ url_for('static', filename='js/portal-empresa/spa/shell.js') }}?v=2"></script>
+<script src="{{ url_for('static', filename='js/portal-empresa/spa/theme-toggle.js') }}?v=2"></script>
+<script src="{{ url_for('static', filename='js/portal-empresa/alerts-global.js') }}?v=2"></script>
+<script src="{{ url_for('static', filename='js/hardware/location-modal-animations.js') }}?v=2"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-<script src="{{ url_for('static', filename='js/api-client.js') }}"></script>
-<script src="{{ url_for('static', filename='js/portal-empresa/spa/store.js') }}"></script>
-<script src="{{ url_for('static', filename='js/portal-empresa/spa/api.js') }}"></script>
-<script src="{{ url_for('static', filename='js/modal-utils.js') }}"></script>
-<script src="{{ url_for('static', filename='js/hardware/hardware-validation.js') }}"></script>
-<script src="{{ url_for('static', filename='js/hardware/hardware-core.js') }}"></script>
-<script src="{{ url_for('static', filename='js/hardware/hardware-main.js') }}"></script>
-<script src="{{ url_for('static', filename='js/portal-empresa/hardware-status-live.js') }}"></script>
-<script src="{{ url_for('static', filename='js/portal-empresa/spa/views/hardware-page.js') }}"></script>
+<script src="{{ url_for('static', filename='js/api-client.js') }}?v=2"></script>
+<script src="{{ url_for('static', filename='js/portal-empresa/spa/store.js') }}?v=2"></script>
+<script src="{{ url_for('static', filename='js/portal-empresa/spa/api.js') }}?v=2"></script>
+<script src="{{ url_for('static', filename='js/modal-utils.js') }}?v=2"></script>
+<script src="{{ url_for('static', filename='js/hardware/hardware-validation.js') }}?v=2"></script>
+<script src="{{ url_for('static', filename='js/hardware/hardware-core.js') }}?v=2"></script>
+<script src="{{ url_for('static', filename='js/hardware/hardware-main.js') }}?v=2"></script>
+<script src="{{ url_for('static', filename='js/portal-empresa/hardware-status-live.js') }}?v=2"></script>
+<script src="{{ url_for('static', filename='js/portal-empresa/spa/views/hardware-page.js') }}?v=2"></script>
 <script>
   window.EMPRESA_SPA_MODE = true;
 </script>
 
 {% block page_js %}{% endblock %}
-<script src="{{ url_for('static', filename='js/portal-empresa/spa/views/dashboard.js') }}"></script>
-<script src="{{ url_for('static', filename='js/portal-empresa/spa/views/stats.js') }}"></script>
+<script src="{{ url_for('static', filename='js/portal-empresa/spa/views/dashboard.js') }}?v=2"></script>
+<script src="{{ url_for('static', filename='js/portal-empresa/spa/views/stats.js') }}?v=2"></script>
 <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/intlTelInput.min.js"></script>
-<script src="{{ url_for('static', filename='js/portal-empresa/spa/views/usuarios-data.js') }}"></script>
-<script src="{{ url_for('static', filename='js/portal-empresa/spa/views/usuarios-main.js') }}"></script>
-<script src="{{ url_for('static', filename='js/portal-empresa/spa/views/usuarios-modals.js') }}"></script>
-<script src="{{ url_for('static', filename='js/portal-empresa/spa/views/usuarios-view.js') }}"></script>
-<script src="{{ url_for('static', filename='js/portal-empresa/spa/views/alertas.js') }}"></script>
-<script src="{{ url_for('static', filename='js/portal-empresa/spa/views/alertas-create.js') }}"></script>
-<script src="{{ url_for('static', filename='js/portal-empresa/spa/views/alertas-inactivas.js') }}"></script>
-<script src="{{ url_for('static', filename='js/portal-empresa/spa/router.js') }}"></script>
+<script src="{{ url_for('static', filename='js/portal-empresa/spa/views/usuarios-data.js') }}?v=2"></script>
+<script src="{{ url_for('static', filename='js/portal-empresa/spa/views/usuarios-main.js') }}?v=2"></script>
+<script src="{{ url_for('static', filename='js/portal-empresa/spa/views/usuarios-modals.js') }}?v=2"></script>
+<script src="{{ url_for('static', filename='js/portal-empresa/spa/views/usuarios-view.js') }}?v=2"></script>
+<script src="{{ url_for('static', filename='js/portal-empresa/spa/views/alertas.js') }}?v=2"></script>
+<script src="{{ url_for('static', filename='js/portal-empresa/spa/views/alertas-create.js') }}?v=2"></script>
+<script src="{{ url_for('static', filename='js/portal-empresa/spa/views/alertas-inactivas.js') }}?v=2"></script>
+<script src="{{ url_for('static', filename='js/portal-empresa/spa/router.js') }}?v=2"></script>
 <script>
   if (typeof EndpointTestClient !== 'undefined' && !window.apiClient) {
     window.apiClient = new EndpointTestClient();

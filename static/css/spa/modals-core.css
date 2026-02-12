@@ -1324,9 +1324,9 @@ select.ios-blur-input {
   
   .ios-blur-body {
     max-height: none !important;
-    padding: 1.5rem !important;
+    padding: 1.25rem !important;
   }
-  
+
   .ios-blur-header {
     border-radius: 20px 20px 0 0 !important;
     padding: 1rem 1.5rem !important;
@@ -1378,6 +1378,108 @@ select.ios-blur-input {
 
   .ios-blur-header .gap-4 {
     gap: 0.75rem;
+  }
+
+  .ios-blur-body .form-grid {
+    gap: 1rem;
+  }
+
+  .ios-blur-body label {
+    font-size: 0.75rem !important;
+    margin-bottom: 0.35rem !important;
+  }
+
+  .ios-blur-input {
+    padding: 0.75rem 1rem !important;
+    font-size: 0.95rem !important;
+  }
+
+  select.ios-blur-input {
+    padding-right: 2.25rem !important;
+  }
+
+  textarea.ios-blur-input {
+    min-height: 4.5rem !important;
+  }
+
+  .ios-blur-btn {
+    padding: 0.75rem 1.25rem !important;
+    font-size: 0.95rem !important;
+    min-height: 44px;
+  }
+
+  .ios-modal-compact .ios-blur-header {
+    padding: 0.6rem 0.9rem !important;
+  }
+
+  .ios-modal-compact .ios-blur-body {
+    padding: 0.75rem !important;
+  }
+
+  .ios-modal-compact .ios-blur-footer {
+    padding: 0.6rem 0.9rem !important;
+  }
+
+  .ios-modal-compact .form-grid {
+    gap: 0.6rem;
+  }
+
+  .ios-modal-compact label {
+    font-size: 0.65rem !important;
+    line-height: 1.25 !important;
+    margin-bottom: 0.2rem !important;
+  }
+
+  .ios-modal-compact .ios-blur-input {
+    padding: 0.55rem 0.8rem !important;
+    font-size: 0.85rem !important;
+  }
+
+  .ios-modal-compact select.ios-blur-input {
+    padding-right: 1.9rem !important;
+  }
+
+  .ios-modal-compact textarea.ios-blur-input {
+    min-height: 3rem !important;
+  }
+
+  .ios-modal-compact .ios-blur-btn {
+    padding: 0.55rem 0.85rem !important;
+    font-size: 0.85rem !important;
+    min-height: 40px;
+  }
+
+  .ios-modal-compact .ios-blur-modal-container {
+    max-height: calc(100vh - 3.5rem) !important;
+    max-height: calc(100dvh - 3.5rem) !important;
+  }
+
+  .ios-modal-compact .ios-blur-header h1,
+  .ios-modal-compact .ios-blur-header h2,
+  .ios-modal-compact .ios-blur-header h3 {
+    font-size: 0.95rem !important;
+    line-height: 1.2 !important;
+  }
+
+  .ios-modal-compact .ios-blur-header p {
+    font-size: 0.65rem !important;
+    line-height: 1.2 !important;
+  }
+
+  .ios-modal-compact .ios-blur-header i {
+    font-size: 0.9rem !important;
+  }
+
+  .ios-modal-compact .ios-blur-header .w-12,
+  .ios-modal-compact .ios-blur-header .h-12 {
+    width: 2.1rem;
+    height: 2.1rem;
+  }
+
+  .ios-modal-compact .ios-blur-header .w-10,
+  .ios-modal-compact .ios-blur-header .h-10 {
+    width: 2rem;
+    height: 2rem;
   }
 }
 

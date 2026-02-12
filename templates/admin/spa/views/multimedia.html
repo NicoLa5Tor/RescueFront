@@ -1,6 +1,4 @@
-<div
-  id="multimediaView"
-  class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+<div id="multimediaView" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
   data-folders-url="{{ url_for('admin_image_assets_folders') }}"
   data-files-template="{{ url_for('admin_image_assets_folder_files', folder_name='__FOLDER__') }}"
   data-create-url="{{ url_for('admin_create_image_folder') }}"
@@ -101,7 +99,7 @@
   </div>
 </div>
 
-<div id="uploadFolderModal" class="ios-modal-backdrop hidden">
+<div id="uploadFolderModal" class="ios-modal-backdrop ios-modal-compact hidden">
   <div class="ios-blur-modal-container w-full max-w-2xl">
     <div class="ios-blur-header">
       <div class="flex items-center justify-between w-full">
@@ -167,7 +165,7 @@
   </div>
 </div>
 
-<div id="createFolderModal" class="ios-modal-backdrop hidden">
+<div id="createFolderModal" class="ios-modal-backdrop ios-modal-compact hidden">
   <div class="ios-blur-modal-container w-full max-w-lg">
     <div class="ios-blur-header">
       <div class="flex items-center justify-between w-full">
