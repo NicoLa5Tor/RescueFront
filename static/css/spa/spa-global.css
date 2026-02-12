@@ -80,13 +80,15 @@ body.ios-modal-open {
 /* Notification styles for hardware */
 .enhanced-notification {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  z-index: 10000;
+  z-index: var(--z-toast, 12000) !important;
 }
 
 /* Notifications for usuarios fallback and legacy toasts */
 .usuario-notification,
-.fallback-notification {
-  z-index: 11000;
+.fallback-notification,
+.alert-notification,
+.auth-notification {
+  z-index: var(--z-toast, 12000) !important;
 }
 
 /* Form grid layout for hardware forms */

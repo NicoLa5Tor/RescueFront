@@ -84,7 +84,8 @@
     </h3>
     <div class="ios-hardware-grid">
       {% for item in dashboard_summary.quick_access %}
-      <a href="{{ url_for(item.url) }}" class="ios-hardware-card gsap-animated">
+      {% set spa_view = 'usuarios' if item.url == 'empresa_usuarios' else 'stats' if item.url == 'empresa_stats' else '' %}
+      <a href="{{ url_for(item.url) if not spa_view else '#' }}" class="ios-hardware-card gsap-animated" {% if spa_view %}data-spa-view="{{ spa_view }}"{% endif %}>
         <div class="ios-card-header">
           <div class="ios-card-icon">
             <i class="{{ item.icon }}"></i>

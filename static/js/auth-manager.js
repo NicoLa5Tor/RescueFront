@@ -241,6 +241,7 @@ class AuthManager {
             type === 'success' ? 'bg-green-500' : 
             'bg-blue-500'
         }`;
+        notification.style.zIndex = '12000';
         notification.textContent = message;
         
         document.body.appendChild(notification);
