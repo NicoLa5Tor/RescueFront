@@ -78,9 +78,7 @@
   }
 }
 
-/* Mantener sidebar/navbar visibles en modales SPA */
-body.modal-open .sidebar,
-body.ios-modal-open .sidebar,
+/* Mantener navbar visible en modales SPA */
 body.modal-open .navbar,
 body.ios-modal-open .navbar {
   display: block !important;
@@ -88,6 +86,17 @@ body.ios-modal-open .navbar {
   opacity: 1 !important;
   pointer-events: auto !important;
   transform: none !important;
+}
+
+@media (min-width: 1024px) {
+  body.modal-open .sidebar,
+  body.ios-modal-open .sidebar {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    transform: none !important;
+  }
 }
 
 .spa-sidebar__header {
