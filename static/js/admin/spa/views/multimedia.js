@@ -36,7 +36,8 @@
       'viewFolderModal',
       'uploadFolderModal',
       'createFolderModal',
-      'deleteFolderModal'
+      'deleteFolderModal',
+      'multimediaUpdateModal'
     ];
 
     modalIds.forEach((modalId) => {

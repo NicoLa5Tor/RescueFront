@@ -100,6 +100,12 @@
       this.elements.deleteFeedback = document.getElementById('deleteFolderFeedback');
       this.elements.deleteConfirmButton = document.getElementById('confirmDeleteFolderButton');
 
+      this.elements.updateModal = document.getElementById('multimediaUpdateModal');
+      this.elements.updateTitle = document.getElementById('multimediaUpdateTitle');
+      this.elements.updateMessage = document.getElementById('multimediaUpdateMessage');
+      this.elements.updateIcon = document.getElementById('multimediaUpdateIcon');
+      this.elements.updateIconFa = document.getElementById('multimediaUpdateIconFa');
+
       this.endpoints.foldersUrl = view.dataset.foldersUrl || '';
       this.endpoints.filesTemplate = view.dataset.filesTemplate || '';
       this.endpoints.createUrl = view.dataset.createUrl || '';
@@ -205,7 +211,7 @@
 
     setupModals() {
       if (!window.modalManager?.setupModal) return;
-      ['viewFolderModal', 'uploadFolderModal', 'createFolderModal', 'deleteFolderModal']
+      ['viewFolderModal', 'uploadFolderModal', 'createFolderModal', 'deleteFolderModal', 'multimediaUpdateModal']
         .forEach((modalId) => {
           window.modalManager.setupModal(modalId, { closeOnBackdropClick: true });
         });
@@ -904,7 +910,8 @@
         this.loadFolders();
         setTimeout(() => {
           this.closeModal('uploadFolderModal');
-        }, 700);
+          this.showUpdateModal('Archivo cargado correctamente.');
+        }, 500);
       } catch (error) {
         this.showUploadFeedback(error.message || 'No se pudo cargar el archivo.', 'error');
       } finally {
@@ -949,7 +956,8 @@
         this.loadFolders();
         setTimeout(() => {
           this.closeModal('createFolderModal');
-        }, 700);
+          this.showUpdateModal('Directorio creado correctamente.');
+        }, 500);
       } catch (error) {
         this.showCreateFeedback(error.message || 'No se pudo crear el directorio.', 'error');
       } finally {
@@ -985,7 +993,8 @@
         this.loadFolders();
         setTimeout(() => {
           this.closeModal('deleteFolderModal');
-        }, 600);
+          this.showUpdateModal('Directorio eliminado correctamente.');
+        }, 450);
       } catch (error) {
         this.showDeleteFeedback(error.message || 'No se pudo eliminar el directorio.', 'error');
       } finally {
@@ -1042,6 +1051,32 @@
       }
     }
 
+    showUpdateModal(message) {
+      if (this.elements.updateMessage) {
+        this.elements.updateMessage.textContent = message || 'Operacion completada.';
+      }
+
+      if (this.elements.updateTitle) {
+        const lower = (message || '').toLowerCase();
+        if (lower.includes('cargado')) {
+          this.elements.updateTitle.textContent = 'Archivo Cargado';
+        } else if (lower.includes('creado')) {
+          this.elements.updateTitle.textContent = 'Directorio Creado';
+        } else if (lower.includes('eliminado')) {
+          this.elements.updateTitle.textContent = 'Directorio Eliminado';
+        } else {
+          this.elements.updateTitle.textContent = 'Operacion Exitosa';
+        }
+      }
+
+      if (this.elements.updateIcon && this.elements.updateIconFa) {
+        this.elements.updateIcon.className = 'client-update-icon mx-auto mb-4';
+        this.elements.updateIconFa.className = 'fas fa-check-circle text-4xl text-emerald-400';
+      }
+
+      this.openModal('multimediaUpdateModal');
+    }
+
     escapeHtml(value) {
       return String(value || '')
         .replace(/&/g, '&amp;')
@@ -1063,4 +1098,6 @@
       window.adminMultimediaMain.activate();
     }
   };
+
+  window.closeMultimediaUpdateModal = () => window.adminMultimediaMain?.closeModal('multimediaUpdateModal');
 })();

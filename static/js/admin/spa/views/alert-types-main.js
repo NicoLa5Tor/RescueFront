@@ -134,6 +134,12 @@
       this.elements.viewImagePreview = document.getElementById('alertDetailImagePreview');
       this.elements.viewAudioContainer = document.getElementById('alertDetailAudioContainer');
       this.elements.viewFeedback = document.getElementById('alertDetailFeedback');
+
+      this.elements.updateModal = document.getElementById('alertTypeUpdateModal');
+      this.elements.updateTitle = document.getElementById('alertTypeUpdateTitle');
+      this.elements.updateMessage = document.getElementById('alertTypeUpdateMessage');
+      this.elements.updateIcon = document.getElementById('alertTypeUpdateIcon');
+      this.elements.updateIconFa = document.getElementById('alertTypeUpdateIconFa');
     }
 
     bindEvents() {
@@ -241,6 +247,9 @@
         }
         if (this.elements.viewModal) {
           window.modalManager.setupModal('viewAlertTypeModal', { closeOnBackdropClick: true });
+        }
+        if (this.elements.updateModal) {
+          window.modalManager.setupModal('alertTypeUpdateModal', { closeOnBackdropClick: true });
         }
       }
 
@@ -876,7 +885,7 @@
         }
 
         this.closeDeactivateAlertTypeModal();
-        this.showToast(data.message || 'Operacion completada.', 'success');
+        this.showUpdateModal(data.message || 'Operacion completada.');
         await this.loadAlertTypes();
       } catch (error) {
         const fallback = isDeletion
@@ -1024,7 +1033,7 @@
         const successMessage = isEditing
           ? 'El tipo de alerta se actualizo correctamente.'
           : 'El tipo de alerta se registro correctamente.';
-        this.showToast(data.message || successMessage, 'success');
+        this.showUpdateModal(data.message || successMessage);
         await this.loadAlertTypes();
       } catch (error) {
         const fallback = this.editingAlertTypeId
@@ -1670,35 +1679,39 @@
       this.elements.viewFeedback.classList.add('hidden');
     }
 
-    showToast(message, type = 'info') {
-      const containerId = 'alertTypesToastContainer';
-      let container = document.getElementById(containerId);
-      if (!container) {
-        container = document.createElement('div');
-        container.id = containerId;
-        container.className = 'fixed top-4 right-4 z-[1080] space-y-3';
-        document.body.appendChild(container);
+    showUpdateModal(message) {
+      if (this.elements.updateMessage) {
+        this.elements.updateMessage.textContent = message || 'Operacion completada.';
       }
 
-      const toast = document.createElement('div');
-      const bgClass = type === 'success' ? 'bg-emerald-500' : (type === 'error' ? 'bg-rose-500' : 'bg-slate-700');
-      const iconClass = type === 'success'
-        ? 'fas fa-check-circle'
-        : (type === 'error' ? 'fas fa-triangle-exclamation' : 'fas fa-info-circle');
-
-      toast.className = `${bgClass} text-white px-4 py-3 rounded-xl shadow-xl flex items-center gap-3`; 
-      toast.innerHTML = `
-        <i class="${iconClass}"></i>
-        <span class="text-sm font-semibold">${this.escapeHtml(message)}</span>
-      `;
-      container.appendChild(toast);
-
-      setTimeout(() => {
-        toast.remove();
-        if (container && container.children.length === 0) {
-          container.remove();
+      if (this.elements.updateTitle) {
+        const lower = (message || '').toLowerCase();
+        if (lower.includes('registro') || lower.includes('creo')) {
+          this.elements.updateTitle.textContent = 'Tipo Registrado';
+        } else if (lower.includes('actualizo')) {
+          this.elements.updateTitle.textContent = 'Tipo Actualizado';
+        } else if (lower.includes('reactivo') || lower.includes('activo')) {
+          this.elements.updateTitle.textContent = 'Tipo Activado';
+        } else if (lower.includes('desactivo')) {
+          this.elements.updateTitle.textContent = 'Tipo Desactivado';
+        } else if (lower.includes('elimino')) {
+          this.elements.updateTitle.textContent = 'Tipo Eliminado';
+        } else {
+          this.elements.updateTitle.textContent = 'Operacion Exitosa';
         }
-      }, 3200);
+      }
+
+      if (this.elements.updateIcon && this.elements.updateIconFa) {
+        this.elements.updateIcon.className = 'client-update-icon mx-auto mb-4';
+        this.elements.updateIconFa.className = 'fas fa-check-circle text-4xl text-emerald-400';
+      }
+
+      if (window.modalManager) {
+        window.modalManager.openModal('alertTypeUpdateModal', { modalClass: 'ios-modal-open' });
+      } else if (this.elements.updateModal) {
+        this.elements.updateModal.classList.remove('hidden');
+        document.body.classList.add('ios-modal-open');
+      }
     }
 
     resolveColorCss(value) {

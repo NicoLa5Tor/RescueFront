@@ -66,6 +66,9 @@
   <section class="spa-view is-hidden" data-spa-section="alert-types">
     {% include "admin/spa/views/alert_types.html" %}
   </section>
+  <section class="spa-view is-hidden" data-spa-section="company-types">
+    {% include "admin/spa/views/company_types.html" %}
+  </section>
   <section class="spa-view is-hidden" data-spa-section="multimedia">
     {% include "admin/spa/views/multimedia.html" %}
   </section>
@@ -96,12 +99,14 @@
 <script src="{{ url_for('static', filename='js/admin/spa/views/hardware-main.js') }}"></script>
 <script src="{{ url_for('static', filename='js/admin/spa/views/hardware-modals.js') }}"></script>
 <script src="{{ url_for('static', filename='js/admin/spa/views/alert-types-main.js') }}"></script>
+<script src="{{ url_for('static', filename='js/admin/spa/views/company-types-main.js') }}"></script>
 <script src="{{ url_for('static', filename='js/admin/spa/views/multimedia-main.js') }}"></script>
 <script src="{{ url_for('static', filename='js/admin/spa/views/dashboard.js') }}"></script>
 <script src="{{ url_for('static', filename='js/admin/spa/views/empresas.js') }}"></script>
 <script src="{{ url_for('static', filename='js/admin/spa/views/usuarios.js') }}"></script>
 <script src="{{ url_for('static', filename='js/admin/spa/views/hardware.js') }}"></script>
 <script src="{{ url_for('static', filename='js/admin/spa/views/alert-types.js') }}"></script>
+<script src="{{ url_for('static', filename='js/admin/spa/views/company-types.js') }}"></script>
 <script src="{{ url_for('static', filename='js/admin/spa/views/multimedia.js') }}"></script>
 <script src="{{ url_for('static', filename='js/admin/spa/router.js') }}"></script>
 {% endblock %}

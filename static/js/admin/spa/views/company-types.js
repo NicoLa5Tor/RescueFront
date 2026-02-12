@@ -1,7 +1,7 @@
 (() => {
-  const viewName = 'alert-types';
+  const viewName = 'company-types';
   let observer = null;
-  let hardwareInitialized = false;
+  let animationsInitialized = false;
 
   const applyCardOptimizations = (card) => {
     if (window.HardwareAnimations && window.HardwareAnimations.animateNewCard) {
@@ -32,12 +32,12 @@
     });
   };
 
-  const moveAlertTypeModalsToBody = () => {
+  const moveCompanyTypeModalsToBody = () => {
     const modalIds = [
-      'toggleAlertTypeModal',
-      'viewAlertTypeModal',
-      'createAlertTypeModal',
-      'alertTypeUpdateModal'
+      'companyTypeModal',
+      'viewCompanyTypeModal',
+      'toggleCompanyTypeModal',
+      'clientUpdateModal'
     ];
 
     modalIds.forEach((modalId) => {
@@ -49,20 +49,20 @@
   };
 
   const mount = () => {
-    moveAlertTypeModalsToBody();
+    moveCompanyTypeModalsToBody();
 
-    if (window.initAdminAlertTypesMain) {
-      window.initAdminAlertTypesMain();
+    if (window.initAdminCompanyTypesMain) {
+      window.initAdminCompanyTypesMain();
     }
 
     ensureContentVisibility();
 
-    if (!hardwareInitialized && window.HardwareAnimations?.init) {
+    if (!animationsInitialized && window.HardwareAnimations?.init) {
       window.HardwareAnimations.init();
-      hardwareInitialized = true;
+      animationsInitialized = true;
     }
 
-    const grid = document.getElementById('alertTypesGrid');
+    const grid = document.getElementById('companyTypesGrid');
     if (!grid) return;
 
     if (!observer) {
