@@ -1349,15 +1349,18 @@ select.ios-blur-input {
   .ios-blur-header h3 {
     font-size: 1.125rem;
     line-height: 1.3;
+    color: rgba(255, 255, 255, 0.95) !important;
   }
 
   .ios-blur-header p {
     font-size: 0.75rem;
     line-height: 1.3;
+    color: rgba(255, 255, 255, 0.75) !important;
   }
 
   .ios-blur-header i {
     font-size: 1rem;
+    color: rgba(255, 255, 255, 0.95) !important;
   }
 
   .ios-blur-header .w-12,
@@ -1378,6 +1381,14 @@ select.ios-blur-input {
 
   .ios-blur-header .gap-4 {
     gap: 0.75rem;
+  }
+
+  .ios-blur-header .text-gray-900,
+  .ios-blur-header .text-gray-800,
+  .ios-blur-header .text-gray-700,
+  .ios-blur-header .text-gray-600,
+  .ios-blur-header .text-gray-500 {
+    color: rgba(255, 255, 255, 0.95) !important;
   }
 
   .ios-blur-body .form-grid {
