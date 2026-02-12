@@ -1157,14 +1157,15 @@ class EmpresaAlertsGlobal {
         // Cerrar el panel de alertas antes de redirigir
         this.closeAlertsPanel();
         
-        // Guardar el ID de la alerta para abrir automáticamente
-        sessionStorage.setItem('openAlertId', alertId);
-        //console.log('🔗 DEBUG: ID guardado en sessionStorage:', alertId);
-
         if (window.empresaSpa && typeof window.empresaSpa.setView === 'function') {
+            sessionStorage.removeItem('openAlertId');
             this.openAlertInSpa(alertId);
             return;
         }
+
+        // Guardar el ID de la alerta para abrir automáticamente
+        sessionStorage.setItem('openAlertId', alertId);
+        //console.log('🔗 DEBUG: ID guardado en sessionStorage:', alertId);
         
         // Redirigir a la vista de alertas
         //console.log('🔗 DEBUG: Redirigiendo a /empresa/alertas');
