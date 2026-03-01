@@ -947,6 +947,9 @@ function generateModalContent(alert, isUserOrigin, isHardwareOrigin) {
         if (deactivatedType === 'empresa') {
             return alert.activacion_alerta?.nombre || alert.empresa_nombre || 'Empresa';
         }
+        if (deactivatedType === 'usuario' || deactivatedType === 'user') {
+            return alert.activacion_alerta?.nombre || 'Usuario';
+        }
         if (deactivatedType === 'admin' || deactivatedType === 'super_admin' || deactivatedType === 'superadmin') {
             return 'Administrador';
         }
