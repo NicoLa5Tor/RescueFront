@@ -941,6 +941,20 @@ function generateModalContent(alert, isUserOrigin, isHardwareOrigin) {
     //console.log('🔍 Data completa:', alert.data);
     
     const alertImageUrl = resolveAlertImageUrl(alert.image_alert);
+    const deactivatedBy = alert.desactivado_por || {};
+    const deactivatedType = (deactivatedBy.tipo || '').toString().trim().toLowerCase();
+    const deactivatedLabel = (() => {
+        if (deactivatedType === 'empresa') {
+            return alert.activacion_alerta?.nombre || alert.empresa_nombre || 'Empresa';
+        }
+        if (deactivatedType === 'admin' || deactivatedType === 'super_admin' || deactivatedType === 'superadmin') {
+            return 'Administrador';
+        }
+        if (deactivatedType === 'sistema' || deactivatedType === 'system') {
+            return 'Sistema';
+        }
+        return deactivatedType ? deactivatedType : 'Sistema';
+    })();
 
     return `
         <!-- Header detallado con información del origen de la alerta -->
@@ -1083,7 +1097,7 @@ function generateModalContent(alert, isUserOrigin, isHardwareOrigin) {
                                 ${alert.desactivado_por ? `
                                     <p class="text-xs text-gray-400">
                                         <i class="fas fa-user-times mr-1"></i>
-                                        Por: ${alert.desactivado_por.tipo === 'empresa' ? 'Empresa' : 'Sistema'}
+                                        Por: ${deactivatedLabel}
                                     </p>
                                 ` : ''}
                             </div>
