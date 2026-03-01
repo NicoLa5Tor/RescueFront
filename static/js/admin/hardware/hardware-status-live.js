@@ -62,7 +62,7 @@ class AdminHardwareStatusLive {
 
   normalizeItem(item) {
     const hardwareId = item?.hardware_id || item?.hardwareId || item?.id || item?._id || '';
-    const stableId = hardwareId || '';
+    const stableId = hardwareId ? String(hardwareId) : '';
     return { id: stableId };
   }
 

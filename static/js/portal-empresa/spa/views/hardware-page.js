@@ -1693,6 +1693,7 @@ function createHardwareCard(hardware) {
     div.setAttribute('data-sede', (hardware.sede || '').toLowerCase());
     div.setAttribute('data-stock', stock);
     div.setAttribute('data-activa', hardware.activa !== false ? 'true' : 'false');
+    div.setAttribute('data-hardware-id', hardware._id || '');
     
     //console.log('🔍 Atributos de filtro establecidos:', {
     //   'data-type': hardware.tipo || '',

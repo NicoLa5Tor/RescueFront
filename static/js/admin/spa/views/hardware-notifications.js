@@ -417,7 +417,7 @@
     }
 
     updateHardwareCards(items) {
-      const inactiveIds = new Set(items.map(item => item.hardwareId || item.id).filter(Boolean));
+      const inactiveIds = new Set(items.map(item => item.hardwareId || item.id).filter(Boolean).map(String));
       const section = document.querySelector('[data-spa-section="hardware"]');
       const scope = section || document;
       const cards = scope.querySelectorAll('.ios-hardware-card[data-hardware-id]');
@@ -499,7 +499,8 @@
     }
 
     normalizeHardwareItem(item) {
-      const hardwareId = item?.hardware_id || item?.hardwareId || item?.id || item?._id || '';
+      const hardwareIdRaw = item?.hardware_id || item?.hardwareId || item?.id || item?._id || '';
+      const hardwareId = hardwareIdRaw ? String(hardwareIdRaw) : '';
       const hardwareName = item?.hardware_nombre || item?.hardwareName || item?.nombre_hardware || item?.nombre || 'Hardware sin nombre';
       const empresaName = item?.empresa_nombre || item?.empresaName || item?.empresa || item?.company_name || 'Empresa sin nombre';
       const sedeName = item?.sede || item?.sede_nombre || item?.site || item?.location || 'Sede no especificada';
@@ -566,6 +567,12 @@
           this.stopAutoRefresh();
         } else {
           this.startAutoRefresh();
+          this.loadHardwareStatus();
+        }
+      });
+
+      document.addEventListener('admin:spa:view-change', (event) => {
+        if (event.detail?.view === 'hardware') {
           this.loadHardwareStatus();
         }
       });

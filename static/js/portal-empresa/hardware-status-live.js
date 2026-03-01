@@ -7,15 +7,56 @@ class EmpresaHardwareStatusLive {
   }
 
   initialize() {
-    if (!window.location.pathname.startsWith('/empresa/hardware')) return;
+    this.bindViewListeners();
+    this.syncWithView();
+  }
+
+  startAutoRefresh() {
+    if (this.refreshInterval) return;
+    this.refreshInterval = setInterval(() => {
+      this.fetchStatus();
+    }, 10000);
+  }
+
+  stopAutoRefresh() {
+    if (!this.refreshInterval) return;
+    clearInterval(this.refreshInterval);
+    this.refreshInterval = null;
+  }
+
+  bindViewListeners() {
+    document.addEventListener('empresa:spa:view-change', (event) => {
+      const view = event.detail?.view;
+      if (view === 'hardware') {
+        this.start();
+        return;
+      }
+      this.stop();
+    });
+  }
+
+  syncWithView() {
+    if (this.isHardwareViewActive()) {
+      this.start();
+      return;
+    }
+    this.stop();
+  }
+
+  isHardwareViewActive() {
+    if (window.location.pathname.startsWith('/empresa/hardware')) return true;
+    const activeView = window.empresaSpa?.getActiveView?.()
+      || document.querySelector('[data-empresa-spa]')?.dataset?.activeView;
+    return activeView === 'hardware';
+  }
+
+  start() {
     this.fetchStatus();
     this.startAutoRefresh();
   }
 
-  startAutoRefresh() {
-    this.refreshInterval = setInterval(() => {
-      this.fetchStatus();
-    }, 10000);
+  stop() {
+    this.stopAutoRefresh();
   }
 
   async fetchStatus() {
@@ -62,7 +103,7 @@ class EmpresaHardwareStatusLive {
 
   normalizeItem(item) {
     const hardwareId = item?.hardware_id || item?.hardwareId || item?.id || item?._id || '';
-    const stableId = hardwareId || '';
+    const stableId = hardwareId ? String(hardwareId) : '';
     return { id: stableId };
   }
 
