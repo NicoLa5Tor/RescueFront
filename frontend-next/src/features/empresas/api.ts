@@ -35,7 +35,7 @@ export async function listEmpresas(): Promise<Empresa[]> {
 }
 
 export async function createEmpresa(values: EmpresaFormValues): Promise<void> {
-  await apiRequest(`${BASE}/`, { method: 'POST', body: toPayload(values) })
+  await apiRequest(BASE, { method: 'POST', body: toPayload(values) })
 }
 
 export async function updateEmpresa(id: string, values: EmpresaFormValues): Promise<void> {

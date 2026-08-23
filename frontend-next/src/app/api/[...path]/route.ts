@@ -70,14 +70,16 @@ async function handle(request: NextRequest, context: RouteContext<'/api/[...path
   if (endpoint === 'api/contact/send') headers.set('user-agent', 'RESCUE-Frontend/1.0')
 
   const hasBody = !['GET', 'HEAD'].includes(request.method)
+  // El proxy Flask anterior leía el JSON antes de reenviarlo. Un string se puede
+  // reutilizar si Flask responde 308, a diferencia del ArrayBuffer de Next.
+  const body = hasBody ? await request.text() : undefined
 
   let upstream: Response
   try {
     upstream = await fetch(target, {
       method: request.method,
       headers,
-      // Se reenvía el cuerpo crudo para soportar tanto JSON como multipart (subidas).
-      body: hasBody ? await request.arrayBuffer() : undefined,
+      body,
       /**
        * Seguir los redirects aquí, no reenviarlos al navegador.
        *
