@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
+import { toast } from 'sonner'
 import {
   Controller,
   FormProvider,
@@ -13,7 +14,6 @@ import {
 } from 'react-hook-form'
 import type { ZodType } from 'zod'
 
-import { ApiError } from '@/lib/api/errors'
 import { cn } from '@/lib/utils'
 
 import { ColorInput } from './color-input'
@@ -61,7 +61,7 @@ export function FormModal<TValues extends FieldValues>({
   schema: ZodType<TValues, TValues>
   defaultValues: DefaultValues<TValues>
   submitLabel?: string
-  /** Debe lanzar para señalar error; el mensaje se muestra en el modal. */
+  /** Debe lanzar para señalar error; el mensaje se muestra como toast. */
   onSubmit: (values: TValues) => Promise<void>
   /** Icono del encabezado, como en cada template Jinja. */
   icon?: string
@@ -81,7 +81,6 @@ export function FormModal<TValues extends FieldValues>({
     register,
     handleSubmit,
     reset,
-    setError,
     formState: { errors, isSubmitting },
   } = methods
 
@@ -92,19 +91,12 @@ export function FormModal<TValues extends FieldValues>({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, reset])
 
-  const rootError = errors.root?.message
-
   const submit = handleSubmit(async (values) => {
     try {
       await onSubmit(values)
       onClose()
     } catch (error) {
-      setError('root', {
-        message:
-          error instanceof ApiError || error instanceof Error
-            ? error.message
-            : 'No se pudo completar la operación.',
-      })
+      toast.error(error instanceof Error ? error.message : 'No se pudo completar la operación.')
     }
   })
 
@@ -141,15 +133,6 @@ export function FormModal<TValues extends FieldValues>({
           noValidate
           className="min-w-0 space-y-5 sm:space-y-6"
         >
-          {rootError && (
-            <p
-              role="alert"
-              className="rounded-xl border border-red-400/40 bg-red-500/15 px-4 py-3 text-sm text-red-200"
-            >
-              {rootError}
-            </p>
-          )}
-
           <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2 md:gap-5">
             {fields.map((field) => {
               const message = errors[field.name]?.message
