@@ -36,7 +36,10 @@ export async function listHardware(empresaId?: string): Promise<Hardware[]> {
 }
 
 export async function createHardware(values: HardwareFormValues): Promise<void> {
-  await apiRequest(BASE, { method: 'POST', body: toPayload(values) })
+  // Flask requires the collection URL to end in `/`. Calling the canonical URL
+  // avoids its 308 redirect, which cannot safely replay a streamed POST body in
+  // the Next.js BFF.
+  await apiRequest(`${BASE}/`, { method: 'POST', body: toPayload(values) })
 }
 
 export async function updateHardware(id: string, values: HardwareFormValues): Promise<void> {
