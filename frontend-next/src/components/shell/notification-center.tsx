@@ -7,15 +7,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Icon } from '@/components/ui/icon'
 import { useRealtime } from '@/features/realtime/realtime-provider'
 import type { AlertNotification, HardwareNotification } from '@/features/realtime/types'
-
-function dateOf(value?: string) {
-  if (!value) return ''
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return ''
-  return new Intl.DateTimeFormat('es-CO', {
-    day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit',
-  }).format(date)
-}
+import { formatTimestamp } from '@/features/stats/format'
 
 function priorityClass(priority?: string) {
   const value = priority?.toLowerCase()
@@ -86,9 +78,9 @@ function AlertRow({ item, onClick }: { item: AlertNotification; onClick?: () => 
         <p className="mt-0.5 truncate text-xs text-[var(--shell-text-muted)]">
           {[item.empresa_nombre, item.sede].filter(Boolean).join(' · ') || item.descripcion || 'Sin ubicación'}
         </p>
-        {dateOf(item.fecha_actualizacion || item.fecha_creacion) && (
+        {(item.fecha_actualizacion || item.fecha_creacion) && (
           <time className="mt-1 block text-[10px] text-[var(--shell-text-muted)]">
-            {dateOf(item.fecha_actualizacion || item.fecha_creacion)}
+            {formatTimestamp(item.fecha_actualizacion || item.fecha_creacion || null)}
           </time>
         )}
       </div>
@@ -113,8 +105,8 @@ function HardwareRow({ item, onClick }: { item: HardwareNotification; onClick?: 
         <p className="mt-0.5 truncate text-xs text-[var(--shell-text-muted)]">
           Inactivo · {[item.tipo, item.sede].filter(Boolean).join(' · ') || 'Sin sede'}
         </p>
-        {dateOf(item.fecha) && (
-          <time className="mt-1 block text-[10px] text-[var(--shell-text-muted)]">{dateOf(item.fecha)}</time>
+        {item.fecha && (
+          <time className="mt-1 block text-[10px] text-[var(--shell-text-muted)]">{formatTimestamp(item.fecha)}</time>
         )}
       </div>
     </button>
